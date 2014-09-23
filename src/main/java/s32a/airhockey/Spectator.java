@@ -6,11 +6,18 @@
 
 package s32a.airhockey;
 
+import lombok.Getter;
+
 /**
  *
  * @author Kargathia
  */
-public class Spectator
+public class Spectator extends Person
 {
-    
+    private Game game;
+    Spectator(String name, int rating, Game game)
+    {
+        super(name, rating);
+        this.game = game;
+    }
 }

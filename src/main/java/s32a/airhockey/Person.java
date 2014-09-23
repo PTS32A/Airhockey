@@ -6,11 +6,25 @@
 
 package s32a.airhockey;
 
+import lombok.Getter;
+
 /**
  *
  * @author Kargathia
  */
 public class Person
 {
+    @Getter private String name;
+    @Getter private int rating;
     
+    /**
+     * 
+     * @param name
+     * @param rating 
+     */
+    Person(String name, int rating)
+    {
+        this.name = name;
+        this.rating = rating;
+    }
 }
