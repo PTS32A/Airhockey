@@ -12,5 +12,35 @@ package s32a.airhockey;
  */
 public class DatabaseControls
 {
+    private String connection;
     
+    /**
+     * 
+     */
+    public DatabaseControls()
+    {
+        
+    }
+    
+    /**
+     * 
+     * @param playerName
+     * @param password
+     * @return 
+     */
+    public Person checkLogin(String playerName, String password)
+    {
+        
+    }
+    
+    /**
+     * 
+     * @param playerName
+     * @param password
+     * @return 
+     */
+    public Person addPerson(String playerName, String password)
+    {
+        
+    }
 }

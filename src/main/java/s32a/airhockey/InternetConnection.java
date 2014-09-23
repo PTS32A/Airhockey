@@ -6,11 +6,39 @@
 
 package s32a.airhockey;
 
+import java.util.List;
+
 /**
  *
  * @author Kargathia
  */
 public class InternetConnection
 {
+    private String connection;
     
+    /**
+     * 
+     */
+    public InternetConnection()
+    {
+        
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public List<Person> populatePersons()
+    {
+        
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public List<Game> populateGames()
+    {
+        
+    }
 }

@@ -6,11 +6,55 @@
 
 package s32a.airhockey;
 
+import com.badlogic.gdx.math.Vector2;
+import java.util.List;
+import lombok.Getter;
+
 /**
  *
  * @author Kargathia
  */
 public class Puck
 {
+    @Getter private Vector2 position;
+    @Getter private float speed;
+    @Getter private List<Player> hitBy;
+    @Getter private float direction;
+    
+    
+    /**
+     * 
+     * @param speed 
+     */
+    public Puck(float speed)
+    {
+        
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean start()
+    {
+        
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean stop()
+    {
+        
+    }
+    
+    /**
+     * 
+     */
+    private void run()
+    {
+        
+    }
     
 }

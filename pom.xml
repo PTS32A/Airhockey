@@ -28,6 +28,11 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.3.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-tools</artifactId>
+            <version>0.9.9</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
