@@ -50,4 +50,24 @@ public class Player extends Person
         this.rotation = rotation;
         this.goalPos = goalPos;
     }
+    
+    public boolean moveBall(float amount)
+    {
+        return false;
+    }
+    
+    public boolean applyPowerUp()
+    {
+        return false;
+    }
+    
+    public void addPowerUp(PowerUp powerUp)
+    {
+        //
+    }
+    
+    public boolean pauseGame(boolean isPaused)
+    {
+        return false;
+    }
 }

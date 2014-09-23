@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
  *
  * @author Kargathia
  */
-public class Bot
+public class Bot extends Player
 {
     /**
      * 
