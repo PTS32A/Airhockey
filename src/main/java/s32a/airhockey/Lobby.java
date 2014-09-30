@@ -21,12 +21,11 @@ public class Lobby
     @Getter private DatabaseControls myDatabaseControls;
     @Getter private Person currentPerson;
     @Getter private List<Person> activePersons;
-    @Getter private List<Game> activeGames;
+    @Getter private List<Game> activeGames, spectatedGames;
     @Getter private Game playedGame;
-    @Getter private List<Game> spectatedGames;
     
     /**
-     * 
+     * Lobby is used as singleton
      */
     public Lobby()
     {
@@ -40,8 +39,8 @@ public class Lobby
     }
     
     /**
-     * 
-     * @return instance of lobby
+     * if _singleton is null, initialises it
+     * @return instance of lobby (_singleton) 
      */
     public static Lobby getSingle()
     {
@@ -49,21 +48,31 @@ public class Lobby
     }
     
     /**
-     * 
-     * @param playerName
-     * @param password
-     * @return 
+     * Adds a new person to the database. Does not add them to active persons yet
+     * the database checks for uniqueness
+     * @param playerName can not be null or whitespace
+     * can't contain whitespaces
+     * @param password can not be null or whitespace
+     * can't contain whitespaces
+     * @return DatabaseControls.addPerson() - or IllegalArgumentException when
+     * parameter(s) is/are null or contain whitespaces
      */
-    public boolean addPlayer(String playerName, String password)
+    public boolean addPerson(String playerName, String password)
     {
         
     }
     
     /**
-     * 
-     * @param playerName
-     * @param password
+     * Checks with the database class whether provided parameters correspond to a 
+     * player in the database
+     * @param playerName can't be null or whitespace
+     * can't contain whitespaces
+     * @param password can't be null or whitespace
+     * can't contain whitespaces
      * @return 
+     * True if DatabaseControls.checkLogin() returned a person
+     * false if .checkLogin() returned null
+     * IllegalArgumentException when parameter was null or empty, or contained whitespaces
      */
     public boolean checkLogin(String playerName, String password)
     {
@@ -71,8 +80,13 @@ public class Lobby
     }
     
     /**
-     * 
+     * Starts a new game, and adds this to the activeGames list
+     * currentPerson is converted to Player
+     * currentPerson is used as gamestarter for Game constructor parameter
+     * currentPerson can't already be a Player or Spectator
      * @return 
+     * - True if everything went well
+     * - False otherwise
      */
     public boolean startGame()
     {
@@ -80,9 +94,13 @@ public class Lobby
     }
     
     /**
-     * 
-     * @param game
+     * lets currentPerson join an existing game
+     * currentPerson is converted to Player
+     * currentPerson can't already be a Player or Spectator
+     * @param game game to join
      * @return 
+     * True if everything went well
+     * False otherwise
      */
     public boolean joinGame(Game game)
     {
@@ -90,9 +108,14 @@ public class Lobby
     }
     
     /**
-     * 
+     * lets currentPerson spectate an existing game
+     * currentPerson is converted to Spectator
+     * currentPerson can't already be a Player
+     * currentPerson can already be a Spectator
      * @param game
      * @return 
+     * - True if everything went well
+     * - False otherwise
      */
     public boolean spectateGame(Game game)
     {
@@ -100,10 +123,13 @@ public class Lobby
     }
     
     /**
-     * 
-     * @param message
-     * @param from
+     * adds a chat message to the lobbychatbox
+     * @param message can't be null
+     * @param from if method is called from GUI it should always be currentPerson
+     * alternative would be if method is called from internetconnection (irrelevant in iteration 1)
      * @return 
+     * - True if everything went well
+     * - False otherwise
      */
     public boolean addChatMessage(String message, Person from)
     {
@@ -111,10 +137,15 @@ public class Lobby
     }
     
     /**
-     * 
-     * @param game
-     * @param hasLeft
+     * ends the provided game, and returns all participants to the lobby
+     * calculates post-game stats
+     * @param game can't be null
+     * @param hasLeft can be null, if game ended normally
+     * is not null when a player leaves the game
      * @return 
+     * - True if everything went well
+     * - False otherwise
+     * - IllegalArgumentException when game is null
      */
     public boolean endGame(Game game, Player hasLeft)
     {
@@ -122,8 +153,10 @@ public class Lobby
     }
     
     /**
-     * 
-     * @param participant 
+     * returns a specific person's status from Player or Spectator back to Person
+     * updates activePersons to reflect this change
+     * @param participant can't be null
+     * throws IllegalArgumentException when participant is null
      */
     public void returnToLobby(Person participant)
     {
@@ -131,11 +164,14 @@ public class Lobby
     }
     
     /**
-     * 
-     * @param myGame
-     * @param message
-     * @param from
+     * Adds a message to a specific game's chatbox
+     * @param myGame can't be null
+     * @param message can't be null or whitespaces
+     * @param from can't be null
+     * when called from the GUI, this should be currentPerson
      * @return 
+     * - True if everything went well
+     * - False otherwise
      */
     public boolean addGameChatMessage(Game myGame, String message, Person from)
     {
@@ -143,9 +179,13 @@ public class Lobby
     }
     
     /**
-     * 
-     * @param gameID
+     * returns the game associated with a gameID
+     * TODO: implement hashable list of games, with key being gameID
+     * @param gameID can't be null
      * @return 
+     * Game when a game was found
+     * null otherwise
+     * IllegalArgumentException when gameID was null
      */
     public Game getMyGame(String gameID)
     {
