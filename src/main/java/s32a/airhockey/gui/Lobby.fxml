@@ -29,7 +29,7 @@
     <Button id="btnNewGame" layoutX="209.0" layoutY="366.0" mnemonicParsing="false" text="New Game" />
     <TableView id="tbl" layoutX="209.0" layoutY="28.0" prefHeight="325.0" prefWidth="390.0">
       <columns>
-        <TableColumn prefWidth="75.0" text="Name" />
+        <TableColumn prefWidth="75.0" text="Difficulty" />
         <TableColumn prefWidth="75.0" text="Player 1" />
         <TableColumn prefWidth="75.0" text="Player 2" />
         <TableColumn prefWidth="75.0" text="Player 3" />
