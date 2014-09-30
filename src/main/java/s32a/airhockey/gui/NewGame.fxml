@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="234.0" prefWidth="355.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <Button id="btnBack" layoutX="100.0" layoutY="174.0" mnemonicParsing="false" text="Back" />
+    <Button id="btnOk" layoutX="264.0" layoutY="174.0" mnemonicParsing="false" text="Ok" />
+    <Label layoutX="65.0" layoutY="98.0" text="Name:" />
+    <Label layoutX="50.0" layoutY="129.0" text="Difficulty:" />
+    <Label layoutX="148.0" layoutY="43.0" text="New Game">
+      <font>
+        <Font size="24.0" />
+      </font>
+    </Label>
+    <TextField id="tfGameName" layoutX="100.0" layoutY="95.0" prefWidth="200.0" />
+    <ChoiceBox id="cbDifficult" layoutX="100.0" layoutY="127.0" prefWidth="93.0">
+      <items>
+        <FXCollections fx:factory="observableArrayList">
+          <String fx:value="Item 1" />
+          <String fx:value="Item 2" />
+          <String fx:value="Item 3" />
+        </FXCollections>
+      </items>
+    </ChoiceBox>
+  </children>
+</AnchorPane>
