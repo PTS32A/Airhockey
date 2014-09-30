@@ -18,7 +18,7 @@ public class Chatbox
     @Getter private List<String> chat;
     
     /**
-     * 
+     * The chat box element.
      */
     public Chatbox()
     {
@@ -27,8 +27,8 @@ public class Chatbox
     
     /**
      * 
-     * @param message
-     * @return 
+     * @param message The message that is going to be sent to the chat box
+     * @return returns true if the message was sent successfully
      */
     public boolean addChatMessage(String message)
     {
