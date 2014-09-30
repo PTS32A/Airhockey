@@ -13,27 +13,31 @@ import lombok.Getter;
  *
  * @author Kargathia
  */
-public class Game {
+public class Game 
+{
 
     @Getter private int sideLength;
     @Getter private List<String> gameInfo;
     @Getter private boolean isPaused;
     @Getter private String gameID;
     @Getter private int roundNo;
+    @Getter private List<Player> myPlayers;
 
     /**
      *
      * @param message
      * @param from
      */
-    public void addChatMessage(String message, Person from) {
+    public void addChatMessage(String message, Person from) 
+    {
     }
 
     /**
      *
      * @param starter
      */
-    public Game(Player starter) {
+    public Game(Player starter) 
+    {
 
     }
 
@@ -42,7 +46,8 @@ public class Game {
      * @param player
      * @return
      */
-    public boolean addPlayer(Player player) {
+    public boolean addPlayer(Player player) 
+    {
     }
 
     /**
@@ -50,7 +55,8 @@ public class Game {
      * @param spectator
      * @return
      */
-    public boolean addSpectator(Spectator spectator) {
+    public boolean addSpectator(Spectator spectator) 
+    {
     }
 
     /**
@@ -58,14 +64,16 @@ public class Game {
      * @param spectator
      * @return
      */
-    public boolean removeSpectator(Spectator spectator) {
+    public boolean removeSpectator(Spectator spectator) 
+    {
     }
 
     /**
      *
      * @return
      */
-    public boolean beginGame() {
+    public boolean beginGame() 
+    {
     }
 
     /**
@@ -73,7 +81,8 @@ public class Game {
      * @param puckSpeed
      * @return
      */
-    public boolean adjustDifficulty(float puckSpeed) {
+    public boolean adjustDifficulty(float puckSpeed) 
+    {
     }
 
     /**
@@ -81,32 +90,37 @@ public class Game {
      * @param isPaused
      * @return
      */
-    public boolean pauseGame(boolean isPaused) {
+    public boolean pauseGame(boolean isPaused) 
+    {
     }
 
     /**
      *
      */
-    public void endGame() {
+    public void endGame() 
+    {
     }
 
     /**
      *
      * @return
      */
-    public Game update() {
+    public Game update() 
+    {
     }
 
     /**
      *
      */
-    private void run() {
+    private void run() 
+    {
     }
 
     /**
      *
      */
-    private void startRound() {
+    private void startRound() 
+    {
     }
 
 }
