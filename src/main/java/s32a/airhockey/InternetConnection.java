@@ -24,18 +24,6 @@ public class InternetConnection
         
     }
     
-    /**
-     * Used in iteration 1 of the project for testing and demonstration purposes
-     * This tries to register and log in a handful of Persons
-     * Is also responsible for setting Person.isBot to true
-     * Next up it starts multiple games, some full with bots, some 2/3 full
-     * @return True if it did its job
-     * Being unable to register the bots due to them being already present in
-     * the database will not return false
-     */
-    public boolean populate()
-    {
-        
-    }
+    
 
 }

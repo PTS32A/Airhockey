@@ -20,8 +20,8 @@ public class Bot extends Player
      * @param rating
      * @param color
      */
-    public Bot(String name, int rating, String color, Game game)
+    public Bot(String name, int rating, String color)
     {
-        super(name,rating,color, game);
+        super(name,rating,color);
     }
 }

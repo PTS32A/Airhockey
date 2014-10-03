@@ -20,11 +20,11 @@ public class Player extends Person
     @Getter private Vector2 batPos;
     @Getter private String color;
     @Getter private int score;
-    @Getter @Setter private boolean starter = false;
+    @Getter @Setter private boolean isStarter;
     @Getter private int rotation;
     @Getter private Vector2 goalPos;
     @Getter private Calendar lastAction;
-    @Getter private Game myGame;
+    @Getter @Setter private Game myGame;
     
     /**
      * 
@@ -33,7 +33,7 @@ public class Player extends Person
      * @param color player color - linked to them being player 1, 2 or 3
      * @param game 
      */
-    public Player(String name, int rating, String color, Game game)
+    public Player(String name, int rating, String color)
     {
         super(name, rating);
         this.color = color;

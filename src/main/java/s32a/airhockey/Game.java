@@ -27,11 +27,10 @@ public class Game
     /**
      * these are externally retrievable through gameInfo
      */
-    @Getter private Player myPlayer1, myPlayer2, myPlayer3;
+    @Getter private List<Player> myPlayers;
     
-    //includes gameID
+    //includes gameID, nextColor, sideLength
     @Getter private HashMap gameInfo;   
-    @Getter private int sideLength;
     @Getter private boolean isPaused;
     @Getter private int roundNo;
 
@@ -40,8 +39,9 @@ public class Game
      * this includes player name and timestamp appended to the message string
      * @param message The message that is going to be sent to the chat
      * @param from The player that is sending the message
+     * @return True if everything went right, and chatbox.addchatmessage returned true
      */
-    public void addChatMessage(String message, Person from)
+    public boolean addChatMessage(String message, Person from)
     {
     }
 
@@ -53,12 +53,12 @@ public class Game
      */
     public Game(Player starter)
     {
-        this.myPlayer1 = starter;
-        this.myPlayer2 = null;
-        this.myPlayer3 = null;
+        this.myPlayers = new ArrayList<>();
+        this.myPlayers.add(starter);
         
-        gameInfo = new HashMap();
-        gameInfo.put("gameID", starter.getName() + String.valueOf(getTime()));
+        this.gameInfo = new HashMap();
+        this.gameInfo.put("gameID", starter.getName() + String.valueOf(getTime()));
+        this.gameInfo.put("nextColor", "blue");
     }
 
     /**
@@ -165,6 +165,16 @@ public class Game
      */
     private void startRound()
     {
+    }
+    
+    /**
+     * gets the color the next player to join should be assigned
+     * @return the color the next player should have, cycling red, blue, green
+     * returns null if game already has three players
+     */
+    public String getNextColor()
+    {
+        
     }
 
     /**

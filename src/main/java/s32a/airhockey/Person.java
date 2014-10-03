@@ -16,7 +16,7 @@ import lombok.Setter;
 public class Person
 {
     @Getter private String name;
-    @Getter private int rating;
+    @Getter @Setter private int rating;
     @Getter @Setter private boolean isBot = false;
     
     /**

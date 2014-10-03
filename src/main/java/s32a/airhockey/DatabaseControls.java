@@ -25,7 +25,7 @@ public class DatabaseControls
     }
     
     /**
-     * 
+     * Checks whether provided playername and password correspond to an existing database item
      * @param playerName
      * @param password
      * @return 
@@ -36,10 +36,11 @@ public class DatabaseControls
     }
     
     /**
-     * 
+     * Adds a new Person to the database
      * @param playerName
      * @param password
-     * @return 
+     * @return the newly initialized Person if all went well
+     * Null if person already exists or anything else went wrong
      */
     public Person addPerson(String playerName, String password)
     {
@@ -63,6 +64,18 @@ public class DatabaseControls
      * @return 
      */
     public boolean removePerson(String playerName)
+    {
+        
+    }
+    
+    /**
+     * updates player's game history, and calculates his new rating
+     * @param player
+     * @param lastGame
+     * @param hasLeft can be null
+     * @return his new rating
+     */
+    public int getNewRating(Player player, Game lastGame, Player hasLeft)
     {
         
     }
