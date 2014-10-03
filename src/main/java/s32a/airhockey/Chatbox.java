@@ -26,9 +26,10 @@ public class Chatbox
     }
     
     /**
-     * 
+     * Message should be preformatted "<PlayerName>[HH:MM:SS]: message"
      * @param message The message that is going to be sent to the chat box
      * @return returns true if the message was sent successfully
+     * returns IllegalArgumentException if message wasn't formatted correctly
      */
     public boolean addChatMessage(String message)
     {

@@ -63,14 +63,14 @@ public class LobbyTest
      * Test of addPlayer method, of class Lobby.
      */
     @Test
-    public void testAddPlayer()
+    public void testAddPerson()
     {
         System.out.println("addPlayer");
         String playerName = "";
         String password = "";
         Lobby instance = new Lobby();
         boolean expResult = false;
-        boolean result = instance.addPlayer(playerName, password);
+        boolean result = instance.addPerson(playerName, password);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

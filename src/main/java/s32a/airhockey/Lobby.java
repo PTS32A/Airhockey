@@ -7,11 +7,14 @@
 package s32a.airhockey;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import lombok.Getter;
 
 /**
- *
+ * NOTES: 
+ * implemented HashMaps for active games and spectated games, key being gameID
+ * implemented HashMap for active persons, key being playername
  * @author Kargathia
  */
 public class Lobby
@@ -20,19 +23,20 @@ public class Lobby
     @Getter private Chatbox mychatbox;
     @Getter private DatabaseControls myDatabaseControls;
     @Getter private Person currentPerson;
-    @Getter private List<Person> activePersons;
+    @Getter private HashMap activePersons;
     @Getter private List<Game> activeGames, spectatedGames;
     @Getter private Game playedGame;
     
     /**
-     * Lobby is used as singleton
+     * Lobby is used as singleton, and is therefore private
+     * Also responsible for calling InternetConnection.populate() in iteration 1
      */
-    public Lobby()
+    private Lobby()
     {
         this.mychatbox = new Chatbox();
         this.myDatabaseControls = new DatabaseControls();
         this.currentPerson = null;
-        this.activePersons = new ArrayList<>();
+        this.activePersons = new HashMap<>();
         this.activeGames = new ArrayList<>();
         this.playedGame = null;
         this.spectatedGames = new ArrayList<>();
@@ -65,6 +69,7 @@ public class Lobby
     /**
      * Checks with the database class whether provided parameters correspond to a 
      * player in the database
+     * Adds person returned from database call to the lists of active persons
      * @param playerName can't be null or whitespace
      * can't contain whitespaces
      * @param password can't be null or whitespace
@@ -188,6 +193,16 @@ public class Lobby
      * IllegalArgumentException when gameID was null
      */
     public Game getMyGame(String gameID)
+    {
+        
+    }
+    
+    /**
+     * retrieves a list of persons from the database, sorted by their ranking
+     * Amount of players retrieved is to be determined by the database
+     * @return a sorted list of highest ranking players
+     */
+    public ArrayList<Person> getRankings()
     {
         
     }

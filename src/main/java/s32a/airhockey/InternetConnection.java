@@ -25,8 +25,9 @@ public class InternetConnection
     }
     
     /**
-     * 
-     * @return 
+     * Used in iteration 1 of the project for testing and demonstration purposes
+     * This tries to register and log in a handful of Persons 
+     * @return a List of (fictional) Persons. 
      */
     public List<Person> populatePersons()
     {

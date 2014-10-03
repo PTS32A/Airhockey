@@ -6,11 +6,10 @@
 
 package s32a.airhockey;
 
-import java.util.Calendar;
-
 import com.badlogic.gdx.math.Vector2;
-
+import java.util.Calendar;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
@@ -21,37 +20,31 @@ public class Player extends Person
     @Getter private Vector2 batPos;
     @Getter private String color;
     @Getter private int score;
-    @Getter private boolean starter;
-    @Getter private boolean AI;
+    @Getter @Setter private boolean starter = false;
     @Getter private int rotation;
     @Getter private Vector2 goalPos;
     @Getter private Calendar lastAction;
+    @Getter private Game myGame;
+    
     /**
      * 
-     * @param name
-     * @param rating
-     * @param batPos
-     * @param color
-     * @param score
-     * @param starter
-     * @param AI
-     * @param rotation
-     * @param goalPos 
+     * @param name provided by Person
+     * @param rating provided by Person
+     * @param color player color - linked to them being player 1, 2 or 3
+     * @param game 
      */
-    public Player(String name, int rating, Vector2 batPos, String color, int score,
-            boolean starter, boolean AI, int rotation, Vector2 goalPos)
+    public Player(String name, int rating, String color, Game game)
     {
         super(name, rating);
-        this.batPos = batPos;
         this.color = color;
-        this.score = score;
-        this.starter = starter;
-        this.AI = AI;
-        this.rotation = rotation;
-        this.goalPos = goalPos;
     }
     
-    public boolean moveBall(float amount)
+    /**
+     * Adjusts the bat position a given distance to left or right
+     * @param amount on an X-scale - negative values are allowed
+     * @return 
+     */
+    public boolean moveBat(float amount)
     {
         return false;
     }

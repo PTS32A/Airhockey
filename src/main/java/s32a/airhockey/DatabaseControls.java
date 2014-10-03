@@ -6,6 +6,8 @@
 
 package s32a.airhockey;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Kargathia
@@ -43,4 +45,14 @@ public class DatabaseControls
     {
         
     }
+    
+    /**
+     * Retrieves a list of highest ranked players from the database
+     * sorted descending by rating
+     * @return the X highest rated players, sorted by rating
+     */
+    public ArrayList<Person> getRankings()
+    {
+        
+    }  
 }
