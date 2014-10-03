@@ -41,24 +41,46 @@ public class Player extends Person
     
     /**
      * Adjusts the bat position a given distance to left or right
+     * Bat is unable to move if game is paused
      * @param amount on an X-scale - negative values are allowed
-     * @return 
+     * max and min values as of yet undetermined
+     * @return True if all went well
+     * False otherwise, including paused game
+     * Eventually throws IllegalArgumentException if amount exceeds min or max value
      */
     public boolean moveBat(float amount)
     {
         return false;
     }
     
+    /**
+     * Applies an owned PowerUp
+     * Could Have functionality - disregard for now
+     * @return True if everything went well
+     * False otherwise - including if no PowerUp was in possession
+     */
     public boolean applyPowerUp()
     {
         return false;
     }
     
+    /**
+     * Adds a PowerUp, readying it to be applied
+     * Could Have functionality - disregard for now
+     * @param powerUp 
+     */
     public void addPowerUp(PowerUp powerUp)
     {
         //
     }
     
+    /**
+     * Tries to pause or unpause current game
+     * @param isPaused the desired pausestate - false for unpause
+     * @return True if pause status was changed
+     * False if unable to change pause state, due to unexpected weirdness
+     * or if isPaused == game.isPaused
+     */
     public boolean pauseGame(boolean isPaused)
     {
         return false;

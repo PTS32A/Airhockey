@@ -7,9 +7,11 @@ package s32a.airhockey;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
 import lombok.Getter;
+import static org.lwjgl.Sys.getTime;
 
 /**
  * NOTES:
@@ -27,12 +29,10 @@ public class Game
      */
     @Getter private Player myPlayer1, myPlayer2, myPlayer3;
     
-    //unclear whether this is useful
-    @Getter private HashMap gameInfo;
-    
+    //includes gameID
+    @Getter private HashMap gameInfo;   
     @Getter private int sideLength;
     @Getter private boolean isPaused;
-    @Getter private final String gameID;
     @Getter private int roundNo;
 
     /**
@@ -47,7 +47,8 @@ public class Game
 
     /**
      * Constructor. Initialises sideLength, isPaused, gameID and roundNo to default values
-     * gameID is a combination of starting player, and exact start date/time
+     * gameID is a combination of starting player, and exact start date/time 
+     * (should be put in gameInfo)
      * @param starter The player that starts the game initially
      */
     public Game(Player starter)
@@ -57,6 +58,7 @@ public class Game
         this.myPlayer3 = null;
         
         gameInfo = new HashMap();
+        gameInfo.put("gameID", starter.getName() + String.valueOf(getTime()));
     }
 
     /**
@@ -165,4 +167,13 @@ public class Game
     {
     }
 
+    /**
+     * 
+     * @return gameID
+     */
+    @Override
+    public String toString()
+    {
+        return (String)gameInfo.get("gameID");
+    }
 }

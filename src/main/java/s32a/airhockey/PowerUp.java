@@ -10,6 +10,7 @@ package s32a.airhockey;
  *
  * @author Luke
  */
-public class PowerUp {
+public class PowerUp 
+{
     
 }

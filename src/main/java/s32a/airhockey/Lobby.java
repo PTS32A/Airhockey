@@ -48,7 +48,11 @@ public class Lobby
      */
     public static Lobby getSingle()
     {
-        
+        if(_singleton == null)
+        {
+            _singleton = new Lobby();
+        }
+        return _singleton;
     }
     
     /**
@@ -82,6 +86,16 @@ public class Lobby
     public boolean checkLogin(String playerName, String password)
     {
         
+    }
+    
+    /**
+     * calls the database to remove a player with given player name
+     * @param playerName
+     * @return DatabaseControls.removePerson()
+     */
+    public boolean removePerson(String playerName)
+    {
+        return myDatabaseControls.removePerson(playerName);
     }
     
     /**

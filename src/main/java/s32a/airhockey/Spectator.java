@@ -15,6 +15,7 @@ import lombok.Getter;
 public class Spectator extends Person
 {
     private Game game;
+    
     Spectator(String name, int rating, Game game)
     {
         super(name, rating);

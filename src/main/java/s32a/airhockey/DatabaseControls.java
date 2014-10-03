@@ -54,5 +54,16 @@ public class DatabaseControls
     public ArrayList<Person> getRankings()
     {
         
-    }  
+    } 
+    
+    /**
+     * Removes a player with given player name from the database
+     * Mostly useful for testing purposes
+     * @param playerName
+     * @return 
+     */
+    public boolean removePerson(String playerName)
+    {
+        
+    }
 }

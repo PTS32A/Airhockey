@@ -9,10 +9,11 @@ package s32a.airhockey;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import java.lang.*;
 
 /**
  *
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
  */
 public class LobbyTest
 {
+    private Lobby mockLobby;
     
     public LobbyTest()
     {
@@ -32,17 +34,19 @@ public class LobbyTest
     
     @AfterClass
     public static void tearDownClass()
-    {
+    {       
     }
     
     @Before
     public void setUp()
     {
+        this.mockLobby = Lobby.getSingle();
     }
     
     @After
     public void tearDown()
     {
+        this.mockLobby.removePerson("testey");
     }
 
     /**
@@ -51,46 +55,50 @@ public class LobbyTest
     @Test
     public void testGetSingle()
     {
-        System.out.println("getSingle");
-        Lobby expResult = null;
-        Lobby result = Lobby.getSingle();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(this.mockLobby);
     }
 
     /**
      * Test of addPlayer method, of class Lobby.
      */
     @Test
-    public void testAddPerson()
+    public void testPersons()
     {
-        System.out.println("addPlayer");
-        String playerName = "";
-        String password = "";
-        Lobby instance = new Lobby();
-        boolean expResult = false;
-        boolean result = instance.addPerson(playerName, password);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Person testey = new Person("testey", 15);
+        assertTrue("addPerson was false", this.mockLobby.addPerson("testey", "testpass"));
+        assertTrue("Person was not logged in", this.mockLobby.checkLogin("testey", "testpass"));
+        assertEquals("Person was not correctly initialised", this.mockLobby.getCurrentPerson(), testey);
+        assertFalse("wrong password logged in anyway", this.mockLobby.checkLogin("testey", "falsepass"));
+        assertFalse("wrong username logged in anyway", this.mockLobby.checkLogin("falsetestey", "testpass"));
+        assertEquals("Person not found in list", (Person)this.mockLobby.getActivePersons().get("testey"), testey);
     }
-
-    /**
-     * Test of checkLogin method, of class Lobby.
-     */
+    
     @Test
-    public void testCheckLogin()
+    (expected = IllegalArgumentException.class)
+    public void testAddUserNullPlayerName()
     {
-        System.out.println("checkLogin");
-        String playerName = "";
-        String password = "";
-        Lobby instance = new Lobby();
-        boolean expResult = false;
-        boolean result = instance.checkLogin(playerName, password);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        this.mockLobby.addPerson(null, "testpass");
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testAddUserNullPassword()
+    {
+        this.mockLobby.addPerson("testey", null);
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testAddUserWhiteSpaceName()
+    {
+        this.mockLobby.addPerson("testey   ", "testpass");
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testAddUserWhiteSpacePassword()
+    {
+        this.mockLobby.addPerson("testey", "test    pass");
     }
 
     /**
