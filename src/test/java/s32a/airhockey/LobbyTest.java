@@ -36,6 +36,8 @@ public class LobbyTest
     public static void tearDownClass()
     {       
         Lobby.getSingle().removePerson("testey");
+        Lobby.getSingle().removePerson("playey");
+        Lobby.getSingle().removePerson("spectey");
     }
     
     @Before
@@ -68,10 +70,14 @@ public class LobbyTest
         Person testey = new Person("testey", 15);
         //assertTrue("addPerson was false", this.mockLobby.addPerson("testey", "testpass"));
         //assertTrue("Person was not logged in", this.mockLobby.checkLogin("testey", "testpass"));
-        assertEquals("Person was not correctly initialised", this.mockLobby.getCurrentPerson(), testey);
-        assertFalse("wrong password logged in anyway", this.mockLobby.checkLogin("testey", "falsepass"));
-        assertFalse("wrong username logged in anyway", this.mockLobby.checkLogin("falsetestey", "testpass"));
-        assertEquals("Person not found in list", (Person)this.mockLobby.getActivePersons().get("testey"), testey);
+        assertEquals("Person was not correctly initialised", 
+                this.mockLobby.getCurrentPerson(), testey);
+        assertFalse("wrong password logged in anyway", 
+                this.mockLobby.checkLogin("testey", "falsepass"));
+        assertFalse("wrong username logged in anyway", 
+                this.mockLobby.checkLogin("falsetestey", "testpass"));
+        assertEquals("Person not found in list", 
+                (Person)this.mockLobby.getActivePersons().get("testey"), testey);
     }
     
     @Test
@@ -108,8 +114,10 @@ public class LobbyTest
     @Test
     public void testStartJoinSpectateGame()
     {
-        assertTrue("startGame returned false", this.mockLobby.startGame());
-        assertNotNull("playedGame was null", this.mockLobby.getPlayedGame());
+        //testey
+        Game game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        assertNotNull("startGame returned null", game);
+        assertEquals("playedGame wasn't started right", this.mockLobby.getPlayedGame(), game);
         
         Player testey = (Player)this.mockLobby.getCurrentPerson();
         assertEquals("currentPerson wasn't starting player", 
@@ -117,39 +125,33 @@ public class LobbyTest
         assertEquals("color wasn't red", testey.getColor(), "red");
         assertEquals("starting score wasn't 20", testey.getScore(), 20);
         assertTrue("testey wasn't a starting player", testey.isStarter());       
-        assertFalse("testey started a game while being a player", this.mockLobby.startGame());
+        assertNull("testey started a game while being a player", 
+                this.mockLobby.startGame(this.mockLobby.getCurrentPerson()));
         
         this.mockLobby.addPerson("playey", "testpass");
         this.mockLobby.addPerson("spectey", "testpass");
         
+        // playey
         this.mockLobby.checkLogin("playey", "testpass");
-        //this.mockLobby.checkLogin("spectey", "testpass");
-        assertTrue("playey was unable to join game", this.mockLobby.joinGame(this.mockLobby.))
-    }
-
-    /**
-     * Test of joinGame method, of class Lobby.
-     */
-    @Test
-    public void testJoinGame()
-    {
+        Person playey = (Person)this.mockLobby.getActivePersons().get("playey");
+        assertNull("playedGame wasn't cleared", 
+                this.mockLobby.joinGame(this.mockLobby.getPlayedGame(), playey));
+        assertEquals("playey was unable to join game", 
+                this.mockLobby.joinGame(game,
+                        (Person)this.mockLobby.getActivePersons().get("playey")), game);
+        assertNull("playey was able to start game while in one", 
+                this.mockLobby.startGame(playey));
+        assertNull("playey was able to join the same game twice", 
+                this.mockLobby.joinGame(game,
+                        (Person)this.mockLobby.getActivePersons().get("playey")));
         
-    }
-
-    /**
-     * Test of spectateGame method, of class Lobby.
-     */
-    @Test
-    public void testSpectateGame()
-    {
-        System.out.println("spectateGame");
-        Game game = null;
-        Lobby instance = new Lobby();
-        boolean expResult = false;
-        boolean result = instance.spectateGame(game);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // spectey
+        this.mockLobby.checkLogin("spectey", "testpass");
+        Person spectey = (Person)this.mockLobby.getActivePersons().get("spectey");
+        assertEquals("spectey didn't spectate the right game", 
+                this.mockLobby.spectateGame(game, spectey));
+        assertNull("spectey was able to spectate the same game twice", 
+                this.mockLobby.spectateGame(game, spectey));
     }
 
     /**
@@ -158,15 +160,14 @@ public class LobbyTest
     @Test
     public void testAddChatMessage()
     {
-        System.out.println("addChatMessage");
-        String message = "";
-        Person from = null;
-        Lobby instance = new Lobby();
-        boolean expResult = false;
-        boolean result = instance.addChatMessage(message, from);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue("testey wasn't able to post a chat message", 
+                this.mockLobby.addChatMessage("testmessage", 
+                this.mockLobby.getCurrentPerson()));
+        assertFalse("testey was able to post a null content message", 
+                this.mockLobby.addChatMessage(null, 
+                        (Person)this.mockLobby.getActivePersons().get("testey")));
+        assertFalse("anon managed to post",
+                this.mockLobby.addChatMessage("anonpost", null));
     }
 
     /**
@@ -175,168 +176,13 @@ public class LobbyTest
     @Test
     public void testEndGame()
     {
-        System.out.println("endGame");
-        Game game = null;
-        Player hasLeft = null;
-        Lobby instance = new Lobby();
-        boolean expResult = false;
-        boolean result = instance.endGame(game, hasLeft);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Game game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        assertTrue("game didn't end as it should", this.mockLobby.endGame(game, null));
+        assertFalse("successfully ended a previously ended game", 
+                this.mockLobby.endGame(game, null));
+        game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        assertTrue("game didn't end as it should with leaver", 
+                this.mockLobby.endGame(game, 
+                        (Player)this.mockLobby.getActivePersons().get("testey")));
     }
-
-    /**
-     * Test of returnToLobby method, of class Lobby.
-     */
-    @Test
-    public void testReturnToLobby()
-    {
-        System.out.println("returnToLobby");
-        Person participant = null;
-        Lobby instance = new Lobby();
-        instance.returnToLobby(participant);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of addGameChatMessage method, of class Lobby.
-     */
-    @Test
-    public void testAddGameChatMessage()
-    {
-        System.out.println("addGameChatMessage");
-        Game myGame = null;
-        String message = "";
-        Person from = null;
-        Lobby instance = new Lobby();
-        boolean expResult = false;
-        boolean result = instance.addGameChatMessage(myGame, message, from);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getMyGame method, of class Lobby.
-     */
-    @Test
-    public void testGetMyGame()
-    {
-        System.out.println("getMyGame");
-        String gameID = "";
-        Lobby instance = new Lobby();
-        Game expResult = null;
-        Game result = instance.getMyGame(gameID);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getMychatbox method, of class Lobby.
-     */
-    @Test
-    public void testGetMychatbox()
-    {
-        System.out.println("getMychatbox");
-        Lobby instance = new Lobby();
-        Chatbox expResult = null;
-        Chatbox result = instance.getMychatbox();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getMyDatabaseControls method, of class Lobby.
-     */
-    @Test
-    public void testGetMyDatabaseControls()
-    {
-        System.out.println("getMyDatabaseControls");
-        Lobby instance = new Lobby();
-        DatabaseControls expResult = null;
-        DatabaseControls result = instance.getMyDatabaseControls();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getCurrentPerson method, of class Lobby.
-     */
-    @Test
-    public void testGetCurrentPerson()
-    {
-        System.out.println("getCurrentPerson");
-        Lobby instance = new Lobby();
-        Person expResult = null;
-        Person result = instance.getCurrentPerson();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getActivePersons method, of class Lobby.
-     */
-    @Test
-    public void testGetActivePersons()
-    {
-        System.out.println("getActivePersons");
-        Lobby instance = new Lobby();
-        List<Person> expResult = null;
-        List<Person> result = instance.getActivePersons();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getActiveGames method, of class Lobby.
-     */
-    @Test
-    public void testGetActiveGames()
-    {
-        System.out.println("getActiveGames");
-        Lobby instance = new Lobby();
-        List<Game> expResult = null;
-        List<Game> result = instance.getActiveGames();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getPlayedGame method, of class Lobby.
-     */
-    @Test
-    public void testGetPlayedGame()
-    {
-        System.out.println("getPlayedGame");
-        Lobby instance = new Lobby();
-        Game expResult = null;
-        Game result = instance.getPlayedGame();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getSpectatedGames method, of class Lobby.
-     */
-    @Test
-    public void testGetSpectatedGames()
-    {
-        System.out.println("getSpectatedGames");
-        Lobby instance = new Lobby();
-        List<Game> expResult = null;
-        List<Game> result = instance.getSpectatedGames();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
 }

@@ -41,6 +41,8 @@ public class Lobby
         this.activeGames = new ArrayList<>();
         this.playedGame = null;
         this.spectatedGames = new ArrayList<>();
+        
+        this.populate();
     }
     
     /**
@@ -106,12 +108,22 @@ public class Lobby
         Person newPerson = this.myDatabaseControls.checkLogin(playerName, password);
         try
         {
-            return (activePersons.put(playerName, newPerson) != null);
+            if (activePersons.put(playerName, newPerson) != null)
+            {
+                this.currentPerson = (Person)this.activePersons.get(playerName);
+                this.playedGame = null;
+                this.spectatedGames = new ArrayList<>();
+            }
+            else
+            {
+                return false;
+            }
         }
         catch(IllegalArgumentException exc)
         {
             return false;
         }
+        return true;
     }
     
     /**
@@ -137,35 +149,37 @@ public class Lobby
      * person can't already be a Player or Spectator
      * @param person should be Lobby.currentPerson if called by GUI
      * @return 
-     * - True if everything went well
-     * - False otherwise
+     * - the freshly started game if everything went well
+     * - null
      */
-    public boolean startGame(Person person)
+    public Game startGame(Person person)
     {
         if(person == null || (person instanceof Player) 
                 || (person instanceof Spectator))
         {
-            return false;
+            return null;
         }
         
+        Game newGame = null;
         try
         {
+            newGame = new Game((Player)person);
             person = new Player(person.getName(), person.getRating(), "rood");
-            this.activePersons.replace(person.getName(), person);
-            this.playedGame = new Game((Player)person);
-            this.activeGames.add(this.playedGame);
+            this.activePersons.replace(person.getName(), person);          
+            this.activeGames.add(newGame);
             if(this.currentPerson == person)
             {
                 this.currentPerson = person;
+                this.playedGame = newGame;
             }
         }
         catch(Exception ex)
         {
             this.returnToLobby(person);
-            this.endGame(this.playedGame, null);
-            return false;
+            this.endGame(newGame, null);
+            return null;
         }
-        return true;
+        return newGame;
     }
     
     /**
@@ -175,30 +189,33 @@ public class Lobby
      * @param game can't be null
      * @param person should be Lobby.currentPerson if called by GUI
      * @return 
-     * True if everything went well
-     * False otherwise
+     * joined game if everything went well
+     * null otherwise
      */
-    public boolean joinGame(Game game, Person person)
+    public Game joinGame(Game game, Person person)
     {
         if(person == null || (person instanceof Player) 
                 || (person instanceof Spectator) || game == null)
         {
-            return false;
+            return null;
         }
         
         try
         {           
             person = new Player(person.getName(), person.getRating(), game.getNextColor());
             this.activePersons.replace(person.getName(), person);
-            this.playedGame = game;
+            if(person.equals(this.currentPerson))
+            {
+                this.playedGame = game;
+            }          
         }
         catch(Exception ex)
         {
             this.returnToLobby(person);
             this.playedGame = null;
-            return false;
+            return null;
         }
-        return true;
+        return game;
     }
     
     /**
@@ -209,14 +226,14 @@ public class Lobby
      * @param game can't be null
      * @param person should be currentPerson if called by GUI
      * @return 
-     * - True if everything went well
-     * - False otherwise
+     * - Game if everything went well
+     * - Null otherwise
      */
-    public boolean spectateGame(Game game, Person person)
+    public Game spectateGame(Game game, Person person)
     {
         if(person == null || (person instanceof Player))
         {
-            return false;
+            return null;
         }
         
         try
@@ -225,12 +242,16 @@ public class Lobby
                     person.getRating(), game);
             game.addSpectator((Spectator)person);
             this.activePersons.replace(person.getName(), person);
+            if(this.currentPerson.equals(person))
+            {
+                this.spectatedGames.add(game);
+            }
         }
         catch (Exception ex)
         {
-            return false;
+            return null;
         }
-        return true;
+        return game;
     }
     
     /**
@@ -278,10 +299,14 @@ public class Lobby
         {
             for (Player player : game.getMyPlayers())
             {
-                player.setRating(this.myDatabaseControls.getNewRating(player, game, hasLeft));
-                this.returnToLobby(player); 
-            }
-            
+                if(this.getActivePersons().get(player.getName()) instanceof Player)
+                {
+                    player.setRating(this.myDatabaseControls.getNewRating(player, game, hasLeft));
+                    this.returnToLobby(player); 
+                }               
+            }  
+            this.activeGames.remove(game);
+            this.spectatedGames.remove(game);
         }
         catch(Exception ex)
         {
@@ -296,9 +321,9 @@ public class Lobby
      * updates activePersons to reflect this change
      * @param participant can be null, but it won't do anything then either
      */
-    public void returnToLobby(Person participant)
+    private void returnToLobby(Person participant)
     {
-        if(participant == null)
+        if(participant == null || !(participant instanceof Player || participant instanceof Spectator))
         {
             return;   
         }
@@ -308,7 +333,7 @@ public class Lobby
             if(this.currentPerson == participant)
             {
                 this.currentPerson = (Person)this.activePersons.get(participant.getName());
-            }
+            }            
         }
         catch(Exception ex){}
     }
@@ -323,10 +348,10 @@ public class Lobby
      * - True if everything went well
      * - False otherwise
      */
-    public boolean addGameChatMessage(Game myGame, String message, Person from)
-    {
-        return myGame.addChatMessage(message, from);
-    }
+//    public boolean addGameChatMessage(Game myGame, String message, Person from)
+//    {
+//        return myGame.addChatMessage(message, from);
+//    }
     
     /**
      * returns the game associated with a gameID
@@ -364,15 +389,39 @@ public class Lobby
     
     /**
      * Used in iteration 1 of the project for testing and demonstration purposes
-     * This tries to register and log in a handful of Persons
+     * This adds a handful of persons to activePersons
+     * it assumes these persons already have been added to the database
      * Is also responsible for setting Person.isBot to true
      * Next up it starts multiple games, some full with bots, some 2/3 full
-     * @return True if it did its job
-     * Being unable to register the bots due to them being already present in
-     * the database will not return false
      */
-    public boolean populate()
+    public void populate()
     {
+        // adds bot 1-11
+        this.activePersons.put("bot1", new Person("bot1", 15));
+        this.activePersons.put("bot2", new Person("bot2", 15));
+        this.activePersons.put("bot3", new Person("bot3", 15));
+        this.activePersons.put("bot4", new Person("bot4", 15));
+        this.activePersons.put("bot5", new Person("bot5", 15));
+        this.activePersons.put("bot6", new Person("bot6", 15));
+        this.activePersons.put("bot7", new Person("bot7", 15));
+        this.activePersons.put("bot8", new Person("bot8", 15));
+        this.activePersons.put("bot9", new Person("bot9", 15));
+        this.activePersons.put("bot10", new Person("bot10", 15));
+        this.activePersons.put("bot11", new Person("bot11", 15));
         
+        Game game = this.startGame((Person)this.activePersons.get("bot1"));
+        this.joinGame(game, (Person)this.activePersons.get("bot2"));
+        this.joinGame(game, (Person)this.activePersons.get("bot3"));
+        
+        game = this.startGame((Person)this.activePersons.get("bot4"));
+        this.joinGame(game, (Person)this.activePersons.get("bot5"));
+        this.joinGame(game, (Person)this.activePersons.get("bot6"));
+        
+        game = this.startGame((Person)this.activePersons.get("bot7"));
+        this.joinGame(game, (Person)this.activePersons.get("bot8"));
+        this.joinGame(game, (Person)this.activePersons.get("bot9"));
+        
+        game = this.startGame((Person)this.activePersons.get("bot10"));
+        this.joinGame(game, (Person)this.activePersons.get("bot8"));
     }
 }
