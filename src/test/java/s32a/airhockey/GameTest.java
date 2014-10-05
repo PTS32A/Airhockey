@@ -158,8 +158,23 @@ public class GameTest
      * Test of beginGame method, of class Game.
      */
     @Test
+    public void testBeginGameNotEnoughPlayers()
+    {      
+        Boolean expResult = false;
+        Boolean result = game.beginGame();
+        
+        assertEquals("Game can't begin without 3 players", expResult, result);
+    }
+    
+    @Test
     public void testBeginGameAlreadyBegon()
     {
+        Player p2 = new Player("testPlayer2", 0, "blue");
+        Player p3 = new Player("testPlayer3", 0, "yellow");
+        
+        game.addPlayer(p2);
+        game.addPlayer(p3);
+        
         game.beginGame();
         
         Boolean expResult = false;
@@ -167,7 +182,7 @@ public class GameTest
         
         assertEquals("Game has already begon", expResult, result);
     }
-    
+       
     /**
      * Test of adjustDifficulty method, of class Game.
      */

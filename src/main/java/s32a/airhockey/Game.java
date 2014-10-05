@@ -44,6 +44,13 @@ public class Game
      */
     public boolean addChatMessage(String message, Person from)
     {
+        String preMessage = "<" + from.getName() + ">[";
+        
+        //TODO add timesstamp to preMessage
+        
+        preMessage += "]: ";
+        message = preMessage + message;
+        return myChatbox.addChatMessage(message);
     }
 
     /**
@@ -74,7 +81,23 @@ public class Game
      */
     public boolean addPlayer(Player player)
     {
-        
+        if (player != null)
+        {
+            if (!myPlayers.contains(player))
+            {
+                if (myPlayers.size() < 3)
+                {
+                    //TODO set nextColor to next available color
+                
+                    return myPlayers.add(player);
+                }
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+        return false;
     }
 
     /**
@@ -87,6 +110,18 @@ public class Game
      */ 
     public boolean addSpectator(Spectator spectator)
     {
+        if (spectator != null)
+        {
+            if (!mySpectators.contains(spectator))
+            {
+                return mySpectators.add(spectator);
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+        return false;
     }
 
     /**
@@ -97,6 +132,18 @@ public class Game
      */
     public boolean removeSpectator(Spectator spectator)
     {
+        if (spectator != null)
+        {
+            if (mySpectators.contains(spectator))
+            {
+                return mySpectators.remove(spectator);
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+        return false;
     }
 
     /**
@@ -106,6 +153,10 @@ public class Game
      */
     public boolean beginGame()
     {
+        if (myPlayers.size() == 3)
+        {
+            //TODO implement beginGame()
+        }
     }
 
     /**
@@ -118,6 +169,20 @@ public class Game
      */
     public boolean adjustDifficulty(float puckSpeed)
     {
+        //TODO determine min and max values for puckSpeed an review the following code
+        float min = 0;
+        float max = 10;
+        
+        if (puckSpeed >= min && puckSpeed <= max)
+        {
+            return myPuck.setSpeed(puckSpeed);
+        }
+        else
+        {
+            throw new IllegalArgumentException(); 
+        }
+        
+        return false;
     }
 
     /**
@@ -129,6 +194,16 @@ public class Game
      */
     public boolean pauseGame(boolean isPaused)
     {
+        if (this.isPaused != isPaused)
+        {
+            this.isPaused = isPaused;
+            return true;
+        }
+        else
+        {
+            //Return false because the pause state is already this way and is therefor not changed
+            return false;
+        }
     }
 
     /**
@@ -142,6 +217,7 @@ public class Game
      */
     public void endGame(Player hasLeft)
     {
+        //TODO
     }
 
     /**
@@ -152,6 +228,8 @@ public class Game
      */
     public Game update()
     {
+        //TODO
+        return this;
     }
 
     /**
@@ -160,6 +238,7 @@ public class Game
      */
     private void run()
     {
+        //TODO
     }
 
     /**
@@ -168,6 +247,7 @@ public class Game
      */
     private void startRound()
     {
+        //TODO
     }
     
     /**
@@ -177,7 +257,17 @@ public class Game
      */
     public String getNextColor()
     {
-        
+        switch (myPlayers.size())
+        {
+            case 0:
+                return "red";
+            case 1:
+                return "blue";
+            case 2:
+                return "green";
+            default:
+                return null;
+        }
     }
 
     /**
