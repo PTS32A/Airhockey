@@ -14,8 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-//Test line added by Julius to test syncing.
-
 /**
  *
  * @author Kargathia
