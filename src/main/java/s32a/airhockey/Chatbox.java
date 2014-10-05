@@ -7,6 +7,7 @@
 package s32a.airhockey;
 
 import java.util.List;
+import java.util.ArrayList;
 import lombok.Getter;
 
 /**
@@ -22,7 +23,7 @@ public class Chatbox
      */
     public Chatbox()
     {
-        
+        this.chat = new ArrayList<>();
     }
     
     /**
@@ -33,6 +34,14 @@ public class Chatbox
      */
     public boolean addChatMessage(String message)
     {
-        
+        if(message.startsWith("<") && message.contains(">[") && message.contains("]:"))
+        {
+            chat.add(message);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
