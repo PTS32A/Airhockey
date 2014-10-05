@@ -31,6 +31,7 @@ public class Player extends Person
      * @param name provided by Person
      * @param rating provided by Person
      * @param color player color - linked to them being player 1, 2 or 3
+     * retrievable from game.getGameInfo.get("nextColor")
      * @param game 
      */
     public Player(String name, int rating, String color)

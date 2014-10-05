@@ -16,6 +16,7 @@ import static org.lwjgl.Sys.getTime;
 /**
  * NOTES:
  * - should hashmaps be added for quick searching?
+ * - probably chuck a few values out of gameInfo when it's finalised
  * @author Kargathia
  */
 public class Game
@@ -64,7 +65,9 @@ public class Game
     /**
      * Adds the provided player to the next open player slot.
      * If player is a bot, then implement it as bot (iteration 1)
+     * sets nextColor in gameID to the next available color
      * @param player The player that's going to be added to the active game
+     * player color can be retrieved from gameID.get("nextColor")
      * @return returns true when the player was successfully added
      * returns false when game is full, or player is already a participant
      * also returns false when anything wonky happens
