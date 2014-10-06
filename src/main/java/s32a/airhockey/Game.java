@@ -88,6 +88,7 @@ public class Game
                 if (myPlayers.size() < 3)
                 {
                     //TODO set nextColor to next available color
+                    this.gameInfo.put("nextColor", getNextColor());
                 
                     return myPlayers.add(player);
                 }
@@ -156,7 +157,17 @@ public class Game
         if (myPlayers.size() == 3)
         {
             //TODO implement beginGame()
+            try
+            {
+                myPuck.start();
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
         }
+        
+        return true;
     }
 
     /**
