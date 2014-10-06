@@ -32,7 +32,12 @@ public class Puck
      */
     public Puck(float speed)
     {
+        this.speed = speed;
         
+        //TODO set position boundaries and randomise position
+        position = new Vector2(0, 0);
+        
+        isMoving = false;
     }
     
     /**
@@ -41,7 +46,15 @@ public class Puck
      */
     private void run()
     {
-        
+        if (isMoving)
+        {
+            float oldX = position.x;
+            float oldY = position.y;
+            float newX = oldX + (float)(Math.sin((double)direction) * speed);
+            float newY = oldY + (float)(Math.cos((double)direction) * speed);
+            
+            position = new Vector2(newX, newY);
+        }
     }
     
 }
