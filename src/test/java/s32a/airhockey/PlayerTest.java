@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 public class PlayerTest
 {
     Player player;
+    Game game;
     
     public PlayerTest()
     {
@@ -41,6 +42,8 @@ public class PlayerTest
     public void setUp()
     {
         player = new Player("Test", 15, "Red");
+        game = new Game(player);
+        player.setMyGame(game);
     }
     
     @After
@@ -55,11 +58,9 @@ public class PlayerTest
     public void testGetBatPos()
     {
         System.out.println("getBatPos");
-        Vector2 expResult = null;
+        Vector2 expResult = new Vector2(0,0);
         Vector2 result = player.getBatPos();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("Expected result does not match given result",expResult, result);
     }
 
     /**
@@ -69,12 +70,9 @@ public class PlayerTest
     public void testGetColor()
     {
         System.out.println("getColor");
-        Player instance = null;
-        String expResult = "";
-        String result = instance.getColor();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String expResult = "Red";
+        String result = player.getColor();
+        assertEquals("Colors do not match", expResult, result);
     }
 
     /**
@@ -84,12 +82,9 @@ public class PlayerTest
     public void testGetScore()
     {
         System.out.println("getScore");
-        Player instance = null;
         int expResult = 0;
-        int result = instance.getScore();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int result = player.getScore();
+        assertEquals("Score incorrect",expResult, result);
     }
 
     /**

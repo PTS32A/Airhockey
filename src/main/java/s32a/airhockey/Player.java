@@ -38,6 +38,9 @@ public class Player extends Person
     {
         super(name, rating);
         this.color = color;
+        this.batPos = new Vector2(0,0);
+        this.score = 0;
+    
     }
     
     /**
@@ -57,6 +60,7 @@ public class Player extends Person
         }
         else
         {
+            this.batPos.x += amount;
             return true;
         }
         
