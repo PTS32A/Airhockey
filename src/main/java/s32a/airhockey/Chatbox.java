@@ -8,6 +8,7 @@ package s32a.airhockey;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
 import lombok.Getter;
 
 /**
@@ -34,7 +35,17 @@ public class Chatbox
      */
     public boolean addChatMessage(String message, Person from)
     {
-        if(message.startsWith("<") && message.contains(">[") && message.contains("]:"))
+        StringBuilder builder = new StringBuilder();
+        String time = "";
+        time = String.valueOf(Calendar.getInstance().getTime()).substring(11, 19); //Gets only the time of the day out of the calendar.
+        
+        builder.append("<").append(from.getName()).append(">");
+        builder.append("[").append(time).append("]");
+        builder.append(": ").append(message);
+        message = builder.toString();
+        
+        System.out.println(message);
+        if(message.startsWith("<") && message.contains(">[") && message.contains("]:") && message.regionMatches(8, ":", 0, 1) && message.regionMatches(11, ":", 0, 1))
         {
             chat.add(message);
             return true;
@@ -43,11 +54,5 @@ public class Chatbox
         {
             return false;
         }
-        // USE THIS I GUESS
-        StringBuilder builder = new StringBuilder();
-        builder.append("<").append(from.getName()).append(">");
-        builder.append("[").append(String.valueOf(Calendar.getInstance().getTime())).append("]"); // TODO TEST WHETHER TIMESTAMP DOESN'T FUCK UP
-        builder.append(": ").append(message);
-        message = builder.toString();
     }
 }
