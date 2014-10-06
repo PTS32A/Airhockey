@@ -164,7 +164,7 @@ public class Lobby
         try
         {
             newGame = new Game((Player)person);
-            person = new Player(person.getName(), person.getRating(), "rood");
+            person = new Player(person.getName(), person.getRating(), "red");
             this.activePersons.replace(person.getName(), person);          
             this.activeGames.add(newGame);
             if(this.currentPerson == person)
