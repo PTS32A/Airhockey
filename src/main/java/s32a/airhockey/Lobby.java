@@ -268,13 +268,8 @@ public class Lobby
         if(message == null || from == null)
         {
             return false;
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append("<").append(from.getName()).append(">");
-        builder.append("[").append(String.valueOf(Calendar.getInstance().getTime())).append("]"); // TODO TEST WHETHER TIMESTAMP DOESN'T FUCK UP
-        builder.append(": ").append(message);
-        message = builder.toString();
-        return this.mychatbox.addChatMessage(message);       
+        }      
+        return this.mychatbox.addChatMessage(message, from);       
     }
     
     /**

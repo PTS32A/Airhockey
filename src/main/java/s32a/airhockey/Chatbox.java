@@ -32,7 +32,7 @@ public class Chatbox
      * @return returns true if the message was sent successfully
      * returns IllegalArgumentException if message wasn't formatted correctly
      */
-    public boolean addChatMessage(String message)
+    public boolean addChatMessage(String message, Person from)
     {
         if(message.startsWith("<") && message.contains(">[") && message.contains("]:"))
         {
@@ -43,5 +43,11 @@ public class Chatbox
         {
             return false;
         }
+        // USE THIS I GUESS
+        StringBuilder builder = new StringBuilder();
+        builder.append("<").append(from.getName()).append(">");
+        builder.append("[").append(String.valueOf(Calendar.getInstance().getTime())).append("]"); // TODO TEST WHETHER TIMESTAMP DOESN'T FUCK UP
+        builder.append(": ").append(message);
+        message = builder.toString();
     }
 }
