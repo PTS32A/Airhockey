@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
  */
 public class PlayerTest
 {
+    Player player;
     
     public PlayerTest()
     {
@@ -39,6 +40,7 @@ public class PlayerTest
     @Before
     public void setUp()
     {
+        player = new Player("Test", 15, "Red");
     }
     
     @After
@@ -53,9 +55,8 @@ public class PlayerTest
     public void testGetBatPos()
     {
         System.out.println("getBatPos");
-        Player instance = null;
         Vector2 expResult = null;
-        Vector2 result = instance.getBatPos();
+        Vector2 result = player.getBatPos();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

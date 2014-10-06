@@ -51,7 +51,15 @@ public class Player extends Person
      */
     public boolean moveBat(float amount)
     {
-        return false;
+        if (myGame.isPaused()) 
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+        
     }
     
     /**
