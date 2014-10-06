@@ -44,13 +44,15 @@ public class Game
      */
     public boolean addChatMessage(String message, Person from)
     {
-        String preMessage = "<" + from.getName() + ">[";
-        
-        //TODO add timesstamp to preMessage
-        
-        preMessage += "]: ";
-        message = preMessage + message;
-        return myChatbox.addChatMessage(message);
+        if (message == null || from == null)
+        {
+            throw new IllegalArgumentException();
+        }
+        if (message.isEmpty())
+        {
+            throw new IllegalArgumentException();
+        }
+        return myChatbox.addChatMessage(message, from);
     }
 
     /**
@@ -89,10 +91,11 @@ public class Game
             {
                 if (myPlayers.size() < 3)
                 {
-                    //TODO set nextColor to next available color
+                    //TODO use enum for color
                     this.gameInfo.put("nextColor", getNextColor());
                 
-                    return myPlayers.add(player);
+                    myPlayers.add(player);
+                    return true;
                 }
             }
         }
@@ -117,7 +120,8 @@ public class Game
         {
             if (!mySpectators.contains(spectator))
             {
-                return mySpectators.add(spectator);
+                mySpectators.add(spectator);
+                return true;
             }
         }
         else
@@ -139,7 +143,8 @@ public class Game
         {
             if (mySpectators.contains(spectator))
             {
-                return mySpectators.remove(spectator);
+                mySpectators.remove(spectator);
+                return true;
             }
         }
         else
@@ -188,14 +193,13 @@ public class Game
         
         if (puckSpeed >= min && puckSpeed <= max)
         {
-            return myPuck.setSpeed(puckSpeed);
+            myPuck.setSpeed(puckSpeed);
+            return true;
         }
         else
         {
             throw new IllegalArgumentException(); 
         }
-        
-        return false;
     }
 
     /**
@@ -230,7 +234,7 @@ public class Game
      */
     public void endGame(Player hasLeft)
     {
-        //TODO
+        //TODO dumpster this and call lobby.endGame(this, hasLeft)
     }
 
     /**
@@ -241,7 +245,6 @@ public class Game
      */
     public Game update()
     {
-        //TODO
         return this;
     }
 
@@ -271,6 +274,8 @@ public class Game
      */
     public String getNextColor()
     {
+        //TODO replace the following code with enum
+        
         switch (myPlayers.size())
         {
             case 0:
