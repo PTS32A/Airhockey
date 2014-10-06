@@ -45,9 +45,10 @@ public class Chatbox
         message = builder.toString();
         
         System.out.println(message);
-        if(message.startsWith("<") && message.contains(">[") && message.contains("]:") && message.regionMatches(8, ":", 0, 1) && message.regionMatches(11, ":", 0, 1))
+        if(message.startsWith("<") && message.contains(">[") && message.contains("]:") && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1) && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1))
         {
             chat.add(message);
+            System.out.println(getChat());
             return true;
         }
         else

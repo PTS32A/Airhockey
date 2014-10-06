@@ -6,6 +6,7 @@
 
 package s32a.airhockey;
 
+import java.util.Calendar;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -20,9 +21,11 @@ import static org.junit.Assert.*;
  */
 public class ChatboxTest
 {
+    Chatbox instance;
     
     public ChatboxTest()
     {
+        instance = new Chatbox();
     }
     
     @BeforeClass
@@ -38,6 +41,9 @@ public class ChatboxTest
     @Before
     public void setUp()
     {
+        Person piet = new Person("piet", 100);
+        String mes = "Ik ben piet";
+        instance.addChatMessage(mes, piet);
     }
     
     @After
@@ -52,13 +58,11 @@ public class ChatboxTest
     public void testAddChatMessage()
     {
         System.out.println("addChatMessage");
-        String message = "";
-        Chatbox instance = new Chatbox();
-        boolean expResult = false;
-        boolean result = instance.addChatMessage(message);
+        String message = "Ik ben jan";
+        boolean expResult = true;
+        Person from = new Person("jan", 50);
+        boolean result = instance.addChatMessage(message, from);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -68,12 +72,10 @@ public class ChatboxTest
     public void testGetChat()
     {
         System.out.println("getChat");
-        Chatbox instance = new Chatbox();
-        List<String> expResult = null;
-        List<String> result = instance.getChat();
+
+        String expResult = "<piet>[" + String.valueOf(Calendar.getInstance().getTime()).substring(11, 19) + "]: Ik ben piet";
+        String result = instance.getChat().get(0);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }
