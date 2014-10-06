@@ -67,6 +67,8 @@ public class Game
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName() + String.valueOf(getTime()));
         this.gameInfo.put("nextColor", "blue");
+        
+        this.roundNo = 0;
     }
 
     /**
@@ -259,6 +261,7 @@ public class Game
     private void startRound()
     {
         //TODO
+        roundNo++;
     }
     
     /**
