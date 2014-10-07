@@ -86,80 +86,14 @@ public class PlayerTest
         int result = player.getScore();
         assertEquals("Score incorrect",expResult, result);
     }
-
-    /**
-     * Test of isStarter method, of class Player.
-     */
-    @Test
-    public void testIsStarter()
-    {
-        System.out.println("isStarter");
-        Player instance = null;
-        boolean expResult = false;
-        boolean result = instance.isStarter();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of isAI method, of class Player.
-     */
-    @Test
-    public void testIsAI()
-    {
-        System.out.println("isAI");
-        Player instance = null;
-        boolean expResult = false;
-        boolean result = instance.isAI();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getRotation method, of class Player.
-     */
-    @Test
-    public void testGetRotation()
-    {
-        System.out.println("getRotation");
-        Player instance = null;
-        int expResult = 0;
-        int result = instance.getRotation();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getGoalPos method, of class Player.
-     */
-    @Test
-    public void testGetGoalPos()
-    {
-        System.out.println("getGoalPos");
-        Player instance = null;
-        Vector2 expResult = null;
-        Vector2 result = instance.getGoalPos();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getLastAction method, of class Player.
-     */
-    @Test
-    public void testGetLastAction()
-    {
-        System.out.println("getLastAction");
-        Player instance = null;
-        Calendar expResult = null;
-        Calendar result = instance.getLastAction();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
     
+    @Test
+    public void testMoveBat()
+    {
+        System.out.println("moveBat");
+        Vector2 expResult = new Vector2(5,0);
+        player.moveBat(5f);
+        Vector2 result = player.getBatPos();
+        assertEquals("Bat not moved properly",expResult, result);
+    }
 }
