@@ -23,6 +23,8 @@ public class Puck
     @Getter private float direction;
     @Getter @Setter boolean isMoving;
     
+    private float size;
+    
     
     /**
      * initialises a game's puck
@@ -30,9 +32,10 @@ public class Puck
      * isMoving is initialised as false
      * @param speed 
      */
-    public Puck(float speed)
+    public Puck(float speed, float sideLength)
     {
         this.speed = speed;
+        this.size = (float)(sideLength * 0.04);
         
         //TODO set position boundaries and randomise position
         position = new Vector2(0, 0);
@@ -44,7 +47,7 @@ public class Puck
      * updates the pucks position based on its speed, direction, and current position
      * does nothing if puck isn't moving
      */
-    private void run()
+    public void run()
     {
         if (isMoving)
         {
@@ -54,7 +57,23 @@ public class Puck
             float newY = oldY + (float)(Math.cos((double)direction) * speed);
             
             position = new Vector2(newX, newY);
+            
+            if(IsOutsideWall() != null)
+            {
+                
+            }
         }
+    }
+    
+    /**
+     * @return the wall position that the puck bounces off
+     * returns null if the puck is not in collision with any walls
+     */
+    private Vector2 IsOutsideWall()
+    {
+        float x = position.x;
+        float y = position.y;
+        if ()
     }
     
 }

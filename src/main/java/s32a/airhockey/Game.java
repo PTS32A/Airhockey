@@ -234,7 +234,9 @@ public class Game
      */
     private void run()
     {
-        //TODO
+        myPuck.run();
+        
+        //TODO bot position
     }
 
     /**
