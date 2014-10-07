@@ -24,7 +24,7 @@ public class Lobby
     @Getter private Chatbox mychatbox;
     @Getter private DatabaseControls myDatabaseControls;
     @Getter private Person currentPerson;
-    @Getter private HashMap activePersons;
+    @Getter private HashMap activePersons, airhockeySettings;
     @Getter private List<Game> activeGames, spectatedGames;
     @Getter private Game playedGame;
     

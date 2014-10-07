@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Puck
 {
     @Getter private Vector2 position;
-    @Getter private float speed;
+    @Getter @Setter private float speed;
     @Getter private List<Player> hitBy;
     @Getter private float direction;
     @Getter @Setter boolean isMoving;

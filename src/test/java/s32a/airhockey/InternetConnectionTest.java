@@ -45,34 +45,6 @@ public class InternetConnectionTest
     {
     }
 
-    /**
-     * Test of populatePersons method, of class InternetConnection.
-     */
-    @Test
-    public void testPopulatePersons()
-    {
-        System.out.println("populatePersons");
-        InternetConnection instance = new InternetConnection();
-        List<Person> expResult = null;
-        List<Person> result = instance.populatePersons();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of populateGames method, of class InternetConnection.
-     */
-    @Test
-    public void testPopulateGames()
-    {
-        System.out.println("populateGames");
-        InternetConnection instance = new InternetConnection();
-        List<Game> expResult = null;
-        List<Game> result = instance.populateGames();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+   
     
 }

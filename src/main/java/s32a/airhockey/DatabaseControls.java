@@ -32,7 +32,7 @@ public class DatabaseControls
      */
     public Person checkLogin(String playerName, String password)
     {
-        
+        return null;
     }
     
     /**
@@ -44,7 +44,7 @@ public class DatabaseControls
      */
     public Person addPerson(String playerName, String password)
     {
-        
+        return null;
     }
     
     /**
@@ -54,7 +54,7 @@ public class DatabaseControls
      */
     public ArrayList<Person> getRankings()
     {
-        
+        return null;
     } 
     
     /**
@@ -65,7 +65,7 @@ public class DatabaseControls
      */
     public boolean removePerson(String playerName)
     {
-        
+        return false;
     }
     
     /**
@@ -77,6 +77,6 @@ public class DatabaseControls
      */
     public int getNewRating(Player player, Game lastGame, Player hasLeft)
     {
-        
+        return -1;
     }
 }

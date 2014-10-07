@@ -164,14 +164,6 @@ public class Game
         if (myPlayers.size() == 3)
         {
             //TODO implement beginGame()
-            try
-            {
-                myPuck.start();
-            }
-            catch(Exception ex)
-            {
-                return false;
-            }
         }
         
         return true;
@@ -188,8 +180,8 @@ public class Game
     public boolean adjustDifficulty(float puckSpeed)
     {
         //TODO determine min and max values for puckSpeed an review the following code
-        float min = 0;
-        float max = 10;
+        float min = -100;
+        float max = 100;
         
         if (puckSpeed >= min && puckSpeed <= max)
         {
@@ -208,6 +200,7 @@ public class Game
      * @param isPaused Set true if the game needs to be paused, false for
      * un-pausing
      * @return returns true if the pause change was successful.
+     * return false if desired pause state == Game.isPaused
      */
     public boolean pauseGame(boolean isPaused)
     {
@@ -223,19 +216,6 @@ public class Game
         }
     }
 
-    /**
-     * dumpsters currently active game, after cleaning up internally score
-     * can be called internally on player timeout, by Player when leaving, or on natural game end
-     * calls Lobby.endGame(this, hasLeft)
-     * Lobby.endGame(game, player) is responsible for returning players and spectators to lobby
-     * Lobby.endGame() can be called directly to forcibly end game, at the cost of ending neatly
-     * @param hasLeft player responsible for the game ending prematurely
-     * can be null
-     */
-    public void endGame(Player hasLeft)
-    {
-        //TODO dumpster this and call lobby.endGame(this, hasLeft)
-    }
 
     /**
      * Does not have to be called for every new frame or update Cycle - Game.run()

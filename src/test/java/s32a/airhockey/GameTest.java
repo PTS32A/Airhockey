@@ -201,10 +201,7 @@ public class GameTest
     (expected = IllegalArgumentException.class)
     public void testAdjustDifficultyMinLimit()
     {
-        Boolean expResult = false;
-        Boolean result = game.adjustDifficulty(null);
-        
-        assertEquals("Diffuclty can't be lower than minimum", expResult, result);
+        Boolean result = game.adjustDifficulty(-200);
         
         //Todo review the code and add a minimum difficulty property to Game class.
     }
@@ -214,23 +211,9 @@ public class GameTest
     public void testAdjustDifficultyMaxLimit()
     {
         Boolean expResult = false;
-        Boolean result = game.adjustDifficulty(null);
-        
-        assertEquals("Diffuclty can't be higher than maximum", expResult, result);
+        Boolean result = game.adjustDifficulty(200);
         
         //Todo review the code and add a maximum difficulty property to Game class.
-    }
-    
-    /**
-     * Test of pauseGame method, of class Game.
-     */
-    @Test
-    (expected = IllegalArgumentException.class)
-    public void testPauseGameNull()
-    {
-        game.beginGame();
-        
-        game.pauseGame(null);
     }
     
     @Test
@@ -258,37 +241,13 @@ public class GameTest
     }
     
     /**
-     * Test of endGame method, of class Game.
-     */
-    @Test
-    (expected = NullPointerException.class)
-    public void testEndGame()
-    {
-        game.beginGame();
-        game.endGame(null);
-              
-        //Expect nullpointer on game after endgame was called
-        game.endGame(null);
-    }
-    
-    @Test
-    public void testEndGame()
-    {
-        game.beginGame();
-
-        Game result = game.update();
-        
-        assertNotNull("Game update can't return null", result);
-    }
-    
-    /**
      * Test of getNextColor method, of class Game.
      */
     @Test
     public void testGetNextColorBlue()
     {
-        Boolean expResult = Colors.Blue.toString();
-        Boolean result = game.getNextColor()''
+        String expResult = Colors.Blue.toString();
+        String result = game.getNextColor();
         
         assertEquals("Next color must be blue", expResult, result);
     }
