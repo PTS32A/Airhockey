@@ -96,4 +96,14 @@ public class PlayerTest
         Vector2 result = player.getBatPos();
         assertEquals("Bat not moved properly",expResult, result);
     }
+    
+    @Test
+    public void testPause()
+    {
+        System.out.println("Pause");
+        boolean expResult = true;
+        player.pauseGame(true);
+        boolean result = game.isPaused();
+        assertEquals("Game was not paused",expResult, result);
+    }
 }
