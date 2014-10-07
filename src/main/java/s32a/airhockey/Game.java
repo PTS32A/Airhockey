@@ -279,11 +279,11 @@ public class Game
         switch (myPlayers.size())
         {
             case 0:
-                return "red";
+                return Colors.Red.toString();
             case 1:
-                return "blue";
+                return Colors.Blue.toString();
             case 2:
-                return "green";
+                return Colors.Green.toString();
             default:
                 return null;
         }

@@ -42,7 +42,7 @@ public class GameTest
     public void setUp()
     {
         //Player starter
-        starter = new Player("testPlayer", 0, "red");
+        starter = new Player("testPlayer", 0, Colors.Red.toString());
         game = new Game(starter);
         spec = new Spectator("testSpectator", 0, game);
         game.addSpectator(spec);
@@ -101,9 +101,9 @@ public class GameTest
     @Test
     public void testAddPlayerGameFull()
     {
-        Player p2 = new Player("testPlayer2", 0, "blue");
-        Player p3 = new Player("testPlayer3", 0, "green");
-        Player p4 = new Player("testPlayer4", 0, "green");
+        Player p2 = new Player("testPlayer2", 0, Colors.Blue.toString());
+        Player p3 = new Player("testPlayer3", 0, Colors.Green.toString());
+        Player p4 = new Player("testPlayer4", 0, Colors.Green.toString());
         
         game.addPlayer(p2);
         game.addPlayer(p3);
@@ -169,8 +169,8 @@ public class GameTest
     @Test
     public void testBeginGameAlreadyBegon()
     {
-        Player p2 = new Player("testPlayer2", 0, "blue");
-        Player p3 = new Player("testPlayer3", 0, "yellow");
+        Player p2 = new Player("testPlayer2", 0, Colors.Blue.toString());
+        Player p3 = new Player("testPlayer3", 0, Colors.Green.toString());
         
         game.addPlayer(p2);
         game.addPlayer(p3);
@@ -287,7 +287,7 @@ public class GameTest
     @Test
     public void testGetNextColorBlue()
     {
-        Boolean expResult = "blue";
+        Boolean expResult = Colors.Blue.toString();
         Boolean result = game.getNextColor()''
         
         assertEquals("Next color must be blue", expResult, result);
@@ -296,9 +296,9 @@ public class GameTest
     @Test
     public void testGetNextColorGreen()
     {
-        game.addPlayer(new Player("testPlayer2", 0, "blue"));
+        game.addPlayer(new Player("testPlayer2", 0, Colors.Blue.toString()));
         
-        String expResult = "green";
+        String expResult = Colors.Green.toString();
         String result = game.getNextColor();
         
         assertEquals("Next color must be green", expResult, result);
