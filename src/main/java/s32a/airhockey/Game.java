@@ -11,7 +11,7 @@ import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
 import lombok.Getter;
-import static org.lwjgl.Sys.getTime;
+//import static org.lwjgl.Sys.getTime;
 
 /**
  * NOTES:
@@ -65,9 +65,17 @@ public class Game
     {
         this.myPlayers = new ArrayList<>();
         this.myPlayers.add(starter);
+        //TODO set default speed
+        this.myPuck = new Puck(3);
         
         this.gameInfo = new HashMap();
-        this.gameInfo.put("gameID", starter.getName() + String.valueOf(getTime()));
+        this.gameInfo.put("gameID", starter.getName() 
+                + String.valueOf(getInstance().get(Calendar.YEAR)) 
+                + String.valueOf(getInstance().get(Calendar.WEEK_OF_YEAR))
+                + String.valueOf(getInstance().get(Calendar.DAY_OF_WEEK))
+                + String.valueOf(getInstance().get(Calendar.HOUR_OF_DAY))
+                + String.valueOf(getInstance().get(Calendar.MINUTE)) 
+                + String.valueOf(getInstance().get(Calendar.SECOND)));
         this.gameInfo.put("nextColor", "blue");
         
         this.roundNo = 0;
