@@ -6,7 +6,10 @@
 
 package s32a.airhockey;
 
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import java.awt.Rectangle;
 import java.util.Calendar;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +28,7 @@ public class Player extends Person
     @Getter private Vector2 goalPos;
     @Getter private Calendar lastAction;
     @Getter @Setter private Game myGame;
+    @Getter private Rectangle rec;
     
     /**
      * 
@@ -38,8 +42,11 @@ public class Player extends Person
     {
         super(name, rating);
         this.color = color;
-        this.goalPos = new Vector2(0,0);
-        this.batPos = new Vector2(0,0);
+        this.goalPos = (Vector2)Lobby.getSingle().getAirhockeySettings().get("Goal Default");
+        float sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
+        int batWidth = (int)(sideLength/100*8);
+        this.batPos = new Vector2(goalPos.x, goalPos.y + 5);
+        rec = new Rectangle((int)batPos.x, (int)batPos.y, batWidth, batWidth);
         this.score = 0;
     }
     
@@ -61,6 +68,7 @@ public class Player extends Person
         else
         {
             this.batPos.x += amount;
+            this.rec.x = (int)batPos.x;
             return true;
         }
         

@@ -58,7 +58,7 @@ public class PlayerTest
     public void testGetBatPos()
     {
         System.out.println("getBatPos");
-        Vector2 expResult = new Vector2(0,0);
+        Vector2 expResult = new Vector2(0,5);
         Vector2 result = player.getBatPos();
         assertEquals("Expected result does not match given result",expResult, result);
     }

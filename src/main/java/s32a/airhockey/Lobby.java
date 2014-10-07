@@ -6,6 +6,7 @@
 
 package s32a.airhockey;
 
+import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,7 +42,9 @@ public class Lobby
         this.activeGames = new ArrayList<>();
         this.playedGame = null;
         this.spectatedGames = new ArrayList<>();
-        
+        this.airhockeySettings = new HashMap<>();
+        airhockeySettings.put("Goal Default", new Vector2(0,0));
+        airhockeySettings.put("Side Length", 200f);
         this.populate();
     }
     
