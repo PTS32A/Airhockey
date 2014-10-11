@@ -24,7 +24,7 @@ public class Puck
     @Getter @Setter boolean isMoving;
     
     private float size;
-    private double sideLength;
+    private float sideLength;
     private double middleLine;
     
     /**
@@ -37,7 +37,7 @@ public class Puck
     {
         this.speed = speed;
         
-        this.sideLength = Lobby.getSingle().getSideLength();
+        this.sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
         
         this.middleLine = Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
         
