@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
  */
 public class PuckTest
 {
+    Puck puck;
     
     public PuckTest()
     {
@@ -39,6 +40,7 @@ public class PuckTest
     @Before
     public void setUp()
     {
+        puck = new Puck(3);
     }
     
     @After
@@ -46,5 +48,15 @@ public class PuckTest
     {
     }
 
-    
+    @Test
+    public void testUpdatePosition()
+    {
+        Vector2 expResult = new Vector2(3,0);
+        
+        puck.run();
+        
+        Vector2 result = puck.getPosition();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
 }
