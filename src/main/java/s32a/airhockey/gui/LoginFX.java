@@ -33,23 +33,27 @@ public class LoginFX extends AirhockeyGUI implements Initializable
         
     }
     
+    // template code for opening an additional window, in this case showing Lobby
+    // for merely switching windows, base.goTo<Something>() should be called
     public void openNew(Event evt)
     {
-        final AirhockeyGUI base = this;
-         javafx.application.Platform.runLater(new Runnable() {
-
-        @Override
-        public void run() {
-            Stage stage = new Stage();
-            try
-            {
-                base.goToLobby(stage);
-            } catch (IOException ex)
-            {
-                Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
+        final AirhockeyGUI base = this;        
+        javafx.application.Platform.runLater(new Runnable() 
+        {
+            @Override
+            public void run() 
+            {           
+                try
+                {
+                    Stage stage = new Stage();
+                    base.goToLobby(stage);
+                    stage.show();
+                } 
+                catch (IOException ex)
+                {
+                    Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
+                }          
             }
-            stage.show();
-        }
-    });
+        });
     }
 }
