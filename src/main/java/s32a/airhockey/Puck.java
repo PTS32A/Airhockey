@@ -55,6 +55,7 @@ public class Puck
         this.size = sideLength * 0.04f;
         
         //TODO set position boundaries and randomise position and direction
+        
         position = new Vector2(0, 0);
         direction = 90;
         
