@@ -5,6 +5,8 @@
  */
 package s32a.airhockey.gui;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -17,7 +19,15 @@ import javafx.stage.Stage;
  *
  * @author Kargathia
  */
-public class GameFX extends AirhockeyGUI
+public class GameFX extends AirhockeyGUI implements Initializable
 {
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources)
+    {
+
+    }
+    
+    
     
 }
