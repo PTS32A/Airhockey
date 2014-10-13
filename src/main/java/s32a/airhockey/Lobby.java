@@ -49,7 +49,7 @@ public class Lobby
     }
     
     /**
-     * if _singleton is null, initialises it
+     * if _singleton is null, initializes it
      * @return instance of lobby (_singleton) 
      */
     public static Lobby getSingle()
@@ -65,13 +65,13 @@ public class Lobby
      * Adds a new person to the database. Does not add them to active persons yet
      * the database checks for uniqueness
      * @param playerName can not be null or whitespace
-     * can't contain whitespaces
+     * can't contain white spaces
      * @param password can not be null or whitespace
-     * can't contain whitespaces
+     * can't contain white spaces
      * @return True if everything went well
      * false if anything went wrong
      * - or IllegalArgumentException when
-     * parameter(s) is/are null or contain trailing / leading whitespaces
+     * parameter(s) is/are null or contain trailing / leading white spaces
      */
     public boolean addPerson(String playerName, String password) 
             throws IllegalArgumentException
@@ -90,14 +90,14 @@ public class Lobby
      * player in the database
      * Adds person returned from database call to the lists of active persons
      * @param playerName can't be null or whitespace
-     * can't contain whitespaces
+     * can't contain white spaces
      * @param password can't be null or whitespace
-     * can't contain trailing / leading whitespaces
+     * can't contain trailing / leading white spaces
      * @return 
      * True if DatabaseControls.checkLogin() returned a person
      * false if .checkLogin() returned null
      * IllegalArgumentException when parameter was null or empty, or contained
-     * trailing / leading whitespaces
+     * trailing / leading white spaces
      */
     public boolean checkLogin(String playerName, String password) 
             throws IllegalArgumentException
@@ -134,7 +134,7 @@ public class Lobby
      * @param playerName
      * @return DatabaseControls.removePerson()
      * throws IllegalArgumentException if playerName is null or contains 
-     * trailing / leading whitespaces
+     * trailing / leading white spaces
      */
     public boolean removePerson(String playerName)
     {
@@ -339,7 +339,7 @@ public class Lobby
     /**
      * Adds a message to a specific game's chatbox
      * @param myGame can't be null
-     * @param message can't be null or whitespaces
+     * @param message can't be null or white spaces
      * @param from can't be null
      * when called from the GUI, this should be currentPerson
      * @return 

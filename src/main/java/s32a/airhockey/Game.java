@@ -65,6 +65,7 @@ public class Game
     {
         this.myPlayers = new ArrayList<>();
         this.myPlayers.add(starter);
+        starter.setMyGame(this);
         //TODO set default speed
         this.myPuck = new Puck(3);
         
@@ -103,6 +104,7 @@ public class Game
                     this.gameInfo.put("nextColor", getNextColor());
                 
                     myPlayers.add(player);
+                    player.setMyGame(this);
                     return true;
                 }
             }
@@ -264,7 +266,6 @@ public class Game
      */
     public Colors getNextColor()
     {
-        //TODO replace the following code with enum
         
         switch (myPlayers.size())
         {
