@@ -262,18 +262,18 @@ public class Game
      * @return the color the next player should have, cycling red, blue, green
      * returns null if game already has three players
      */
-    public String getNextColor()
+    public Colors getNextColor()
     {
         //TODO replace the following code with enum
         
         switch (myPlayers.size())
         {
             case 0:
-                return Colors.Red.toString();
+                return Colors.Red;
             case 1:
-                return Colors.Blue.toString();
+                return Colors.Blue;
             case 2:
-                return Colors.Green.toString();
+                return Colors.Green;
             default:
                 return null;
         }
