@@ -21,7 +21,7 @@ import lombok.Setter;
 public class Player extends Person
 {
     @Getter private Vector2 batPos;
-    @Getter private String color;
+    @Getter private Colors color;
     @Getter private int score;
     @Getter @Setter private boolean isStarter;
     @Getter private int rotation;
@@ -36,9 +36,8 @@ public class Player extends Person
      * @param rating provided by Person
      * @param color player color - linked to them being player 1, 2 or 3
      * retrievable from game.getGameInfo.get("nextColor")
-     * @param game 
      */
-    public Player(String name, int rating, String color)
+    public Player(String name, int rating, Colors color)
     {
         super(name, rating);
         this.color = color;
