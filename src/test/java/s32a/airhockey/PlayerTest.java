@@ -41,7 +41,7 @@ public class PlayerTest
     @Before
     public void setUp()
     {
-        player = new Player("Test", 15, "Red");
+        player = new Player("Test", 15, Colors.Red);
         game = new Game(player);
         player.setMyGame(game);
     }
@@ -70,8 +70,8 @@ public class PlayerTest
     public void testGetColor()
     {
         System.out.println("getColor");
-        String expResult = "Red";
-        String result = player.getColor();
+        Colors expResult = Colors.Red;
+        Colors result = player.getColor();
         assertEquals("Colors do not match", expResult, result);
     }
 
@@ -91,9 +91,13 @@ public class PlayerTest
     public void testMoveBat()
     {
         System.out.println("moveBat");
-        Vector2 expResult = new Vector2(5,0);
+        Vector2 expResult = new Vector2(5,5);
         player.moveBat(5f);
         Vector2 result = player.getBatPos();
+        assertEquals("Bat not moved properly",expResult, result);
+        expResult = new Vector2(0,5);
+        player.moveBat(-5f);
+        result = player.getBatPos();
         assertEquals("Bat not moved properly",expResult, result);
     }
     
