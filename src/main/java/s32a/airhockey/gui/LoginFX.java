@@ -33,6 +33,24 @@ public class LoginFX extends AirhockeyGUI implements Initializable
         
     }
     
+    /**
+     * Tries to login, changes window to lobby
+     * @param evt 
+     */
+    public void Login(Event evt)
+    {
+        
+    }
+    
+    /**
+     * moves the user to register window
+     * @param evt 
+     */
+    public void Register(Event evt)
+    {
+        
+    }
+    
     // template code for opening an additional window, in this case showing Lobby
     // for merely switching windows, base.goTo<Something>() should be called
     public void openNew(Event evt)
