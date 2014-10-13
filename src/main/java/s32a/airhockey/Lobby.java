@@ -76,8 +76,7 @@ public class Lobby
     public boolean addPerson(String playerName, String password) 
             throws IllegalArgumentException
     {
-        if(!playerName.trim().equals(playerName) || !password.trim().equals(password) ||
-                playerName == null || password == null)
+        if(playerName == null || password == null || !playerName.trim().equals(playerName)|| !password.trim().equals(password))
         {
             throw new IllegalArgumentException();
         }
