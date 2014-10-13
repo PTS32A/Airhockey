@@ -31,6 +31,7 @@ public class Puck
     private float sideGoalMaxY;
     private float bottomGoalMinX;
     private float bottomGoalMaxX;
+    private float batWidth;
     
     /**
      * initialises a game's puck
@@ -51,6 +52,8 @@ public class Puck
         this.sideGoalMaxY = this.middleLine * 0.7f;
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
+        
+        this.batWidth = sideLength/100*8;
         
         this.size = sideLength * 0.04f;
         
@@ -110,13 +113,13 @@ public class Puck
                     switch(goalHit)
                     {
                         case 1:
-                            //Player red goal hit
+                            //Player green goal hit
                             break;
                         case 2:
                             //Player blue goal hit
                             break;
                         case 3:
-                            //Player yellow goal hit
+                            //Player red goal hit
                             break;
                         default:
                             //Default to player red goal hit
@@ -287,29 +290,84 @@ public class Puck
      * Calculate whether a Vector2 position is in a goal
      * @param pos
      * @return Return an int value to tell whose goal is hit where:
-     * 1 refers to player Red
+     * 1 refers to player Green
      * 2 refers to player Blue
-     * 3 refers to player Green
+     * 3 refers to player Red
      * Returns 0 if no goal has been hit
      */
     private int checkGoalHit(Vector2 pos)
     {
+        Vector2 SideBatPos = (Vector2))Lobby.getSingle().getMyGame(null).getPlayer("Player Green").getBat(); //TODO Needs reviewing
+        Vector2 BottomBatPos = (Vector2))Lobby.getSingle().getMyGame(null).getPlayer("Player Red").getBat(); //TODO Needs reviewing
+        
         if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY)
         {
+            //Check bat blocking the puck
+            if (pos.y > SideBatPos.y - getSideBatMinMaxYValue() && pos.y < SideBatPos.y + getSideBatMinMaxYValue())
+            {
+                //Bat blocked the puck
+                
+                if (pos.x < 0)
+                {
+                    //Green Bat
+                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Green"); //TODO Needs reviewing
+                }
+                else
+                {
+                    //Blue Bat
+                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Blue"); //TODO Needs reviewing
+                }
+                
+                return 0;
+            }
+            
+            //Check left or right wall (Green or Blue)
             if (pos.x < 0)
             {
+                //Goal at Green
                 return 1;
             }
             else
             {
+                //Goal at Blue
                 return 2;
             }
         }
         else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX)
         {
+            //Check bat blocking the puck
+            if (pos.x > BottomBatPos.x - getBottomBatMinMaxXValue() && pos.x < BottomBatPos.x + getBottomBatMinMaxXValue())
+            {
+                //Bat blocked the puck
+                return 0;
+            }
+
+            //Goal at Red
             return 3;
         }
         
         return 0;
+    }
+    
+    /**
+     * Gets the length of the opposite of the triangle which is made by a side Bat (player Green/Blue) and a vertical and horizontal line
+     * This value is used to calculate the lowest Y and highest Y of the bat
+     * @return Returns a float containing the length of the opposite
+     */
+    private float getSideBatMinMaxYValue()
+    {
+        //opposite = sin(angle) * diagonal
+        float opposite = (float)(Math.sin(30) * (0.5 * batWidth));
+        return opposite;
+    }
+    
+    /**
+     * Gets the half the length of a bat
+     * This value is used to calculate the lowest X and highest X of the bat
+     * @return Returns a float containing half the length of the badWidth
+     */
+    private float getBottomBatMinMaxXValue()
+    {
+        return (float)(0.5 * batWidth);
     }
 }
