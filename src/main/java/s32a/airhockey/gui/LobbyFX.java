@@ -7,6 +7,7 @@ package s32a.airhockey.gui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -35,4 +36,56 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
 
     }
     
+    /**
+     * updates relevant screens in display
+     */
+    private void update()
+    {
+        
+    }
+    
+    /**
+     * starts a new game. opens game window in new window
+     * @param evt 
+     */
+    public void newGame(Event evt)
+    {
+        
+    }
+    
+    /**
+     * joins an already existing game. opens game in new window
+     * @param evt 
+     */
+    public void joinGame(Event evt)
+    {
+        
+    }
+    
+    /**
+     * spectates a game. opens in new window
+     * @param evt 
+     */
+    public void spectateGame(Event evt)
+    {
+        
+    }
+    
+    /**
+     * logs out current user, ends his active game
+     * @param evt 
+     */
+    public void logOut(Event evt)
+    {
+        
+    }
+    
+    /**
+     * sends a lobby chat message
+     * @param evt 
+     */
+    public void sendChatMessage(Event evt)
+    {
+        
+    }
 }

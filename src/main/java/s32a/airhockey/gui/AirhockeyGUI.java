@@ -84,6 +84,12 @@ public class AirhockeyGUI extends Application
         stage.show();
     }
     
+    void showDialog(String type, String message) 
+    {
+        Stage myDialog = new Dialog(getStage(), type, message);
+        myDialog.show();
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -7,6 +7,7 @@ package s32a.airhockey.gui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
@@ -27,4 +28,23 @@ public class RegisterFX extends AirhockeyGUI implements Initializable
 
     }
     
+    /**
+     * Tries to register credentials - transports to lobby on confirmation
+     * logs in with new credentials
+     * Shows error dialog when unable, or wrong input
+     * @param evt 
+     */
+    public void registerOk(Event evt)
+    {
+        
+    }
+    
+    /**
+     * resets fields
+     * @param evt 
+     */
+    public void registerCancel(Event evt)
+    {
+        
+    }
 }

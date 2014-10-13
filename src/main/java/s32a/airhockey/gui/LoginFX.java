@@ -16,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import s32a.airhockey.Lobby;
 
 /**
  *
@@ -37,19 +38,33 @@ public class LoginFX extends AirhockeyGUI implements Initializable
      * Tries to login, changes window to lobby
      * @param evt 
      */
-    public void Login(Event evt)
+    public void login(Event evt)
     {
-        
+        if(tfUserName.getText().equals("") || pwfPassword.getText().equals(""))
+        {
+            super.showDialog("Error", "One or more fields are empty");
+        }
+        if(Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
+        {
+            super.goToLobby(null);
+        }
     }
     
     /**
      * moves the user to register window
      * @param evt 
      */
-    public void Register(Event evt)
+    public void register(Event evt)
     {
         
     }
+    
+    
+    private Stage getStage() 
+    {
+        return (Stage) tfUserName.getScene().getWindow();
+    }
+    
     
     // template code for opening an additional window, in this case showing Lobby
     // for merely switching windows, base.goTo<Something>() should be called
