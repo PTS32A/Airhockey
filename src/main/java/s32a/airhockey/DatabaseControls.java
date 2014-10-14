@@ -76,6 +76,12 @@ public class DatabaseControls
      */
     private void initConnection() throws SQLException 
     {
+        if(props.get("url") == null || props.get("username") == null 
+                || props.get("password") == null)
+        {
+            throw new SQLException("props values not correctly configured");
+        }
+        
         String url = (String)props.get("url");
         String username = (String)props.get("username");
         String password = (String)props.get("password");
@@ -92,7 +98,7 @@ public class DatabaseControls
             conn.close();
             conn = null;
         } catch (SQLException ex) {
-            System.err.println(ex.getMessage());
+            System.err.println("closeConnection: " + ex.getMessage());
         }
     }
     

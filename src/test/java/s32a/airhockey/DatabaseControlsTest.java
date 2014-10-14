@@ -6,6 +6,10 @@
 
 package s32a.airhockey;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,6 +23,7 @@ import static org.junit.Assert.*;
  */
 public class DatabaseControlsTest
 {
+    private DatabaseControls mockDB;
     
     public DatabaseControlsTest()
     {
@@ -27,6 +32,7 @@ public class DatabaseControlsTest
     @BeforeClass
     public static void setUpClass()
     {
+        
     }
     
     @AfterClass
@@ -37,6 +43,14 @@ public class DatabaseControlsTest
     @Before
     public void setUp()
     {
+        this.mockDB = new DatabaseControls();
+        try
+        {
+            this.mockDB.configure();
+        } catch (IOException ex)
+        {
+            Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @After
@@ -44,38 +58,42 @@ public class DatabaseControlsTest
     {
     }
 
-    /**
-     * Test of checkLogin method, of class DatabaseControls.
-     */
     @Test
-    public void testCheckLogin()
+    public void testConfigure()
     {
-        System.out.println("checkLogin");
-        String playerName = "";
-        String password = "";
-        DatabaseControls instance = new DatabaseControls();
-        Person expResult = null;
-        Person result = instance.checkLogin(playerName, password);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try
+        {
+            this.mockDB.configure();
+        } catch (IOException ex)
+        {
+            fail(ex.getMessage());
+        }
     }
-
+    
     /**
      * Test of addPerson method, of class DatabaseControls.
      */
     @Test
-    public void testAddPerson()
+    public void testAddPersonCheckLogin()
     {
-        System.out.println("addPerson");
-        String playerName = "";
-        String password = "";
-        DatabaseControls instance = new DatabaseControls();
-        Person expResult = null;
-        Person result = instance.addPerson(playerName, password);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try
+        {
+            this.mockDB.clearDatabase();
+            this.mockDB.addPerson("testey", "testpass");
+            Person testey = this.mockDB.checkLogin("testey", "testpass");
+            assertEquals("testey name is wrong", "testey", testey.getName());
+            assertEquals("testey rating is wrong", 15, testey.getRating());
+            assertNull("able to log in with wrong username", 
+                    this.mockDB.checkLogin("fakeTestey", "testpass"));
+            assertNull("able to log in with wrong password",
+                    this.mockDB.checkLogin("testey", "testpass"));
+        } catch (SQLException ex)
+        {
+            fail(ex.getMessage());
+        }
     }
+    
+
+    
     
 }
