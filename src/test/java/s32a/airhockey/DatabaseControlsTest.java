@@ -85,6 +85,7 @@ public class DatabaseControlsTest
     {
         try
         {
+            
             this.mockDB.addPerson("testey", "testpass");
             Person testey = this.mockDB.checkLogin("testey", "testpass");
             assertEquals("testey name is wrong", "testey", testey.getName());
