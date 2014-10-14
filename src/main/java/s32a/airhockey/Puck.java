@@ -297,8 +297,8 @@ public class Puck
      */
     private int checkGoalHit(Vector2 pos)
     {
-        Vector2 SideBatPos = (Vector2))Lobby.getSingle().getMyGame(null).getPlayer("Player Green").getBat(); //TODO Needs reviewing
-        Vector2 BottomBatPos = (Vector2))Lobby.getSingle().getMyGame(null).getPlayer("Player Red").getBat(); //TODO Needs reviewing
+        Vector2 SideBatPos = (Vector2)Lobby.getSingle().getMyGame(null).getPlayer("Player Green").getBat(); //TODO Needs reviewing
+        Vector2 BottomBatPos = (Vector2)Lobby.getSingle().getMyGame(null).getPlayer("Player Red").getBat(); //TODO Needs reviewing
         
         if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY)
         {
@@ -310,12 +310,12 @@ public class Puck
                 if (pos.x < 0)
                 {
                     //Green Bat
-                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Green"); //TODO Needs reviewing
+                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Green")); //TODO Needs reviewing
                 }
                 else
                 {
                     //Blue Bat
-                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Blue"); //TODO Needs reviewing
+                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Blue")); //TODO Needs reviewing
                 }
                 
                 return 0;
