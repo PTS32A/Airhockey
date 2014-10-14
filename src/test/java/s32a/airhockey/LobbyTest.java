@@ -288,4 +288,6 @@ public class LobbyTest
                 this.mockLobby.endGame(game, 
                         (Player)this.mockLobby.getActivePersons().get("testey")));
     }
+    
+    //TODO check if user is already logged in
 }
