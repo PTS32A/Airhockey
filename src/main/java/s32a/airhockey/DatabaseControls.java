@@ -6,7 +6,20 @@
 
 package s32a.airhockey;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,14 +27,73 @@ import java.util.ArrayList;
  */
 public class DatabaseControls
 {
-    private String connection;
+    private Connection conn;
+    private Properties props;
     
     /**
-     * 
+     * creates new instance of DatabaseControls
      */
     public DatabaseControls()
     {
-        
+        this.conn = null;
+        this.props = null;
+    }
+    
+    /**
+     * loads the configuration settings from file, and tests whether everything works
+     * @throws IOException if something went wrong
+     */
+    public void configure() throws IOException
+    {
+        this.props = new Properties();
+        try (FileInputStream in = new FileInputStream("database.properties")) 
+        {
+            props.load(in);
+        } catch (FileNotFoundException ex)
+        {
+            throw new IOException("File not found: " + ex.getMessage());
+        } catch (IOException ex)
+        {
+            throw new IOException("IOException on props load: " + ex.getMessage());
+        }
+            
+        try
+        {
+            this.initConnection();
+        } catch (SQLException ex)
+        {
+            throw new IOException("SQL Exception on initConnection: " + ex.getMessage());
+        }
+        finally
+        {
+            this.closeConnection();
+        }
+    }
+    
+    /**
+     * Makes a connection to the database 
+     * @throws SQLException 
+     */
+    private void initConnection() throws SQLException 
+    {
+        String url = (String)props.get("url");
+        String username = (String)props.get("username");
+        String password = (String)props.get("password");
+
+        this.conn = DriverManager.getConnection(url, username, password);
+    }
+    
+    /**
+     * closes currently active connection
+     */
+    private void closeConnection() 
+    {
+        try {
+            conn.close();
+            conn = null;
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+        }
     }
     
     /**
@@ -29,43 +101,112 @@ public class DatabaseControls
      * @param playerName
      * @param password
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public Person checkLogin(String playerName, String password)
+    public Person checkLogin(String playerName, String password) throws SQLException
     {
-        return null;
+        this.initConnection();
+        Person output = null;
+        
+        PreparedStatement prepStat = null;
+        String query = "SELECT playername, rating FROM personen WHERE playername = ? AND playerpassword = ? ";
+        
+        
+        // checks with the database whether that username / password combination exists
+        try
+        {
+            prepStat = conn.prepareStatement(query);
+            prepStat.setString(1, playerName);
+            prepStat.setString(2, password);
+        
+            ResultSet rs = prepStat.executeQuery(query);
+            while (rs.next())
+            {
+                if(output != null)
+                {
+                    throw new SQLException("multiple players found");
+                }
+                int rating = rs.getInt("rating");
+                String name = rs.getString("playername");
+                output = new Person(name, rating);
+            }
+            return output;
+        }
+        finally
+        {
+            prepStat.close();
+            this.closeConnection();
+        }       
     }
     
     /**
      * Adds a new Person to the database
      * @param playerName
      * @param password
-     * @return the newly initialized Person if all went well
-     * Null if person already exists or anything else went wrong
+     * @throws java.sql.SQLException 
      */
-    public Person addPerson(String playerName, String password)
+    public void addPerson(String playerName, String password) throws SQLException
     {
-        return null;
+        this.initConnection();
+        Person output = null;
+        PreparedStatement prepStat = null;
+        String Query = "INSERT INTO player (playername, playerpassword) VALUES (?, ?)";
+        
+        try
+        {
+            prepStat = this.conn.prepareStatement(Query);
+            prepStat.setString(1, playerName);
+            prepStat.setString(2, password);
+            prepStat.executeUpdate();
+        }
+        finally
+        {
+            prepStat.close();
+            this.closeConnection();
+        }
     }
     
     /**
      * Retrieves a list of highest ranked players from the database
      * sorted descending by rating
      * @return the X highest rated players, sorted by rating
+     * @throws java.sql.SQLException
      */
-    public ArrayList<Person> getRankings()
+    public List<Person> getRankings() throws SQLException
     {
-        return null;
+        
+        List<Person> output = new ArrayList<>();
+        String query = "SELECT playername, ranking FROM player SORT BY ranking DESC";
+        Statement stat = null;
+        
+        try
+        {
+            this.initConnection();
+            stat = conn.createStatement();
+
+            ResultSet rs = stat.executeQuery(query);
+            while (rs.next())
+            {
+                String name = rs.getString("playername");
+                int rating = rs.getInt("ranking");
+                output.add(new Person(name, rating));
+            } 
+        }
+        finally
+        {
+            stat.close();
+            this.closeConnection();
+        }
+        return output;
     } 
     
     /**
-     * Removes a player with given player name from the database
+     * Clears the entire database
      * Mostly useful for testing purposes
-     * @param playerName
-     * @return 
      */
-    public boolean removePerson(String playerName)
+    public void clearDatabase()
     {
-        return false;
+        
     }
     
     /**
