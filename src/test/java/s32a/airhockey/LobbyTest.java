@@ -14,9 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import java.lang.*;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,44 +29,22 @@ public class LobbyTest
     @BeforeClass
     public static void setUpClass()
     {
-        try
-        {
-            Lobby.getSingle().addPerson("testey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Lobby.getSingle().addPerson("testey", "testpass");
     }
     
     @AfterClass
     public static void tearDownClass()
     {       
-        try
-        {
-            Lobby.getSingle().getMyDatabaseControls().clearDatabase();
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Lobby.getSingle().removePerson("testey");
+        Lobby.getSingle().removePerson("playey");
+        Lobby.getSingle().removePerson("spectey");
     }
     
     @Before
     public void setUp()
     {
         this.mockLobby = new Lobby();
-        try
-        {
-            this.mockLobby.checkLogin("testey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.mockLobby.checkLogin("testey", "testpass");
     }
     
     @After
@@ -97,28 +72,10 @@ public class LobbyTest
         //assertTrue("Person was not logged in", this.mockLobby.checkLogin("testey", "testpass"));
         assertEquals("Person was not correctly initialised", 
                 this.mockLobby.getCurrentPerson(), testey);
-        try
-        {
-            assertFalse("wrong password logged in anyway",
-                    this.mockLobby.checkLogin("testey", "falsepass"));
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try
-        {
-            assertFalse("wrong username logged in anyway",
-                    this.mockLobby.checkLogin("falsetestey", "testpass"));
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        assertFalse("wrong password logged in anyway", 
+                this.mockLobby.checkLogin("testey", "falsepass"));
+        assertFalse("wrong username logged in anyway", 
+                this.mockLobby.checkLogin("falsetestey", "testpass"));
         assertEquals("Person not found in list", 
                 (Person)this.mockLobby.getActivePersons().get("testey"), testey);
     }
@@ -127,64 +84,28 @@ public class LobbyTest
     (expected = IllegalArgumentException.class)
     public void testAddUserNullPlayerName()
     {
-        try
-        {
-            this.mockLobby.addPerson(null, "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.mockLobby.addPerson(null, "testpass");
     }
     
     @Test
     (expected = IllegalArgumentException.class)
     public void testAddUserNullPassword()
     {
-        try
-        {
-            this.mockLobby.addPerson("testey", null);
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.mockLobby.addPerson("testey", null);
     }
     
     @Test
     (expected = IllegalArgumentException.class)
     public void testAddUserTrailingWhiteSpaceName()
     {
-        try
-        {
-            this.mockLobby.addPerson("testey   ", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.mockLobby.addPerson("testey   ", "testpass");
     }
     
     @Test
     (expected = IllegalArgumentException.class)
     public void testAddUserLeadingWhiteSpacePassword()
     {
-        try
-        {
-            this.mockLobby.addPerson("testey", "   testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.mockLobby.addPerson("testey", "   testpass");
     }
 
     /**
@@ -207,38 +128,11 @@ public class LobbyTest
         assertNull("testey started a game while being a player", 
                 this.mockLobby.startGame(this.mockLobby.getCurrentPerson()));
         
-        try
-        {
-            this.mockLobby.addPerson("playey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try
-        {
-            this.mockLobby.addPerson("spectey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.mockLobby.addPerson("playey", "testpass");
+        this.mockLobby.addPerson("spectey", "testpass");
         
-        try
-        {
-            // playey
-            this.mockLobby.checkLogin("playey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // playey
+        this.mockLobby.checkLogin("playey", "testpass");
         Person playey = (Person)this.mockLobby.getActivePersons().get("playey");
         assertNull("playedGame wasn't cleared", 
                 this.mockLobby.joinGame(this.mockLobby.getPlayedGame(), playey));
@@ -251,17 +145,8 @@ public class LobbyTest
                 this.mockLobby.joinGame(game,
                         (Person)this.mockLobby.getActivePersons().get("playey")));
         
-        try
-        {
-            // spectey
-            this.mockLobby.checkLogin("spectey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // spectey
+        this.mockLobby.checkLogin("spectey", "testpass");
         Person spectey = (Person)this.mockLobby.getActivePersons().get("spectey");
         assertEquals("spectey didn't spectate the right game", 
                 this.mockLobby.spectateGame(game, spectey));

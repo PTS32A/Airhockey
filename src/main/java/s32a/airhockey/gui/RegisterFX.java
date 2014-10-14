@@ -7,7 +7,6 @@ package s32a.airhockey.gui;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +39,7 @@ public class RegisterFX extends AirhockeyGUI implements Initializable
      * Shows error dialog when unable, or wrong input
      * @param evt 
      */
-    public void registerOk(Event evt) throws SQLException
+    public void registerOk(Event evt)
     {
         if(tfUserName.getText().equals("") || pwfPassword.getText().equals("") 
                 || pwfPasswordConfirm.getText().equals(""))

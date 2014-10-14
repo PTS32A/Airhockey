@@ -6,7 +6,6 @@
 
 package s32a.airhockey;
 
-import java.sql.SQLException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -49,7 +48,7 @@ public class DatabaseControlsTest
      * Test of checkLogin method, of class DatabaseControls.
      */
     @Test
-    public void testCheckLogin() throws SQLException
+    public void testCheckLogin()
     {
         System.out.println("checkLogin");
         String playerName = "";
@@ -66,7 +65,7 @@ public class DatabaseControlsTest
      * Test of addPerson method, of class DatabaseControls.
      */
     @Test
-    public void testAddPerson() throws SQLException
+    public void testAddPerson()
     {
         System.out.println("addPerson");
         String playerName = "";
