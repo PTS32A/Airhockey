@@ -219,7 +219,10 @@ public class DatabaseControls
         }
         finally
         {
-            stat.close();
+            if (stat != null) 
+            {
+                stat.close();
+            }
             this.closeConnection();
         }
         return output;

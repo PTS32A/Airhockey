@@ -52,7 +52,8 @@ public class LoginFX extends AirhockeyGUI implements Initializable
                 try
                 {
                     super.goToLobby(getThisStage());
-                } catch (IOException ex)
+                } 
+                catch (IOException ex)
                 {
                     super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
                 }
@@ -84,30 +85,5 @@ public class LoginFX extends AirhockeyGUI implements Initializable
     private Stage getThisStage() 
     {
         return (Stage) tfUserName.getScene().getWindow();
-    }
-    
-    
-    // template code for opening an additional window, in this case showing Lobby
-    // for merely switching windows, base.goTo<Something>() should be called
-    public void openNew(Event evt)
-    {
-        final AirhockeyGUI base = this;        
-        javafx.application.Platform.runLater(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {           
-                try
-                {
-                    Stage stage = new Stage();
-                    base.goToLobby(stage);
-                    stage.show();
-                } 
-                catch (IOException ex)
-                {
-                    Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
-                }          
-            }
-        });
     }
 }

@@ -390,10 +390,10 @@ public class Lobby
         {
             return this.myDatabaseControls.getRankings();
         } 
-        catch (SQLException ex) 
+        catch (Exception ex) 
         {
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            return new ArrayList<>();
         }
     }
     
