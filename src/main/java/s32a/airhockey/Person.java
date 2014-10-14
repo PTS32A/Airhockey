@@ -24,7 +24,7 @@ public class Person
      * @param name
      * @param rating 
      */
-    Person(String name, int rating)
+    public Person(String name, int rating)
     {
         this.name = name;
         this.rating = rating;

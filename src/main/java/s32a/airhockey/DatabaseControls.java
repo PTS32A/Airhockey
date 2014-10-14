@@ -115,7 +115,7 @@ public class DatabaseControls
         Person output = null;
         
         PreparedStatement prepStat = null;
-        String query = "SELECT playername, rating FROM personen WHERE playername = ? AND playerpassword = ? ";
+        String query = "SELECT playername, rating FROM player WHERE playername = ? AND playerpassword = ?";
         
         
         // checks with the database whether that username / password combination exists
@@ -125,7 +125,7 @@ public class DatabaseControls
             prepStat.setString(1, playerName);
             prepStat.setString(2, password);
         
-            ResultSet rs = prepStat.executeQuery(query);
+            ResultSet rs = prepStat.executeQuery();
             while (rs.next())
             {
                 if(output != null)
@@ -155,14 +155,25 @@ public class DatabaseControls
     public Person addPerson(String playerName, String password) throws SQLException
     {
         this.initConnection();
-        PreparedStatement prepStat = null;
-        String Query = "INSERT INTO player (playername, playerpassword) VALUES (?, ?)";
         
+        PreparedStatement prepStat = null;
+        String query = "SELECT playername FROM player WHERE playername = ?";
         try
         {
-            prepStat = this.conn.prepareStatement(Query);
+            prepStat = this.conn.prepareStatement(query);
+            prepStat.setString(1, playerName);
+            ResultSet rs = prepStat.executeQuery();
+            while (rs.next())
+            {
+                return null;
+            }
+     
+        query = "INSERT INTO player (playername, playerpassword, rating) VALUES (?, ?, ?)";
+
+            prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);
             prepStat.setString(2, password);
+            prepStat.setInt(3, 15);
             prepStat.executeUpdate();
         }
         finally
@@ -220,11 +231,11 @@ public class DatabaseControls
         {
             this.initConnection();
             stat = conn.createStatement();
-            stat.executeQuery(query);
+            stat.executeUpdate(query);
             
             // if this throws an SQL Error, try closing it before executing a new query
             query = "DELETE FROM player";
-            stat.executeQuery(query);
+            stat.executeUpdate(query);
         }
         finally
         {

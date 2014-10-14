@@ -85,15 +85,17 @@ public class DatabaseControlsTest
     {
         try
         {
-            
+            this.mockDB.clearDatabase();
             this.mockDB.addPerson("testey", "testpass");
             Person testey = this.mockDB.checkLogin("testey", "testpass");
             assertEquals("testey name is wrong", "testey", testey.getName());
             assertEquals("testey rating is wrong", 15, testey.getRating());
+            assertNull("added testey twice", this.mockDB.addPerson("testey", "testpass"));
+            
             assertNull("able to log in with wrong username", 
                     this.mockDB.checkLogin("fakeTestey", "testpass"));
             assertNull("able to log in with wrong password",
-                    this.mockDB.checkLogin("testey", "testpass"));
+                    this.mockDB.checkLogin("testey", "falsepass"));
         } catch (SQLException ex)
         {
             fail(ex.getMessage());
