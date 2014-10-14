@@ -56,6 +56,13 @@ public class DatabaseControlsTest
     @After
     public void tearDown()
     {
+        try
+        {
+            this.mockDB.clearDatabase();
+        } catch (SQLException ex)
+        {
+            fail(ex.getMessage());
+        }
     }
 
     @Test
@@ -78,7 +85,6 @@ public class DatabaseControlsTest
     {
         try
         {
-            this.mockDB.clearDatabase();
             this.mockDB.addPerson("testey", "testpass");
             Person testey = this.mockDB.checkLogin("testey", "testpass");
             assertEquals("testey name is wrong", "testey", testey.getName());
