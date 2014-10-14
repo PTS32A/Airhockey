@@ -5,13 +5,18 @@
  */
 package s32a.airhockey.gui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import s32a.airhockey.Lobby;
 
 /**
  *
@@ -36,7 +41,35 @@ public class RegisterFX extends AirhockeyGUI implements Initializable
      */
     public void registerOk(Event evt)
     {
-        
+        if(tfUserName.getText().equals("") || pwfPassword.getText().equals("") 
+                || pwfPasswordConfirm.getText().equals(""))
+        {
+            super.showDialog("Error", "One or more fields are empty");
+        }
+        else
+        {
+            if(!pwfPassword.getText().equals(pwfPasswordConfirm.getText()))
+            {
+                super.showDialog("Error", "Passwords do not match");
+            }
+            else
+            {
+                if(Lobby.getSingle().addPerson(tfUserName.getText(), pwfPassword.getText()))
+                {
+                    try
+                    {
+                        super.goToLogin(getThisStage());
+                    } catch (IOException ex)
+                    {
+                        super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+                    }
+                }
+                else
+                {
+                    super.showDialog("Error", "Username already exists.");
+                }
+            }
+        }
     }
     
     /**
@@ -45,6 +78,18 @@ public class RegisterFX extends AirhockeyGUI implements Initializable
      */
     public void registerCancel(Event evt)
     {
-        
+        try 
+        {
+            super.goToLogin(getThisStage());
+        } 
+        catch (IOException ex) 
+        {
+            Logger.getLogger(RegisterFX.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private Stage getThisStage() 
+    {
+        return (Stage) tfUserName.getScene().getWindow();
     }
 }

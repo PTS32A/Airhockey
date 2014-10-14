@@ -42,16 +42,23 @@ public class LoginFX extends AirhockeyGUI implements Initializable
     {
         if(tfUserName.getText().equals("") || pwfPassword.getText().equals(""))
         {
-            super.showDialog("Error", "One or more fields are empty");
+            super.showDialog("Error", "One or more fields are empty.");
         }
-        if(Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
+        else
         {
-            try
+            if(Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
             {
-                super.goToLobby(null);
-            } catch (IOException ex)
+                try
+                {
+                    super.goToLobby(getThisStage());
+                } catch (IOException ex)
+                {
+                    super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+                }
+            }
+            else
             {
-                super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+                super.showDialog("Error", "Username or password is incorrect.");
             }
         }
     }
@@ -62,7 +69,14 @@ public class LoginFX extends AirhockeyGUI implements Initializable
      */
     public void register(Event evt)
     {
-        
+        try 
+        {
+            super.goToRegister(getThisStage());
+        } 
+        catch (IOException ex) 
+        {
+            Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     
