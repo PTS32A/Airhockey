@@ -252,14 +252,14 @@ public class Game
     private void run()
     {
         //Continue round
-        while (isPaused == false && continueRun == true)
-        {
-            if (myPuck != null)
-            {
-                System.out.println("RUN");
-                myPuck.run();
-            }
-        }
+        //while (isPaused == false && continueRun == true)
+        //{
+        //    if (myPuck != null)
+        //    {
+        //        System.out.println("RUN");
+        //        myPuck.run();
+        //    }
+        //}
         
         //Start new round
         startRound();
