@@ -15,3 +15,6 @@ target/
 hs_err_pid*
 
 *.netbeans_automatic_build
+
+# database #
+database.properties

@@ -46,7 +46,13 @@ public class LoginFX extends AirhockeyGUI implements Initializable
         }
         if(Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
         {
-            super.goToLobby(null);
+            try
+            {
+                super.goToLobby(null);
+            } catch (IOException ex)
+            {
+                super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+            }
         }
     }
     
@@ -60,7 +66,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
     }
     
     
-    private Stage getStage() 
+    private Stage getThisStage() 
     {
         return (Stage) tfUserName.getScene().getWindow();
     }
