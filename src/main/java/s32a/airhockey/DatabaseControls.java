@@ -174,8 +174,7 @@ public class DatabaseControls
      * @throws java.sql.SQLException
      */
     public List<Person> getRankings() throws SQLException
-    {
-        
+    {        
         List<Person> output = new ArrayList<>();
         String query = "SELECT playername, ranking FROM player SORT BY ranking DESC";
         Statement stat = null;
@@ -204,10 +203,28 @@ public class DatabaseControls
     /**
      * Clears the entire database
      * Mostly useful for testing purposes
+     * @throws java.sql.SQLException
      */
-    public void clearDatabase()
+    public void clearDatabase() throws SQLException
     {
+        String query = "DELETE FROM game";
+        Statement stat = null;
         
+        try
+        {
+            this.initConnection();
+            stat = conn.createStatement();
+            stat.executeQuery(query);
+            
+            // if this throws an SQL Error, try closing it before executing a new query
+            query = "DELETE FROM player";
+            stat.executeQuery(query);
+        }
+        finally
+        {
+            stat.close();
+            this.closeConnection();
+        }
     }
     
     /**
