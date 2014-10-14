@@ -251,15 +251,17 @@ public class Game
      */
     private void run()
     {
-        //Continue round
-        //while (isPaused == false && continueRun == true)
-        //{
-        //    if (myPuck != null)
-        //    {
-        //        System.out.println("RUN");
-        //        myPuck.run();
-        //    }
-        //}
+        //Continue
+        int count = 0;
+        while (isPaused == false && continueRun == true && count < 10)
+        {
+            if (myPuck != null)
+            {
+                System.out.println("RUN");
+                myPuck.run();
+            }
+            count++;
+        }
         
         //Start new round
         startRound();
@@ -271,7 +273,7 @@ public class Game
      */
     private void startRound()
     {
-        if (roundNo < 2)
+        if (roundNo < 1)
         {
             //Start new round
             this.roundNo++;
