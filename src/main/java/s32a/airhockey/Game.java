@@ -72,6 +72,7 @@ public class Game
         this.myPlayers = new ArrayList<>();
         this.myPlayers.add(starter);
         starter.setMyGame(this);
+        
         //TODO set default speed
         this.myPuck = new Puck(3, this);
         
@@ -179,7 +180,6 @@ public class Game
     {
         if (myPlayers.size() == 3)
         {
-            //TODO implement beginGame()
             startRound();
         }
         
@@ -303,7 +303,6 @@ public class Game
      */
     public Colors getNextColor()
     {
-        
         switch (myPlayers.size())
         {
             case 0:

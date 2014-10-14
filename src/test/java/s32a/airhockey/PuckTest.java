@@ -21,6 +21,11 @@ import static org.junit.Assert.*;
  */
 public class PuckTest
 {
+    Player p1 = new Player("playerRed", 10, Colors.Red);
+    Player p2 = new Player("playerBlue", 10, Colors.Blue);
+    Player p3 = new Player("playerGreen", 10, Colors.Green);
+    
+    Game game;
     Puck puck;
     
     public PuckTest()
@@ -40,7 +45,12 @@ public class PuckTest
     @Before
     public void setUp()
     {
-        puck = new Puck(3);
+        game = new Game(p1);
+        
+        game.addPlayer(p2);
+        game.addPlayer(p3);
+        
+        game.beginGame();
     }
     
     @After
