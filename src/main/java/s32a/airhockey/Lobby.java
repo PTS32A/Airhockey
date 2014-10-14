@@ -141,7 +141,13 @@ public class Lobby
      */
     public void clearDatabase()
     {
-        myDatabaseControls.clearDatabase();
+        try
+        {
+            myDatabaseControls.clearDatabase();
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
