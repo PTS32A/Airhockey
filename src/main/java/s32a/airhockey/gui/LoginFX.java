@@ -7,6 +7,7 @@ package s32a.airhockey.gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +39,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
      * Tries to login, changes window to lobby
      * @param evt 
      */
-    public void login(Event evt)
+    public void login(Event evt) throws IllegalArgumentException, SQLException
     {
         if(tfUserName.getText().equals("") || pwfPassword.getText().equals(""))
         {

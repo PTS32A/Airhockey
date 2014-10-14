@@ -6,6 +6,7 @@
 package s32a.airhockey.gui;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,6 +15,7 @@ import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import s32a.airhockey.*;
 
 /**
@@ -43,6 +45,19 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         highScores = FXCollections.observableArrayList(Lobby.getSingle().getRankings());
         messages = FXCollections.observableArrayList(Lobby.getSingle().getMychatbox().getChat());
         games = FXCollections.observableArrayList(Lobby.getSingle().getActiveGames());
+        
+        tcHSName.setCellValueFactory(new PropertyValueFactory<Person,String>("name"));
+        tcHSRating.setCellValueFactory(new PropertyValueFactory<Person,String>("rating"));
+        tvHighscores.setItems(highScores);
+        
+        tcGDDifficulty.setCellValueFactory(new PropertyValueFactory<Game,String>("speed"));
+        tcGDPlayer1.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
+        tcGDPlayer2.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
+        tcGDPlayer3.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
+        tcGDStatus.setCellValueFactory(new PropertyValueFactory<Game,Boolean>("isPaused"));
+        tvGameDisplay.setItems(games);
+        
+        lvChatbox.setItems(messages);
     }
     
     /**
