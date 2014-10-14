@@ -7,10 +7,13 @@
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Getter;
 
 /**
@@ -74,7 +77,7 @@ public class Lobby
      * parameter(s) is/are null or contain trailing / leading white spaces
      */
     public boolean addPerson(String playerName, String password) 
-            throws IllegalArgumentException
+            throws IllegalArgumentException, SQLException
     {
         if(playerName == null || password == null || 
                 !playerName.trim().equals(playerName)|| !password.trim().equals(password))
@@ -100,7 +103,7 @@ public class Lobby
      * trailing / leading white spaces
      */
     public boolean checkLogin(String playerName, String password) 
-            throws IllegalArgumentException
+            throws IllegalArgumentException, SQLException
     {
         if(playerName == null || password == null || 
                 !playerName.trim().equals(playerName) || !password.trim().equals(password))
@@ -136,13 +139,9 @@ public class Lobby
      * throws IllegalArgumentException if playerName is null or contains 
      * trailing / leading white spaces
      */
-    public boolean removePerson(String playerName)
+    public void clearDatabase()
     {
-        if(playerName == null || !playerName.trim().equals(playerName))
-        {
-            throw new IllegalArgumentException();
-        }
-        return myDatabaseControls.removePerson(playerName);
+        myDatabaseControls.clearDatabase();
     }
     
     /**
@@ -380,9 +379,17 @@ public class Lobby
      * Amount of players retrieved is to be determined by the database
      * @return a sorted list of highest ranking players
      */
-    public ArrayList<Person> getRankings()
+    public List<Person> getRankings()
     {
-        return this.myDatabaseControls.getRankings();
+        try 
+        {
+            return this.myDatabaseControls.getRankings();
+        } 
+        catch (SQLException ex) 
+        {
+            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
     
     /**

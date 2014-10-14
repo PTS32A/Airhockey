@@ -7,10 +7,14 @@ package s32a.airhockey.gui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import s32a.airhockey.*;
 
 /**
  *
@@ -29,11 +33,16 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             tcGDPlayer2, tcGDPlayer3, tcGDStatus;
     
     @FXML ListView lvPlayerInfo;
+    ObservableList<Person> highScores;
+    ObservableList<String> messages;
+    ObservableList<Game> games;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-
+        highScores = FXCollections.observableArrayList(Lobby.getSingle().getRankings());
+        messages = FXCollections.observableArrayList(Lobby.getSingle().getMychatbox().getChat());
+        games = FXCollections.observableArrayList(Lobby.getSingle().getActiveGames());
     }
     
     /**
