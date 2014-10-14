@@ -75,6 +75,7 @@ public class Lobby
      * false if anything went wrong
      * - or IllegalArgumentException when
      * parameter(s) is/are null or contain trailing / leading white spaces
+     * @throws java.sql.SQLException
      */
     public boolean addPerson(String playerName, String password) 
             throws IllegalArgumentException, SQLException
@@ -82,7 +83,7 @@ public class Lobby
         if(playerName == null || password == null || 
                 !playerName.trim().equals(playerName)|| !password.trim().equals(password))
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("incorrect input");
         }
         
         return (this.myDatabaseControls.addPerson(playerName, password) != null);
@@ -112,20 +113,18 @@ public class Lobby
         }
         
         Person newPerson = this.myDatabaseControls.checkLogin(playerName, password);
-        try
+        if(newPerson == null)
         {
-            if (activePersons.put(playerName, newPerson) != null)
-            {
-                this.currentPerson = (Person)this.activePersons.get(playerName);
-                this.playedGame = null;
-                this.spectatedGames = new ArrayList<>();
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
-        catch(IllegalArgumentException exc)
+        
+        if (activePersons.put(playerName, newPerson) == null)
+        {
+            this.currentPerson = (Person)this.activePersons.get(playerName);
+            this.playedGame = null;
+            this.spectatedGames = new ArrayList<>();
+        }
+        else
         {
             return false;
         }

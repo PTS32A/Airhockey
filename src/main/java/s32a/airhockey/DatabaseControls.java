@@ -37,6 +37,14 @@ public class DatabaseControls
     {
         this.conn = null;
         this.props = null;
+        try
+        {
+            this.configure();
+        } catch (IOException ex)
+        {
+            System.out.println("unable to configure database: check database.properties");
+        }
+        
     }
     
     /**

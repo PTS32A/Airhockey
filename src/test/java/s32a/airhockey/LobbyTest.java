@@ -32,28 +32,13 @@ public class LobbyTest
     @BeforeClass
     public static void setUpClass()
     {
-        try
-        {
-            Lobby.getSingle().addPerson("testey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }
     
     @AfterClass
     public static void tearDownClass()
     {       
-        try
-        {
-            Lobby.getSingle().getMyDatabaseControls().clearDatabase();
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }
     
     @Before
@@ -62,13 +47,10 @@ public class LobbyTest
         this.mockLobby = new Lobby();
         try
         {
-            this.mockLobby.checkLogin("testey", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            this.mockLobby.getMyDatabaseControls().clearDatabase();
         } catch (SQLException ex)
         {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("failed to clear database");
         }
     }
     
@@ -93,20 +75,38 @@ public class LobbyTest
     public void testPersons()
     {
         Person testey = new Person("testey", 15);
-        //assertTrue("addPerson was false", this.mockLobby.addPerson("testey", "testpass"));
-        //assertTrue("Person was not logged in", this.mockLobby.checkLogin("testey", "testpass"));
+        try
+        {
+            assertTrue("addPerson was false", this.mockLobby.addPerson("testey", "testpass"));
+        } catch (IllegalArgumentException ex)
+        {
+            fail("Illegal argument on addPerson: " + ex.getMessage());
+        } catch (SQLException ex)
+        {
+            fail("SQL exception on addPerson: " + ex.getMessage());
+        }
+        try
+        {
+            assertTrue("Person could not be logged in", this.mockLobby.checkLogin("testey", "testpass"));
+        } catch (IllegalArgumentException ex)
+        {
+            fail("Illegal argument on checkLogin: " + ex.getMessage());
+        } catch (SQLException ex)
+        {
+            fail("SQL exception on checkLogin: " + ex.getMessage());
+        }
         assertEquals("Person was not correctly initialised", 
-                this.mockLobby.getCurrentPerson(), testey);
+                this.mockLobby.getCurrentPerson().getName(), testey.getName());
         try
         {
             assertFalse("wrong password logged in anyway",
                     this.mockLobby.checkLogin("testey", "falsepass"));
         } catch (IllegalArgumentException ex)
         {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Illegal argument on wrong password: " + ex.getMessage());
         } catch (SQLException ex)
         {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("SQL exception on wrong password: " + ex.getMessage());
         }
         try
         {
@@ -114,13 +114,13 @@ public class LobbyTest
                     this.mockLobby.checkLogin("falsetestey", "testpass"));
         } catch (IllegalArgumentException ex)
         {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Illegal argument on wrong username: " + ex.getMessage());
         } catch (SQLException ex)
         {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("SQL exception on wrong username: " + ex.getMessage());
         }
         assertEquals("Person not found in list", 
-                (Person)this.mockLobby.getActivePersons().get("testey"), testey);
+                ((Person)this.mockLobby.getActivePersons().get("testey")).getName(), testey.getName());
     }
     
     @Test
@@ -130,9 +130,6 @@ public class LobbyTest
         try
         {
             this.mockLobby.addPerson(null, "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex)
         {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -146,9 +143,6 @@ public class LobbyTest
         try
         {
             this.mockLobby.addPerson("testey", null);
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex)
         {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -162,9 +156,6 @@ public class LobbyTest
         try
         {
             this.mockLobby.addPerson("testey   ", "testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex)
         {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -178,9 +169,6 @@ public class LobbyTest
         try
         {
             this.mockLobby.addPerson("testey", "   testpass");
-        } catch (IllegalArgumentException ex)
-        {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex)
         {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
