@@ -143,12 +143,12 @@ public class DatabaseControls
      * Adds a new Person to the database
      * @param playerName
      * @param password
+     * @return the newly added person, if applicable
      * @throws java.sql.SQLException 
      */
-    public void addPerson(String playerName, String password) throws SQLException
+    public Person addPerson(String playerName, String password) throws SQLException
     {
         this.initConnection();
-        Person output = null;
         PreparedStatement prepStat = null;
         String Query = "INSERT INTO player (playername, playerpassword) VALUES (?, ?)";
         
@@ -164,6 +164,7 @@ public class DatabaseControls
             prepStat.close();
             this.closeConnection();
         }
+        return this.checkLogin(playerName, password);
     }
     
     /**
