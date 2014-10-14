@@ -26,7 +26,7 @@ import java.util.TimerTask;
 public class Game
 {
     private Chatbox myChatbox;
-    private Puck myPuck;
+    @Getter private Puck myPuck;
     @Getter private List<Spectator> mySpectators;
     
     /**
@@ -256,6 +256,7 @@ public class Game
         {
             if (myPuck != null)
             {
+                System.out.println("RUN");
                 myPuck.run();
             }
         }
@@ -270,10 +271,11 @@ public class Game
      */
     private void startRound()
     {
-        if (roundNo < 10)
+        if (roundNo < 2)
         {
             //Start new round
             this.roundNo++;
+            System.out.println("ROUND " + roundNo);
             
             //Countdown
             try
@@ -293,6 +295,7 @@ public class Game
         else
         {
             //End game
+            System.out.println("END GAME");
         }
     }
     

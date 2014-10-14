@@ -26,7 +26,6 @@ public class PuckTest
     Player p3 = new Player("playerGreen", 10, Colors.Green);
     
     Game game;
-    Puck puck;
     
     public PuckTest()
     {
@@ -49,8 +48,6 @@ public class PuckTest
         
         game.addPlayer(p2);
         game.addPlayer(p3);
-        
-        game.beginGame();
     }
     
     @After
@@ -61,11 +58,13 @@ public class PuckTest
     @Test
     public void testUpdatePosition()
     {
+        game.beginGame();
+        Puck puck = game.getMyPuck();
+        
         Vector2 expResult = new Vector2(3,0);
-        
-        puck.run();
-        
         Vector2 result = puck.getPosition();
+        
+        System.out.println("ENDPOSITION: " + result.x + ", " + result.y);
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }

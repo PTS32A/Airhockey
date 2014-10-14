@@ -55,6 +55,10 @@ public class Puck
         
         float centreX = (float)(0.5 * (double)sideLength);
         float centreY = (float)(Math.tan(30) * (0.5 * (double)sideLength));
+        
+        centreX = Math.round(centreX * 100) / 100;
+        centreY = Math.round(centreY * 100) / 100;
+        
         this.centre = new Vector2(centreX, centreY);
         
         this.goalLength = sideLength * 0.4f;
@@ -68,10 +72,12 @@ public class Puck
         
         this.size = sideLength * 0.04f;
               
-        position = new Vector2((new Random().nextFloat() - 0.5f) * (sideLength * 0.1f), (new Random().nextFloat() - 0.5f) * (sideLength * 0.1f));
-        direction = new Random().nextFloat() * 360;
+        //position = new Vector2((new Random().nextFloat() - 0.5f) * (sideLength * 0.1f), (new Random().nextFloat() - 0.5f) * (sideLength * 0.1f));
+        position = new Vector2(0, 0);
+        //direction = new Random().nextFloat() * 360;
+        direction = 90;
         
-        isMoving = false;
+        isMoving = true;
         
         this.myGame = myGame;
     }
@@ -96,8 +102,19 @@ public class Puck
         {
             float oldX = position.x;
             float oldY = position.y;
-            float newX = oldX + (float)(Math.sin((double)direction) * distance);
-            float newY = oldY + (float)(Math.cos((double)direction) * distance);
+            
+            double radians = Math.toRadians((double)direction);
+            
+            float newX = oldX + (float)(Math.sin(radians) * (double)distance);
+            float newY = oldY + (float)(Math.cos(radians) * (double)distance);
+            
+            newX = Math.round(newX * 100) / 100;
+            newY = Math.round(newY * 100) / 100;
+            
+            //System.out.println("Direction: " + direction);
+            //System.out.println("Radians: " + radians);
+            //System.out.println("old: " + oldX + "," + oldY);
+            System.out.println("new: " + newX + "," + newY);
             
             Vector2 newPosition = new Vector2(newX, newY);
             
