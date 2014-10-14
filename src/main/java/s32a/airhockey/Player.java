@@ -22,7 +22,7 @@ public class Player extends Person
 {
     @Getter private Vector2 batPos;
     @Getter private Colors color;
-    @Getter private int score;
+    @Getter @Setter private int score;
     @Getter @Setter private boolean isStarter;
     @Getter private int rotation;
     @Getter private Vector2 goalPos;

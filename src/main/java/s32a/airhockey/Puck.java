@@ -8,6 +8,7 @@ package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
 import java.util.List;
+import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +27,9 @@ public class Puck
     private float size;
     private float sideLength;
     private float middleLine;
+    
+    private Vector2 centre;
+    
     private float goalLength;
     private float sideGoalMinY;
     private float sideGoalMaxY;
@@ -33,13 +37,15 @@ public class Puck
     private float bottomGoalMaxX;
     private float batWidth;
     
+    private Game myGame;
+    
     /**
      * initialises a game's puck
      * position is randomised, speed is a given
      * isMoving is initialised as false
      * @param speed 
      */
-    public Puck(float speed)
+    public Puck(float speed, Game myGame)
     {
         this.speed = speed;
         
@@ -47,22 +53,27 @@ public class Puck
         
         this.middleLine = (float)Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
         
+        float centreX = (float)(0.5 * (double)sideLength);
+        float centreY = (float)(Math.tan(30) * (0.5 * (double)sideLength));
+        this.centre = new Vector2(centreX, centreY);
+        
         this.goalLength = sideLength * 0.4f;
-        this.sideGoalMinY = this.middleLine * 0.3f;
-        this.sideGoalMaxY = this.middleLine * 0.7f;
+        
+        this.sideGoalMinY = this.centre.y - (float)((0.5 * goalLength) * sideLength);
+        this.sideGoalMaxY = this.centre.y + (float)((0.5 * goalLength) * sideLength);
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
         
         this.batWidth = sideLength/100*8;
         
         this.size = sideLength * 0.04f;
-        
-        //TODO set position boundaries and randomise position and direction
-        
-        position = new Vector2(0, 0);
-        direction = 90;
+              
+        position = new Vector2((new Random().nextFloat() - 0.5f) * (sideLength * 0.1f), (new Random().nextFloat() - 0.5f) * (sideLength * 0.1f));
+        direction = new Random().nextFloat() * 360;
         
         isMoving = false;
+        
+        this.myGame = myGame;
     }
     
     /**
@@ -94,45 +105,57 @@ public class Puck
             
             if (bouncePosition == null)
             {
-                //No bounce
+                //Inside field
                 position = newPosition;
             }
             else
             {
-                //Bounce
+                //Outside field or in collission with wall
                 position = bouncePosition;
-                distance = getDistance(bouncePosition, newPosition);
+                               
+                //Detect wheter a goal has been hit (includes detection of bat blocking the puck)
+                int goalHitPlayerID = checkGoalHit(bouncePosition);
                 
-                //TODO detect wheter a bat has been hit
-                
-                //Detect wheter a goal has been hit
-                int goalHit = checkGoalHit(bouncePosition);
-                
-                if (goalHit != 0)
+                if (goalHitPlayerID != -1)
                 {
-                    switch(goalHit)
+                    switch(goalHitPlayerID)
                     {
-                        case 1:
-                            //Player green goal hit
+                        case 0:
+                            //Player red goal hit
                             break;
-                        case 2:
+                        case 1:
                             //Player blue goal hit
                             break;
-                        case 3:
-                            //Player red goal hit
+                        case 2:
+                            //Player green goal hit
                             break;
                         default:
                             //Default to player red goal hit
                             break;
                     }
+                                               
+                    //Round is over
+                    
+                    //Player who scored
+                    Player whoScored = hitBy.get(hitBy.size() - 1);
+                    whoScored.setScore(whoScored.getScore() + 1);
+                    
+                    //Player whose goal is hit
+                    Player whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
+                    whoLostScore.setScore(whoScored.getScore() - 1);
                             
-                    //TODO set score, clean up puck, start new round
+                    //End round
+                    myGame.setContinueRun(false);
                 }
                 else
                 {
                     //Position is set to bouncePosition and new direction has been calculated
                     //Repeat process with remaining distance to travel
-                    updatePosition(distance);
+                    distance = getDistance(bouncePosition, newPosition);
+                    if (distance > 0)
+                    {
+                        updatePosition(distance);
+                    }
                 }
             }
         }
@@ -170,6 +193,7 @@ public class Puck
         
         if (outside == -1)
         {
+            //Left of field
             Vector2 linePos1 = new Vector2((float)(-(sideLength / 2)), 0);
             Vector2 linePos2 = new Vector2(0, (float)middleLine);
             
@@ -178,6 +202,7 @@ public class Puck
         }
         else if (outside == 1)
         {
+            //Right of field
             Vector2 linePos1 = new Vector2((float)(sideLength / 2), 0);
             Vector2 linePos2 = new Vector2(0, (float)middleLine);
             
@@ -198,11 +223,13 @@ public class Puck
             }
             else if (y > middleLine)
             {
+                //Above field
                 updateDirection(180);
                 return new Vector2(0, (float)middleLine);
             }
         }
         
+        //Inside field
         return null;
     }
     
@@ -296,78 +323,90 @@ public class Puck
      * Returns 0 if no goal has been hit
      */
     private int checkGoalHit(Vector2 pos)
-    {
-        Vector2 SideBatPos = (Vector2)Lobby.getSingle().getMyGame(null).getPlayer("Player Green").getBat(); //TODO Needs reviewing
-        Vector2 BottomBatPos = (Vector2)Lobby.getSingle().getMyGame(null).getPlayer("Player Red").getBat(); //TODO Needs reviewing
+    {      
+        int playerID = -1;
         
         if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY)
         {
-            //Check bat blocking the puck
-            if (pos.y > SideBatPos.y - getSideBatMinMaxYValue() && pos.y < SideBatPos.y + getSideBatMinMaxYValue())
-            {
-                //Bat blocked the puck
-                
-                if (pos.x < 0)
-                {
-                    //Green Bat
-                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Green")); //TODO Needs reviewing
-                }
-                else
-                {
-                    //Blue Bat
-                    hitBy.add((Player)Lobby.getSingle().getMyGame(null).getPlayer("Player Blue")); //TODO Needs reviewing
-                }
-                
-                return 0;
-            }
-            
-            //Check left or right wall (Green or Blue)
             if (pos.x < 0)
             {
-                //Goal at Green
-                return 1;
+                //Green goal
+                playerID = 3;
             }
             else
             {
-                //Goal at Blue
-                return 2;
+                //Blue goal
+                playerID = 2;
             }
         }
         else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX)
         {
-            //Check bat blocking the puck
-            if (pos.x > BottomBatPos.x - getBottomBatMinMaxXValue() && pos.x < BottomBatPos.x + getBottomBatMinMaxXValue())
-            {
-                //Bat blocked the puck
-                return 0;
-            }
-
-            //Goal at Red
-            return 3;
+            //Red goal
+            playerID = 1;
         }
         
-        return 0;
+        if (playerID == -1)
+        {
+            //No goal hit
+            return -1;
+        }
+        else
+        {
+            //Goal hit, but possible block by bat
+            if (checkBatBlock(playerID, pos))
+            {
+                //Bat blocked the puck
+                hitBy.add(myGame.getMyPlayers().get(playerID));
+                
+                //No goal hit
+                return -1;
+            }
+            else
+            {
+                //Bat did not block the puck
+                //Goal hit of player with playerID
+                return playerID;
+            }
+        }
     }
     
-    /**
-     * Gets the length of the opposite of the triangle which is made by a side Bat (player Green/Blue) and a vertical and horizontal line
-     * This value is used to calculate the lowest Y and highest Y of the bat
-     * @return Returns a float containing the length of the opposite
-     */
-    private float getSideBatMinMaxYValue()
+    private boolean checkBatBlock(int playerID, Vector2 pos)
     {
-        //opposite = sin(angle) * diagonal
-        float opposite = (float)(Math.sin(30) * (0.5 * batWidth));
-        return opposite;
-    }
-    
-    /**
-     * Gets the half the length of a bat
-     * This value is used to calculate the lowest X and highest X of the bat
-     * @return Returns a float containing half the length of the badWidth
-     */
-    private float getBottomBatMinMaxXValue()
-    {
-        return (float)(0.5 * batWidth);
+        Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
+        
+        if (playerID == 0)
+        {
+            //Player Red (bottom bat)
+            float batMinX = batPos.x - (float)(0.5 * batWidth);
+            float batMaxX = batPos.x + (float)(0.5 * batWidth);
+            
+            if (pos.x > batMinX && pos.x < batMaxX)
+            {
+                //Bat blocked the puck
+                return true;
+            }
+            else
+            {
+                //Bat did not block the puck
+                return false;
+            }
+        }
+        else
+        {
+            //Player Blue or Green (side bat)
+            float batMinY = batPos.y - (float)(Math.sin(30) * (0.5 * batWidth));
+            float batMaxY = batPos.y + (float)(Math.sin(30) * (0.5 * batWidth));
+            
+            if (pos.y > batMinY && pos.y < batMaxY)
+            {
+                //Bat blocked the puck
+                return true;
+            }
+            else
+            {
+                //Bat did not block the puck
+                return false;
+            }
+        }
     }
 }

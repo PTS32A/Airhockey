@@ -11,6 +11,10 @@ import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
 import lombok.Getter;
+import lombok.Setter;
+import java.util.Timer;
+import java.util.TimerTask;
+
 //import static org.lwjgl.Sys.getTime;
 
 /**
@@ -34,6 +38,8 @@ public class Game
     @Getter private HashMap gameInfo;   
     @Getter private boolean isPaused;
     @Getter private int roundNo;
+    
+    @Getter @Setter private boolean continueRun;
 
     /**
      * Calls ChatBox.addMessage(string) with a pre-formatted message - 
@@ -67,7 +73,7 @@ public class Game
         this.myPlayers.add(starter);
         starter.setMyGame(this);
         //TODO set default speed
-        this.myPuck = new Puck(3);
+        this.myPuck = new Puck(3, this);
         
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName() 
@@ -174,6 +180,7 @@ public class Game
         if (myPlayers.size() == 3)
         {
             //TODO implement beginGame()
+            startRound();
         }
         
         return true;
@@ -244,9 +251,17 @@ public class Game
      */
     private void run()
     {
-        myPuck.run();
+        //Continue round
+        while (isPaused == false && continueRun == true)
+        {
+            if (myPuck != null)
+            {
+                myPuck.run();
+            }
+        }
         
-        //TODO bot position
+        //Start new round
+        startRound();
     }
 
     /**
@@ -255,8 +270,30 @@ public class Game
      */
     private void startRound()
     {
-        //TODO
-        roundNo++;
+        if (roundNo < 10)
+        {
+            //Start new round
+            this.roundNo++;
+            
+            //Countdown
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException ex)
+            {
+                
+            }
+            
+            this.myPuck = new Puck(3, this);
+            this.continueRun = true;
+            this.isPaused = false;
+            this.run();
+        }
+        else
+        {
+            //End game
+        }
     }
     
     /**
