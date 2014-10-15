@@ -114,7 +114,7 @@ public class Puck
             //System.out.println("Direction: " + direction);
             //System.out.println("Radians: " + radians);
             //System.out.println("old: " + oldX + "," + oldY);
-            System.out.println("new: " + newX + "," + newY);
+            System.out.println("Position: " + newX + ", " + newY);
             
             Vector2 newPosition = new Vector2(newX, newY);
             

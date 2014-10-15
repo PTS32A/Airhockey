@@ -257,7 +257,7 @@ public class Game
         {
             if (myPuck != null)
             {
-                System.out.println("RUN");
+                //System.out.println("RUN");
                 myPuck.run();
             }
             count++;
