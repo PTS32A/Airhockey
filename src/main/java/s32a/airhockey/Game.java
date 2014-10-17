@@ -34,7 +34,9 @@ public class Game
      */
     @Getter private List<Player> myPlayers;
     
-    //includes gameID, nextColor, sideLength
+    /**
+     * includes gameID, nextColor, sideLength, gameDate
+     */
     @Getter private HashMap gameInfo;   
     @Getter private boolean isPaused;
     @Getter private int roundNo;

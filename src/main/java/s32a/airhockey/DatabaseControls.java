@@ -9,13 +9,16 @@ package s32a.airhockey;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -123,7 +126,7 @@ public class DatabaseControls
         Person output = null;
         
         PreparedStatement prepStat = null;
-        String query = "SELECT playername, rating FROM player WHERE playername = ? AND playerpassword = ?";
+        String query = "SELECT playername, rating FROM airhockey.player WHERE playername = ? AND playerpassword = ?";
         
         
         // checks with the database whether that username / password combination exists
@@ -165,7 +168,7 @@ public class DatabaseControls
         this.initConnection();
         
         PreparedStatement prepStat = null;
-        String query = "SELECT playername FROM player WHERE playername = ?";
+        String query = "SELECT playername FROM airhockey.player WHERE playername = ?";
         try
         {
             prepStat = this.conn.prepareStatement(query);
@@ -176,7 +179,7 @@ public class DatabaseControls
                 return null;
             }
      
-        query = "INSERT INTO player (playername, playerpassword, rating) VALUES (?, ?, ?)";
+        query = "INSERT INTO airhockey.player (playername, playerpassword, rating) VALUES (?, ?, ?)";
 
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);
@@ -201,7 +204,7 @@ public class DatabaseControls
     public List<Person> getRankings() throws SQLException
     {        
         List<Person> output = new ArrayList<>();
-        String query = "SELECT playername, ranking FROM player SORT BY ranking DESC";
+        String query = "SELECT playername, ranking FROM airhockey.player SORT BY ranking DESC";
         Statement stat = null;
         
         try
@@ -235,7 +238,7 @@ public class DatabaseControls
      */
     public void clearDatabase() throws SQLException
     {
-        String query = "DELETE FROM game";
+        String query = "DELETE FROM airhockey.game";
         Statement stat = null;
         
         try
@@ -245,7 +248,7 @@ public class DatabaseControls
             stat.executeUpdate(query);
             
             // if this throws an SQL Error, try closing it before executing a new query
-            query = "DELETE FROM player";
+            query = "DELETE FROM airhockey.player";
             stat.executeUpdate(query);
         }
         finally
@@ -256,14 +259,84 @@ public class DatabaseControls
     }
     
     /**
+     * Saves a game to the database - currently gamedate is set as current date,
+     * as game does not save gamedate yet.
+     * Adjusts scores based on player ratings.
+     * @param game
+     * @throws SQLException 
+     */
+    public void saveGame(Game game) throws SQLException
+    {
+        this.initConnection();
+        PreparedStatement prepStat = null;
+        String query = "INSERT INTO airhockey.game (gameid, gamedate, "
+                + "player1score, player2score, player3score, "
+                + "player1, player2, player3, puckspeed) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+        
+        try
+        {
+            prepStat = this.conn.prepareStatement(query);
+            
+            prepStat.setString(1, (String)game.getGameInfo().get("gameID"));        
+            java.util.Date utilDate = new java.util.Date();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+            prepStat.setDate(2, sqlDate);
+            
+            prepStat.setInt(3, game.getMyPlayers().get(0).getScore());
+            prepStat.setInt(4, game.getMyPlayers().get(1).getScore());
+            prepStat.setInt(5, game.getMyPlayers().get(2).getScore());
+            
+            prepStat.setString(6, game.getMyPlayers().get(0).getName());
+            prepStat.setString(7, game.getMyPlayers().get(1).getName());
+            prepStat.setString(8, game.getMyPlayers().get(2).getName());
+            
+            prepStat.setFloat(9, game.getMyPuck().getSpeed());
+            
+            prepStat.executeUpdate();
+        }
+        finally
+        {
+            prepStat.close();
+            this.closeConnection();
+        }
+    }
+    
+    /**
      * updates player's game history, and calculates his new rating
+     * player scores should have been adjusted before this
      * @param player
-     * @param lastGame
+     * @param lastGame currently not used TODO: remove this
      * @param hasLeft can be null
      * @return his new rating
+     * @throws java.sql.SQLException
      */
-    public int getNewRating(Player player, Game lastGame, Player hasLeft)
+    public int getNewRating(Person player, Game lastGame, Player hasLeft) throws SQLException
     {
-        return -1;
+        this.initConnection();
+        int output = -1;       
+        CallableStatement callStat = null;        
+        try
+        {
+            callStat = conn.prepareCall("{? = call getNewRating(?, ?)}");
+            callStat.registerOutParameter(1,java.sql.Types.INTEGER);
+            callStat.setString(2, player.getName());
+            if(hasLeft != null)
+            {
+                callStat.setString(3, hasLeft.getName());
+            }
+            else
+            {
+                callStat.setString(3, "");
+            }
+            callStat.execute();
+            output = callStat.getInt(1);
+        }
+        finally
+        {
+            callStat.close();
+            this.closeConnection();
+        }
+        return output;       
     }
 }
