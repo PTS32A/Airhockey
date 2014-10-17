@@ -287,6 +287,8 @@ public class LobbyTest
         assertTrue("game didn't end as it should with leaver", 
                 this.mockLobby.endGame(game, 
                         (Player)this.mockLobby.getActivePersons().get("testey")));
+        
+        // TODO: check whether rating updates as it should
     }
     
     //TODO check if user is already logged in

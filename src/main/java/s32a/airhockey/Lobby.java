@@ -102,6 +102,7 @@ public class Lobby
      * false if .checkLogin() returned null
      * IllegalArgumentException when parameter was null or empty, or contained
      * trailing / leading white spaces
+     * @throws java.sql.SQLException, IllegalArgumentException
      */
     public boolean checkLogin(String playerName, String password) 
             throws IllegalArgumentException, SQLException
@@ -132,11 +133,18 @@ public class Lobby
     }
     
     /**
-     * calls the database to remove a player with given player name
-     * @param playerName
-     * @return DatabaseControls.removePerson()
-     * throws IllegalArgumentException if playerName is null or contains 
-     * trailing / leading white spaces
+     * logs out given player. Sets currentPerson to null if it was him.
+     * Should always be called with currentPerson by the GUI
+     * @param input
+     * @return whether logout succeeded
+     */
+    public boolean logOut(Person input)
+    {
+        return false;
+    }
+    
+    /**
+     * clears the entire database - should only be used for reset and debugging
      */
     public void clearDatabase()
     {
@@ -299,6 +307,7 @@ public class Lobby
         
         try
         {
+            this.adjustScore(game, (hasLeft != null));
             for (Player player : game.getMyPlayers())
             {
                 if(this.getActivePersons().get(player.getName()) instanceof Player)
@@ -338,6 +347,44 @@ public class Lobby
             }            
         }
         catch(Exception ex){}
+    }
+    
+    /**
+     * Adjusts end of game scores according to the URS
+     * @param input
+     * @return 
+     */
+    private Game adjustScore(Game input, boolean earlyEnding) throws IllegalArgumentException
+    {
+        if(input.getMyPlayers().size() <3)
+        {
+            throw new IllegalArgumentException("game wasn't full");
+        }
+        int player1score = input.getMyPlayers().get(0).getScore();
+        int player2score = input.getMyPlayers().get(1).getScore();
+        int player3score = input.getMyPlayers().get(2).getScore();
+        
+        int player1rating = input.getMyPlayers().get(0).getRating();
+        int player2rating = input.getMyPlayers().get(1).getRating();
+        int player3rating = input.getMyPlayers().get(2).getRating();
+        
+        player1score += (player2rating + player3rating - 2*player1rating)/8;
+        player2score += (player1rating + player3rating - 2*player2rating)/8;
+        player3score += (player1rating + player2rating - 2*player3rating)/8;
+        
+        // adjusts score based on whether the game ended prematurely
+        if(earlyEnding)
+        {
+            player1score = (player1score - 20)*10/input.getRoundNo() + 20;
+            player2score = (player2score - 20)*10/input.getRoundNo() + 20;
+            player3score = (player3score - 20)*10/input.getRoundNo() + 20;
+        }
+        
+        input.getMyPlayers().get(0).setScore(player1score);
+        input.getMyPlayers().get(1).setScore(player2score);
+        input.getMyPlayers().get(2).setScore(player3score);
+        
+        return input;
     }
     
     /**

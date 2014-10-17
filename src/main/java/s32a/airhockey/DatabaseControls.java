@@ -247,7 +247,6 @@ public class DatabaseControls
             stat = conn.createStatement();
             stat.executeUpdate(query);
             
-            // if this throws an SQL Error, try closing it before executing a new query
             query = "DELETE FROM airhockey.player";
             stat.executeUpdate(query);
         }
@@ -261,12 +260,18 @@ public class DatabaseControls
     /**
      * Saves a game to the database - currently gamedate is set as current date,
      * as game does not save gamedate yet.
-     * Adjusts scores based on player ratings.
+     * Does not adjust scores - that's lobby's job
      * @param game
-     * @throws SQLException 
+     * @throws SQLException
+     * @throws IllegalArgumentException when game doesn't have three players
      */
-    public void saveGame(Game game) throws SQLException
+    public void saveGame(Game game) throws SQLException, IllegalArgumentException
     {
+        if(game.getMyPlayers().size() < 3)
+        {
+            throw new IllegalArgumentException("Game contained less than three players");
+        }
+        
         this.initConnection();
         PreparedStatement prepStat = null;
         String query = "INSERT INTO airhockey.game (gameid, gamedate, "
@@ -327,7 +332,7 @@ public class DatabaseControls
             }
             else
             {
-                callStat.setString(3, "");
+                callStat.setNull(3, Types.VARCHAR);
             }
             callStat.execute();
             output = callStat.getInt(1);

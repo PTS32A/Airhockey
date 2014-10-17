@@ -56,6 +56,7 @@ public class DatabaseControlsTest
     @After
     public void tearDown()
     {
+        /*
         try
         {
             this.mockDB.clearDatabase();
@@ -63,6 +64,7 @@ public class DatabaseControlsTest
         {
             fail(ex.getMessage());
         }
+        */
     }
 
     @Test
@@ -102,6 +104,28 @@ public class DatabaseControlsTest
         }
     }
     
+    @Test
+    public void testSaveGameCheckRating()
+    {
+        try
+        {
+            this.mockDB.clearDatabase();
+            this.mockDB.addPerson("testey", "testpass");
+            Person testey = this.mockDB.checkLogin("testey", "testpass");
+            
+            assertEquals("initial rating incorrect", 15, this.mockDB.getNewRating(testey, null, null));
+            
+            Lobby mockLobby = new Lobby();
+            mockLobby.populate();
+            
+            this.mockDB.saveGame(mockLobby.getActiveGames().get(0));
+            // TODO: test whether the database function handles 
+                       
+        } catch (SQLException ex)
+        {
+            fail(ex.getMessage());
+        }
+    }
 
     
     

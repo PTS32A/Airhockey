@@ -28,10 +28,6 @@ public class Game
     private Chatbox myChatbox;
     @Getter private Puck myPuck;
     @Getter private List<Spectator> mySpectators;
-    
-    /**
-     * these are externally retrievable through gameInfo
-     */
     @Getter private List<Player> myPlayers;
     
     /**
