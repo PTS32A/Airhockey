@@ -7,8 +7,8 @@
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,38 +48,55 @@ public class Puck
     public Puck(float speed, Game myGame)
     {
         this.speed = speed;
+        this.hitBy = new ArrayList<Player>();
         
         this.sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
         
+        //Inner triangle for centre of Puck to bounce against so that the edges of the circle of the Puck will look like bouncing of the real triangle
+        //TODO this.sideLength = less then sidelength (using puck width) to forn inner triangle
+        
         this.middleLine = (float)Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
         
-        float centreX = (float)(0.5 * (double)sideLength);
-        float centreY = (float)(Math.tan(30) * (0.5 * (double)sideLength));
+        float centreX = 0;
+        float centreY = (float)(Math.tan(Math.toRadians(30)) * (0.5 * (double)sideLength));
         
         centreX = Math.round(centreX * 100) / 100;
         centreY = Math.round(centreY * 100) / 100;
-        
+               
         this.centre = new Vector2(centreX, centreY);
-        
+               
         this.goalLength = sideLength * 0.4f;
         
-        this.sideGoalMinY = this.centre.y - (float)((0.5 * goalLength) * sideLength);
-        this.sideGoalMaxY = this.centre.y + (float)((0.5 * goalLength) * sideLength);
+        this.sideGoalMinY = this.centre.y - (float)(Math.sin(Math.toRadians(0.5 * goalLength)));
+        this.sideGoalMaxY = this.centre.y + sideGoalMinY;
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
+        
+        System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
+        System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
         
         this.batWidth = sideLength/100*8;
         
         this.size = sideLength * 0.04f;
               
-        //position = new Vector2((new Random().nextFloat() - 0.5f) * (sideLength * 0.1f), (new Random().nextFloat() - 0.5f) * (sideLength * 0.1f));
-        position = new Vector2(0, 0);
+        //position = new Vector2((new Random().nextFloat() - 0.5f) * (sideLength * 0.1f), (new Random().nextFloat() - 0.5f) * (sideLength * 0.1f));              
+        position = centre;
+        
+        position.y = 10;
         //direction = new Random().nextFloat() * 360;
         direction = 90;
         
         isMoving = true;
         
         this.myGame = myGame;
+        
+        Vector2 batPosition0 = myGame.getMyPlayers().get(0).getBatPos();
+        Vector2 batPosition1 = myGame.getMyPlayers().get(1).getBatPos();
+        Vector2 batPosition2 = myGame.getMyPlayers().get(2).getBatPos();
+        
+        System.out.println("Bat Red: " + batPosition0.x + ", " + batPosition0.y);
+        System.out.println("Bat Blue: " + batPosition1.x + ", " + batPosition1.y);
+        System.out.println("Bat Green: " + batPosition2.x + ", " + batPosition2.y);
     }
     
     /**
@@ -110,12 +127,7 @@ public class Puck
             
             newX = Math.round(newX * 100) / 100;
             newY = Math.round(newY * 100) / 100;
-            
-            //System.out.println("Direction: " + direction);
-            //System.out.println("Radians: " + radians);
-            //System.out.println("old: " + oldX + "," + oldY);
-            System.out.println("Position: " + newX + ", " + newY);
-            
+                       
             Vector2 newPosition = new Vector2(newX, newY);
             
             Vector2 bouncePosition = isOutsideField(newPosition);
@@ -124,11 +136,15 @@ public class Puck
             {
                 //Inside field
                 position = newPosition;
+                System.out.println("Position: " + newX + ", " + newY);
             }
             else
             {
                 //Outside field or in collission with wall
                 position = bouncePosition;
+                
+                System.out.println("Wanted Position: " + newX + ", " + newY);
+                System.out.println("Bounce Position: " + bouncePosition.x + ", " + bouncePosition.y);
                                
                 //Detect wheter a goal has been hit (includes detection of bat blocking the puck)
                 int goalHitPlayerID = checkGoalHit(bouncePosition);
@@ -154,12 +170,16 @@ public class Puck
                     //Round is over
                     
                     //Player who scored
-                    Player whoScored = hitBy.get(hitBy.size() - 1);
-                    whoScored.setScore(whoScored.getScore() + 1);
+                    Player whoScored = null;
+                    if (hitBy.size() > 0)
+                    {
+                        whoScored = hitBy.get(hitBy.size() - 1);
+                        whoScored.setScore(whoScored.getScore() + 1);
+                    }
                     
                     //Player whose goal is hit
                     Player whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
-                    whoLostScore.setScore(whoScored.getScore() - 1);
+                    whoLostScore.setScore(whoLostScore.getScore() - 1);
                             
                     //End round
                     myGame.setContinueRun(false);
@@ -205,12 +225,14 @@ public class Puck
             {
                 outside = +1;
             }
-        }
-        
+        }   
         
         if (outside == -1)
         {
             //Left of field
+            
+            System.out.println("OUTSIDE: Left of the field");
+            
             Vector2 linePos1 = new Vector2((float)(-(sideLength / 2)), 0);
             Vector2 linePos2 = new Vector2(0, (float)middleLine);
             
@@ -220,6 +242,9 @@ public class Puck
         else if (outside == 1)
         {
             //Right of field
+            
+            System.out.println("OUTSIDE: Right of the field");
+            
             Vector2 linePos1 = new Vector2((float)(sideLength / 2), 0);
             Vector2 linePos2 = new Vector2(0, (float)middleLine);
             
@@ -231,16 +256,22 @@ public class Puck
             if (y < 0)
             {
                 //Underneath field
+                
+                System.out.println("OUTSIDE: Underneath the field");
+                
                 Vector2 linePos1 = new Vector2((float)(-(sideLength / 2)), 0);
                 Vector2 linePos2 = new Vector2((float)(sideLength / 2), 0);
             
-                direction = 180;
+                updateDirection(180);
                 
                 return getIntersection(position, newPosition, linePos1, linePos2);
             }
             else if (y > middleLine)
             {
                 //Above field
+                
+                System.out.println("OUTSIDE: Above the field");
+                
                 updateDirection(180);
                 return new Vector2(0, (float)middleLine);
             }
@@ -261,42 +292,97 @@ public class Puck
      */
     private Vector2 getIntersection(Vector2 oldPos, Vector2 newPos, Vector2 linePos1, Vector2 linePos2)
     {
-        float puckAX = oldPos.x;
-        float puckAY = oldPos.y;
+        //NEW CALCULATIONS
         
-        float puckBX = newPos.x;
-        float puckBY = newPos.y;
+        /**
+        * Line Formula:
+        * y = a*x + b
+        * a = (change in y) / (change in x)
+        * b = y - a * x
+        */
         
-        float puckA = ((puckAX-puckBX)/(puckAY-puckBY));
-        float puckB = puckAY - (puckA*puckAX);
+        //Line 1:
+        float a1 = (oldPos.y - newPos.y) / (oldPos.x - newPos.x);
+        float b1 = oldPos.y - a1 * oldPos.x;
+        
+        //Line 2:
+        float a2 = (linePos1.y - linePos2.y) / (linePos1.x - linePos2.x);
+        float b2 = linePos1.y - a2 * linePos1.x;
+              
+        float x;
+        
+        if (oldPos.x == newPos.x)
+        {
+            //Vertical line
+            x = oldPos.x;
+        }
+        else
+        {
+            //Curved line
+            
+            //Equate the two lines:
+            // a1*x + b1 = a2*x + b2
+            // (a1 - a2) * x = b2 - b1
+            // x = (b2 - b1) / (a1 - a2)
+            x = (b2 - b1) / (a1 - a2);
+        }
+        
+        //Find y:
+        //y = a*x + b
+        float y = a2 * x + b2;
+        
+        try
+        {
+            return new Vector2(x, y);
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Exception: " + ex.getMessage());
+            return null;
+        }
+        
+        //OLD CALCULATIONS (PROBABLY WRONG)
+        
+        //float puckAX = oldPos.x;
+        //float puckAY = oldPos.y;
+        
+        //float puckBX = newPos.x;
+        //float puckBY = newPos.y;
+        
+        //float puckA = ((puckAX-puckBX)/(puckAY-puckBY));
+        //float puckB = puckAY - (puckA*puckAX);
         
         
-        float lineAX = linePos1.x;
-        float lineAY = linePos1.y;
+        //float lineAX = linePos1.x;
+        //float lineAY = linePos1.y;
         
-        float lineBX = linePos2.x;
-        float lineBY = linePos2.y;
+        //float lineBX = linePos2.x;
+        //float lineBY = linePos2.y;
         
-        float lineA = ((lineAX-puckBX)/(lineAY-lineBY));
-        float lineB = lineAY - (lineA*lineAX);
+        //float lineA = ((lineAX-puckBX)/(lineAY-lineBY));
+        //float lineB = lineAY - (lineA*lineAX);
         
+        /** formula
         // y = puckA * x + puckB
         // y = lineA * x + lineB
         // puckA * x + puckB = lineA * x + lineB
         //(puckA -lineA)x = lineB-puckB
         //x = (lineB-puckB)/(puckA -lineA)
+        */
         
-        try
-        {
-            float x =(lineB-puckB)/(puckA -lineA);
-            float y =puckA * x + puckB;
-        
-            return new Vector2(x, y);
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
+        //try
+        //{
+        //    float x =(lineB-puckB)/(puckA -lineA);
+        //    float y = puckA * x + puckB;
+        //
+        //    System.out.println("INTERSECTION: " + x + ", " + y);
+        //    
+        //    return new Vector2(x, y);
+        //}
+        //catch (Exception ex)
+        //{
+        //    return null;
+        //}
     }
     
     /**
@@ -342,24 +428,24 @@ public class Puck
     private int checkGoalHit(Vector2 pos)
     {      
         int playerID = -1;
-        
+       
         if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY)
         {
             if (pos.x < 0)
             {
                 //Green goal
-                playerID = 3;
+                playerID = 2;
             }
             else
             {
                 //Blue goal
-                playerID = 2;
+                playerID = 1;
             }
         }
-        else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX)
+        else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0)
         {
             //Red goal
-            playerID = 1;
+            playerID = 0;
         }
         
         if (playerID == -1)
@@ -373,6 +459,7 @@ public class Puck
             if (checkBatBlock(playerID, pos))
             {
                 //Bat blocked the puck
+                System.out.println("BAT BOUNCE AT PLAYER " + playerID);
                 hitBy.add(myGame.getMyPlayers().get(playerID));
                 
                 //No goal hit
@@ -382,6 +469,7 @@ public class Puck
             {
                 //Bat did not block the puck
                 //Goal hit of player with playerID
+                System.out.println("GOAL AT PLAYER " + playerID);
                 return playerID;
             }
         }

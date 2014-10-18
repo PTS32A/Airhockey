@@ -72,7 +72,7 @@ public class Game
         starter.setMyGame(this);
         
         //TODO set default speed
-        this.myPuck = new Puck(3, this);
+        //this.myPuck = new Puck(10, this);
         
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName() 
@@ -251,7 +251,7 @@ public class Game
     {
         //Continue
         int count = 0;
-        while (isPaused == false && continueRun == true && count < 10)
+        while (isPaused == false && continueRun == true && count < 25)
         {
             if (myPuck != null)
             {
@@ -287,7 +287,7 @@ public class Game
                 
             }
             
-            this.myPuck = new Puck(3, this);
+            this.myPuck = new Puck(10, this);
             this.continueRun = true;
             this.isPaused = false;
             this.run();
