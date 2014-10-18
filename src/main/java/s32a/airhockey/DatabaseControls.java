@@ -126,7 +126,7 @@ public class DatabaseControls
         Person output = null;
         
         PreparedStatement prepStat = null;
-        String query = "SELECT playername, rating FROM airhockey.player WHERE playername = ? AND playerpassword = ?";
+        String query = "SELECT playername, rating FROM player WHERE playername = ? AND playerpassword = ?";
         
         
         // checks with the database whether that username / password combination exists
@@ -168,7 +168,7 @@ public class DatabaseControls
         this.initConnection();
         
         PreparedStatement prepStat = null;
-        String query = "SELECT playername FROM airhockey.player WHERE playername = ?";
+        String query = "SELECT playername FROM player WHERE playername = ?";
         try
         {
             prepStat = this.conn.prepareStatement(query);
@@ -179,7 +179,7 @@ public class DatabaseControls
                 return null;
             }
      
-        query = "INSERT INTO airhockey.player (playername, playerpassword, rating) VALUES (?, ?, ?)";
+        query = "INSERT INTO player (playername, playerpassword, rating) VALUES (?, ?, ?)";
 
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);
@@ -204,7 +204,7 @@ public class DatabaseControls
     public List<Person> getRankings() throws SQLException
     {        
         List<Person> output = new ArrayList<>();
-        String query = "SELECT playername, ranking FROM airhockey.player SORT BY ranking DESC";
+        String query = "SELECT playername, ranking FROM player SORT BY ranking DESC";
         Statement stat = null;
         
         try
@@ -238,7 +238,7 @@ public class DatabaseControls
      */
     public void clearDatabase() throws SQLException
     {
-        String query = "DELETE FROM airhockey.game";
+        String query = "DELETE FROM game";
         Statement stat = null;
         
         try
@@ -247,7 +247,7 @@ public class DatabaseControls
             stat = conn.createStatement();
             stat.executeUpdate(query);
             
-            query = "DELETE FROM airhockey.player";
+            query = "DELETE FROM player";
             stat.executeUpdate(query);
         }
         finally
@@ -274,7 +274,7 @@ public class DatabaseControls
         
         this.initConnection();
         PreparedStatement prepStat = null;
-        String query = "INSERT INTO airhockey.game (gameid, gamedate, "
+        String query = "INSERT INTO game (gameid, gamedate, "
                 + "player1score, player2score, player3score, "
                 + "player1, player2, player3, puckspeed) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
