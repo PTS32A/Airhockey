@@ -56,15 +56,23 @@ public class PuckTest
     }
 
     @Test
-    public void testUpdatePosition()
+    public void testUpdatePositionMovePuck()
     {
+        Vector2 position = new Vector2(0, 10);
+        float puckSpeed = 10;
+        float direction = 90; //Move to the right
+        int runCount = 5;
+        
+        game.customSetup(position, puckSpeed, direction, runCount);
         game.beginGame();
         Puck puck = game.getMyPuck();
         
-        Vector2 expResult = new Vector2(3,0);
-        Vector2 result = puck.getPosition();
+        //No bounce
+        float expX = runCount * puckSpeed;
+        float expY = 10;
         
-        System.out.println("ENDPOSITION: " + result.x + ", " + result.y);
+        Vector2 expResult = new Vector2(expX,expY);
+        Vector2 result = puck.getPosition();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
