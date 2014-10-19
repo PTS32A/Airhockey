@@ -41,7 +41,7 @@ public class PlayerTest
     @Before
     public void setUp()
     {
-        player = new Player("Test", 15, Colors.Red);
+        player = new Player("Test", (double)15, Colors.Red);
         game = new Game(player);
         player.setMyGame(game);
     }

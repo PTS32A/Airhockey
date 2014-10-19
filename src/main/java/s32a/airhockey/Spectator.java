@@ -16,7 +16,7 @@ public class Spectator extends Person
 {
     private Game game;
     
-    Spectator(String name, int rating, Game game)
+    Spectator(String name, double rating, Game game)
     {
         super(name, rating);
         this.game = game;

@@ -285,8 +285,8 @@ public class DatabaseControls
             
             prepStat.setString(1, (String)game.getGameInfo().get("gameID"));        
             java.util.Date utilDate = new java.util.Date();
-            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-            prepStat.setDate(2, sqlDate);
+            java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
+            prepStat.setTimestamp(2, sqlDate);
             
             prepStat.setInt(3, game.getMyPlayers().get(0).getScore());
             prepStat.setInt(4, game.getMyPlayers().get(1).getScore());
