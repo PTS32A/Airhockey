@@ -40,6 +40,7 @@ public class DatabaseControlsTest
     @AfterClass
     public static void tearDownClass()
     {
+        
     }
     
     @Before
@@ -57,16 +58,14 @@ public class DatabaseControlsTest
     
     @After
     public void tearDown()
-    {
-        /*
+    {      
         try
         {
             this.mockDB.clearDatabase();
         } catch (SQLException ex)
         {
             fail(ex.getMessage());
-        }
-        */
+        }       
     }
 
     @Test
@@ -255,21 +254,52 @@ public class DatabaseControlsTest
                     (double)((5*25 + 4*25 + 3*25 + 2*25 + 25)/15), 
                     this.mockDB.getNewRating(test3, null), 0.1);
             
-            // checks how leavers impact scores
-            assertEquals("rating game6 leaver=test2 test1 incorrect", 
-                    (double)((5*20 + 4*20 + 3*20 + 2*20 + 20)/15), 
-                    this.mockDB.getNewRating(test1, test2), 0.1);
-            assertEquals("rating game6 leaver=test2 test2 incorrect", 
-                    (double)((5*30 + 4*30 + 3*30 + 2*20 + 30)/15), 
-                    this.mockDB.getNewRating(test2, test2), 0.1);
+            //sets score game 7
+            mockGame = new Game(test1);
+            mockGame.addPlayer(test2);
+            mockGame.addPlayer(test3);
+            test1.setScore(0); // goes down
+            test2.setScore(50); // goes up
+            test3.setScore(25); // stays even
+            assertTrue("game didn't start", mockGame.beginGame());
+            this.mockDB.saveGame(mockGame);
             
+            // checks how leavers impact scores (restrained score)
+            assertEquals("rating game7 leaver=test2 test1 incorrect", 
+                    (double)((5*10 + 4*20 + 3*20 + 2*20 + 20)/15), 
+                    this.mockDB.getNewRating(test1, test2), 0.1);
+            double test2result = (double)((5*40 + 4*30 + 3*30 + 2*30 + 30)/15);
+            assertEquals("rating game7 leaver=test2 test2 incorrect", 
+                    (double)((5*40 + 4*30 + 3*30 + 2*30 + 30)/15), 
+                    this.mockDB.getNewRating(test2, test2), 0.1);
+            assertEquals("rating game7 leaver=test2 test3 incorrect", 
+                    (double)((5*25 + 4*25 + 3*25 + 2*25 + 25)/15), 
+                    this.mockDB.getNewRating(test3, test2), 0.1);
+            
+            //sets score game 8
+            mockGame = new Game(test1);
+            mockGame.addPlayer(test2);
+            mockGame.addPlayer(test3);
+            test1.setScore(50); // goes up
+            test2.setScore(10); // goes down
+            test3.setScore(25); // stays even
+            assertTrue("game didn't start", mockGame.beginGame());
+            this.mockDB.saveGame(mockGame);
+            
+            // checks how leavers impact scores (unrestrained scores)
+            assertEquals("rating game7 leaver=test2 test1 incorrect", 
+                    (double)((5*50 + 4*0 + 3*10 + 2*20 + 20)/15), 
+                    this.mockDB.getNewRating(test1, test2), 0.1);
+            assertEquals("rating game7 leaver=test2 test2 incorrect", 
+                    (double)((5*10 + 4*50 + 3*40 + 2*30 + 30)/15), 
+                    this.mockDB.getNewRating(test2, test2), 0.1);
+            assertEquals("rating game7 leaver=test3 test3 incorrect", 
+                    (double)((5*25 + 4*25 + 3*25 + 2*25 + 25)/15), 
+                    this.mockDB.getNewRating(test3, test3), 0.1);
                        
         } catch (SQLException ex)
         {
             fail(ex.getMessage());
         }
-    }
-
-    
-    
+    } 
 }
