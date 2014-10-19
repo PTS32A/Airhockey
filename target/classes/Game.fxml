@@ -20,13 +20,13 @@
       </font>
     </Label>
     <Label font="$x1" layoutX="14.0" layoutY="50.0" text="Difficulty:" />
-    <Label font="$x1" layoutX="425.0" layoutY="14.0" text="Score:" />
+    <Label font="$x1" layoutX="435.0" layoutY="14.0" text="Score:" />
     <Label font="$x1" layoutX="432.0" layoutY="50.0" text="Time:" />
     <Label id="lblName" font="$x1" layoutX="88.0" layoutY="14.0" text="Luke" />
     <Label id="lblDifficult" font="$x1" layoutX="120.0" layoutY="50.0" text="Extreme!" />
-    <Label id="lblScore" font="$x1" layoutX="503.0" layoutY="14.0" text="3" />
+    <Label id="lblScore" font="$x1" layoutX="513.0" layoutY="14.0" text="3" />
     <Label id="lblTime" font="$x1" layoutX="503.0" layoutY="50.0" text="01:56" />
-    <Polygon fill="DODGERBLUE" layoutX="299.0" layoutY="220.0" scaleX="3.15093728121543" scaleY="2.625399958095691" stroke="BLACK" strokeType="INSIDE">
+    <Polygon fill="DODGERBLUE" layoutX="296.0" layoutY="227.0" scaleX="3.15093728121543" scaleY="2.625399958095691" stroke="BLACK" strokeType="INSIDE">
       <points>
         <Double fx:value="-50.0" />
         <Double fx:value="40.0" />
