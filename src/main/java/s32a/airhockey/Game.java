@@ -76,6 +76,8 @@ public class Game
         this.mySpectators = new ArrayList<>();
         
         this.myPlayers.add(starter);
+        setBatPosition(starter, 0);
+        
         starter.setMyGame(this);
                
         this.gameInfo = new HashMap();
@@ -120,6 +122,9 @@ public class Game
                 
                     myPlayers.add(player);
                     player.setMyGame(this);
+                    
+                    setBatPosition(player, myPlayers.size() - 1);
+                    
                     return true;
                 }
             }
@@ -129,6 +134,55 @@ public class Game
             throw new IllegalArgumentException();
         }
         return false;
+    }
+    
+    private void setBatPosition(Player p, int playerID)
+    {
+        float sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");       
+        double puckSize = sideLength * 0.04;
+        sideLength = sideLength - (float)(2 * puckSize * Math.sqrt(3));
+        
+        float x;
+        float y;
+        
+        if (playerID == 0)
+        {
+            //Player red
+            x = 0;
+            y = 0;
+        }
+        else
+        {
+            //Player blue or green
+            y = (float)(Math.tan(Math.toRadians(30)) * (0.5 * (double)sideLength));
+            
+            float middleLine = (float)Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
+            
+            Vector2 linePos1 = new Vector2(0, (float)middleLine);
+            Vector2 linePos2;
+            
+            if (playerID == 1)
+            {
+                //Player blue
+                linePos2 = new Vector2((float)(sideLength / 2), 0);
+            }
+            else
+            {
+                //Player green
+                linePos2 = new Vector2((float)(-(sideLength / 2)), 0);
+            }
+            
+            float a = (linePos1.y - linePos2.y) / (linePos1.x - linePos2.x);
+            float b = linePos1.y - a * linePos1.x;
+            
+            //y = a*x + b
+            //a*x = y - b
+            //x = (y - b) / a
+            x = (y - b) / a;
+        }
+        
+        Vector2 batPos = new Vector2(x, y);
+        p.setBatPos(batPos);
     }
 
     /**
@@ -273,15 +327,16 @@ public class Game
         //BEGIN PUCK MOVEMENT
         System.out.println("--BEGIN PUCK MOVEMENT");
         
-        //Vector2 batPosition0 = this.getMyPlayers().get(0).getBatPos();
-        //Vector2 batPosition1 = this.getMyPlayers().get(1).getBatPos();
-        //Vector2 batPosition2 = this.getMyPlayers().get(2).getBatPos();
+        Vector2 batPosition0 = this.getMyPlayers().get(0).getBatPos();
+        Vector2 batPosition1 = this.getMyPlayers().get(1).getBatPos();
+        Vector2 batPosition2 = this.getMyPlayers().get(2).getBatPos();
         
-        //System.out.println("Bat Red: " + batPosition0.x + ", " + batPosition0.y);
-        //System.out.println("Bat Blue: " + batPosition1.x + ", " + batPosition1.y);
-        //System.out.println("Bat Green: " + batPosition2.x + ", " + batPosition2.y);
+        System.out.println("Bat Red: " + batPosition0.x + ", " + batPosition0.y);
+        System.out.println("Bat Blue: " + batPosition1.x + ", " + batPosition1.y);
+        System.out.println("Bat Green: " + batPosition2.x + ", " + batPosition2.y);
         
         runCount = defaultRunCount;
+        myPuck.clearEndData();
         
         //Continue
         if (runCount == -1)

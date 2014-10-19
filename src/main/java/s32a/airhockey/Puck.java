@@ -38,9 +38,7 @@ public class Puck
     private float batWidth;
     
     private Game myGame;
-    
-    private int runCount;
-    
+       
     @Getter private Vector2 endPosition;
     @Getter private float endDirection;
     @Getter private Player endGoalHit;
@@ -67,6 +65,8 @@ public class Puck
         this.hitBy = new ArrayList<Player>();
         
         this.sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
+        this.goalLength = sideLength * 0.4f;
+        this.batWidth = sideLength / 100 * 8;
         
         //Inner triangle for centre of Puck to bounce against so that the edges of the circle of the Puck will look like bouncing of the real triangle
         double puckSize = this.sideLength * 0.04;
@@ -82,23 +82,17 @@ public class Puck
                
         this.centre = new Vector2(centreX, centreY);
                
-        this.goalLength = sideLength * 0.4f;
-        
         this.sideGoalMinY = this.centre.y - (float)(Math.sin(Math.toRadians(0.5 * goalLength)));
         this.sideGoalMaxY = this.centre.y + sideGoalMinY;
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
         
-        //System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
-        //System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
-        
-        this.batWidth = sideLength/100*8;
+        System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
+        System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
                      
         this.isMoving = true;
         
         this.myGame = myGame;
-        
-        this.runCount = 0;
         
         resetPuck();
     }
@@ -114,13 +108,14 @@ public class Puck
         this.endPosition = position;
         this.endDirection = direction;
         
+        System.out.println(hitBy.size());
         if (hitBy.size() > 0)
         {
             this.endBatHit = hitBy.get(hitBy.size() - 1);
         }
     }
     
-    private void clearEndData()
+    public void clearEndData()
     {
         //DATA for after a round; used by unittests.
         this.endPosition = null;
@@ -136,8 +131,6 @@ public class Puck
      */
     public void run()
     {
-        clearEndData();
-        
         updatePosition(speed);
         
         setEndData();
@@ -479,7 +472,7 @@ public class Puck
             if (checkBatBlock(playerID, pos))
             {
                 //Bat blocked the puck
-                System.out.println("BAT BOUNCE AT PLAYER " + playerID);
+                System.out.println("BAT BOUNCE AT PLAYER " + getColorName(playerID));
                 hitBy.add(myGame.getMyPlayers().get(playerID));
                 
                 //No goal hit
@@ -489,7 +482,7 @@ public class Puck
             {
                 //Bat did not block the puck
                 //Goal hit of player with playerID
-                System.out.println("GOAL AT PLAYER " + playerID);
+                System.out.println("GOAL AT PLAYER " + getColorName(playerID));
                 return playerID;
             }
         }
@@ -498,6 +491,8 @@ public class Puck
     private boolean checkBatBlock(int playerID, Vector2 pos)
     {
         Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
+        
+        System.out.println();
         
         if (playerID == 0)
         {
@@ -519,8 +514,8 @@ public class Puck
         else
         {
             //Player Blue or Green (side bat)
-            float batMinY = batPos.y - (float)(Math.sin(30) * (0.5 * batWidth));
-            float batMaxY = batPos.y + (float)(Math.sin(30) * (0.5 * batWidth));
+            float batMinY = batPos.y - (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+            float batMaxY = batPos.y + (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
             
             if (pos.y > batMinY && pos.y < batMaxY)
             {
@@ -532,6 +527,21 @@ public class Puck
                 //Bat did not block the puck
                 return false;
             }
+        }
+    }
+    
+    private String getColorName(int playerID)
+    {
+        switch(playerID)
+        {
+            case 0:
+                return "Red";
+            case 1:
+                return "Blue";
+            case 2:
+                return "Green";
+            default:
+                return "Unknown";
         }
     }
 }

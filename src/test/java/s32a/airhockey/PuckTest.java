@@ -102,7 +102,7 @@ public class PuckTest
     @Test
     public void testUpdatePositionGoalHit()
     {
-        position = null; //Keep default start position
+        position = new Vector2(0, 95);
         puckSpeed = 10;
         direction = 90; //Move to the right
         runCount = 10;
@@ -121,7 +121,7 @@ public class PuckTest
     {
         position = null; //Keep default start position
         puckSpeed = 10;
-        direction = 90; //Move to the right
+        direction = 90; //Move towards the bottom
         runCount = 10;
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
