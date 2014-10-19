@@ -133,6 +133,16 @@ public class DatabaseControlsTest
             test2.setScore(30);
             test3.setScore(25);
             
+            assertEquals("rating game1 test1 incorrect", 
+                    ((5*20 + 4*15 + 3*15 + 2*15 + 15)/15), 
+                    this.mockDB.getNewRating(test1, null));
+            assertEquals("rating game1 test2 incorrect", 
+                    ((5*30 + 4*15 + 3*15 + 2*15 + 15)/15), 
+                    this.mockDB.getNewRating(test2, null));
+            assertEquals("rating game1 test3 incorrect", 
+                    ((5*25 + 4*15 + 3*15 + 2*15 + 15)/15), 
+                    this.mockDB.getNewRating(test2, null));
+            
             this.mockDB.getNewRating(test1, null);
             
             // TODO: test whether the database function handles 
