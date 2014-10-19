@@ -5,6 +5,7 @@
  */
 package s32a.airhockey;
 
+import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.Calendar;
 import static java.util.Calendar.getInstance;
@@ -38,6 +39,7 @@ public class Game
     @Getter private int roundNo;
     
     @Getter @Setter private boolean continueRun;
+    private int runCount;
 
     /**
      * Calls ChatBox.addMessage(string) with a pre-formatted message - 
@@ -70,10 +72,7 @@ public class Game
         this.myPlayers = new ArrayList<>();
         this.myPlayers.add(starter);
         starter.setMyGame(this);
-        
-        //TODO set default speed
-        //this.myPuck = new Puck(10, this);
-        
+               
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName() 
                 + String.valueOf(getInstance().get(Calendar.YEAR)) 
@@ -85,6 +84,9 @@ public class Game
         this.gameInfo.put("nextColor", this.getNextColor());
         
         this.roundNo = 0;
+        
+        this.myPuck = new Puck(10, this);
+        this.runCount = 0;
     }
 
     /**
@@ -250,18 +252,32 @@ public class Game
     private void run()
     {
         //Continue
-        int count = 0;
-        while (isPaused == false && continueRun == true && count < 25)
+        if (runCount == -1)
         {
-            if (myPuck != null)
+            //Loop until someone scores (puck will end loop)
+            while (isPaused == false && continueRun == true)
             {
-                //System.out.println("RUN");
-                myPuck.run();
+                if (myPuck != null)
+                {
+                    myPuck.run();
+                }
             }
-            count++;
+        }
+        else
+        {
+            //Loop until someone scored (puck will end loop) or until runCount (a custom setting)is 0
+            while (isPaused == false && continueRun == true && runCount > 0)
+            {
+                if (myPuck != null)
+                {
+                    myPuck.run();
+                }
+                runCount--;
+            }
         }
         
         //Start new round
+        this.myPuck.resetPuck();
         startRound();
     }
 
@@ -271,7 +287,7 @@ public class Game
      */
     private void startRound()
     {
-        if (roundNo < 1)
+        if (roundNo < 3) //Default 10
         {
             //Start new round
             this.roundNo++;
@@ -287,8 +303,6 @@ public class Game
 //            {
 //                
 //            }
-            
-            this.myPuck = new Puck(10, this);
             this.continueRun = true;
             this.isPaused = false;
             this.run();
@@ -328,5 +342,37 @@ public class Game
     public String toString()
     {
         return (String)gameInfo.get("gameID");
+    }
+    
+    /**
+     * Used to set properties of Puck for customization of unit tests
+     * @param position the start position (Vector2) of the Puck
+     * @param puckSpeed the speed of the Puck
+     * @param direction the start direction of the Puck
+     * @param runCount the number of times the run() method of Puck should be called
+     */
+    public void customSetup(Vector2 position, float puckSpeed, float direction, int runCount)
+    {
+        //Caution: puck position and direction are reset to default after a round has ended
+        
+        if (position != null)
+        {
+            this.myPuck.setPosition(position);
+        }
+        
+        if (puckSpeed > 0 && puckSpeed < 100)
+        {
+            this.myPuck.setSpeed(puckSpeed);
+        }
+        
+        if (direction >= 0 && direction < 360)
+        {
+            this.myPuck.setDirection(direction);
+        }
+        
+        if (runCount > 0 && runCount < 100)
+        {
+            this.runCount = runCount;
+        }
     }
 }

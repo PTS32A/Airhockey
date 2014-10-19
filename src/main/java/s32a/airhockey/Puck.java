@@ -9,6 +9,7 @@ package s32a.airhockey;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,13 +19,12 @@ import lombok.Setter;
  */
 public class Puck
 {
-    @Getter private Vector2 position;
+    @Getter @Setter private Vector2 position;
     @Getter @Setter private float speed;
     @Getter private List<Player> hitBy;
-    @Getter private float direction;
+    @Getter @Setter private float direction;
     @Getter @Setter boolean isMoving;
     
-    private float size;
     private float sideLength;
     private float middleLine;
     
@@ -38,6 +38,8 @@ public class Puck
     private float batWidth;
     
     private Game myGame;
+    
+    private int runCount;
     
     /**
      * initialises a game's puck
@@ -72,23 +74,19 @@ public class Puck
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
         
-        System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
-        System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
+        //System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
+        //System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
         
         this.batWidth = sideLength/100*8;
+                     
+        this.position = centre;
+        this.direction = new Random().nextFloat() * 360;
         
-        this.size = sideLength * 0.04f;
-              
-        //position = new Vector2((new Random().nextFloat() - 0.5f) * (sideLength * 0.1f), (new Random().nextFloat() - 0.5f) * (sideLength * 0.1f));              
-        position = centre;
-        
-        position.y = 10;
-        //direction = new Random().nextFloat() * 360;
-        direction = 90;
-        
-        isMoving = true;
+        this.isMoving = true;
         
         this.myGame = myGame;
+        
+        this.runCount = 0;
         
         Vector2 batPosition0 = myGame.getMyPlayers().get(0).getBatPos();
         Vector2 batPosition1 = myGame.getMyPlayers().get(1).getBatPos();
@@ -97,6 +95,12 @@ public class Puck
         System.out.println("Bat Red: " + batPosition0.x + ", " + batPosition0.y);
         System.out.println("Bat Blue: " + batPosition1.x + ", " + batPosition1.y);
         System.out.println("Bat Green: " + batPosition2.x + ", " + batPosition2.y);
+    }
+    
+    public void resetPuck()
+    {
+        this.position = centre;
+        this.direction = new Random().nextFloat() * 360;
     }
     
     /**
