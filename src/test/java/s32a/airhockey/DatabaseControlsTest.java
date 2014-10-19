@@ -57,8 +57,7 @@ public class DatabaseControlsTest
     
     @After
     public void tearDown()
-    {
-        /*
+    {        
         try
         {
             this.mockDB.clearDatabase();
@@ -66,7 +65,6 @@ public class DatabaseControlsTest
         {
             fail(ex.getMessage());
         }
-        */
     }
 
     @Test
