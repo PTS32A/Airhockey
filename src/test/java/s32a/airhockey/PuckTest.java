@@ -21,9 +21,9 @@ import static org.junit.Assert.*;
  */
 public class PuckTest
 {
-    Player p1 = new Player("playerRed", 10, Colors.Red);
-    Player p2 = new Player("playerBlue", 10, Colors.Blue);
-    Player p3 = new Player("playerGreen", 10, Colors.Green);
+    Player p1 = new Player("playerRed", (double)10, Colors.Red);
+    Player p2 = new Player("playerBlue", (double)10, Colors.Blue);
+    Player p3 = new Player("playerGreen", (double)10, Colors.Green);
     
     Game game;
     

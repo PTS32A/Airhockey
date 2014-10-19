@@ -74,7 +74,7 @@ public class LobbyTest
     @Test
     public void testPersons()
     {
-        Person testey = new Person("testey", 15);
+        Person testey = new Person("testey", (double)15);
         try
         {
             assertTrue("addPerson was false", this.mockLobby.addPerson("testey", "testpass"));

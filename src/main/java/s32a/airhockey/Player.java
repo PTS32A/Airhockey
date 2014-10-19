@@ -37,7 +37,7 @@ public class Player extends Person
      * @param color player color - linked to them being player 1, 2 or 3
      * retrievable from game.getGameInfo.get("nextColor")
      */
-    public Player(String name, int rating, Colors color)
+    public Player(String name, double rating, Colors color)
     {
         super(name, rating);
         this.color = color;

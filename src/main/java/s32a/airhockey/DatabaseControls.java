@@ -143,7 +143,7 @@ public class DatabaseControls
                 {
                     throw new SQLException("multiple players found");
                 }
-                int rating = rs.getInt("rating");
+                double rating = rs.getDouble("rating");
                 String name = rs.getString("playername");
                 output = new Person(name, rating);
             }
@@ -184,7 +184,7 @@ public class DatabaseControls
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);
             prepStat.setString(2, password);
-            prepStat.setInt(3, 15);
+            prepStat.setDouble(3, 15);
             prepStat.executeUpdate();
         }
         finally
@@ -216,7 +216,7 @@ public class DatabaseControls
             while (rs.next())
             {
                 String name = rs.getString("playername");
-                int rating = rs.getInt("ranking");
+                double rating = rs.getDouble("ranking");
                 output.add(new Person(name, rating));
             } 
         }
@@ -316,15 +316,15 @@ public class DatabaseControls
      * @return his new rating
      * @throws java.sql.SQLException
      */
-    public int getNewRating(Person player, Player hasLeft) throws SQLException
+    public double getNewRating(Person player, Player hasLeft) throws SQLException
     {
         this.initConnection();
-        int output = -1;       
+        double output = -1;       
         CallableStatement callStat = null;        
         try
         {
             callStat = conn.prepareCall("{? = call getNewRating(?, ?)}");
-            callStat.registerOutParameter(1,java.sql.Types.INTEGER);
+            callStat.registerOutParameter(1,java.sql.Types.DOUBLE);
             callStat.setString(2, player.getName());
             if(hasLeft != null)
             {

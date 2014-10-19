@@ -31,7 +31,7 @@ public class Bot extends Player
      * @param rating
      * @param color
      */
-    public Bot(String name, int rating, Colors color)
+    public Bot(String name, double rating, Colors color)
     {
         super(name,rating,color);
         this.goalPos = (Vector2)Lobby.getSingle().getAirhockeySettings().get("Goal Default");

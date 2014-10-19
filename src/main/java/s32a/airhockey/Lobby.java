@@ -364,9 +364,9 @@ public class Lobby
         int player2score = input.getMyPlayers().get(1).getScore();
         int player3score = input.getMyPlayers().get(2).getScore();
         
-        int player1rating = input.getMyPlayers().get(0).getRating();
-        int player2rating = input.getMyPlayers().get(1).getRating();
-        int player3rating = input.getMyPlayers().get(2).getRating();
+        double player1rating = input.getMyPlayers().get(0).getRating();
+        double player2rating = input.getMyPlayers().get(1).getRating();
+        double player3rating = input.getMyPlayers().get(2).getRating();
         
         player1score += (player2rating + player3rating - 2*player1rating)/8;
         player2score += (player1rating + player3rating - 2*player2rating)/8;
@@ -454,17 +454,17 @@ public class Lobby
     public void populate()
     {
         // adds bot 1-11
-        this.activePersons.put("bot1", new Person("bot1", 15));
-        this.activePersons.put("bot2", new Person("bot2", 15));
-        this.activePersons.put("bot3", new Person("bot3", 15));
-        this.activePersons.put("bot4", new Person("bot4", 15));
-        this.activePersons.put("bot5", new Person("bot5", 15));
-        this.activePersons.put("bot6", new Person("bot6", 15));
-        this.activePersons.put("bot7", new Person("bot7", 15));
-        this.activePersons.put("bot8", new Person("bot8", 15));
-        this.activePersons.put("bot9", new Person("bot9", 15));
-        this.activePersons.put("bot10", new Person("bot10", 15));
-        this.activePersons.put("bot11", new Person("bot11", 15));
+        this.activePersons.put("bot1", new Person("bot1", (double) 15));
+        this.activePersons.put("bot2", new Person("bot2", (double) 15));
+        this.activePersons.put("bot3", new Person("bot3", (double) 15));
+        this.activePersons.put("bot4", new Person("bot4", (double) 15));
+        this.activePersons.put("bot5", new Person("bot5", (double) 15));
+        this.activePersons.put("bot6", new Person("bot6", (double) 15));
+        this.activePersons.put("bot7", new Person("bot7", (double) 15));
+        this.activePersons.put("bot8", new Person("bot8", (double) 15));
+        this.activePersons.put("bot9", new Person("bot9", (double) 15));
+        this.activePersons.put("bot10", new Person("bot10", (double) 15));
+        this.activePersons.put("bot11", new Person("bot11", (double) 15));
         
         Game game = this.startGame((Person)this.activePersons.get("bot1"));
         this.joinGame(game, (Person)this.activePersons.get("bot2"));
