@@ -6,6 +6,7 @@
 
 package s32a.airhockey;
 
+import com.badlogic.gdx.math.Vector2;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -61,6 +62,7 @@ public class GameTest
     public void testAddChatMessageNullMessage()
     {      
         game.addChatMessage(null, starter);
+        fail("ChatMessage can't be null");
     }
     
     @Test
@@ -69,15 +71,25 @@ public class GameTest
     {
         message = "This is a test message.";
         game.addChatMessage(message, null);
+        fail("Given player can't be null");
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testAddChatMessageEmpty()
+    {      
+        message = "";
+        game.addChatMessage(message, starter);
+        fail("ChatMessage must containt characters other than white space");
     }
     
     @Test
     (expected = IllegalArgumentException.class)
     public void testAddChatMessageWhiteSpaceMessage()
     {      
-        message = "";
+        message = "   ";
         game.addChatMessage(message, starter);
-        
+        fail("ChatMessage must containt characters other than white space");
     }
     
     @Test
@@ -85,6 +97,7 @@ public class GameTest
     public void testAddPlayerNullPlayer()
     {
         game.addPlayer(null);
+        fail("Given player can't be null");
     }
     
     /**
@@ -122,6 +135,7 @@ public class GameTest
     public void testAddSpectatorNullSpectator()
     {
         game.addSpectator(null);
+        fail("Given spectator can't be null");
     }
     
     @Test
@@ -141,6 +155,7 @@ public class GameTest
     public void testRemoveSpectatorNullSpectator()
     {
         game.removeSpectator(null);
+        fail("Given spectator can't be null");
     }
     
     @Test
@@ -189,6 +204,12 @@ public class GameTest
     @Test
     public void testAdjustDifficultyGameAlreadyBegon()
     {   
+        Player p2 = new Player("testPlayer2", (double)0, Colors.Blue);
+        Player p3 = new Player("testPlayer3", (double)0, Colors.Green);
+        
+        game.addPlayer(p2);
+        game.addPlayer(p3);
+        
         game.beginGame();
         
         Boolean expResult = false;
@@ -201,9 +222,10 @@ public class GameTest
     (expected = IllegalArgumentException.class)
     public void testAdjustDifficultyMinLimit()
     {
-        Boolean result = game.adjustDifficulty(-200);
+        Boolean expResult = false;
+        Boolean result = game.adjustDifficulty(-1);
         
-        //Todo review the code and add a minimum difficulty property to Game class.
+        fail("Speed must be greater than the minimal limit (0)");
     }
     
     @Test
@@ -211,9 +233,9 @@ public class GameTest
     public void testAdjustDifficultyMaxLimit()
     {
         Boolean expResult = false;
-        Boolean result = game.adjustDifficulty(200);
+        Boolean result = game.adjustDifficulty(101);
         
-        //Todo review the code and add a maximum difficulty property to Game class.
+        fail("Speed must be smaller than the maximal limit (101)");
     }
     
     @Test
@@ -261,5 +283,13 @@ public class GameTest
         Colors result = game.getNextColor();
         
         assertEquals("Next color must be green", expResult, result);
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testCustomSetup()
+    {
+        game.customSetup(new Vector2(300, 300), 1, 1, 1, 1);
+        fail("Custom position is outside of field");
     }
 }

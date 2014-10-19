@@ -39,7 +39,10 @@ public class Game
     @Getter private int roundNo;
     
     @Getter @Setter private boolean continueRun;
+    
+    private int defaultRunCount;
     private int runCount;
+    private int maxRounds;
 
     /**
      * Calls ChatBox.addMessage(string) with a pre-formatted message - 
@@ -54,7 +57,7 @@ public class Game
         {
             throw new IllegalArgumentException();
         }
-        if (message.isEmpty())
+        if (message.trim().isEmpty())
         {
             throw new IllegalArgumentException();
         }
@@ -70,6 +73,8 @@ public class Game
     public Game(Player starter)
     {
         this.myPlayers = new ArrayList<>();
+        this.mySpectators = new ArrayList<>();
+        
         this.myPlayers.add(starter);
         starter.setMyGame(this);
                
@@ -86,7 +91,10 @@ public class Game
         this.roundNo = 0;
         
         this.myPuck = new Puck(10, this);
-        this.runCount = 0;
+        
+        this.defaultRunCount = 3;
+        this.runCount = defaultRunCount;
+        this.maxRounds = 10;
     }
 
     /**
@@ -180,10 +188,14 @@ public class Game
     {
         if (myPlayers.size() == 3)
         {
-            this.startRound();
+            if (roundNo == 0)
+            {
+                this.startRound();
+                return true;
+            }
         }
         
-        return true;
+        return false;
     }
 
     /**
@@ -196,18 +208,25 @@ public class Game
      */
     public boolean adjustDifficulty(float puckSpeed)
     {
-        //TODO determine min and max values for puckSpeed an review the following code
-        float min = -100;
-        float max = 100;
-        
-        if (puckSpeed >= min && puckSpeed <= max)
+        if (this.roundNo == 0)
         {
-            myPuck.setSpeed(puckSpeed);
-            return true;
+            float min = 0;
+            float max = 101;
+        
+            if (puckSpeed > min && puckSpeed < max)
+            {
+                myPuck.setSpeed(puckSpeed);
+                return true;
+            }
+            else
+            {
+                throw new IllegalArgumentException(); 
+            }
         }
         else
         {
-            throw new IllegalArgumentException(); 
+            //Can't adjust difficulty if game has already begun
+            return false;
         }
     }
 
@@ -251,6 +270,19 @@ public class Game
      */
     private void run()
     {
+        //BEGIN PUCK MOVEMENT
+        System.out.println("--BEGIN PUCK MOVEMENT");
+        
+        //Vector2 batPosition0 = this.getMyPlayers().get(0).getBatPos();
+        //Vector2 batPosition1 = this.getMyPlayers().get(1).getBatPos();
+        //Vector2 batPosition2 = this.getMyPlayers().get(2).getBatPos();
+        
+        //System.out.println("Bat Red: " + batPosition0.x + ", " + batPosition0.y);
+        //System.out.println("Bat Blue: " + batPosition1.x + ", " + batPosition1.y);
+        //System.out.println("Bat Green: " + batPosition2.x + ", " + batPosition2.y);
+        
+        runCount = defaultRunCount;
+        
         //Continue
         if (runCount == -1)
         {
@@ -276,6 +308,10 @@ public class Game
             }
         }
         
+        //END PUCK MOVEMENT
+        System.out.println("--END PUCK MOVEMENT");
+        
+        
         //Start new round
         this.myPuck.resetPuck();
         startRound();
@@ -287,7 +323,7 @@ public class Game
      */
     private void startRound()
     {
-        if (roundNo < 3) //Default 10
+        if (roundNo < maxRounds)
         {
             //Start new round
             this.roundNo++;
@@ -351,13 +387,22 @@ public class Game
      * @param direction the start direction of the Puck
      * @param runCount the number of times the run() method of Puck should be called
      */
-    public void customSetup(Vector2 position, float puckSpeed, float direction, int runCount)
+    public void customSetup(Vector2 position, float puckSpeed, float direction, int runCount, int maxRounds)
     {
         //Caution: puck position and direction are reset to default after a round has ended
         
         if (position != null)
         {
-            this.myPuck.setPosition(position);
+            if (this.myPuck.isOutsideField(position) == null)
+            {
+                //Inside of field
+                this.myPuck.setPosition(position);
+            }
+            else
+            {
+                //Outside of field
+                throw new IllegalArgumentException();
+            }
         }
         
         if (puckSpeed > 0 && puckSpeed < 100)
@@ -372,7 +417,12 @@ public class Game
         
         if (runCount > 0 && runCount < 100)
         {
-            this.runCount = runCount;
+            this.defaultRunCount = runCount;
+        }
+        
+        if (maxRounds > 0 && maxRounds <= 10)
+        {
+            this.maxRounds = maxRounds;
         }
     }
 }

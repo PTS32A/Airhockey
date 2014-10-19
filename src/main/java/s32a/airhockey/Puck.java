@@ -41,6 +41,11 @@ public class Puck
     
     private int runCount;
     
+    @Getter private Vector2 endPosition;
+    @Getter private float endDirection;
+    @Getter private Player endGoalHit;
+    @Getter private Player endBatHit;
+    
     /**
      * initialises a game's puck
      * position is randomised, speed is a given
@@ -49,13 +54,23 @@ public class Puck
      */
     public Puck(float speed, Game myGame)
     {
+        if (speed <= 0)
+        {
+            throw new IllegalArgumentException();
+        }
+        if (myGame == null)
+        {
+            throw new IllegalArgumentException();
+        }
+        
         this.speed = speed;
         this.hitBy = new ArrayList<Player>();
         
         this.sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
         
         //Inner triangle for centre of Puck to bounce against so that the edges of the circle of the Puck will look like bouncing of the real triangle
-        //TODO this.sideLength = less then sidelength (using puck width) to forn inner triangle
+        double puckSize = this.sideLength * 0.04;
+        this.sideLength = this.sideLength - (float)(2 * puckSize * Math.sqrt(3));
         
         this.middleLine = (float)Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
         
@@ -79,22 +94,13 @@ public class Puck
         
         this.batWidth = sideLength/100*8;
                      
-        this.position = centre;
-        this.direction = new Random().nextFloat() * 360;
-        
         this.isMoving = true;
         
         this.myGame = myGame;
         
         this.runCount = 0;
         
-        Vector2 batPosition0 = myGame.getMyPlayers().get(0).getBatPos();
-        Vector2 batPosition1 = myGame.getMyPlayers().get(1).getBatPos();
-        Vector2 batPosition2 = myGame.getMyPlayers().get(2).getBatPos();
-        
-        System.out.println("Bat Red: " + batPosition0.x + ", " + batPosition0.y);
-        System.out.println("Bat Blue: " + batPosition1.x + ", " + batPosition1.y);
-        System.out.println("Bat Green: " + batPosition2.x + ", " + batPosition2.y);
+        resetPuck();
     }
     
     public void resetPuck()
@@ -103,13 +109,38 @@ public class Puck
         this.direction = new Random().nextFloat() * 360;
     }
     
+    private void setEndData()
+    {
+        this.endPosition = position;
+        this.endDirection = direction;
+        
+        if (hitBy.size() > 0)
+        {
+            this.endBatHit = hitBy.get(hitBy.size() - 1);
+        }
+    }
+    
+    private void clearEndData()
+    {
+        //DATA for after a round; used by unittests.
+        this.endPosition = null;
+        this.endDirection = 0;
+        this.endGoalHit = null;
+        this.endBatHit = null;
+        hitBy.clear();
+    }
+    
     /**
      * Is continuously called by the Game class
      * Starts the process of updating the pucks position and detection of goal hits
      */
     public void run()
     {
+        clearEndData();
+        
         updatePosition(speed);
+        
+        setEndData();
     }
     
     /**
@@ -154,23 +185,7 @@ public class Puck
                 int goalHitPlayerID = checkGoalHit(bouncePosition);
                 
                 if (goalHitPlayerID != -1)
-                {
-                    switch(goalHitPlayerID)
-                    {
-                        case 0:
-                            //Player red goal hit
-                            break;
-                        case 1:
-                            //Player blue goal hit
-                            break;
-                        case 2:
-                            //Player green goal hit
-                            break;
-                        default:
-                            //Default to player red goal hit
-                            break;
-                    }
-                                               
+                {                                              
                     //Round is over
                     
                     //Player who scored
@@ -184,6 +199,7 @@ public class Puck
                     //Player whose goal is hit
                     Player whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
                     whoLostScore.setScore(whoLostScore.getScore() - 1);
+                    this.endGoalHit = whoLostScore;
                             
                     //End round
                     myGame.setContinueRun(false);
@@ -206,7 +222,7 @@ public class Puck
      * @return the wall position that the puck bounces off
      * returns null if the puck is not in collision with any walls
      */
-    private Vector2 isOutsideField(Vector2 newPosition)
+    public Vector2 isOutsideField(Vector2 newPosition)
     {       
         float x = newPosition.x;
         float y = newPosition.y;

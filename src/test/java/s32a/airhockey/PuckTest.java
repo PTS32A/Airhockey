@@ -7,7 +7,6 @@
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
-import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,6 +25,11 @@ public class PuckTest
     Player p3 = new Player("playerGreen", (double)10, Colors.Green);
     
     Game game;
+    
+    Vector2 position;
+    float puckSpeed;
+    float direction;
+    int runCount;
     
     public PuckTest()
     {
@@ -58,22 +62,98 @@ public class PuckTest
     @Test
     public void testUpdatePositionMovePuck()
     {
-        Vector2 position = new Vector2(0, 10);
-        float puckSpeed = 10;
-        float direction = 90; //Move to the right
-        int runCount = 5;
+        position = new Vector2(0, 10);
+        puckSpeed = 10;
+        direction = 90; //Move to the right
+        runCount = 5;
         
-        game.customSetup(position, puckSpeed, direction, runCount);
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
-        Puck puck = game.getMyPuck();
-        
+
         //No bounce
+        //Exspected X is the ammount of times moving (runCount) * the speed (distance traveling) of the puck (runSpeed)
         float expX = runCount * puckSpeed;
         float expY = 10;
         
         Vector2 expResult = new Vector2(expX,expY);
-        Vector2 result = puck.getPosition();
+        Vector2 result = game.getMyPuck().getEndPosition();
         
         assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    public void testUpdatePositionBounce()
+    {
+        position = null; //Keep default start position
+        puckSpeed = 10;
+        direction = 90; //Move to the right
+        runCount = 10;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        //Bounce off the rightside wall >>> resulting in the direction going towards the right (90) changing to going towards the bottom (180).
+        int expResult = 180;
+        int result = (int)game.getMyPuck().getEndDirection();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    public void testUpdatePositionGoalHit()
+    {
+        position = null; //Keep default start position
+        puckSpeed = 10;
+        direction = 90; //Move to the right
+        runCount = 10;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        Player expResult = game.getMyPlayers().get(1); //Player blue
+        Player result = game.getMyPuck().getEndGoalHit();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    public void testUpdatePositionBatHit()
+    {
+        position = null; //Keep default start position
+        puckSpeed = 10;
+        direction = 90; //Move to the right
+        runCount = 10;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        Player expResult = game.getMyPlayers().get(1); //Player blue
+        Player result = game.getMyPuck().getEndBatHit();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testPuckWrongSpeed1()
+    {
+        Puck p = new Puck(0, game);
+        fail("Puckspeed must positive");
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testPuckWrongSpeed2()
+    {
+        Puck p = new Puck(-1, game);
+        fail("Puckspeed must positive");
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testPuckWrongGame()
+    {
+        Puck p = new Puck(1, null);
+        fail("Game can't be null");
     }
 }
