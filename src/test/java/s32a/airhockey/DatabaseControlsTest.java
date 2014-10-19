@@ -40,7 +40,6 @@ public class DatabaseControlsTest
     @AfterClass
     public static void tearDownClass()
     {
-        
     }
     
     @Before
@@ -58,14 +57,16 @@ public class DatabaseControlsTest
     
     @After
     public void tearDown()
-    {      
+    {
+        /*
         try
         {
             this.mockDB.clearDatabase();
         } catch (SQLException ex)
         {
             fail(ex.getMessage());
-        }       
+        }
+        */
     }
 
     @Test
@@ -264,15 +265,14 @@ public class DatabaseControlsTest
             assertTrue("game didn't start", mockGame.beginGame());
             this.mockDB.saveGame(mockGame);
             
-            // checks how leavers impact scores (restrained score)
+            // checks how leavers impact scores (restrained)
             assertEquals("rating game7 leaver=test2 test1 incorrect", 
                     (double)((5*10 + 4*20 + 3*20 + 2*20 + 20)/15), 
                     this.mockDB.getNewRating(test1, test2), 0.1);
-            double test2result = (double)((5*40 + 4*30 + 3*30 + 2*30 + 30)/15);
             assertEquals("rating game7 leaver=test2 test2 incorrect", 
                     (double)((5*40 + 4*30 + 3*30 + 2*30 + 30)/15), 
                     this.mockDB.getNewRating(test2, test2), 0.1);
-            assertEquals("rating game7 leaver=test2 test3 incorrect", 
+            assertEquals("rating game7 test3 incorrect", 
                     (double)((5*25 + 4*25 + 3*25 + 2*25 + 25)/15), 
                     this.mockDB.getNewRating(test3, test2), 0.1);
             
@@ -281,25 +281,60 @@ public class DatabaseControlsTest
             mockGame.addPlayer(test2);
             mockGame.addPlayer(test3);
             test1.setScore(50); // goes up
-            test2.setScore(10); // goes down
+            test2.setScore(0); // goes down
             test3.setScore(25); // stays even
             assertTrue("game didn't start", mockGame.beginGame());
             this.mockDB.saveGame(mockGame);
             
-            // checks how leavers impact scores (unrestrained scores)
-            assertEquals("rating game7 leaver=test2 test1 incorrect", 
+            // checks how leavers impact scores (unrestrained)
+            assertEquals("rating game8 leaver=test2 test1 incorrect", 
                     (double)((5*50 + 4*0 + 3*10 + 2*20 + 20)/15), 
                     this.mockDB.getNewRating(test1, test2), 0.1);
-            assertEquals("rating game7 leaver=test2 test2 incorrect", 
-                    (double)((5*10 + 4*50 + 3*40 + 2*30 + 30)/15), 
+            assertEquals("rating game8 leaver=test2 test2 incorrect", 
+                    (double)((5*0 + 4*50 + 3*40 + 2*30 + 30)/15), 
                     this.mockDB.getNewRating(test2, test2), 0.1);
-            assertEquals("rating game7 leaver=test3 test3 incorrect", 
+            assertEquals("rating game8 test3 incorrect", 
                     (double)((5*25 + 4*25 + 3*25 + 2*25 + 25)/15), 
-                    this.mockDB.getNewRating(test3, test3), 0.1);
+                    this.mockDB.getNewRating(test3, test2), 0.1);
+            
                        
         } catch (SQLException ex)
         {
             fail(ex.getMessage());
         }
-    } 
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void saveGameNegativeScoreTest()
+    {
+        try
+        {
+            Game mockGame;
+            
+            Player test1 = new Player("test1", (double)15, Colors.Red);
+            Player test2 = new Player("test2", (double)15, Colors.Blue);
+            Player test3 = new Player("test3", (double)15, Colors.Green);
+            
+            this.mockDB.addPerson("test1", "test");
+            this.mockDB.addPerson("test2", "test");
+            this.mockDB.addPerson("test3", "test");
+            
+            //sets negative score
+            mockGame = new Game(test1);
+            mockGame.addPlayer(test2);
+            mockGame.addPlayer(test3);
+            test1.setScore(-20);
+            test2.setScore(30);
+            test3.setScore(25);
+            assertTrue("game didn't start", mockGame.beginGame());
+            this.mockDB.saveGame(mockGame);
+        } catch (SQLException ex)
+        {
+            fail(ex.getMessage());
+        }
+    }
+
+    
+    
 }

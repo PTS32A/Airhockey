@@ -272,6 +272,13 @@ public class DatabaseControls
             throw new IllegalArgumentException("Game contained less than three players");
         }
         
+        if(game.getMyPlayers().get(0).getScore() < 0 
+                || game.getMyPlayers().get(1).getScore() < 0 
+                || game.getMyPlayers().get(2).getScore() < 0)
+        {
+            throw new IllegalArgumentException("One or more players had negative scores");
+        }
+        
         this.initConnection();
         PreparedStatement prepStat = null;
         String query = "INSERT INTO game (gameid, gamedate, "
