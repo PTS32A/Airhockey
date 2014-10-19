@@ -79,6 +79,7 @@ public class Game
         setBatPosition(starter, 0);
         
         starter.setMyGame(this);
+        starter.setStarter(true);
                
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName() 
@@ -191,21 +192,24 @@ public class Game
      * false when the spectator was already associated with this game
      * also false if the method failed to add for any other reason
      */ 
-    public boolean addSpectator(Spectator spectator)
+    public boolean addSpectator(Spectator spectator) throws IllegalArgumentException
     {
         if (spectator != null)
         {
-            if (!mySpectators.contains(spectator))
+            for (Spectator spect : this.mySpectators)
             {
-                mySpectators.add(spectator);
-                return true;
+                if(spect.getName().equals(spectator.getName()))
+                {
+                    return false;
+                }
             }
+            mySpectators.add(spectator);
+            return true;
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("spectator is null");
         }
-        return false;
     }
 
     /**

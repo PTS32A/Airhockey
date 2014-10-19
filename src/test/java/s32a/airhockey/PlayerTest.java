@@ -82,7 +82,7 @@ public class PlayerTest
     public void testGetScore()
     {
         System.out.println("getScore");
-        int expResult = 0;
+        int expResult = 20;
         int result = player.getScore();
         assertEquals("Score incorrect",expResult, result);
     }

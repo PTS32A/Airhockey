@@ -182,7 +182,7 @@ public class Lobby
             newGame = new Game((Player)person);           
             this.activePersons.replace(person.getName(), person);          
             this.activeGames.add(newGame);
-            if(this.currentPerson == person)
+            if(this.currentPerson.getName().equals(person.getName()))
             {
                 this.currentPerson = person;
                 this.playedGame = newGame;
@@ -255,7 +255,10 @@ public class Lobby
         {
             person = new Spectator(person.getName(), 
                     person.getRating(), game);
-            game.addSpectator((Spectator)person);
+            if(!game.addSpectator((Spectator)person))
+            {
+                return null;
+            }
             this.activePersons.replace(person.getName(), person);
             if(this.currentPerson.equals(person))
             {
@@ -277,12 +280,13 @@ public class Lobby
      * @return 
      * - True if everything went well
      * - False otherwise
+     * @throws IllegalArgumentException
      */
-    public boolean addChatMessage(String message, Person from)
+    public boolean addChatMessage(String message, Person from) throws IllegalArgumentException
     {
         if(message == null || from == null)
         {
-            return false;
+            throw new IllegalArgumentException("message or poster is null");
         }      
         return this.mychatbox.addChatMessage(message, from);       
     }
@@ -300,14 +304,18 @@ public class Lobby
      */
     public boolean endGame(Game game, Player hasLeft)
     {
-        if(game == null)
+        if(game == null || !this.activeGames.contains(game))
         {
             return false;
         }
         
-        try
+        if(game.getMyPlayers().size() == 3)
         {
-            this.adjustScore(game, (hasLeft != null));
+            game = this.adjustScore(game, (hasLeft != null));
+        }
+        
+        try
+        {          
             for (Player player : game.getMyPlayers())
             {
                 if(this.getActivePersons().get(player.getName()) instanceof Player)
@@ -319,7 +327,7 @@ public class Lobby
             this.activeGames.remove(game);
             this.spectatedGames.remove(game);
         }
-        catch(Exception ex)
+        catch(IllegalArgumentException | SQLException ex)
         {
             return false;
         }
@@ -383,6 +391,15 @@ public class Lobby
         input.getMyPlayers().get(0).setScore(player1score);
         input.getMyPlayers().get(1).setScore(player2score);
         input.getMyPlayers().get(2).setScore(player3score);
+        
+        try
+        {
+            // saves game
+            this.myDatabaseControls.saveGame(input);
+        } catch (SQLException ex)
+        {
+            return null;
+        }
         
         return input;
     }
