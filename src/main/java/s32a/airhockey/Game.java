@@ -139,8 +139,6 @@ public class Game
     private void setBatPosition(Player p, int playerID)
     {
         float sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");       
-        //double puckSize = sideLength * 0.04;
-        //sideLength = sideLength - (float)(2 * puckSize * Math.sqrt(3));
         
         float x;
         float y;
@@ -244,6 +242,7 @@ public class Game
         {
             if (roundNo == 0)
             {
+                System.out.println("BEGIN GAME");
                 this.startRound();
                 return true;
             }
@@ -326,15 +325,7 @@ public class Game
     {
         //BEGIN PUCK MOVEMENT
         System.out.println("--BEGIN PUCK MOVEMENT");
-        
-        Vector2 batPosition0 = this.getMyPlayers().get(0).getBatPos();
-        Vector2 batPosition1 = this.getMyPlayers().get(1).getBatPos();
-        Vector2 batPosition2 = this.getMyPlayers().get(2).getBatPos();
-        
-        System.out.println("Bat Red: " + batPosition0.x + ", " + batPosition0.y);
-        System.out.println("Bat Blue: " + batPosition1.x + ", " + batPosition1.y);
-        System.out.println("Bat Green: " + batPosition2.x + ", " + batPosition2.y);
-        
+               
         runCount = defaultRunCount;
         myPuck.clearEndData();
         
@@ -382,7 +373,7 @@ public class Game
         {
             //Start new round
             this.roundNo++;
-            System.out.println("ROUND " + roundNo);
+            System.out.println("-ROUND " + roundNo);
             
 //            //Countdown
 //            try
@@ -402,6 +393,7 @@ public class Game
         {
             //End game
             System.out.println("END GAME");
+            System.out.println("");
         }
     }
     

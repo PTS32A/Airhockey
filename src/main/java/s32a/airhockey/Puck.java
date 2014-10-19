@@ -45,6 +45,8 @@ public class Puck
     @Getter private Player endGoalHit;
     @Getter private Player endBatHit;
     
+    private boolean printMessages = false;
+    
     /**
      * initialises a game's puck
      * position is randomised, speed is a given
@@ -88,8 +90,8 @@ public class Puck
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
         
-        System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
-        System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
+        //System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
+        //System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
                      
         this.isMoving = true;
         
@@ -109,7 +111,6 @@ public class Puck
         this.endPosition = position;
         this.endDirection = direction;
         
-        System.out.println(hitBy.size());
         if (hitBy.size() > 0)
         {
             this.endBatHit = hitBy.get(hitBy.size() - 1);
@@ -165,15 +166,15 @@ public class Puck
             {
                 //Inside field
                 position = newPosition;
-                System.out.println("Position: " + newX + ", " + newY);
+                printMessage("Position: " + newX + ", " + newY);
             }
             else
             {
                 //Outside field or in collission with wall
                 position = bouncePosition;
                 
-                System.out.println("Wanted Position: " + newX + ", " + newY);
-                System.out.println("Bounce Position: " + bouncePosition.x + ", " + bouncePosition.y);
+                printMessage("  Wanted Position: " + newX + ", " + newY);
+                printMessage("  Bounce Position: " + bouncePosition.x + ", " + bouncePosition.y);
                                
                 //Detect wheter a goal has been hit (includes detection of bat blocking the puck)
                 int goalHitPlayerID = checkGoalHit(bouncePosition);
@@ -245,7 +246,7 @@ public class Puck
         {
             //Left of field
             
-            System.out.println("OUTSIDE: Left of the field");
+            printMessage("OUTSIDE: Left of the field");
             
             Vector2 linePos1 = new Vector2((float)(-(sideLength / 2)), 0);
             Vector2 linePos2 = new Vector2(0, (float)middleLine);
@@ -257,7 +258,7 @@ public class Puck
         {
             //Right of field
             
-            System.out.println("OUTSIDE: Right of the field");
+            printMessage("OUTSIDE: Right of the field");
             
             Vector2 linePos1 = new Vector2((float)(sideLength / 2), 0);
             Vector2 linePos2 = new Vector2(0, (float)middleLine);
@@ -271,7 +272,7 @@ public class Puck
             {
                 //Underneath field
                 
-                System.out.println("OUTSIDE: Underneath the field");
+                printMessage("OUTSIDE: Underneath the field");
                 
                 Vector2 linePos1 = new Vector2((float)(-(sideLength / 2)), 0);
                 Vector2 linePos2 = new Vector2((float)(sideLength / 2), 0);
@@ -284,7 +285,7 @@ public class Puck
             {
                 //Above field
                 
-                System.out.println("OUTSIDE: Above the field");
+                printMessage("OUTSIDE: Above the field");
                 
                 updateDirection(180);
                 return new Vector2(0, (float)middleLine);
@@ -473,7 +474,7 @@ public class Puck
             if (checkBatBlock(playerID, pos))
             {
                 //Bat blocked the puck
-                System.out.println("BAT BOUNCE AT PLAYER " + getColorName(playerID));
+                printMessage("BAT BOUNCE AT PLAYER " + getColorName(playerID));
                 hitBy.add(myGame.getMyPlayers().get(playerID));
                 
                 //No goal hit
@@ -483,7 +484,7 @@ public class Puck
             {
                 //Bat did not block the puck
                 //Goal hit of player with playerID
-                System.out.println("GOAL AT PLAYER " + getColorName(playerID));
+                printMessage("GOAL AT PLAYER " + getColorName(playerID));
                 return playerID;
             }
         }
@@ -492,9 +493,7 @@ public class Puck
     private boolean checkBatBlock(int playerID, Vector2 pos)
     {
         Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
-               
-        System.out.println();
-        
+                      
         if (playerID == 0)
         {
             //Player Red (bottom bat)
@@ -546,6 +545,14 @@ public class Puck
                 return "Green";
             default:
                 return "Unknown";
+        }
+    }
+    
+    private void printMessage(String message)
+    {
+        if (printMessages)
+        {
+            System.out.println("   " + message);
         }
     }
 }
