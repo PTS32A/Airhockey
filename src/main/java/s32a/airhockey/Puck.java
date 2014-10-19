@@ -36,6 +36,7 @@ public class Puck
     private float bottomGoalMinX;
     private float bottomGoalMaxX;
     private float batWidth;
+    private float puckSize;
     
     private Game myGame;
        
@@ -69,7 +70,7 @@ public class Puck
         this.batWidth = sideLength / 100 * 8;
         
         //Inner triangle for centre of Puck to bounce against so that the edges of the circle of the Puck will look like bouncing of the real triangle
-        double puckSize = this.sideLength * 0.04;
+        this.puckSize = (float)(this.sideLength * 0.04);
         this.sideLength = this.sideLength - (float)(2 * puckSize * Math.sqrt(3));
         
         this.middleLine = (float)Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
@@ -491,7 +492,7 @@ public class Puck
     private boolean checkBatBlock(int playerID, Vector2 pos)
     {
         Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
-        
+               
         System.out.println();
         
         if (playerID == 0)
@@ -514,9 +515,12 @@ public class Puck
         else
         {
             //Player Blue or Green (side bat)
-            float batMinY = batPos.y - (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
-            float batMaxY = batPos.y + (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+            //Correct batPosition because of inner triangle:
+            float batY = batPos.y - (float)(0.5 * this.puckSize * Math.sqrt(3));
             
+            float batMinY = batY - (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+            float batMaxY = batY + (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+                        
             if (pos.y > batMinY && pos.y < batMaxY)
             {
                 //Bat blocked the puck

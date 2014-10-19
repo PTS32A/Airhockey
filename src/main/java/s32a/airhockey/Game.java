@@ -139,8 +139,8 @@ public class Game
     private void setBatPosition(Player p, int playerID)
     {
         float sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");       
-        double puckSize = sideLength * 0.04;
-        sideLength = sideLength - (float)(2 * puckSize * Math.sqrt(3));
+        //double puckSize = sideLength * 0.04;
+        //sideLength = sideLength - (float)(2 * puckSize * Math.sqrt(3));
         
         float x;
         float y;
