@@ -123,6 +123,10 @@ public class DatabaseControlsTest
             Player test2 = new Player("test2", 15, Colors.Blue);
             Player test3 = new Player("test3", 15, Colors.Green);
             
+            this.mockDB.addPerson("test1", "test");
+            this.mockDB.addPerson("test2", "test");
+            this.mockDB.addPerson("test3", "test");
+            
             // initiates game
             mockGame = new Game(test1);
             mockGame.addPlayer(test2);
@@ -132,6 +136,9 @@ public class DatabaseControlsTest
             test1.setScore(20);
             test2.setScore(30);
             test3.setScore(25);
+            assertTrue("game didn't start", mockGame.beginGame());
+            this.mockDB.saveGame(mockGame);
+            
             
             assertEquals("rating game1 test1 incorrect", 
                     ((5*20 + 4*15 + 3*15 + 2*15 + 15)/15), 

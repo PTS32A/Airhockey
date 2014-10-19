@@ -178,7 +178,7 @@ public class Game
     {
         if (myPlayers.size() == 3)
         {
-            startRound();
+            this.startRound();
         }
         
         return true;
@@ -277,15 +277,16 @@ public class Game
             this.roundNo++;
             System.out.println("ROUND " + roundNo);
             
-            //Countdown
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (InterruptedException ex)
-            {
-                
-            }
+//            //Countdown
+//            try
+//            {
+//                //SHOULD BE IMPLEMENTED IN JAVAFX
+//                Thread.sleep(1000);
+//            }
+//            catch (InterruptedException ex)
+//            {
+//                
+//            }
             
             this.myPuck = new Puck(10, this);
             this.continueRun = true;

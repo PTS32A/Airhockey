@@ -46,7 +46,7 @@ public class Player extends Person
         int batWidth = (int)(sideLength/100*8);
         this.batPos = new Vector2(goalPos.x, goalPos.y + 5);
         rec = new Rectangle((int)batPos.x, (int)batPos.y, batWidth, batWidth);
-        this.score = 0;
+        this.score = 20;
     }
     
     /**
