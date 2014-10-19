@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 public class Player extends Person
 {
-    @Getter private Vector2 batPos;
+    @Getter @Setter private Vector2 batPos;
     @Getter private Colors color;
     @Getter @Setter private int score;
     @Getter @Setter private boolean isStarter;
