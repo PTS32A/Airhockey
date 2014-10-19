@@ -316,7 +316,7 @@ public class DatabaseControls
      * @return his new rating
      * @throws java.sql.SQLException
      */
-    public int getNewRating(Person player, Game lastGame, Player hasLeft) throws SQLException
+    public int getNewRating(Person player, Player hasLeft) throws SQLException
     {
         this.initConnection();
         int output = -1;       

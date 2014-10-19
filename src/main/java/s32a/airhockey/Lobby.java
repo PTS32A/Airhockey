@@ -312,7 +312,7 @@ public class Lobby
             {
                 if(this.getActivePersons().get(player.getName()) instanceof Player)
                 {
-                    player.setRating(this.myDatabaseControls.getNewRating(player, game, hasLeft));
+                    player.setRating(this.myDatabaseControls.getNewRating(player, hasLeft));
                     this.returnToLobby(player); 
                 }               
             }  

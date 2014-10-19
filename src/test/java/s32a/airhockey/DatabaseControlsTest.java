@@ -8,6 +8,8 @@ package s32a.airhockey;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -113,12 +115,26 @@ public class DatabaseControlsTest
             this.mockDB.addPerson("testey", "testpass");
             Person testey = this.mockDB.checkLogin("testey", "testpass");
             
-            assertEquals("initial rating incorrect", 15, this.mockDB.getNewRating(testey, null, null));
+            assertEquals("initial rating incorrect", 15, this.mockDB.getNewRating(testey, null));
             
-            Lobby mockLobby = new Lobby();
-            mockLobby.populate();
+            Game mockGame;
             
-            this.mockDB.saveGame(mockLobby.getActiveGames().get(0));
+            Player test1 = new Player("test1", 15, Colors.Red);
+            Player test2 = new Player("test2", 15, Colors.Blue);
+            Player test3 = new Player("test3", 15, Colors.Green);
+            
+            // initiates game
+            mockGame = new Game(test1);
+            mockGame.addPlayer(test2);
+            mockGame.addPlayer(test3);
+            
+            //sets score game 1
+            test1.setScore(20);
+            test2.setScore(30);
+            test3.setScore(25);
+            
+            this.mockDB.getNewRating(test1, null);
+            
             // TODO: test whether the database function handles 
                        
         } catch (SQLException ex)
