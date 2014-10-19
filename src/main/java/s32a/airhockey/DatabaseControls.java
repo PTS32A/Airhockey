@@ -43,7 +43,7 @@ public class DatabaseControls
         try
         {
             this.configure();
-        } catch (IOException ex)
+        } catch (IOException | NullPointerException ex)
         {
             System.out.println("unable to configure database: check database.properties");
         }

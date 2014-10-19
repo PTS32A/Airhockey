@@ -58,7 +58,7 @@ public class Player extends Person
      * False otherwise, including paused game
      * Eventually throws IllegalArgumentException if amount exceeds min or max value
      */
-    public boolean moveBat(float amount)
+    public boolean moveBat(float amount) throws IllegalArgumentException
     {
         if (myGame.isPaused()) 
         {

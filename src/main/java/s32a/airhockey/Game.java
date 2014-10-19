@@ -82,7 +82,7 @@ public class Game
                 + String.valueOf(getInstance().get(Calendar.HOUR_OF_DAY))
                 + String.valueOf(getInstance().get(Calendar.MINUTE)) 
                 + String.valueOf(getInstance().get(Calendar.SECOND)));
-        this.gameInfo.put("nextColor", "blue");
+        this.gameInfo.put("nextColor", Colors.Blue);
         
         this.roundNo = 0;
     }

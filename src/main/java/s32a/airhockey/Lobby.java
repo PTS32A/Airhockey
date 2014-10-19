@@ -177,9 +177,9 @@ public class Lobby
         
         Game newGame = null;
         try
-        {
-            newGame = new Game((Player)person);
+        {           
             person = new Player(person.getName(), person.getRating(), Colors.Red);
+            newGame = new Game((Player)person);           
             this.activePersons.replace(person.getName(), person);          
             this.activeGames.add(newGame);
             if(this.currentPerson == person)
