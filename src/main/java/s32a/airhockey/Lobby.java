@@ -153,7 +153,10 @@ public class Lobby
                 {
                     if(p == input)
                     {
-                        endGame(p.getMyGame(), p);
+                        if(!endGame(p.getMyGame(), p))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
