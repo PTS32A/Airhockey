@@ -337,5 +337,51 @@ public class LobbyTest
         // TODO: check whether rating updates as it should
     }
     
+    @Test
+    public void testLogout1()
+    {
+        try
+        {
+            this.mockLobby.addPerson("testey", "testpass");
+            this.mockLobby.checkLogin("testey", "testpass");
+        } catch (IllegalArgumentException | SQLException ex)
+        {
+            fail("unable to add or log in testey" + ex.getMessage());
+        } 
+        
+        Game game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        
+        try
+        {
+            this.mockLobby.addPerson("testey1", "testpass");
+            this.mockLobby.checkLogin("testey1", "testpass");
+        } catch (IllegalArgumentException | SQLException ex)
+        {
+            fail("unable to add or log in testey1" + ex.getMessage());
+        } 
+        this.mockLobby.joinGame(game, this.mockLobby.getCurrentPerson());
+        
+        try
+        {
+            this.mockLobby.addPerson("testey2", "testpass");
+            this.mockLobby.checkLogin("testey2", "testpass");
+        } catch (IllegalArgumentException | SQLException ex)
+        {
+            fail("unable to add or log in testey2" + ex.getMessage());
+        } 
+        this.mockLobby.joinGame(game, this.mockLobby.getCurrentPerson());
+        
+        game.beginGame();
+        
+        assertTrue("Logout didn't succeed", this.mockLobby.logOut(this.mockLobby.getCurrentPerson()));
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testLogout2()
+    {
+        this.mockLobby.logOut(null);
+    }
+    
     //TODO check if user is already logged in
 }

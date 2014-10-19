@@ -140,7 +140,28 @@ public class Lobby
      */
     public boolean logOut(Person input)
     {
+        if(input == null)
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        if(input == currentPerson)
+        {
+            for(Game g : activeGames)
+            {
+                for(Player p : g.getMyPlayers())
+                {
+                    if(p == input)
+                    {
+                        endGame(p.getMyGame(), p);
+                    }
+                }
+            }
+            currentPerson = null;
+            return true;
+        }
         return false;
+        
     }
     
     /**
@@ -460,7 +481,7 @@ public class Lobby
             return new ArrayList<>();
         }
     }
-    
+        
     /**
      * Used in iteration 1 of the project for testing and demonstration purposes
      * This adds a handful of persons to activePersons
