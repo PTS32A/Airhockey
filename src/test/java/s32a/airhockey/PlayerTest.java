@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Kargathia
+ * @author Luke
  */
 public class PlayerTest
 {
@@ -51,6 +51,22 @@ public class PlayerTest
     {
     }
 
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testBatMoveGreaterEx()
+    {
+        player.moveBat(101);
+        fail("Moved out of field to the right");
+    }
+    
+    @Test
+    (expected = IllegalArgumentException.class)
+    public void testBatMoveLessEx()
+    {
+        player.moveBat(-101);
+        fail("Moved out of field to the left");
+    }
+    
     /**
      * Test of getBatPos method, of class Player.
      */

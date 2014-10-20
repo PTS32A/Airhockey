@@ -325,7 +325,7 @@ public class Game
      *This method cycles to a new frame (puck position, bot position)
      * ToBeImplemented
      */
-    private void run()
+    public void run()
     {
         //BEGIN PUCK MOVEMENT
         System.out.println("--BEGIN PUCK MOVEMENT");

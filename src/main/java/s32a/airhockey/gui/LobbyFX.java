@@ -97,9 +97,9 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     {
         try 
         {
-            super.goToGame(getThisStage());
+            openNew(evt);
         } 
-        catch (IOException ex) 
+        catch (Exception ex) 
         {
             Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
         }

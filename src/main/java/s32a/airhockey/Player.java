@@ -29,6 +29,7 @@ public class Player extends Person
     @Getter private Calendar lastAction;
     @Getter @Setter private Game myGame;
     @Getter private Rectangle rec;
+    @Getter private float sideLength;
     
     /**
      * 
@@ -42,7 +43,7 @@ public class Player extends Person
         super(name, rating);
         this.color = color;
         this.goalPos = (Vector2)Lobby.getSingle().getAirhockeySettings().get("Goal Default");
-        float sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
+        sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
         int batWidth = (int)(sideLength/100*8);
         this.batPos = new Vector2(goalPos.x, goalPos.y + 5);
         rec = new Rectangle((int)batPos.x, (int)batPos.y, batWidth, batWidth);
@@ -66,7 +67,12 @@ public class Player extends Person
         }
         else
         {
-            this.batPos.x += amount;
+            float check = this.batPos.x + amount;
+            if (check >= sideLength/2 || check <= -(sideLength/2)) 
+            {
+                throw new IllegalArgumentException();
+            }
+            ;
             this.rec.x = (int)batPos.x;
             return true;
         }

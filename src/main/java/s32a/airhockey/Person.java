@@ -26,6 +26,10 @@ public class Person
      */
     public Person(String name, Double rating)
     {
+        if (name.equals("") || name == null || rating < 0 || rating == null) 
+        {
+            throw new IllegalArgumentException();
+        }
         this.name = name;
         this.rating = rating;
     }
