@@ -45,7 +45,7 @@ public class Player extends Person
         this.goalPos = (Vector2)Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
         int batWidth = (int)(sideLength/100*8);
-        this.batPos = new Vector2(goalPos.x, goalPos.y + 5);
+        this.batPos = new Vector2(goalPos.x, goalPos.y + 5f);
         rec = new Rectangle((int)batPos.x, (int)batPos.y, batWidth, batWidth);
         this.score = 20;
     }
@@ -72,7 +72,7 @@ public class Player extends Person
             {
                 throw new IllegalArgumentException();
             }
-            ;
+            this.batPos.x += amount;
             this.rec.x = (int)batPos.x;
             return true;
         }
