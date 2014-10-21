@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package s32a.airhockey;
 
 import lombok.Getter;
@@ -14,8 +13,9 @@ import lombok.Getter;
  */
 public class Spectator extends Person
 {
+
     private Game game;
-    
+
     Spectator(String name, double rating, Game game)
     {
         super(name, rating);

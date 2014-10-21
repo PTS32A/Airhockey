@@ -39,6 +39,7 @@ public class RegisterFX extends AirhockeyGUI implements Initializable
      * logs in with new credentials
      * Shows error dialog when unable, or wrong input
      * @param evt 
+     * @throws java.sql.SQLException 
      */
     public void registerOk(Event evt) throws IllegalArgumentException, SQLException
     {
@@ -85,7 +86,7 @@ public class RegisterFX extends AirhockeyGUI implements Initializable
         } 
         catch (IOException ex) 
         {
-            Logger.getLogger(RegisterFX.class.getName()).log(Level.SEVERE, null, ex);
+            super.showDialog("Error", "Unable to go to Login: " + ex.getMessage());
         }
     }
     

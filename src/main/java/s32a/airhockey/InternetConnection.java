@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package s32a.airhockey;
 
 import java.util.List;
@@ -14,16 +13,15 @@ import java.util.List;
  */
 public class InternetConnection
 {
+
     private String connection;
-    
+
     /**
-     * 
+     *
      */
     public InternetConnection()
     {
-        
+
     }
-    
-    
 
 }

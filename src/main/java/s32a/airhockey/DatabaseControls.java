@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package s32a.airhockey;
 
 import java.io.FileInputStream;
@@ -30,9 +29,10 @@ import java.util.logging.Logger;
  */
 public class DatabaseControls
 {
+
     private Connection conn;
     private Properties props;
-    
+
     /**
      * creates new instance of DatabaseControls
      */
@@ -47,17 +47,19 @@ public class DatabaseControls
         {
             System.out.println("unable to configure database: check database.properties");
         }
-        
+
     }
-    
+
     /**
-     * loads the configuration settings from file, and tests whether everything works
+     * loads the configuration settings from file, and tests whether everything
+     * works
+     *
      * @throws IOException if something went wrong
      */
     public void configure() throws IOException
     {
         this.props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) 
+        try (FileInputStream in = new FileInputStream("database.properties"))
         {
             props.load(in);
         } catch (FileNotFoundException ex)
@@ -67,79 +69,82 @@ public class DatabaseControls
         {
             throw new IOException("IOException on props load: " + ex.getMessage());
         }
-            
+
         try
         {
             this.initConnection();
         } catch (SQLException ex)
         {
             throw new IOException("SQL Exception on initConnection: " + ex.getMessage());
-        }
-        finally
+        } finally
         {
             this.closeConnection();
         }
     }
-    
+
     /**
-     * Makes a connection to the database 
-     * @throws SQLException 
+     * Makes a connection to the database
+     *
+     * @throws SQLException
      */
-    private void initConnection() throws SQLException 
+    private void initConnection() throws SQLException
     {
-        if(props.get("url") == null || props.get("username") == null 
+        if (props.get("url") == null || props.get("username") == null
                 || props.get("password") == null)
         {
             throw new SQLException("props values not correctly configured");
         }
-        
-        String url = (String)props.get("url");
-        String username = (String)props.get("username");
-        String password = (String)props.get("password");
+
+        String url = (String) props.get("url");
+        String username = (String) props.get("username");
+        String password = (String) props.get("password");
 
         this.conn = DriverManager.getConnection(url, username, password);
     }
-    
+
     /**
      * closes currently active connection
      */
-    private void closeConnection() 
+    private void closeConnection()
     {
-        try {
+        try
+        {
             conn.close();
             conn = null;
-        } catch (SQLException ex) {
+        } catch (SQLException ex)
+        {
             System.err.println("closeConnection: " + ex.getMessage());
         }
     }
-    
+
     /**
-     * Checks whether provided playername and password correspond to an existing database item
+     * Checks whether provided playername and password correspond to an existing
+     * database item
+     *
      * @param playerName
      * @param password
-     * @return 
-     * @throws java.sql.SQLException 
+     * @return
+     * @throws java.sql.SQLException
      */
     public Person checkLogin(String playerName, String password) throws SQLException
     {
         this.initConnection();
         Person output = null;
-        
+
         PreparedStatement prepStat = null;
         String query = "SELECT playername, rating FROM player WHERE playername = ? AND playerpassword = ?";
-        
-        
+
         // checks with the database whether that username / password combination exists
         try
         {
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, playerName);
             prepStat.setString(2, password);
-        
+
             ResultSet rs = prepStat.executeQuery();
             while (rs.next())
             {
-                if(output != null)
+                if (output != null)
                 {
                     throw new SQLException("multiple players found");
                 }
@@ -148,25 +153,25 @@ public class DatabaseControls
                 output = new Person(name, rating);
             }
             return output;
-        }
-        finally
+        } finally
         {
             prepStat.close();
             this.closeConnection();
-        }       
+        }
     }
-    
+
     /**
      * Adds a new Person to the database
+     *
      * @param playerName
      * @param password
      * @return the newly added person, if applicable
-     * @throws java.sql.SQLException 
+     * @throws java.sql.SQLException
      */
     public Person addPerson(String playerName, String password) throws SQLException
     {
         this.initConnection();
-        
+
         PreparedStatement prepStat = null;
         String query = "SELECT playername FROM player WHERE playername = ?";
         try
@@ -178,35 +183,35 @@ public class DatabaseControls
             {
                 return null;
             }
-     
-        query = "INSERT INTO player (playername, playerpassword, rating) VALUES (?, ?, ?)";
+
+            query = "INSERT INTO player (playername, playerpassword, rating) VALUES (?, ?, ?)";
 
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);
             prepStat.setString(2, password);
             prepStat.setDouble(3, 15);
             prepStat.executeUpdate();
-        }
-        finally
+        } finally
         {
             prepStat.close();
             this.closeConnection();
         }
         return this.checkLogin(playerName, password);
     }
-    
+
     /**
-     * Retrieves a list of highest ranked players from the database
-     * sorted descending by rating
+     * Retrieves a list of highest ranked players from the database sorted
+     * descending by rating
+     *
      * @return the X highest rated players, sorted by rating
      * @throws java.sql.SQLException
      */
     public List<Person> getRankings() throws SQLException
-    {        
+    {
         List<Person> output = new ArrayList<>();
         String query = "SELECT playername, ranking FROM player SORT BY ranking DESC";
         Statement stat = null;
-        
+
         try
         {
             this.initConnection();
@@ -218,105 +223,104 @@ public class DatabaseControls
                 String name = rs.getString("playername");
                 double rating = rs.getDouble("ranking");
                 output.add(new Person(name, rating));
-            } 
-        }
-        finally
+            }
+        } finally
         {
-            if (stat != null) 
+            if (stat != null)
             {
                 stat.close();
             }
             this.closeConnection();
         }
         return output;
-    } 
-    
+    }
+
     /**
-     * Clears the entire database
-     * Mostly useful for testing purposes
+     * Clears the entire database Mostly useful for testing purposes
+     *
      * @throws java.sql.SQLException
      */
     public void clearDatabase() throws SQLException
     {
         String query = "DELETE FROM game";
         Statement stat = null;
-        
+
         try
         {
             this.initConnection();
             stat = conn.createStatement();
             stat.executeUpdate(query);
-            
+
             query = "DELETE FROM player";
             stat.executeUpdate(query);
-        }
-        finally
+        } finally
         {
             stat.close();
             this.closeConnection();
         }
     }
-    
+
     /**
      * Saves a game to the database - currently gamedate is set as current date,
-     * as game does not save gamedate yet.
-     * Does not adjust scores - that's lobby's job
+     * as game does not save gamedate yet. Does not adjust scores - that's
+     * lobby's job
+     *
      * @param game
      * @throws SQLException
      * @throws IllegalArgumentException when game doesn't have three players
      */
     public void saveGame(Game game) throws SQLException, IllegalArgumentException
     {
-        if(game.getMyPlayers().size() < 3)
+        if (game.getMyPlayers().size() < 3)
         {
             throw new IllegalArgumentException("Game contained less than three players");
         }
-        
-        if(game.getMyPlayers().get(0).getScore() < 0 
-                || game.getMyPlayers().get(1).getScore() < 0 
+
+        if (game.getMyPlayers().get(0).getScore() < 0
+                || game.getMyPlayers().get(1).getScore() < 0
                 || game.getMyPlayers().get(2).getScore() < 0)
         {
             throw new IllegalArgumentException("One or more players had negative scores");
         }
-        
+
         this.initConnection();
         PreparedStatement prepStat = null;
         String query = "INSERT INTO game (gameid, gamedate, "
                 + "player1score, player2score, player3score, "
                 + "player1, player2, player3, puckspeed) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
-        
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try
         {
             prepStat = this.conn.prepareStatement(query);
-            
-            prepStat.setString(1, (String)game.getGameInfo().get("gameID"));        
+
+            prepStat.setString(1, (String) game.getGameInfo().get("gameID"));
             java.util.Date utilDate = new java.util.Date();
             java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
             prepStat.setTimestamp(2, sqlDate);
-            
+
             prepStat.setInt(3, game.getMyPlayers().get(0).getScore());
             prepStat.setInt(4, game.getMyPlayers().get(1).getScore());
             prepStat.setInt(5, game.getMyPlayers().get(2).getScore());
-            
+
             prepStat.setString(6, game.getMyPlayers().get(0).getName());
             prepStat.setString(7, game.getMyPlayers().get(1).getName());
             prepStat.setString(8, game.getMyPlayers().get(2).getName());
-            
+
             prepStat.setFloat(9, game.getMyPuck().getSpeed());
-            
+
             prepStat.executeUpdate();
-        }
-        finally
+        } finally
         {
             prepStat.close();
             this.closeConnection();
         }
     }
-    
+
     /**
-     * updates player's game history, and calculates his new rating
-     * player scores should have been adjusted before this
+     * updates player's game history, and calculates his new rating player
+     * scores should have been adjusted before this
+     *
      * @param player
      * @param lastGame currently not used TODO: remove this
      * @param hasLeft can be null
@@ -326,29 +330,27 @@ public class DatabaseControls
     public double getNewRating(Person player, Player hasLeft) throws SQLException
     {
         this.initConnection();
-        double output = -1;       
-        CallableStatement callStat = null;        
+        double output = -1;
+        CallableStatement callStat = null;
         try
         {
             callStat = conn.prepareCall("{? = call getNewRating(?, ?)}");
-            callStat.registerOutParameter(1,java.sql.Types.DOUBLE);
+            callStat.registerOutParameter(1, java.sql.Types.DOUBLE);
             callStat.setString(2, player.getName());
-            if(hasLeft != null)
+            if (hasLeft != null)
             {
                 callStat.setString(3, hasLeft.getName());
-            }
-            else
+            } else
             {
                 callStat.setNull(3, Types.VARCHAR);
             }
             callStat.execute();
             output = callStat.getInt(1);
-        }
-        finally
+        } finally
         {
             callStat.close();
             this.closeConnection();
         }
-        return output;       
+        return output;
     }
 }

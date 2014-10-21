@@ -77,7 +77,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
         } 
         catch (IOException ex) 
         {
-            Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
+            super.showDialog("Error", "Unable to go to Register: " + ex.getMessage());
         }
     }
     

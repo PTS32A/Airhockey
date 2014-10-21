@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
@@ -19,17 +18,27 @@ import lombok.Setter;
  */
 public class Puck
 {
-    @Getter @Setter private Vector2 position;
-    @Getter @Setter private float speed;
-    @Getter private List<Player> hitBy;
-    @Getter @Setter private float direction;
-    @Getter @Setter boolean isMoving;
-    
+
+    @Getter
+    @Setter
+    private Vector2 position;
+    @Getter
+    @Setter
+    private float speed;
+    @Getter
+    private List<Player> hitBy;
+    @Getter
+    @Setter
+    private float direction;
+    @Getter
+    @Setter
+    boolean isMoving;
+
     private float sideLength;
     private float middleLine;
-    
+
     private Vector2 centre;
-    
+
     private float goalLength;
     private float sideGoalMinY;
     private float sideGoalMaxY;
@@ -37,21 +46,25 @@ public class Puck
     private float bottomGoalMaxX;
     private float batWidth;
     private float puckSize;
-    
+
     private Game myGame;
-       
-    @Getter private Vector2 endPosition;
-    @Getter private float endDirection;
-    @Getter private Player endGoalHit;
-    @Getter private Player endBatHit;
-    
+
+    @Getter
+    private Vector2 endPosition;
+    @Getter
+    private float endDirection;
+    @Getter
+    private Player endGoalHit;
+    @Getter
+    private Player endBatHit;
+
     private boolean printMessages = false;
-    
+
     /**
-     * initialises a game's puck
-     * position is randomised, speed is a given
+     * initialises a game's puck position is randomised, speed is a given
      * isMoving is initialised as false
-     * @param speed 
+     *
+     * @param speed
      */
     public Puck(float speed, Game myGame)
     {
@@ -63,60 +76,59 @@ public class Puck
         {
             throw new IllegalArgumentException();
         }
-        
+
         this.speed = speed;
         this.hitBy = new ArrayList<Player>();
-        
-        this.sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
+
+        this.sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         this.goalLength = sideLength * 0.4f;
         this.batWidth = sideLength / 100 * 8;
-        
+
         //Inner triangle for centre of Puck to bounce against so that the edges of the circle of the Puck will look like bouncing of the real triangle
-        this.puckSize = (float)(this.sideLength * 0.04);
-        this.sideLength = this.sideLength - (float)(2 * puckSize * Math.sqrt(3));
-        
-        this.middleLine = (float)Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
-        
+        this.puckSize = (float) (this.sideLength * 0.04);
+        this.sideLength = this.sideLength - (float) (2 * puckSize * Math.sqrt(3));
+
+        this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
+
         float centreX = 0;
-        float centreY = (float)(Math.tan(Math.toRadians(30)) * (0.5 * (double)sideLength));
-        
+        float centreY = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));
+
         centreX = Math.round(centreX * 100) / 100;
         centreY = Math.round(centreY * 100) / 100;
-               
+
         this.centre = new Vector2(centreX, centreY);
-               
-        this.sideGoalMinY = this.centre.y - (float)(Math.sin(Math.toRadians(0.5 * goalLength)));
+
+        this.sideGoalMinY = this.centre.y - (float) (Math.sin(Math.toRadians(0.5 * goalLength)));
         this.sideGoalMaxY = this.centre.y + sideGoalMinY;
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
-        
+
         //System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
         //System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
-                     
         this.isMoving = true;
-        
+
         this.myGame = myGame;
-        
+
         resetPuck();
     }
-    
+
     public void resetPuck()
     {
         this.position = centre;
         this.direction = new Random().nextFloat() * 360;
     }
-    
+
     private void setEndData()
     {
         this.endPosition = position;
         this.endDirection = direction;
-        
+
         if (hitBy.size() > 0)
         {
             this.endBatHit = hitBy.get(hitBy.size() - 1);
         }
     }
-    
+
     public void clearEndData()
     {
         //DATA for after a round; used by unittests.
@@ -126,22 +138,25 @@ public class Puck
         this.endBatHit = null;
         hitBy.clear();
     }
-    
+
     /**
-     * Is continuously called by the Game class
-     * Starts the process of updating the pucks position and detection of goal hits
+     * Is continuously called by the Game class Starts the process of updating
+     * the pucks position and detection of goal hits
      */
     public void run()
     {
         updatePosition(speed);
-        
+
         setEndData();
     }
-    
+
     /**
-     * updates the pucks position based on its speed, direction, and current position
-     * does nothing if puck isn't moving
-     * @param distance The distance for the puck to be traveled; based on either the current speed or the remaining distance the puck has to travel after a bounce
+     * updates the pucks position based on its speed, direction, and current
+     * position does nothing if puck isn't moving
+     *
+     * @param distance The distance for the puck to be traveled; based on either
+     * the current speed or the remaining distance the puck has to travel after
+     * a bounce
      */
     private void updatePosition(float distance)
     {
@@ -149,40 +164,39 @@ public class Puck
         {
             float oldX = position.x;
             float oldY = position.y;
-            
-            double radians = Math.toRadians((double)direction);
-            
-            float newX = oldX + (float)(Math.sin(radians) * (double)distance);
-            float newY = oldY + (float)(Math.cos(radians) * (double)distance);
-            
+
+            double radians = Math.toRadians((double) direction);
+
+            float newX = oldX + (float) (Math.sin(radians) * (double) distance);
+            float newY = oldY + (float) (Math.cos(radians) * (double) distance);
+
             newX = Math.round(newX * 100) / 100;
             newY = Math.round(newY * 100) / 100;
-                       
+
             Vector2 newPosition = new Vector2(newX, newY);
-            
+
             Vector2 bouncePosition = isOutsideField(newPosition);
-            
+
             if (bouncePosition == null)
             {
                 //Inside field
                 position = newPosition;
                 printMessage("Position: " + newX + ", " + newY);
-            }
-            else
+            } else
             {
                 //Outside field or in collission with wall
                 position = bouncePosition;
-                
+
                 printMessage("  Wanted Position: " + newX + ", " + newY);
                 printMessage("  Bounce Position: " + bouncePosition.x + ", " + bouncePosition.y);
-                               
+
                 //Detect wheter a goal has been hit (includes detection of bat blocking the puck)
                 int goalHitPlayerID = checkGoalHit(bouncePosition);
-                
+
                 if (goalHitPlayerID != -1)
-                {                                              
+                {
                     //Round is over
-                    
+
                     //Player who scored
                     Player whoScored = null;
                     if (hitBy.size() > 0)
@@ -190,16 +204,15 @@ public class Puck
                         whoScored = hitBy.get(hitBy.size() - 1);
                         whoScored.setScore(whoScored.getScore() + 1);
                     }
-                    
+
                     //Player whose goal is hit
                     Player whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
                     whoLostScore.setScore(whoLostScore.getScore() - 1);
                     this.endGoalHit = whoLostScore;
-                            
+
                     //End round
                     myGame.setContinueRun(false);
-                }
-                else
+                } else
                 {
                     //Position is set to bouncePosition and new direction has been calculated
                     //Repeat process with remaining distance to travel
@@ -212,19 +225,18 @@ public class Puck
             }
         }
     }
-    
+
     /**
-     * @return the wall position that the puck bounces off
-     * returns null if the puck is not in collision with any walls
+     * @return the wall position that the puck bounces off returns null if the
+     * puck is not in collision with any walls
      */
     public Vector2 isOutsideField(Vector2 newPosition)
-    {       
+    {
         float x = newPosition.x;
         float y = newPosition.y;
 
         int outside = 0;
-        
-        
+
         if (x < 0)
         {
             //Check outside field left
@@ -232,159 +244,142 @@ public class Puck
             {
                 outside = -1;
             }
-        }
-        else if (x > 0)
+        } else if (x > 0)
         {
             //Check outside field right
             if (y > -(middleLine / (sideLength / 2)) * x + middleLine)
             {
                 outside = +1;
             }
-        }   
-        
+        }
+
         if (outside == -1)
         {
             //Left of field
-            
+
             printMessage("OUTSIDE: Left of the field");
-            
-            Vector2 linePos1 = new Vector2((float)(-(sideLength / 2)), 0);
-            Vector2 linePos2 = new Vector2(0, (float)middleLine);
-            
+
+            Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
+            Vector2 linePos2 = new Vector2(0, (float) middleLine);
+
             updateDirection(90);
             return getIntersection(position, newPosition, linePos1, linePos2);
-        }
-        else if (outside == 1)
+        } else if (outside == 1)
         {
             //Right of field
-            
+
             printMessage("OUTSIDE: Right of the field");
-            
-            Vector2 linePos1 = new Vector2((float)(sideLength / 2), 0);
-            Vector2 linePos2 = new Vector2(0, (float)middleLine);
-            
+
+            Vector2 linePos1 = new Vector2((float) (sideLength / 2), 0);
+            Vector2 linePos2 = new Vector2(0, (float) middleLine);
+
             updateDirection(-90);
             return getIntersection(position, newPosition, linePos1, linePos2);
-        }
-        else
+        } else
         {
             if (y < 0)
             {
                 //Underneath field
-                
+
                 printMessage("OUTSIDE: Underneath the field");
-                
-                Vector2 linePos1 = new Vector2((float)(-(sideLength / 2)), 0);
-                Vector2 linePos2 = new Vector2((float)(sideLength / 2), 0);
-            
+
+                Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
+                Vector2 linePos2 = new Vector2((float) (sideLength / 2), 0);
+
                 updateDirection(180);
-                
+
                 return getIntersection(position, newPosition, linePos1, linePos2);
-            }
-            else if (y > middleLine)
+            } else if (y > middleLine)
             {
                 //Above field
-                
+
                 printMessage("OUTSIDE: Above the field");
-                
+
                 updateDirection(180);
-                return new Vector2(0, (float)middleLine);
+                return new Vector2(0, (float) middleLine);
             }
         }
-        
+
         //Inside field
         return null;
     }
-    
+
     /**
-     * Calculated lines between begin and end positions and calculated the crossing position of those lines
+     * Calculated lines between begin and end positions and calculated the
+     * crossing position of those lines
+     *
      * @param oldPos Puck start position
      * @param newPos Puck end position
      * @param linePos1 Field line start position
      * @param linePos2 Field line end position
-     * @return Returns a Vector2 containing the position where the two lines generated by the given positions cross
-     * Returns null if no crossing position is found
+     * @return Returns a Vector2 containing the position where the two lines
+     * generated by the given positions cross Returns null if no crossing
+     * position is found
      */
     private Vector2 getIntersection(Vector2 oldPos, Vector2 newPos, Vector2 linePos1, Vector2 linePos2)
     {
         //NEW CALCULATIONS
-        
+
         /**
-        * Line Formula:
-        * y = a*x + b
-        * a = (change in y) / (change in x)
-        * b = y - a * x
-        */
-        
+         * Line Formula: y = a*x + b a = (change in y) / (change in x) b = y - a
+         * * x
+         */
         //Line 1:
         float a1 = (oldPos.y - newPos.y) / (oldPos.x - newPos.x);
         float b1 = oldPos.y - a1 * oldPos.x;
-        
+
         //Line 2:
         float a2 = (linePos1.y - linePos2.y) / (linePos1.x - linePos2.x);
         float b2 = linePos1.y - a2 * linePos1.x;
-              
+
         float x;
-        
+
         if (oldPos.x == newPos.x)
         {
             //Vertical line
             x = oldPos.x;
-        }
-        else
+        } else
         {
             //Curved line
-            
+
             //Equate the two lines:
             // a1*x + b1 = a2*x + b2
             // (a1 - a2) * x = b2 - b1
             // x = (b2 - b1) / (a1 - a2)
             x = (b2 - b1) / (a1 - a2);
         }
-        
+
         //Find y:
         //y = a*x + b
         float y = a2 * x + b2;
-        
+
         try
         {
             return new Vector2(x, y);
-        }
-        catch(Exception ex)
+        } catch (Exception ex)
         {
             System.out.println("Exception: " + ex.getMessage());
             return null;
         }
-        
+
         //OLD CALCULATIONS (PROBABLY WRONG)
-        
         //float puckAX = oldPos.x;
         //float puckAY = oldPos.y;
-        
         //float puckBX = newPos.x;
         //float puckBY = newPos.y;
-        
         //float puckA = ((puckAX-puckBX)/(puckAY-puckBY));
         //float puckB = puckAY - (puckA*puckAX);
-        
-        
         //float lineAX = linePos1.x;
         //float lineAY = linePos1.y;
-        
         //float lineBX = linePos2.x;
         //float lineBY = linePos2.y;
-        
         //float lineA = ((lineAX-puckBX)/(lineAY-lineBY));
         //float lineB = lineAY - (lineA*lineAX);
-        
-        /** formula
-        // y = puckA * x + puckB
-        // y = lineA * x + lineB
-        // puckA * x + puckB = lineA * x + lineB
-        //(puckA -lineA)x = lineB-puckB
-        //x = (lineB-puckB)/(puckA -lineA)
-        */
-        
+        /**
+         * formula // y = puckA * x + puckB // y = lineA * x + lineB // puckA *
+         * x + puckB = lineA * x + lineB //(puckA -lineA)x = lineB-puckB //x =
+         * (lineB-puckB)/(puckA -lineA)
+         */
         //try
         //{
         //    float x =(lineB-puckB)/(puckA -lineA);
@@ -399,76 +394,75 @@ public class Puck
         //    return null;
         //}
     }
-    
+
     /**
      * Calculates the distance between two Vector2 positions
+     *
      * @param p1 Position one
      * @param p2 Position two
      * @return Returns the distance between two Vector2 positions
      */
     private float getDistance(Vector2 p1, Vector2 p2)
     {
-        float distance = (float)Math.sqrt(Math.pow((double)Math.abs(p1.x - p2.x), 2) + Math.pow((double)Math.abs(p1.y - p2.y), 2));
+        float distance = (float) Math.sqrt(Math.pow((double) Math.abs(p1.x - p2.x), 2) + Math.pow((double) Math.abs(p1.y - p2.y), 2));
         return distance;
     }
-    
+
     /**
      * Updated the direction based on the wall it bounced off
-     * @param adjustValue The value the direction has to be adjusted with to get the right bouncing position based on the direction of the wall
+     *
+     * @param adjustValue The value the direction has to be adjusted with to get
+     * the right bouncing position based on the direction of the wall
      */
     private void updateDirection(float adjustValue)
     {
         direction = -direction + adjustValue;
-        
+
         while (direction > 360)
         {
             direction -= 360;
         }
-        
+
         while (direction < 0)
         {
             direction += 360;
         }
     }
-    
+
     /**
      * Calculate whether a Vector2 position is in a goal
+     *
      * @param pos
-     * @return Return an int value to tell whose goal is hit where:
-     * 1 refers to player Green
-     * 2 refers to player Blue
-     * 3 refers to player Red
-     * Returns 0 if no goal has been hit
+     * @return Return an int value to tell whose goal is hit where: 1 refers to
+     * player Green 2 refers to player Blue 3 refers to player Red Returns 0 if
+     * no goal has been hit
      */
     private int checkGoalHit(Vector2 pos)
-    {      
+    {
         int playerID = -1;
-       
+
         if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY)
         {
             if (pos.x < 0)
             {
                 //Green goal
                 playerID = 2;
-            }
-            else
+            } else
             {
                 //Blue goal
                 playerID = 1;
             }
-        }
-        else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0)
+        } else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0)
         {
             //Red goal
             playerID = 0;
         }
-        
+
         if (playerID == -1)
         {
             //No goal hit
             return -1;
-        }
-        else
+        } else
         {
             //Goal hit, but possible block by bat
             if (checkBatBlock(playerID, pos))
@@ -476,11 +470,10 @@ public class Puck
                 //Bat blocked the puck
                 printMessage("BAT BOUNCE AT PLAYER " + getColorName(playerID));
                 hitBy.add(myGame.getMyPlayers().get(playerID));
-                
+
                 //No goal hit
                 return -1;
-            }
-            else
+            } else
             {
                 //Bat did not block the puck
                 //Goal hit of player with playerID
@@ -489,53 +482,50 @@ public class Puck
             }
         }
     }
-    
+
     private boolean checkBatBlock(int playerID, Vector2 pos)
     {
         Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
-                      
+
         if (playerID == 0)
         {
             //Player Red (bottom bat)
-            float batMinX = batPos.x - (float)(0.5 * batWidth);
-            float batMaxX = batPos.x + (float)(0.5 * batWidth);
-            
+            float batMinX = batPos.x - (float) (0.5 * batWidth);
+            float batMaxX = batPos.x + (float) (0.5 * batWidth);
+
             if (pos.x > batMinX && pos.x < batMaxX)
             {
                 //Bat blocked the puck
                 return true;
-            }
-            else
+            } else
             {
                 //Bat did not block the puck
                 return false;
             }
-        }
-        else
+        } else
         {
             //Player Blue or Green (side bat)
             //Correct batPosition because of inner triangle:
-            float batY = batPos.y - (float)(0.5 * this.puckSize * Math.sqrt(3));
-            
-            float batMinY = batY - (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
-            float batMaxY = batY + (float)(Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
-                        
+            float batY = batPos.y - (float) (0.5 * this.puckSize * Math.sqrt(3));
+
+            float batMinY = batY - (float) (Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+            float batMaxY = batY + (float) (Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+
             if (pos.y > batMinY && pos.y < batMaxY)
             {
                 //Bat blocked the puck
                 return true;
-            }
-            else
+            } else
             {
                 //Bat did not block the puck
                 return false;
             }
         }
     }
-    
+
     private String getColorName(int playerID)
     {
-        switch(playerID)
+        switch (playerID)
         {
             case 0:
                 return "Red";
@@ -547,7 +537,7 @@ public class Puck
                 return "Unknown";
         }
     }
-    
+
     private void printMessage(String message)
     {
         if (printMessages)
