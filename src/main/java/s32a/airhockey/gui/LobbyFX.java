@@ -7,11 +7,14 @@ package s32a.airhockey.gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
+import static javafx.collections.FXCollections.observableArrayList;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -51,9 +54,22 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             highScores = FXCollections.observableArrayList(Lobby.getSingle().getRankings());
             messages = FXCollections.observableArrayList(Lobby.getSingle().getMychatbox().getChat());
             games = FXCollections.observableArrayList(Lobby.getSingle().getActiveGames());
+        } catch (SQLException ex)
+        {
+            super.showDialog("Error", "Unable to retrieve data: " + ex.getMessage());
+        }
+        finally
+        {
+            highScores = FXCollections.observableArrayList(new ArrayList<Person>());
+            messages = FXCollections.observableArrayList(new ArrayList<String>());
+            games = FXCollections.observableArrayList(new ArrayList<Game>());
+        }
+        
+        try
+        {
 
-            tcHSName.setCellValueFactory(new PropertyValueFactory<Person,String>("name"));
-            tcHSRating.setCellValueFactory(new PropertyValueFactory<Person,String>("rating"));
+            tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));
+            tcHSRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
             
             
             //Need to figure out best way to do this
@@ -138,11 +154,12 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     {
         try 
         {
+            Lobby.getSingle().logOut(Lobby.getSingle().getCurrentPerson());
             super.goToLogin(getThisStage());
         } 
         catch (IOException ex) 
         {
-            Logger.getLogger(RegisterFX.class.getName()).log(Level.SEVERE, null, ex);
+            super.showDialog("Error", "Unable to log out: " + ex.getMessage());
         }
     }
     

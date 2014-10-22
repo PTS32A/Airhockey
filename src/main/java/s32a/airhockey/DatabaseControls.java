@@ -209,7 +209,7 @@ public class DatabaseControls
     public List<Person> getRankings() throws SQLException
     {
         List<Person> output = new ArrayList<>();
-        String query = "SELECT playername, ranking FROM player SORT BY ranking DESC";
+        String query = "SELECT playername, rating FROM player ORDER BY rating DESC";
         Statement stat = null;
 
         try
@@ -221,7 +221,7 @@ public class DatabaseControls
             while (rs.next())
             {
                 String name = rs.getString("playername");
-                double rating = rs.getDouble("ranking");
+                double rating = rs.getDouble("rating");
                 output.add(new Person(name, rating));
             }
         } finally

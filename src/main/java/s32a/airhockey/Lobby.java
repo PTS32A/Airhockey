@@ -6,6 +6,7 @@
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
+import com.mysql.jdbc.SQLError;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -463,17 +464,11 @@ public class Lobby
      * Amount of players retrieved is to be determined by the database
      *
      * @return a sorted list of highest ranking players
+     * @throws java.sql.SQLException
      */
-    public List<Person> getRankings()
+    public List<Person> getRankings() throws SQLException
     {
-        try
-        {
-            return this.myDatabaseControls.getRankings();
-        } catch (Exception ex)
-        {
-            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
-            return new ArrayList<>();
-        }
+        return this.myDatabaseControls.getRankings();
     }
 
     /**

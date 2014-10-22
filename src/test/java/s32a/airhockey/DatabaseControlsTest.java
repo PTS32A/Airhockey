@@ -58,13 +58,13 @@ public class DatabaseControlsTest
     @After
     public void tearDown()
     {        
-        try
-        {
-            this.mockDB.clearDatabase();
-        } catch (SQLException ex)
-        {
-            fail(ex.getMessage());
-        }
+//        try
+//        {
+//            this.mockDB.clearDatabase();
+//        } catch (SQLException ex)
+//        {
+//            fail(ex.getMessage());
+//        }
     }
 
     @Test

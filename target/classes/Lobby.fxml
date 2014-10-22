@@ -23,7 +23,7 @@
         </Menu>
       </menus>
     </MenuBar>
-    <Button id="btnLogOut" layoutX="683.0" layoutY="372.0" mnemonicParsing="false" text="Log out" />
+    <Button id="btnLogOut" layoutX="683.0" layoutY="372.0" mnemonicParsing="false" onAction="#logOut" text="Log out" />
     <Button id="btnSpec" layoutX="473.0" layoutY="366.0" mnemonicParsing="false" onAction="#spectateGame" text="Spectate" />
     <Button id="btnJoin" layoutX="557.0" layoutY="366.0" mnemonicParsing="false" onAction="#joinGame" text="Join" />
     <Button id="btnNewGame" layoutX="379.0" layoutY="366.0" mnemonicParsing="false" onAction="#newGame" text="New Game" />
@@ -51,6 +51,6 @@
     </Label>
     <ListView fx:id="lvChatbox" layoutX="14.0" layoutY="265.0" prefHeight="101.0" prefWidth="177.99990000000253" />
     <Label font="$x1" layoutX="641.0" layoutY="36.0" text="Player Info" />
-    <Button layoutX="193.0" layoutY="366.0" mnemonicParsing="false" text="Send" />
+    <Button layoutX="192.0" layoutY="366.0" mnemonicParsing="false" onAction="#sendChatMessage" text="Send" />
   </children>
 </AnchorPane>
