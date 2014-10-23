@@ -351,7 +351,12 @@ public class Game
             {
                 if (myPuck != null)
                 {
-                    myPuck.run();
+                    //OLD:
+                    //myPuck.run();
+                    
+                    //NEW:
+                    Thread thread = new Thread(myPuck);
+                    thread.run();
                 }
             }
         } else
@@ -361,13 +366,18 @@ public class Game
             {
                 if (myPuck != null)
                 {
-                    myPuck.run();
+                    //OLD:
+                    //myPuck.run();
+                    
+                    //NEW:
+                    Thread thread = new Thread(myPuck);
+                    thread.run();
                 }
                 runCount--;
             }
         }
 
-        //END PUCK MOVEMENT
+        //END OF PUCK MOVEMENT
         System.out.println("--END PUCK MOVEMENT");
 
         //Start new round

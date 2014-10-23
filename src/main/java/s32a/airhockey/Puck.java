@@ -16,7 +16,7 @@ import lombok.Setter;
  *
  * @author Kargathia
  */
-public class Puck
+public class Puck implements Runnable
 {
 
     @Getter
