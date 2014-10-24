@@ -70,6 +70,8 @@ public class PuckTest
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
 
+        waitForPuck();
+        
         //No bounce
         //Exspected X is the ammount of times moving (runCount) * the speed (distance traveling) of the puck (runSpeed)
         float expX = runCount * puckSpeed;
@@ -92,6 +94,8 @@ public class PuckTest
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
 
+        waitForPuck();
+        
         //Bounce off the rightside wall >>> resulting in the direction going towards the right (90) changing to going towards the bottom (180).
         int expResult = 180;
         int result = (int)game.getMyPuck().getEndDirection();
@@ -110,6 +114,8 @@ public class PuckTest
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
 
+        waitForPuck();
+        
         Player expResult = game.getMyPlayers().get(1); //Player blue
         Player result = game.getMyPuck().getEndGoalHit();
         
@@ -127,6 +133,8 @@ public class PuckTest
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
 
+        waitForPuck();
+        
         Player expResult = game.getMyPlayers().get(1); //Player blue
         Player result = game.getMyPuck().getEndBatHit();
         
@@ -155,5 +163,15 @@ public class PuckTest
     {
         Puck p = new Puck(1, null);
         fail("Game can't be null");
+    }
+    
+    private void waitForPuck()
+    {
+        while (game.getMyPuck().getRunCount() != 0)
+        {
+            //Wait indefinitly for Puck to finish
+            System.out.println("WAITING: " + game.getMyPuck().getRunCount());
+            //System.out.println("WAITING");
+        }
     }
 }

@@ -58,8 +58,14 @@ public class Puck extends TimerTask
     private Player endGoalHit;
     @Getter
     private Player endBatHit;
+    @Getter
+    @Setter
+    private int runCount;
+    @Getter
+    @Setter
+    private int defaultRunCount;
 
-    private boolean printMessages = false;
+    private boolean printMessages = true;
 
     /**
      * initialises a game's puck position is randomised, speed is a given
@@ -116,6 +122,9 @@ public class Puck extends TimerTask
 
         this.myGame = myGame;
 
+
+        this.defaultRunCount = 5;
+        
         resetPuck();
     }
 
@@ -123,6 +132,7 @@ public class Puck extends TimerTask
     {
         this.position = centre;
         this.direction = new Random().nextFloat() * 360;
+        this.runCount = defaultRunCount;
     }
 
     /**
@@ -162,9 +172,17 @@ public class Puck extends TimerTask
     @Override
     public void run()
     {
-        updatePosition(speed);
-
-        setEndData();
+        if (this.runCount == 0)
+        {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RUNCOUNT = 0");
+            myGame.endRound();
+        }
+        else
+        {
+            updatePosition(speed);
+            this.runCount--;
+            setEndData();
+        }
     }
 
     /**
@@ -231,7 +249,8 @@ public class Puck extends TimerTask
 
                     //End round
                     //myGame.setContinueRun(false);
-                    cancel();
+                    this.runCount = 0;
+                    myGame.endRound();
                 } else
                 {
                     //Position is set to bouncePosition and new direction has been calculated

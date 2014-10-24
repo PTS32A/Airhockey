@@ -47,9 +47,9 @@ public class Game
     @Setter
     private boolean continueRun;
 
-    private int defaultRunCount;
-    private int runCount;
     private int maxRounds;
+    
+    Timer puckTimer;
 
     /**
      * Calls ChatBox.addMessage(string) with a pre-formatted message - this
@@ -105,9 +105,9 @@ public class Game
 
         this.myPuck = new Puck(10, this);
 
-        this.defaultRunCount = 3;
-        this.runCount = defaultRunCount;
         this.maxRounds = 10;
+        
+        this.puckTimer = new Timer();
     }
 
     /**
@@ -338,40 +338,18 @@ public class Game
         //BEGIN PUCK MOVEMENT
         System.out.println("--BEGIN PUCK MOVEMENT");
 
-        runCount = defaultRunCount;
         myPuck.clearEndData();
 
-        //Continue
-        
-        Timer puckTimer = new Timer();
-        
+        //Continue       
         if (!isPaused && myPuck != null)
-            {
-                //OLD:
-                //myPuck.run();
-                                           
-                //Timer will keep going until someone scored
-                long interval = (long)(1 / myPuck.getSpeed() * 1000);
-                puckTimer.scheduleAtFixedRate(myPuck, 0, interval);
-            }
-        
-        if (runCount <= 0)
         {
+            //OLD:
+            //myPuck.run();
+                                           
             //Timer will keep going until someone scored
-            // - or until runCount (a custom setting)is 0
-            while (runCount > 0)
-            {
-                runCount--;
-            }
-            puckTimer.cancel();
+            long interval = 100; //100 ms for a max 100fps
+            puckTimer.scheduleAtFixedRate(myPuck, 0, interval);
         }
-
-        //END OF PUCK MOVEMENT
-        System.out.println("--END PUCK MOVEMENT");
-
-        //Start new round
-        this.myPuck.resetPuck();
-        startRound();
     } 
 
     /**
@@ -407,6 +385,18 @@ public class Game
             System.out.println("END GAME");
             System.out.println("");
         }
+    }
+    
+    public void endRound()
+    {
+        puckTimer.cancel();
+        
+         //END OF PUCK MOVEMENT
+        System.out.println("--END PUCK MOVEMENT");
+
+        //Start new round
+        this.myPuck.resetPuck();
+        startRound();
     }
 
     /**
@@ -480,7 +470,7 @@ public class Game
 
         if (runCount > 0 && runCount < 100)
         {
-            this.defaultRunCount = runCount;
+            this.myPuck.setRunCount(runCount);
         }
 
         if (maxRounds > 0 && maxRounds <= 10)
