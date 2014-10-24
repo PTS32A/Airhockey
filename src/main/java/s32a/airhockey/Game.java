@@ -347,27 +347,25 @@ public class Game implements Runnable
         if (runCount == -1)
         {
             //Loop until someone scores (puck will end loop)
-            while (continueRun == true)
+            while (continueRun)
             {
-                if (isPaused == false)
+                if (!isPaused && myPuck != null)
                 {
-                    if (myPuck != null)
-                    {
                         //OLD:
                         //myPuck.run();
                     
                         //NEW:
                         Thread thread = new Thread(myPuck);
                         thread.run();
-                    }
                 }
             }
         } else
         {
-            //Loop until someone scored (puck will end loop) or until runCount (a custom setting)is 0
-            while (continueRun == true && runCount > 0)
+            //Loop until someone scored (puck will end loop) 
+            // - or until runCount (a custom setting)is 0
+            while (continueRun && runCount > 0)
             {
-                if (isPaused == false)
+                if (!isPaused)
                 {
                     if (myPuck != null)
                     {
@@ -470,8 +468,10 @@ public class Game implements Runnable
      * @param direction the start direction of the Puck
      * @param runCount the number of times the run() method of Puck should be
      * called
+     * @param maxRounds
      */
-    public void customSetup(Vector2 position, float puckSpeed, float direction, int runCount, int maxRounds)
+    public void customSetup(Vector2 position, float puckSpeed, 
+            float direction, int runCount, int maxRounds)
     {
         //Caution: puck position and direction are reset to default after the first round has ended
 
