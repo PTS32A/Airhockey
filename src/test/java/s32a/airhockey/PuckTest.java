@@ -166,14 +166,8 @@ public class PuckTest
     }
     
     private void waitForPuck()
-    {
-        //while (game.getMyPuck().getRunCount() != 0)
-        //{
-        //    //Wait indefinitly for Puck to finish
-        //    System.out.print("");
-        //}
-        
-        while (game.getGameOver() == false)
+    {       
+        while (!game.isGameOver())
         {
             //Wait indefinitly for Puck to finish
             System.out.print("");
