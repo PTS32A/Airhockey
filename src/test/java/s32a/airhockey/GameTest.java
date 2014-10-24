@@ -262,6 +262,33 @@ public class GameTest
         assertEquals("Game can't be unpaused if it is already unpaused", expResult, result);
     }
     
+    @Test
+    public void testPauseGame()
+    {
+        game.beginGame();
+        game.pauseGame(true);
+        
+        Vector2 expResult = game.getMyPuck().getPosition();
+        
+        try
+        {
+            Thread.sleep(1000);
+        }
+        catch (Exception ex)
+        {
+            System.out.print("Exception: " + ex.getMessage());
+        }
+        
+        Vector2 result = game.getMyPuck().getPosition();
+        
+        game.pauseGame(false);
+        
+        System.out.print("ExpResult: " + expResult.toString());
+        System.out.print("Result: " + result.toString());
+        
+        assertEquals("Puck position can't change during pause", expResult, result);
+    }
+    
     /**
      * Test of getNextColor method, of class Game.
      */

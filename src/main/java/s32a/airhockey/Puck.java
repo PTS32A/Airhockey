@@ -118,8 +118,14 @@ public class Puck implements Runnable
         this.direction = new Random().nextFloat() * 360;
     }
 
+    /**
+     * Sets the EndData variables at the end of each round.
+     * These variables contain the last position and last direction of the Puck,
+     * the player whose Bat last touched the Puck.
+     */
     private void setEndData()
     {
+        //DATA for after a round; used by unittests.
         this.endPosition = position;
         this.endDirection = direction;
 
@@ -129,6 +135,9 @@ public class Puck implements Runnable
         }
     }
 
+    /**
+     * Clears the EndData variables at the start of each round.
+     */
     public void clearEndData()
     {
         //DATA for after a round; used by unittests.
@@ -143,6 +152,7 @@ public class Puck implements Runnable
      * Is continuously called by the Game class Starts the process of updating
      * the pucks position and detection of goal hits
      */
+    @Override
     public void run()
     {
         updatePosition(speed);
@@ -318,8 +328,6 @@ public class Puck implements Runnable
      */
     private Vector2 getIntersection(Vector2 oldPos, Vector2 newPos, Vector2 linePos1, Vector2 linePos2)
     {
-        //NEW CALCULATIONS
-
         /**
          * Line Formula: y = a*x + b a = (change in y) / (change in x) b = y - a
          * * x
@@ -361,38 +369,6 @@ public class Puck implements Runnable
             System.out.println("Exception: " + ex.getMessage());
             return null;
         }
-
-        //OLD CALCULATIONS (PROBABLY WRONG)
-        //float puckAX = oldPos.x;
-        //float puckAY = oldPos.y;
-        //float puckBX = newPos.x;
-        //float puckBY = newPos.y;
-        //float puckA = ((puckAX-puckBX)/(puckAY-puckBY));
-        //float puckB = puckAY - (puckA*puckAX);
-        //float lineAX = linePos1.x;
-        //float lineAY = linePos1.y;
-        //float lineBX = linePos2.x;
-        //float lineBY = linePos2.y;
-        //float lineA = ((lineAX-puckBX)/(lineAY-lineBY));
-        //float lineB = lineAY - (lineA*lineAX);
-        /**
-         * formula // y = puckA * x + puckB // y = lineA * x + lineB // puckA *
-         * x + puckB = lineA * x + lineB //(puckA -lineA)x = lineB-puckB //x =
-         * (lineB-puckB)/(puckA -lineA)
-         */
-        //try
-        //{
-        //    float x =(lineB-puckB)/(puckA -lineA);
-        //    float y = puckA * x + puckB;
-        //
-        //    System.out.println("INTERSECTION: " + x + ", " + y);
-        //    
-        //    return new Vector2(x, y);
-        //}
-        //catch (Exception ex)
-        //{
-        //    return null;
-        //}
     }
 
     /**
@@ -433,9 +409,9 @@ public class Puck implements Runnable
      * Calculate whether a Vector2 position is in a goal
      *
      * @param pos
-     * @return Return an int value to tell whose goal is hit where: 1 refers to
-     * player Green 2 refers to player Blue 3 refers to player Red Returns 0 if
-     * no goal has been hit
+     * @return Return an int value to tell whose goal is hit where: 0 refers to
+     * player Red, 1 refers to player Blue and 2 refers to player Green.
+     * Returns 0 if no goal has been hit
      */
     private int checkGoalHit(Vector2 pos)
     {
@@ -483,6 +459,12 @@ public class Puck implements Runnable
         }
     }
 
+    /**
+     * Checks wheter a position on the goalline is blocked by the corresponding Bat.
+     * @param playerID The ID of the player whose Bat should be checked
+     * @param pos The position on the goalline to be checked
+     * @return Returns a boolean containing whether a Bat has blocked the Puck or not
+     */
     private boolean checkBatBlock(int playerID, Vector2 pos)
     {
         Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
@@ -523,6 +505,13 @@ public class Puck implements Runnable
         }
     }
 
+    /**
+     * Gets the corresponding color of the player with id playerID, where 0 is Red,
+     * 1 is Blue and 2 is Green.
+     * @param playerID The id of the player
+     * @return Return a string containing the name of the color of the player whose id is playerID
+     * returns "unknown" if the playerID can't be matched with a player.
+     */
     private String getColorName(int playerID)
     {
         switch (playerID)
@@ -538,6 +527,12 @@ public class Puck implements Runnable
         }
     }
 
+    /**
+     * A private method used to print messages about the status and events of the Puck.
+     * Checks whether a local boolean (printMessages) is true to print the messages.
+     * Used for testing only.
+     * @param message 
+     */
     private void printMessage(String message)
     {
         if (printMessages)

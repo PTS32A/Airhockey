@@ -23,7 +23,7 @@ import java.util.TimerTask;
  *
  * @author Kargathia
  */
-public class Game
+public class Game implements Runnable
 {
 
     private Chatbox myChatbox;
@@ -130,7 +130,6 @@ public class Game
             {
                 if (myPlayers.size() < 3)
                 {
-                    //TODO use enum for color
                     this.gameInfo.put("nextColor", getNextColor());
 
                     myPlayers.add(player);
@@ -335,6 +334,7 @@ public class Game
      * This method cycles to a new frame (puck position, bot position)
      * ToBeImplemented
      */
+    @Override
     public void run()
     {
         //BEGIN PUCK MOVEMENT
@@ -347,33 +347,39 @@ public class Game
         if (runCount == -1)
         {
             //Loop until someone scores (puck will end loop)
-            while (isPaused == false && continueRun == true)
+            while (continueRun == true)
             {
-                if (myPuck != null)
+                if (isPaused == false)
                 {
-                    //OLD:
-                    //myPuck.run();
+                    if (myPuck != null)
+                    {
+                        //OLD:
+                        //myPuck.run();
                     
-                    //NEW:
-                    Thread thread = new Thread(myPuck);
-                    thread.run();
+                        //NEW:
+                        Thread thread = new Thread(myPuck);
+                        thread.run();
+                    }
                 }
             }
         } else
         {
             //Loop until someone scored (puck will end loop) or until runCount (a custom setting)is 0
-            while (isPaused == false && continueRun == true && runCount > 0)
+            while (continueRun == true && runCount > 0)
             {
-                if (myPuck != null)
+                if (isPaused == false)
                 {
-                    //OLD:
-                    //myPuck.run();
+                    if (myPuck != null)
+                    {
+                        //OLD:
+                        //myPuck.run();
                     
-                    //NEW:
-                    Thread thread = new Thread(myPuck);
-                    thread.run();
+                        //NEW:
+                        Thread thread = new Thread(myPuck);
+                        thread.run();
+                    }
+                    runCount--;
                 }
-                runCount--;
             }
         }
 
@@ -383,7 +389,7 @@ public class Game
         //Start new round
         this.myPuck.resetPuck();
         startRound();
-    }
+    } 
 
     /**
      * Starts a new round within the running game rounds are ended automatically
@@ -409,7 +415,14 @@ public class Game
 //            }
             this.continueRun = true;
             this.isPaused = false;
-            this.run();
+            
+            //OLD:
+            //this.run();
+            
+            //NEW"
+            Thread gameThread = new Thread(this);
+            gameThread.run();
+            
         } else
         {
             //End game
@@ -460,7 +473,7 @@ public class Game
      */
     public void customSetup(Vector2 position, float puckSpeed, float direction, int runCount, int maxRounds)
     {
-        //Caution: puck position and direction are reset to default after a round has ended
+        //Caution: puck position and direction are reset to default after the first round has ended
 
         if (position != null)
         {
