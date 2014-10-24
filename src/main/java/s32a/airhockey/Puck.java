@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.TimerTask;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,7 @@ import lombok.Setter;
  *
  * @author Kargathia
  */
-public class Puck implements Runnable
+public class Puck extends TimerTask
 {
 
     @Getter
@@ -229,7 +230,8 @@ public class Puck implements Runnable
                     this.endGoalHit = whoLostScore;
 
                     //End round
-                    myGame.setContinueRun(false);
+                    //myGame.setContinueRun(false);
+                    cancel();
                 } else
                 {
                     //Position is set to bouncePosition and new direction has been calculated

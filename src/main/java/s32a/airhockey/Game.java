@@ -11,10 +11,9 @@ import java.util.Calendar;
 import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.Timer;
-import java.util.TimerTask;
 
 //import static org.lwjgl.Sys.getTime;
 /**
@@ -23,7 +22,7 @@ import java.util.TimerTask;
  *
  * @author Kargathia
  */
-public class Game implements Runnable
+public class Game
 {
 
     private Chatbox myChatbox;
@@ -334,7 +333,6 @@ public class Game implements Runnable
      * This method cycles to a new frame (puck position, bot position)
      * ToBeImplemented
      */
-    @Override
     public void run()
     {
         //BEGIN PUCK MOVEMENT
@@ -344,41 +342,28 @@ public class Game implements Runnable
         myPuck.clearEndData();
 
         //Continue
-        if (runCount == -1)
-        {
-            //Loop until someone scores (puck will end loop)
-            while (continueRun)
+        
+        Timer puckTimer = new Timer();
+        
+        if (!isPaused && myPuck != null)
             {
-                if (!isPaused && myPuck != null)
-                {
-                        //OLD:
-                        //myPuck.run();
-                    
-                        //NEW:
-                        Thread thread = new Thread(myPuck);
-                        thread.run();
-                }
+                //OLD:
+                //myPuck.run();
+                                           
+                //Timer will keep going until someone scored
+                long interval = (long)(1 / myPuck.getSpeed() * 1000);
+                puckTimer.scheduleAtFixedRate(myPuck, 0, interval);
             }
-        } else
+        
+        if (runCount <= 0)
         {
-            //Loop until someone scored (puck will end loop) 
+            //Timer will keep going until someone scored
             // - or until runCount (a custom setting)is 0
-            while (continueRun && runCount > 0)
+            while (runCount > 0)
             {
-                if (!isPaused)
-                {
-                    if (myPuck != null)
-                    {
-                        //OLD:
-                        //myPuck.run();
-                    
-                        //NEW:
-                        Thread thread = new Thread(myPuck);
-                        thread.run();
-                    }
-                    runCount--;
-                }
+                runCount--;
             }
+            puckTimer.cancel();
         }
 
         //END OF PUCK MOVEMENT
@@ -414,12 +399,7 @@ public class Game implements Runnable
             this.continueRun = true;
             this.isPaused = false;
             
-            //OLD:
-            //this.run();
-            
-            //NEW"
-            Thread gameThread = new Thread(this);
-            gameThread.run();
+            this.run();
             
         } else
         {
