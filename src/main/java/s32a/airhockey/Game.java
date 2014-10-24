@@ -49,7 +49,12 @@ public class Game
 
     private int maxRounds;
     
-    Timer puckTimer;
+    @Getter
+    private boolean gameOver;
+    
+    private Timer puckTimer;
+    
+    
 
     /**
      * Calls ChatBox.addMessage(string) with a pre-formatted message - this
@@ -108,6 +113,8 @@ public class Game
         this.maxRounds = 10;
         
         this.puckTimer = new Timer();
+        
+        this.gameOver = false;
     }
 
     /**
@@ -358,11 +365,9 @@ public class Game
      */
     private void startRound()
     {
-        if (roundNo < maxRounds)
-        {
-            //Start new round
-            this.roundNo++;
-            System.out.println("-ROUND " + roundNo);
+        //Start new round
+        this.roundNo++;
+        System.out.println("-ROUND " + roundNo);
 
 //            //Countdown
 //            try
@@ -374,17 +379,10 @@ public class Game
 //            {
 //                
 //            }
-            this.continueRun = true;
-            this.isPaused = false;
+        this.continueRun = true;
+        this.isPaused = false;
             
-            this.run();
-            
-        } else
-        {
-            //End game
-            System.out.println("END GAME");
-            System.out.println("");
-        }
+        this.run();
     }
     
     public void endRound()
@@ -396,7 +394,17 @@ public class Game
 
         //Start new round
         this.myPuck.resetPuck();
-        startRound();
+        
+        if (roundNo < maxRounds)
+        {
+            startRound();
+        } else
+        {
+            //End game
+            System.out.println("END GAME");
+            System.out.println("");
+            this.gameOver = true;
+        }
     }
 
     /**

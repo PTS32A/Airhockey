@@ -174,7 +174,6 @@ public class Puck extends TimerTask
     {
         if (this.runCount == 0)
         {
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RUNCOUNT = 0");
             myGame.endRound();
         }
         else
