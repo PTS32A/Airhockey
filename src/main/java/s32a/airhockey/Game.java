@@ -346,7 +346,7 @@ public class Game
         System.out.println("--BEGIN PUCK MOVEMENT");
 
         myPuck.clearEndData();
-
+        
         //Continue       
         if (!isPaused && myPuck != null)
         {
@@ -357,6 +357,25 @@ public class Game
             long interval = 100; //100 ms for a max 100fps
             puckTimer.scheduleAtFixedRate(myPuck, 0, interval);
         }
+        
+        System.out.println("--BEGIN BOT MOVEMENT");
+        
+        List<Bot> bots = new ArrayList();
+        for(Player p : myPlayers)
+        {
+            if(p.isBot())
+            {
+                //Don't know if this will work.
+                bots.add((Bot)p);
+            }
+        }
+        
+        for(Bot b : bots)
+        {
+            b.moveBat();
+        }
+        
+        System.out.println("--END BOT MOVEMENT");
     } 
 
     /**

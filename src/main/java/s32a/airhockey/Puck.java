@@ -40,6 +40,7 @@ public class Puck extends TimerTask
 
     private Vector2 centre;
 
+    @Getter
     private float goalLength;
     private float sideGoalMinY;
     private float sideGoalMaxY;

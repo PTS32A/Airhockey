@@ -52,5 +52,17 @@ public class Bot extends Player
         rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
         this.score = 0;
     }
+    
+    public void moveBat()
+    {
+        if(!myGame.isPaused())
+        {
+            if(myGame.getMyPuck().getEndPosition().x >= goalPos.x && myGame.getMyPuck().getEndPosition().x <= goalPos.x + myGame.getMyPuck().getGoalLength())
+            {
+                batPos.x = myGame.getMyPuck().getEndPosition().x;
+                rec.x = (int)batPos.x;
+            } 
+        }
+    }
 
 }
