@@ -31,7 +31,27 @@ import s32a.airhockey.Lobby;
 import s32a.airhockey.Player;
 
 /**
- *
+ * Notes: 
+ * - check whether using initialize doesn't mess things up, as it occupies a weird spot in the call order
+ * - Support for spectating games is lacking
+ * - Support for multiple active games (spectating) is lacking
+ * - Lobby.startGame returns a game, use this
+ * - Lobby.startGame should be called in LobbyFX, to check whether player is allowed to start a game at all
+ * - if you're using a local variable for player, consistently use him
+ * - beyond that, Lobby already has playedGame.
+ * - add Error handling - replace logging with showdialogs in all places
+ * - what if game is null, or currentPerson?
+ * - any timed function for redrawing the game is absent
+ * - why are player and puck responsible for drawing objects? ask them puck / bat position, 
+ *          but domain classes should not import anything javafx related
+ * - score always starts @ 20 - see URS
+ * - check whether keyevents don't propagate outside game
+ * - currently keyevents do not support continuous movement, you'd need to spam movement keys
+ * - Game and puck are drawing an AWT element, not javaFX
+ * 
+ * - overall flow should be that game and its items update their stats, 
+ *      and that GUI on a regular basis (every 10-20ms or so) redraws itself based on their info
+ *      - preferably initial drawing on a second graphics element, which is not shown onscreen until it's finished drawing
  * @author Luke
  */
 public class GameFX extends AirhockeyGUI implements Initializable

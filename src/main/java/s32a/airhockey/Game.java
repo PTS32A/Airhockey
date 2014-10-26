@@ -354,7 +354,7 @@ public class Game
             //myPuck.run();
                                            
             //Timer will keep going until someone scored
-            long interval = 100; //100 ms for a max 100fps
+            long interval = 10; //10 ms for a max 100fps
             puckTimer.scheduleAtFixedRate(myPuck, 0, interval);
         }
         
