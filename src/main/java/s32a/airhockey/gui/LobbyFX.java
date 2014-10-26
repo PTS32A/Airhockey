@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import static javafx.collections.FXCollections.observableArrayList;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventType;
@@ -45,6 +46,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     ObservableList<Person> highScores;
     ObservableList<String> messages;
     ObservableList<Game> games;
+    ObservableList<String> playerInfo;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -61,8 +63,32 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         finally
         {
             highScores = FXCollections.observableArrayList(new ArrayList<Person>());
+            highScores.addListener(new ListChangeListener() 
+            {
+            @Override
+                public void onChanged(ListChangeListener.Change change) 
+                {
+                    tvHighscores.setItems(highScores);
+                }
+            });
             messages = FXCollections.observableArrayList(new ArrayList<String>());
+            messages.addListener(new ListChangeListener() 
+            {
+            @Override
+                public void onChanged(ListChangeListener.Change change) 
+                {
+                    lvChatbox.setItems(messages); 
+                }
+            });
             games = FXCollections.observableArrayList(new ArrayList<Game>());
+            games.addListener(new ListChangeListener() 
+            {
+            @Override
+                public void onChanged(ListChangeListener.Change change) 
+                {
+                    tvGameDisplay.setItems(games); 
+                }
+            });
         }
         
         try
@@ -90,6 +116,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             {
               lvChatbox.setItems(messages); 
             }
+            update();
         }
         catch(Exception ex)
         {
@@ -102,7 +129,9 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
      */
     private void update()
     {
-        
+        Person p = Lobby.getSingle().getCurrentPerson();
+        playerInfo = FXCollections.observableArrayList("Name: " + p.getName(), "Rating: " + Double.toString(p.getRating()));
+        lvPlayerInfo.setItems(playerInfo);
     }
     
     /**
@@ -192,7 +221,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
                 {
                     Stage stage = new Stage();
                     base.goToGame(stage);
-                    stage.show();
                 } 
                 catch (IOException ex)
                 {

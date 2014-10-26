@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import lombok.Getter;
+import s32a.airhockey.Lobby;
 
 /**
  *
@@ -34,7 +35,7 @@ public class AirhockeyGUI extends Application
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
-//        goToLobby(stage);
+        //goToLobby(stage);
     }
     
     /**

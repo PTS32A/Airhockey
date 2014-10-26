@@ -8,8 +8,10 @@ package s32a.airhockey;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Calendar;
+import javafx.scene.canvas.GraphicsContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,6 +46,8 @@ public class Player extends Person
     private Rectangle rec;
     @Getter
     private float sideLength;
+    @Getter
+    private int batWidth;
 
     /**
      *
@@ -58,7 +62,7 @@ public class Player extends Person
         this.color = color;
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
-        int batWidth = (int) (sideLength / 100 * 8);
+        batWidth = (int) (sideLength / 100 * 8);
         this.batPos = new Vector2(goalPos.x, goalPos.y + 5f);
         rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
         this.score = 20;
@@ -125,5 +129,13 @@ public class Player extends Person
     public boolean pauseGame(boolean isPaused)
     {
         return myGame.pauseGame(isPaused);
+    }
+    
+    public void draw(Graphics graphics)
+    {
+        int radius = batWidth/2;
+        int x = rec.x - radius;
+        int y = rec.y - radius;
+        graphics.fillOval(x, y, batWidth, batWidth);
     }
 }
