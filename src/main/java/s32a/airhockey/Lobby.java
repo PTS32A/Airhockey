@@ -47,7 +47,9 @@ public class Lobby
     @Getter
     private Person currentPerson;
     @Getter
-    private HashMap activePersons, airhockeySettings;
+    private HashMap airhockeySettings;
+    @Getter
+    private HashMap<String, Person> activePersons;
     @Getter
     private List<Game> activeGames, spectatedGames;
     @Getter
