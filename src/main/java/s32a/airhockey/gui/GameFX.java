@@ -25,6 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import lombok.Getter;
 import lombok.Setter;
 import s32a.airhockey.*;
 
@@ -51,7 +52,7 @@ import s32a.airhockey.*;
  *      - preferably initial drawing on a second graphics element, which is not shown onscreen until it's finished drawing
  * @author Luke
  */
-public class GameFX extends AirhockeyGUI implements Initializable, Observer
+public class GameFX extends AirhockeyGUI implements Initializable
 {
     @FXML Label lblName;
     @FXML Label lblDifficulty;
@@ -67,9 +68,8 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     private int width = 0;
     private int height = 0;
     private GraphicsContext graphics;
-    private Game myGame;
-    private Player me;
-    private Calendar start;
+    private @Getter boolean started = false;
+    private @Getter Calendar start;
     
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -79,16 +79,21 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     
     public void setUp()
     {
+        Game myGame;
+        Player me;
         if (Lobby.getSingle().getCurrentPerson() instanceof Player)
-        {
-            this.myGame = Lobby.getSingle().getPlayedGame();
-            this.me = (Player)Lobby.getSingle().getCurrentPerson();
+        {   
+            myGame = Lobby.getSingle().getPlayedGame();
+            me = (Player)Lobby.getSingle().getCurrentPerson();
             lblName.setText(Lobby.getSingle().getCurrentPerson().getName());
             lblTime.setText("00:00");
         }
         else
         {
             //Spectator
+            myGame = Lobby.getSingle().getSpectatedGames().get(Lobby.getSingle()
+                    .getSpectatedGames().size()-1);
+            me = null;
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             lblTime.setText("00:00");
         }
@@ -101,15 +106,6 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
         graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, width, height);
         drawEdges();
-        
-        Platform.runLater(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                draw();
-            }
-        });
     }
     
     public void updateScore()
@@ -124,7 +120,8 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
      */
     public void updateTime()
     {
-        long elapsed = Calendar.getInstance().getTimeInMillis() - start.getTimeInMillis();
+        long elapsed = Calendar.getInstance().getTimeInMillis() 
+                - start.getTimeInMillis();
         TimeUnit tU = TimeUnit.MINUTES;
         long minute = tU.convert(elapsed, TimeUnit.MILLISECONDS);
         tU = TimeUnit.SECONDS;
@@ -134,6 +131,7 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     
     public void draw()
     {
+        Game myGame = Lobby.getSingle().getPlayedGame();
         myGame.getMyPlayers().get(0).draw(graphics);
         //myGame.getMyPlayers().get(1).draw(graphics);
         //myGame.getMyPlayers().get(2).draw(graphics);
@@ -148,13 +146,14 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     {
         addKeyEvents();
         start = Calendar.getInstance();
-        myGame.run();
+        Lobby.getSingle().getPlayedGame().run();
         updateTime();
     }
     
     public void pauseClick(Event evt)
     {
-        myGame.pauseGame(!myGame.isPaused());
+        Lobby.getSingle().getPlayedGame().pauseGame(
+                !Lobby.getSingle().getPlayedGame().isPaused());
     }
     
     public void quitClick(Event evt)
@@ -165,15 +164,18 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     private void addKeyEvents() 
     {
         //Moving left or right
+        Player me = (Player)Lobby.getSingle().getCurrentPerson();
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() 
         {
             public void handle(final KeyEvent keyEvent) 
             {
-                if (keyEvent.getCode() == KeyCode.A || keyEvent.getCode() == KeyCode.LEFT) 
+                if (keyEvent.getCode() == KeyCode.A 
+                        || keyEvent.getCode() == KeyCode.LEFT) 
                 {
                     me.moveBat(-1);
                 } 
-                else if (keyEvent.getCode() == KeyCode.D || keyEvent.getCode() == KeyCode.RIGHT) 
+                else if (keyEvent.getCode() == KeyCode.D 
+                        || keyEvent.getCode() == KeyCode.RIGHT) 
                 {
                     me.moveBat(1);
                 }
@@ -195,12 +197,6 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     private Stage getThisStage() 
     {
         return (Stage) lblName.getScene().getWindow();
-    }
-
-    @Override
-    public void update(Observable o, Object arg) 
-    {
-        //to be updated
     }
     
     
