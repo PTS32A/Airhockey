@@ -243,7 +243,13 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     public void sendChatMessage(Event evt)
     {
         Lobby l = Lobby.getSingle();
-        l.addChatMessage(tfChatbox.getText(), l.getCurrentPerson());
+        if(!tfChatbox.getText().equals(""))
+        {
+            l.addChatMessage(tfChatbox.getText(), l.getCurrentPerson());
+
+            lvChatbox.setItems(FXCollections.observableArrayList(l.getMychatbox().getChat()));
+            tfChatbox.setText("");
+        }
     }
     
     private Stage getThisStage() 
