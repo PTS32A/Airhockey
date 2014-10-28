@@ -84,7 +84,7 @@ public class PuckTest
     }
     
     @Test
-    public void testUpdatePositionBounce()
+    public void testUpdatePositionBounceRight()
     {
         position = null; //Keep default start position
         puckSpeed = 10;
@@ -98,6 +98,105 @@ public class PuckTest
         
         //Bounce off the rightside wall >>> resulting in the direction going towards the right (90) changing to going towards the bottom (180).
         int expResult = 180;
+        int result = (int)game.getMyPuck().getEndDirection();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    public void testUpdatePositionBounceLeft()
+    {
+        position = null; //Keep default start position
+        puckSpeed = 10;
+        direction = 270; //Move to the left
+        runCount = 10;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        waitForPuck();
+        
+        //Bounce off the leftside wall >>> resulting in the direction going towards the left (90) changing to going towards the bottom (180).
+        int expResult = 180;
+        int result = (int)game.getMyPuck().getEndDirection();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    public void testUpdatePositionBounceUp()
+    {
+        position = null; //Keep default start position
+        puckSpeed = 10;
+        direction = 0; //Move up
+        runCount = 20;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        waitForPuck();
+        
+        //Bounce off the top corner >>> resulting in the direction going up (0) changing to going towards the bottom (180).
+        int expResult = 180;
+        int result = (int)game.getMyPuck().getEndDirection();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    public void testUpdatePositionBounceDown()
+    {
+        position = null; //Keep default start position
+        puckSpeed = 10;
+        direction = 180; //Move down
+        runCount = 15;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        waitForPuck();
+        
+        //Bounce off the top corner >>> resulting in the direction going down (180) changing to going up (0).
+        int expResult = 0;
+        int result = (int)game.getMyPuck().getEndDirection();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    @Test
+    public void testUpdatePositionBounceDiagonalTowardsBottomWall()
+    {
+        position = new Vector2(50, 10); //Keep default start position
+        puckSpeed = 10;
+        direction = 160; //Move diagonally down towards the bottom wall
+        runCount = 5;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        waitForPuck();
+        
+        //Bounce off the top corner >>> resulting in the direction going down (180) changing to going up (0).
+        int expResult = 20;
+        int result = (int)game.getMyPuck().getEndDirection();
+        
+        assertEquals("Pucks position is incorrect", expResult, result);
+    }
+    
+    public void testUpdatePositionBounceDiagonalTowardsLeftWall()
+    {
+        position = new Vector2(50, 10); //Keep default start position
+        puckSpeed = 10;
+        direction = 290; //Move diagonally down towards the bottom wall
+        runCount = 5;
+        
+        game.customSetup(position, puckSpeed, direction, runCount, 1);
+        game.beginGame();
+
+        waitForPuck();
+        
+        //Bounce off the top corner >>> resulting in the direction going down (180) changing to going up (0).
+        int expResult = 130;
         int result = (int)game.getMyPuck().getEndDirection();
         
         assertEquals("Pucks position is incorrect", expResult, result);
