@@ -64,7 +64,14 @@ public class DatabaseControls
             props.load(in);
         } catch (FileNotFoundException ex)
         {
-            throw new IOException("File not found: " + ex.getMessage());
+            // tries to load backup location (used in deployed version)
+            try (FileInputStream in = new FileInputStream("/database.properties"))
+            {
+                props.load(in);
+            } catch (FileNotFoundException exc)
+            {
+                throw new IOException("File not found: " + exc.getMessage());
+            }
         } catch (IOException ex)
         {
             throw new IOException("IOException on props load: " + ex.getMessage());

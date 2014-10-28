@@ -29,6 +29,8 @@ public class AirhockeyGUI extends Application
     @Override
     public void start(Stage stage) throws Exception
     {
+        Lobby.getSingle();
+        
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
         

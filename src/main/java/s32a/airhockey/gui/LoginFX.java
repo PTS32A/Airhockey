@@ -25,64 +25,67 @@ import s32a.airhockey.Lobby;
  */
 public class LoginFX extends AirhockeyGUI implements Initializable
 {
-    @FXML TextField tfUserName;
-    @FXML PasswordField pwfPassword;
-    
-    
+
+    @FXML
+    TextField tfUserName;
+    @FXML
+    PasswordField pwfPassword;
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        
+
     }
-    
+
     /**
      * Tries to login, changes window to lobby
-     * @param evt 
+     *
+     * @param evt
      */
     public void login(Event evt) throws IllegalArgumentException, SQLException
     {
-        if(tfUserName.getText().equals("") || pwfPassword.getText().equals(""))
+        if (tfUserName.getText().equals("") || pwfPassword.getText().equals(""))
         {
             super.showDialog("Error", "One or more fields are empty.");
-        }
-        else
+        } else
         {
-            if(Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
+            try
             {
-                try
+                if (Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
                 {
                     super.goToLobby(getThisStage());
-                } 
-                catch (IOException ex)
+                } else
                 {
-                    super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+                    super.showDialog("Error", "Username or password is incorrect.");
                 }
-            }
-            else
+            } catch (IllegalArgumentException ex)
             {
-                super.showDialog("Error", "Username or password is incorrect.");
+                super.showDialog("Error", "Unable to login: " + ex.getMessage());
+            } catch (SQLException | IOException ex)
+            {
+                super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
             }
+
         }
     }
-    
+
     /**
      * moves the user to register window
-     * @param evt 
+     *
+     * @param evt
      */
     public void register(Event evt)
     {
-        try 
+        try
         {
             super.goToRegister(getThisStage());
-        } 
-        catch (IOException ex) 
+        } catch (IOException ex)
         {
             super.showDialog("Error", "Unable to go to Register: " + ex.getMessage());
         }
     }
-    
-    
-    private Stage getThisStage() 
+
+    private Stage getThisStage()
     {
         return (Stage) tfUserName.getScene().getWindow();
     }
