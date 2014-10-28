@@ -135,8 +135,8 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     public void draw()
     {
         myGame.getMyPlayers().get(0).draw(graphics);
-        myGame.getMyPlayers().get(1).draw(graphics);
-        myGame.getMyPlayers().get(2).draw(graphics);
+        //myGame.getMyPlayers().get(1).draw(graphics);
+        //myGame.getMyPlayers().get(2).draw(graphics);
         myGame.getMyPuck().draw(graphics);
     }
     public void drawEdges()
@@ -148,7 +148,7 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     {
         addKeyEvents();
         start = Calendar.getInstance();
-        //myGame.run();
+        myGame.run();
         updateTime();
     }
     
@@ -160,7 +160,6 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     public void quitClick(Event evt)
     {
         //Handle someone leaving here
-        updateTime();
     }
     
     private void addKeyEvents() 
