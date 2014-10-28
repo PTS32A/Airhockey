@@ -81,31 +81,27 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     {
         if (Lobby.getSingle().getCurrentPerson() instanceof Player)
         {
-            this.addKeyEvents();
             this.myGame = Lobby.getSingle().getPlayedGame();
             this.me = (Player)Lobby.getSingle().getCurrentPerson();
             lblName.setText(Lobby.getSingle().getCurrentPerson().getName());
-            lblScoreP1.setText("20");
-            lblScoreP2.setText("20");
-            lblScoreP3.setText("20");
             lblTime.setText("00:00");
-            lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
         }
         else
         {
+            //Spectator
             lblName.setText(myGame.getMyPlayers().get(0).getName());
-            lblScoreP1.setText(String.valueOf(myGame.getMyPlayers().get(0).getScore()));
-            lblScoreP2.setText(String.valueOf(myGame.getMyPlayers().get(1).getScore()));
-            lblScoreP3.setText(String.valueOf(myGame.getMyPlayers().get(2).getScore()));
             lblTime.setText("00:00");
-            lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
         }
-        
+        lblScoreP1.setText(String.valueOf(myGame.getMyPlayers().get(0).getScore()));
+        //lblScoreP2.setText(String.valueOf(myGame.getMyPlayers().get(1).getScore()));
+        //lblScoreP3.setText(String.valueOf(myGame.getMyPlayers().get(2).getScore()));
+        lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
         width = (int)canvas.getWidth();
         height = (int)canvas.getHeight();
         graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, width, height);
         drawEdges();
+        
         Platform.runLater(new Runnable() 
         {
             @Override
@@ -150,16 +146,10 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     
     public void startClick(Event evt)
     {
+        addKeyEvents();
         start = Calendar.getInstance();
         //myGame.run();
-        Platform.runLater(new Runnable() 
-        {
-            @Override
-            public void run() 
-            {
-                updateTime();
-            }
-        });
+        updateTime();
     }
     
     public void pauseClick(Event evt)
@@ -170,6 +160,7 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     public void quitClick(Event evt)
     {
         //Handle someone leaving here
+        updateTime();
     }
     
     private void addKeyEvents() 
@@ -197,13 +188,14 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
                 me.moveBat(0);
             }
         };
+        
         getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
     }
     
     private Stage getThisStage() 
     {
-        return (Stage) btnStart.getScene().getWindow();
+        return (Stage) lblName.getScene().getWindow();
     }
 
     @Override
