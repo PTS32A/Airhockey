@@ -56,7 +56,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             highScores = FXCollections.observableArrayList(Lobby.getSingle().getRankings());
             messages = FXCollections.observableArrayList(Lobby.getSingle().getMychatbox().getChat());
             games = FXCollections.observableArrayList(Lobby.getSingle().getActiveGames());
-        } catch (SQLException ex)
+        } 
+        catch (SQLException ex)
         {
             super.showDialog("Error", "Unable to retrieve data: " + ex.getMessage());
         }
@@ -142,11 +143,19 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     {
         try 
         {
-            openNew(evt);
+            if (Lobby.getSingle().getCurrentPerson() instanceof Person)
+            {
+                Lobby.getSingle().startGame(Lobby.getSingle().getCurrentPerson());
+                openNew(evt);
+            }
+            else
+            {
+                super.showDialog("Error", "You are currently spectating or playing a game");
+            }
         } 
         catch (Exception ex) 
         {
-            Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
+            super.showDialog("Error", "Unable to open new game: " + ex.getMessage());
         }
     }
     
@@ -158,11 +167,15 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     {
         try 
         {
-            super.goToGame(getThisStage());
+            if (Lobby.getSingle().getCurrentPerson() instanceof Person)
+            {
+                Lobby.getSingle().joinGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson());
+                openNew(evt);
+            }
         } 
-        catch (IOException ex) 
+        catch (Exception ex) 
         {
-            Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
+            super.showDialog("Error", "Unable to join game: " + ex.getMessage());
         }
     }
     
@@ -172,6 +185,12 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
      */
     public void spectateGame(Event evt)
     {
+        if (Lobby.getSingle().getCurrentPerson() instanceof Player)
+        {
+            super.showDialog("Error", "You are playing a game and cant spectate at the same time");
+            return;
+        }
+        Lobby.getSingle().spectateGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson());
         openNew(evt);
     }
     
@@ -207,8 +226,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         return (Stage) tfChatbox.getScene().getWindow();
     }
     
-    // template code for opening an additional window, in this case showing Game
-    // for merely switching windows, base.goTo<Something>() should be called
+    //Opening new game window
     public void openNew(Event evt)
     {
         final AirhockeyGUI base = this;        
