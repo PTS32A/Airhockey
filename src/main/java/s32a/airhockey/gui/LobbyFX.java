@@ -145,8 +145,14 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         {
             if (Lobby.getSingle().getCurrentPerson() instanceof Person)
             {
-                Lobby.getSingle().startGame(Lobby.getSingle().getCurrentPerson());
-                openNew(evt);
+                if (Lobby.getSingle().startGame(Lobby.getSingle().getCurrentPerson()) != null)
+                {
+                    openNew(evt);
+                }
+                else
+                {
+                    super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
+                }
             }
             else
             {
@@ -169,8 +175,17 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         {
             if (Lobby.getSingle().getCurrentPerson() instanceof Person)
             {
-                Lobby.getSingle().joinGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson());
-                openNew(evt);
+                if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null)
+                {
+                    if (Lobby.getSingle().joinGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson()) != null)
+                    {
+                        openNew(evt);
+                    }
+                    else
+                    {
+                        super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
+                    }
+                }
             }
         } 
         catch (Exception ex) 
@@ -187,11 +202,21 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     {
         if (Lobby.getSingle().getCurrentPerson() instanceof Player)
         {
-            super.showDialog("Error", "You are playing a game and cant spectate at the same time");
+            super.showDialog("Error", "You are playing a game and can't spectate at the same time");
             return;
         }
-        Lobby.getSingle().spectateGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson());
-        openNew(evt);
+        
+        if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null)
+        {
+            if (Lobby.getSingle().spectateGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson()) != null)
+            {
+                openNew(evt);
+            }
+            else
+            {
+                super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
+            }
+        }
     }
     
     /**
