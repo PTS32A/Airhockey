@@ -5,8 +5,6 @@
  */
 package s32a.airhockey.gui;
 
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
@@ -21,11 +19,11 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.Setter;
 import s32a.airhockey.*;
@@ -46,7 +44,7 @@ import s32a.airhockey.*;
  * x score always starts @ 20 - see URS
  * x check whether keyevents don't propagate outside game. --- stage.addEventFilter takes care of that
  * x currently keyevents do not support continuous movement --- this will be fixed in player class
- * ? Game and puck are drawing an AWT element, not javaFX
+ * x Game and puck are drawing an AWT element, not javaFX
  * 
  * - overall flow should be that game and its items update their stats, 
  *      and that GUI on a regular basis (every 10-20ms or so) redraws itself based on their info
@@ -68,7 +66,7 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
     
     private int width = 0;
     private int height = 0;
-    private Graphics graphics;
+    private GraphicsContext graphics;
     private Game myGame;
     private Player me;
     private Calendar start;
@@ -103,9 +101,9 @@ public class GameFX extends AirhockeyGUI implements Initializable, Observer
             lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
         }
         
-        width = canvas.getSize().width;
-        height = canvas.getSize().height;
-        graphics = canvas.getGraphics();
+        width = (int)canvas.getWidth();
+        height = (int)canvas.getHeight();
+        graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, width, height);
         drawEdges();
         Platform.runLater(new Runnable() 

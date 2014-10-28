@@ -590,7 +590,7 @@ public class Puck extends TimerTask
         }
     }
     
-    public void draw(Graphics graphics)
+    public void draw(GraphicsContext graphics)
     {
         int radius = (int)(puckSize/2);
         int x = (int)position.x - radius;

@@ -131,7 +131,7 @@ public class Player extends Person
         return myGame.pauseGame(isPaused);
     }
     
-    public void draw(Graphics graphics)
+    public void draw(GraphicsContext graphics)
     {
         int radius = batWidth/2;
         int x = rec.x - radius;
