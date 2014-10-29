@@ -25,6 +25,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.airhockey.*;
+import timers.GameTimer;
 
 /**
  * Notes: 
@@ -66,9 +67,10 @@ public class GameFX extends AirhockeyGUI implements Initializable
     private int width = 0;
     private int height = 0;
     private GraphicsContext graphics;
-    private @Getter boolean started = false;
+    private boolean gameEnded = false;
     private int sec = 0;
     private int min = 0;
+    private GameTimer gameTimer;
     
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -107,9 +109,6 @@ public class GameFX extends AirhockeyGUI implements Initializable
             lblScoreP2.setText("20");
             lblScoreP3.setText("20");
         }
-        lblScoreP1.setTextFill(Paint.valueOf("RED"));
-        lblScoreP2.setTextFill(Paint.valueOf("BLUE"));
-        lblScoreP3.setTextFill(Paint.valueOf("GREEN"));
         lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
         width = (int)canvas.getWidth();
         height = (int)canvas.getHeight();
@@ -120,17 +119,14 @@ public class GameFX extends AirhockeyGUI implements Initializable
     
     public void updateScore()
     {
-        if (started) 
-        {
-            List<Player> p = Lobby.getSingle().getPlayedGame().getMyPlayers();
-            int score1 = p.get(0).getScore();
-            int score2 = p.get(1).getScore();
-            int score3 = p.get(2).getScore();
-            lblScoreP1.setText(String.valueOf(score1));
-            lblScoreP2.setText(String.valueOf(score2));
-            lblScoreP3.setText(String.valueOf(score3));
-            lblRound.setText(Integer.toString(Lobby.getSingle().getPlayedGame().getRoundNo()));
-        }
+        List<Player> p = Lobby.getSingle().getPlayedGame().getMyPlayers();
+        int score1 = p.get(0).getScore();
+        int score2 = p.get(1).getScore();
+        int score3 = p.get(2).getScore();
+        lblScoreP1.setText(String.valueOf(score1));
+        lblScoreP2.setText(String.valueOf(score2));
+        lblScoreP3.setText(String.valueOf(score3));
+        lblRound.setText(Integer.toString(Lobby.getSingle().getPlayedGame().getRoundNo()));
     }
     
     /**
@@ -138,7 +134,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void updateTime()
     {   
-        if (started) 
+        if (!Lobby.getSingle().getPlayedGame().isPaused()) 
         {
             sec++;
             if (sec > 59) 
@@ -152,20 +148,17 @@ public class GameFX extends AirhockeyGUI implements Initializable
                second = "0" + Integer.toString(sec); 
             }
             String minute = "0" + Integer.toString(min);
-            lblTime.setText(minute + ":" + second);
+            lblTime.setText(minute + ":" + second); 
         }
     }
     
     public void draw()
     {
-        if (started)
-        {
-            Game myGame = Lobby.getSingle().getPlayedGame();
-            myGame.getMyPlayers().get(0).draw(graphics);
-            myGame.getMyPlayers().get(1).draw(graphics);
-            myGame.getMyPlayers().get(2).draw(graphics);
-            myGame.getMyPuck().draw(graphics);
-        }
+        Game myGame = Lobby.getSingle().getPlayedGame();
+        myGame.getMyPlayers().get(0).draw(graphics);
+        myGame.getMyPlayers().get(1).draw(graphics);
+        myGame.getMyPlayers().get(2).draw(graphics);
+        myGame.getMyPuck().draw(graphics);
     }
     public void drawEdges()
     {
@@ -174,9 +167,17 @@ public class GameFX extends AirhockeyGUI implements Initializable
     
     public void startClick(Event evt)
     {
-        addKeyEvents();
-        started = true;
-        Lobby.getSingle().getPlayedGame().run();
+        if (Lobby.getSingle().getPlayedGame().getMyPlayers().size() == 3) 
+        {
+            addKeyEvents();
+            gameTimer = new GameTimer(this);
+            gameTimer.start(); 
+            Lobby.getSingle().getPlayedGame().run();
+        }
+        else
+        {
+            super.showDialog("Warning", "Not enough players to begin game.");
+        }
     }
     
     public void pauseClick(Event evt)
@@ -187,7 +188,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
     
     public void quitClick(Event evt)
     {
-        //Handle someone leaving here
+        Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), 
+                (Player) Lobby.getSingle().getCurrentPerson());
     }
     
     private void addKeyEvents() 
@@ -204,6 +206,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     if (!Lobby.getSingle().getPlayedGame().isPaused()) 
                     {
                         me.moveBat(-1);
+                        System.out.println("moving");
                     }
                     
                 } 

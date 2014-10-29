@@ -14,24 +14,24 @@
     <Button fx:id="btnQuit" layoutX="623.0" layoutY="449.0" mnemonicParsing="false" onAction="#quitClick" prefWidth="52.0" text="Quit" />
     <Button fx:id="btnPause" layoutX="623.0" layoutY="413.0" mnemonicParsing="false" onAction="#pauseClick" text="Pause" />
     <Button fx:id="btnStart" layoutX="623.0" layoutY="372.0" mnemonicParsing="false" onAction="#startClick" prefWidth="51.000099999997474" text="Start" />
-    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" layoutX="22.0" layoutY="447.0" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" wrapText="true" />
+    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" layoutX="294.0" layoutY="455.0" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" wrapText="true" />
     <Label layoutX="14.0" layoutY="14.0" text="Name:">
       <font>
         <Font size="24.0" fx:id="x1" />
       </font>
     </Label>
     <Label font="$x1" layoutX="14.0" layoutY="50.0" text="Difficulty:" />
-    <Label font="$x1" layoutX="508.0" layoutY="44.0" text="Score Red:" />
+    <Label font="$x1" layoutX="523.0" layoutY="44.0" text="Score P1:" textFill="RED" />
     <Label font="$x1" layoutX="563.0" layoutY="8.0" text="Time:" />
     <Label fx:id="lblName" font="$x1" layoutX="88.0" layoutY="14.0" text="" />
     <Label id="lblDifficult" fx:id="lblDifficulty" font="$x1" layoutX="120.0" layoutY="50.0" text="" />
-    <Label id="lblScore" fx:id="lblScoreP1" font="$x1" layoutX="624.0" layoutY="44.0" prefHeight="35.0" prefWidth="69.0" text="" />
+    <Label id="lblScore" fx:id="lblScoreP1" font="$x1" layoutX="624.0" layoutY="44.0" prefHeight="35.0" prefWidth="69.0" text="" textFill="RED" />
     <Label fx:id="lblTime" font="$x1" layoutX="624.0" layoutY="8.0" prefHeight="35.0" prefWidth="69.0" text="" />
-    <Canvas fx:id="canvas" height="400.0" layoutX="63.0" layoutY="44.0" width="560.0" />
-    <Label font="$x1" layoutX="505.0" layoutY="76.0" text="Score Blue:" />
-    <Label id="lblScore" fx:id="lblScoreP2" font="$x1" layoutX="626.0" layoutY="76.0" prefHeight="35.0" prefWidth="69.0" text="" />
-    <Label font="$x1" layoutX="487.0" layoutY="108.0" text="Score Green:" />
-    <Label id="lblScore" fx:id="lblScoreP3" font="$x1" layoutX="626.0" layoutY="108.0" prefHeight="35.0" prefWidth="69.0" text="" />
+    <Canvas fx:id="canvas" height="400.0" layoutX="56.0" layoutY="50.0" width="560.0" />
+    <Label font="$x1" layoutX="523.0" layoutY="76.0" text="Score P2:" textFill="BLUE" />
+    <Label id="lblScore" fx:id="lblScoreP2" font="$x1" layoutX="626.0" layoutY="76.0" prefHeight="35.0" prefWidth="69.0" text="" textFill="BLUE" />
+    <Label font="$x1" layoutX="523.0" layoutY="108.0" text="Score P3:" textFill="LIME" />
+    <Label id="lblScore" fx:id="lblScoreP3" font="$x1" layoutX="626.0" layoutY="108.0" prefHeight="35.0" prefWidth="69.0" text="" textFill="LIME" />
       <Label font="$x1" layoutX="261.0" layoutY="8.0" text="Round:" />
       <Label fx:id="lblRound" font="$x1" layoutX="343.0" layoutY="8.0" prefHeight="35.0" prefWidth="69.0" />
   </children>
