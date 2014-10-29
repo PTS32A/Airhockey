@@ -18,8 +18,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
-import s32a.airhockey.Lobby;
-import s32a.airhockey.Person;
+import s32a.airhockey.*;
 
 /**
  *
@@ -103,6 +102,19 @@ public class AirhockeyGUI extends Application
         
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event)
+            {
+                Player person = (Player)Lobby.getSingle().getCurrentPerson();
+                if(person != null)
+                {
+                    Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), person);
+                }
+                stage.close();
+            }
+        });
         stage.show();
     }
     
