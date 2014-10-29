@@ -42,7 +42,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
      *
      * @param evt
      */
-    public void login(Event evt) throws IllegalArgumentException, SQLException
+    public void login(Event evt)
     {
         if (tfUserName.getText().equals("") || pwfPassword.getText().equals(""))
         {
@@ -53,6 +53,13 @@ public class LoginFX extends AirhockeyGUI implements Initializable
             {
                 if (Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
                 {
+                    // populates lobby
+                    Thread thread = new Thread(() ->
+                    {
+                        Lobby.getSingle().populate();
+                    });
+                    thread.start();
+                    
                     super.goToLobby(getThisStage());
                 } else
                 {

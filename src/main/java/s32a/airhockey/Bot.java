@@ -57,7 +57,9 @@ public class Bot extends Player
     {
         if(!myGame.isPaused())
         {
-            if(myGame.getMyPuck().getEndPosition().x >= goalPos.x && myGame.getMyPuck().getEndPosition().x <= goalPos.x + myGame.getMyPuck().getGoalLength())
+            if(myGame.getMyPuck().getEndPosition().x >= goalPos.x 
+                    && myGame.getMyPuck().getEndPosition().x 
+                    <= goalPos.x + myGame.getMyPuck().getGoalLength())
             {
                 batPos.x = myGame.getMyPuck().getEndPosition().x;
                 rec.x = (int)batPos.x;

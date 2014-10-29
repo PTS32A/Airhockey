@@ -12,19 +12,19 @@ import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 //import static org.lwjgl.Sys.getTime;
 /**
- * NOTES: - should hashmaps be added for quick searching? - probably chuck a few
- * values out of gameInfo when it's finalised
- *
  * @author Kargathia
  */
 public class Game
-{
-
+{    
+    @Getter private StringProperty gameDifficulty, gameStatus;
+    
     private Chatbox myChatbox;
     @Getter
     private Puck myPuck;
@@ -87,6 +87,10 @@ public class Game
      */
     public Game(Player starter)
     {
+        float defaultSpeed = 10;
+        this.gameStatus = new SimpleStringProperty("Setting Up");
+        this.gameDifficulty = new SimpleStringProperty(String.valueOf(defaultSpeed));
+        
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
 
@@ -108,7 +112,7 @@ public class Game
 
         this.roundNo = 0;
 
-        this.myPuck = new Puck(10, this);
+        this.myPuck = new Puck(defaultSpeed, this);
 
         this.maxRounds = 10;
         
@@ -264,6 +268,7 @@ public class Game
             {
                 System.out.println("BEGIN GAME");
                 this.startRound();
+                this.gameStatus.set("Playing");
                 return true;
             }
         }
@@ -290,6 +295,7 @@ public class Game
             if (puckSpeed > min && puckSpeed < max)
             {
                 myPuck.setSpeed(puckSpeed);
+                this.gameDifficulty.set(String.valueOf(puckSpeed));
                 return true;
             } else
             {
@@ -316,11 +322,27 @@ public class Game
         if (this.isPaused != isPaused)
         {
             this.isPaused = isPaused;
+            this.setPauseStatus();
             return true;
         } else
         {
             //Return false because the pause state is already this way and is therefor not changed
             return false;
+        }
+    }
+    
+    /**
+     * adjusts game status for javaFX display purposes
+     */
+    private void setPauseStatus()
+    {
+        if(this.isPaused)
+        {
+            this.gameStatus.set("Paused");
+        }
+        else
+        {
+            this.gameStatus.set("Playing");
         }
     }
 

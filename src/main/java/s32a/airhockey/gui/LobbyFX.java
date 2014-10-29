@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import static javafx.collections.FXCollections.observableArrayList;
 import javafx.collections.ListChangeListener;
@@ -25,6 +26,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import s32a.airhockey.*;
+import timers.LobbyTimer;
 
 /**
  *
@@ -51,14 +53,17 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
 
     @FXML
     ListView lvPlayerInfo;
+    
     ObservableList<Person> highScores;
     ObservableList<String> messages;
     ObservableList<Game> games;
     ObservableList<String> playerInfo;
+    
+    private AnimationTimer lobbyTimer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
-    {
+    {    
         try
         {
             highScores = FXCollections.observableArrayList(Lobby.getSingle().getRankings());
@@ -67,49 +72,19 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         } catch (SQLException ex)
         {
             super.showDialog("Error", "Unable to retrieve data: " + ex.getMessage());
-        } finally
-        {
-            highScores = FXCollections.observableArrayList(new ArrayList<Person>());
-            highScores.addListener(new ListChangeListener()
-            {
-                @Override
-                public void onChanged(ListChangeListener.Change change)
-                {
-                    tvHighscores.setItems(highScores);
-                }
-            });
-            messages = FXCollections.observableArrayList(new ArrayList<String>());
-            messages.addListener(new ListChangeListener()
-            {
-                @Override
-                public void onChanged(ListChangeListener.Change change)
-                {
-                    lvChatbox.setItems(messages);
-                }
-            });
-            games = FXCollections.observableArrayList(new ArrayList<Game>());
-            games.addListener(new ListChangeListener()
-            {
-                @Override
-                public void onChanged(ListChangeListener.Change change)
-                {
-                    tvGameDisplay.setItems(games);
-                }
-            });
-        }
+        } 
+        
+        
 
         try
         {
 
             tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));
             tcHSRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
-
-            //Need to figure out best way to do this
-            //tcGDDifficulty.setCellValueFactory(new PropertyValueFactory<Game,Puck>("myPuck"));
-            //tcGDPlayer1.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
-            //tcGDPlayer2.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
-            //tcGDPlayer3.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
-            //tcGDStatus.setCellValueFactory(new PropertyValueFactory<Game,Boolean>("isPaused"));
+            
+//            this.tcGDPlayer1.setCellValueFactory(
+//            new PropertyValueFactory<Person,String>("lastName");
+            
             if (games != null)
             {
                 tvGameDisplay.setItems(games);
@@ -127,6 +102,9 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         {
             super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
         }
+        
+        this.lobbyTimer = new LobbyTimer(this, 3000);
+        this.lobbyTimer.start();
     }
 
     /**
@@ -135,8 +113,10 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     private void update()
     {
         Person p = Lobby.getSingle().getCurrentPerson();
-        playerInfo = FXCollections.observableArrayList("Name: " + p.getName(), "Rating: " + Double.toString(p.getRating()));
+        playerInfo = FXCollections.observableArrayList("Name: " 
+                + p.getName(), "Rating: " + Double.toString(p.getRating()));
         lvPlayerInfo.setItems(playerInfo);
+        
     }
 
     /**
@@ -287,7 +267,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
      */
     public void setHighscore(List<Person> plist)
     {
-        tvHighscores.setItems(FXCollections.observableArrayList(plist));
+        
     }
 
     /**
@@ -307,6 +287,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
      */
     public void setChatMessages(List<String> chatMessages)
     {
-        lvChatbox.setItems(FXCollections.observableArrayList(chatMessages);
+        lvChatbox.setItems(FXCollections.observableArrayList(chatMessages));
     }
 }

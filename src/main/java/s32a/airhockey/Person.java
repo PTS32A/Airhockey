@@ -5,6 +5,8 @@
  */
 package s32a.airhockey;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +17,8 @@ import lombok.Setter;
 public class Person
 {
 
+    @Getter private StringProperty nameProperty;
+    
     @Getter
     private String name;
     @Getter
@@ -37,5 +41,6 @@ public class Person
         }
         this.name = name;
         this.rating = rating;
+        this.nameProperty = new SimpleStringProperty(name);
     }
 }

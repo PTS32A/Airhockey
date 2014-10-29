@@ -502,6 +502,7 @@ public class Lobby
         game = this.startGame((Person) this.activePersons.get("bot4"));
         this.joinGame(game, (Person) this.activePersons.get("bot5"));
         this.joinGame(game, (Person) this.activePersons.get("bot6"));
+        game.pauseGame(true);
 
         game = this.startGame((Person) this.activePersons.get("bot7"));
         this.joinGame(game, (Person) this.activePersons.get("bot8"));
