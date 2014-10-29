@@ -11,12 +11,17 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import s32a.airhockey.Lobby;
 
 /**
@@ -34,7 +39,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-
+        
     }
 
     /**
@@ -59,7 +64,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
                         Lobby.getSingle().populate();
                     });
                     thread.start();
-                    
+
                     super.goToLobby(getThisStage());
                 } else
                 {
@@ -68,11 +73,14 @@ public class LoginFX extends AirhockeyGUI implements Initializable
             } catch (IllegalArgumentException ex)
             {
                 super.showDialog("Error", "Unable to login: " + ex.getMessage());
-            } catch (SQLException | IOException ex)
+            } catch (SQLException ex)
             {
                 super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+            } catch (IOException ex)
+            {
+                Lobby.getSingle().logOut(Lobby.getSingle().getCurrentPerson());
+                super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
-
         }
     }
 
