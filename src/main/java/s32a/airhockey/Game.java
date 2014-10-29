@@ -23,7 +23,7 @@ import lombok.Setter;
  */
 public class Game
 {    
-    @Getter private StringProperty gameDifficulty, gameStatus;
+    private StringProperty difficultyProp, statusProp;
     
     private Chatbox myChatbox;
     @Getter
@@ -54,7 +54,90 @@ public class Game
     
     private Timer puckTimer;
     
+    /**
+     * getter for difficulty as a property
+     * @return 
+     */
+    public StringProperty difficultyProperty()
+    {
+        if(this.difficultyProp == null)
+        {
+            this.difficultyProp = new SimpleStringProperty(String.valueOf(this.myPuck.getSpeed()));
+        }
+        return this.difficultyProp;
+    }
     
+    /**
+     * Returns the current game status, formatted as StringProperty
+     * @return 
+     */
+    public StringProperty statusProperty()
+    {
+        if(this.statusProp == null)
+        {
+            this.statusProp = new SimpleStringProperty("");
+        }
+        
+        if(this.myPlayers.size() < 3)
+        {
+            this.statusProp.set("Setting Up");
+            return this.statusProp;
+        }      
+        else if (isPaused)
+        {
+            this.statusProp.set("Paused");
+            return this.statusProp;
+        }
+        else
+        {
+            this.statusProp.set("Playing");
+            return this.statusProp;
+        }
+    }
+    
+    /**
+     * loads the name of player 1 in a StringProperty
+     * @return 
+     */
+    public StringProperty player1NameProperty()
+    {
+        return this.playerNameProp(0);
+    }
+    
+    /**
+     * loads the name of player 2 in a StringProperty
+     * @return 
+     */
+    public StringProperty player2NameProperty()
+    {
+        return this.playerNameProp(1);
+    }
+    
+    /**
+     * loads the name of Player 3 in a StringProperty
+     * @return 
+     */
+    public StringProperty player3NameProperty()
+    {
+        return this.playerNameProp(2);
+    }
+    
+    /**
+     * returns playername property at given index - used by player<X>Property
+     * @param index
+     * @return 
+     */
+    private StringProperty playerNameProp(int index)
+    {
+        if(this.myPlayers.get(index) == null)
+        {
+            return new SimpleStringProperty("--");
+        }
+        else
+        {
+            return this.myPlayers.get(index).nameProperty();
+        }
+    }
 
     /**
      * Calls ChatBox.addMessage(string) with a pre-formatted message - this
@@ -88,8 +171,6 @@ public class Game
     public Game(Player starter)
     {
         float defaultSpeed = 10;
-        this.gameStatus = new SimpleStringProperty("Setting Up");
-        this.gameDifficulty = new SimpleStringProperty(String.valueOf(defaultSpeed));
         
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
@@ -268,7 +349,6 @@ public class Game
             {
                 System.out.println("BEGIN GAME");
                 this.startRound();
-                this.gameStatus.set("Playing");
                 return true;
             }
         }
@@ -295,7 +375,6 @@ public class Game
             if (puckSpeed > min && puckSpeed < max)
             {
                 myPuck.setSpeed(puckSpeed);
-                this.gameDifficulty.set(String.valueOf(puckSpeed));
                 return true;
             } else
             {
@@ -322,27 +401,11 @@ public class Game
         if (this.isPaused != isPaused)
         {
             this.isPaused = isPaused;
-            this.setPauseStatus();
             return true;
         } else
         {
             //Return false because the pause state is already this way and is therefor not changed
             return false;
-        }
-    }
-    
-    /**
-     * adjusts game status for javaFX display purposes
-     */
-    private void setPauseStatus()
-    {
-        if(this.isPaused)
-        {
-            this.gameStatus.set("Paused");
-        }
-        else
-        {
-            this.gameStatus.set("Playing");
         }
     }
 

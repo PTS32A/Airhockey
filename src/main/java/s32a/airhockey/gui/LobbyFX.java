@@ -14,17 +14,20 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import static javafx.collections.FXCollections.observableArrayList;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import s32a.airhockey.*;
 import timers.LobbyTimer;
 
@@ -53,70 +56,66 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
 
     @FXML
     ListView lvPlayerInfo;
-    
+
     ObservableList<Person> highScores;
     ObservableList<String> messages;
     ObservableList<Game> games;
     ObservableList<String> playerInfo;
-    
+
     private AnimationTimer lobbyTimer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
-    {    
-        try
-        {
-            highScores = FXCollections.observableArrayList(Lobby.getSingle().getRankings());
-            messages = FXCollections.observableArrayList(Lobby.getSingle().getMychatbox().getChat());
-            games = FXCollections.observableArrayList(Lobby.getSingle().getActiveGames());
-        } catch (SQLException ex)
-        {
-            super.showDialog("Error", "Unable to retrieve data: " + ex.getMessage());
-        } 
-        
-        
+    {
+            highScores = FXCollections.observableArrayList(new ArrayList<Person>());
+            messages = FXCollections.observableArrayList(new ArrayList<String>());
+            games = FXCollections.observableArrayList(new ArrayList<Game>());
 
         try
         {
+            this.tvHighscores.setItems(highScores);
+            this.tvGameDisplay.setItems(games);
+            
+            this.tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));
+            this.tcHSRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
 
-            tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));
-            tcHSRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
-            
-//            this.tcGDPlayer1.setCellValueFactory(
-//            new PropertyValueFactory<Person,String>("lastName");
-            
-            if (games != null)
-            {
-                tvGameDisplay.setItems(games);
-            }
-            if (highScores != null)
-            {
-                tvHighscores.setItems(highScores);
-            }
-            if (messages != null)
-            {
-                lvChatbox.setItems(messages);
-            }
-            update();
+            this.tcGDDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
+            this.tcGDStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+            this.tcGDPlayer1.setCellValueFactory(new PropertyValueFactory<>("player1Name"));
+            this.tcGDPlayer2.setCellValueFactory(new PropertyValueFactory<>("player2Name"));
+            this.tcGDPlayer3.setCellValueFactory(new PropertyValueFactory<>("player3Name"));
+            this.updatePlayerInfo();
         } catch (Exception ex)
         {
             super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
         }
-        
+
         this.lobbyTimer = new LobbyTimer(this, 3000);
         this.lobbyTimer.start();
+        
+        this.getThisStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event)
+            {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
     }
 
     /**
      * updates relevant screens in display
      */
-    private void update()
+    private void updatePlayerInfo()
     {
         Person p = Lobby.getSingle().getCurrentPerson();
-        playerInfo = FXCollections.observableArrayList("Name: " 
-                + p.getName(), "Rating: " + Double.toString(p.getRating()));
-        lvPlayerInfo.setItems(playerInfo);
-        
+        if (p != null)
+        {
+            playerInfo = FXCollections.observableArrayList("Name: "
+                    + p.getName(), "Rating: " + Double.toString(p.getRating()));
+            lvPlayerInfo.setItems(playerInfo);
+        }
     }
 
     /**
@@ -263,30 +262,30 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     /**
      * Updates the highscores view
      *
-     * @param plist
+     * @param input
      */
-    public void setHighscore(List<Person> plist)
+    public void setHighscore(List<Person> input)
     {
-        
+        this.tvHighscores.setItems(FXCollections.observableArrayList(input));
     }
 
     /**
      * Updates the active games view
      *
-     * @param glist
+     * @param input
      */
-    public void setActiveGames(List<Game> glist)
+    public void setActiveGames(List<Game> input)
     {
-        tvGameDisplay.setItems(FXCollections.observableArrayList(glist));
+        this.tvGameDisplay.setItems(FXCollections.observableArrayList(input));
     }
 
     /**
      * Updates the chatbox
      *
-     * @param chatMessages
+     * @param input
      */
-    public void setChatMessages(List<String> chatMessages)
+    public void setChatMessages(List<String> input)
     {
-        lvChatbox.setItems(FXCollections.observableArrayList(chatMessages));
+        this.lvChatbox.setItems(FXCollections.observableArrayList(input));
     }
 }

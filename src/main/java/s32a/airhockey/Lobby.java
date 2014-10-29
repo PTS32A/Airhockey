@@ -151,26 +151,25 @@ public class Lobby
             throw new IllegalArgumentException();
         }
 
+        if (input instanceof Player)
+        {
+            Player playerInput = (Player)input;
+            this.endGame(playerInput.getMyGame(), playerInput);
+        }
+        else if (input instanceof Spectator)
+        {
+            Spectator spectInput = (Spectator)input;
+            for(Game g : activeGames)
+            {
+                g.removeSpectator(spectInput);
+            }
+        }
+
         if (input == currentPerson)
         {
-            for (Game g : activeGames)
-            {
-                for (Player p : g.getMyPlayers())
-                {
-                    if (p == input)
-                    {
-                        if (!endGame(p.getMyGame(), p))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
             currentPerson = null;
-            return true;
         }
-        return false;
-
+        return true;
     }
 
     /**
