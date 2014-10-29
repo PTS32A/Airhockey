@@ -26,23 +26,26 @@ import s32a.airhockey.*;
  */
 public class AirhockeyGUI extends Application
 {
-    @Getter private Stage stage;
-    
+
+    @Getter
+    private Stage stage;
+
     @Override
     public void start(Stage stage) throws Exception
     {
         Lobby.getSingle();
-        
+
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
-        
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        {
 
             @Override
             public void handle(WindowEvent event)
             {
                 Person person = Lobby.getSingle().getCurrentPerson();
-                if(person != null)
+                if (person != null)
                 {
                     Lobby.getSingle().logOut(person);
                 }
@@ -50,65 +53,73 @@ public class AirhockeyGUI extends Application
                 System.exit(0);
             }
         });
-        
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+
+        // populates lobby
+        Thread thread = new Thread(() ->
+        {
+            Lobby.getSingle().populate();
+        });
+        thread.start();
         //goToLobby(stage);
     }
-    
+
     /**
-     * 
+     *
      */
     void goToLogin(Stage stage) throws IOException
     {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
-        
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
-    
+
     /**
-     * 
+     *
      */
     public void goToRegister(Stage stage) throws IOException
     {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Register.fxml"));
-        
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
-    
+
     /**
-     * 
+     *
      */
     void goToLobby(Stage stage) throws IOException
     {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Lobby.fxml"));
-        
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
-    
+
     /**
-     * 
+     *
      */
     void goToGame(Stage stage) throws IOException
     {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
-        
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        {
 
             @Override
             public void handle(WindowEvent event)
             {
-                Player person = (Player)Lobby.getSingle().getCurrentPerson();
-                if(person != null)
+                Player person = (Player) Lobby.getSingle().getCurrentPerson();
+                if (person != null)
                 {
                     Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), person);
                 }
@@ -117,13 +128,13 @@ public class AirhockeyGUI extends Application
         });
         stage.show();
     }
-    
-    void showDialog(String type, String message) 
+
+    void showDialog(String type, String message)
     {
         Stage myDialog = new Dialog(getStage(), type, message);
         myDialog.show();
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -131,5 +142,5 @@ public class AirhockeyGUI extends Application
     {
         launch(args);
     }
-    
+
 }
