@@ -25,12 +25,14 @@
     <Label font="$x1" layoutX="563.0" layoutY="8.0" text="Time:" />
     <Label fx:id="lblName" font="$x1" layoutX="88.0" layoutY="14.0" text="" />
     <Label id="lblDifficult" fx:id="lblDifficulty" font="$x1" layoutX="120.0" layoutY="50.0" text="" />
-    <Label id="lblScore" fx:id="lblScoreP1" font="$x1" layoutX="624.0" layoutY="44.0" prefWidth="18.0" text="" />
-    <Label fx:id="lblTime" font="$x1" layoutX="624.0" layoutY="8.0" prefWidth="18.0" text="" />
+    <Label id="lblScore" fx:id="lblScoreP1" font="$x1" layoutX="624.0" layoutY="44.0" prefHeight="35.0" prefWidth="69.0" text="" />
+    <Label fx:id="lblTime" font="$x1" layoutX="624.0" layoutY="8.0" prefHeight="35.0" prefWidth="69.0" text="" />
     <Canvas fx:id="canvas" height="400.0" layoutX="63.0" layoutY="44.0" width="560.0" />
     <Label font="$x1" layoutX="505.0" layoutY="76.0" text="Score Blue:" />
-    <Label id="lblScore" fx:id="lblScoreP2" font="$x1" layoutX="626.0" layoutY="76.0" prefWidth="32.0" text="" />
+    <Label id="lblScore" fx:id="lblScoreP2" font="$x1" layoutX="626.0" layoutY="76.0" prefHeight="35.0" prefWidth="69.0" text="" />
     <Label font="$x1" layoutX="487.0" layoutY="108.0" text="Score Green:" />
-    <Label id="lblScore" fx:id="lblScoreP3" font="$x1" layoutX="633.0" layoutY="108.0" prefWidth="22.0" text="" />
+    <Label id="lblScore" fx:id="lblScoreP3" font="$x1" layoutX="626.0" layoutY="108.0" prefHeight="35.0" prefWidth="69.0" text="" />
+      <Label font="$x1" layoutX="261.0" layoutY="8.0" text="Round:" />
+      <Label fx:id="lblRound" font="$x1" layoutX="343.0" layoutY="8.0" prefHeight="35.0" prefWidth="69.0" />
   </children>
 </AnchorPane>
