@@ -78,26 +78,27 @@ public class Game
             this.statusProp = new SimpleStringProperty("");
         }
         
-        if(this.myPlayers.size() < 3)
+        if(this.gameOver)
+        {
+            this.statusProp.set("Game Over");
+        }
+        else if(this.myPlayers.size() < 3)
         {
             this.statusProp.set("Setting Up");
-            return this.statusProp;
         }      
         else if (isPaused)
         {
             this.statusProp.set("Paused");
-            return this.statusProp;
         }
-        else if(!continueRun && !gameOver)
+        else if(!continueRun)
         {
             this.statusProp.set("Ready");
-            return this.statusProp;
         }
         else
         {
             this.statusProp.set("Playing");
-            return this.statusProp;
         }
+        return this.statusProp;
     }
     
     /**
@@ -145,28 +146,6 @@ public class Game
     }
 
     /**
-     * Calls ChatBox.addMessage(string) with a pre-formatted message - this
-     * includes player name and timestamp appended to the message string
-     *
-     * @param message The message that is going to be sent to the chat
-     * @param from The player that is sending the message
-     * @return True if everything went right, and chatbox.addchatmessage
-     * returned true
-     */
-    public boolean addChatMessage(String message, Person from)
-    {
-        if (message == null || from == null)
-        {
-            throw new IllegalArgumentException();
-        }
-        if (message.trim().isEmpty())
-        {
-            throw new IllegalArgumentException();
-        }
-        return myChatbox.addChatMessage(message, from);
-    }
-
-    /**
      * Constructor. Initialises sideLength, isPaused, gameID and roundNo to
      * default values gameID is a combination of starting player, and exact
      * start date/time (should be put in gameInfo)
@@ -175,8 +154,6 @@ public class Game
      */
     public Game(Player starter)
     {
-        float defaultSpeed = 10;
-        
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
 
@@ -197,14 +174,33 @@ public class Game
         this.gameInfo.put("nextColor", this.getNextColor());
 
         this.roundNo = 0;
-
+        float defaultSpeed = 10;
         this.myPuck = new Puck(defaultSpeed, this);
-
-        this.maxRounds = 10;
-        
-        this.puckTimer = new Timer();
-        
+        this.maxRounds = 10;      
+        this.puckTimer = new Timer();       
         this.gameOver = false;
+    }
+    
+    /**
+     * Calls ChatBox.addMessage(string) with a pre-formatted message - this
+     * includes player name and timestamp appended to the message string
+     *
+     * @param message The message that is going to be sent to the chat
+     * @param from The player that is sending the message
+     * @return True if everything went right, and chatbox.addchatmessage
+     * returned true
+     */
+    public boolean addChatMessage(String message, Person from)
+    {
+        if (message == null || from == null)
+        {
+            throw new IllegalArgumentException("sender or message is null");
+        }
+        if (message.trim().isEmpty())
+        {
+            throw new IllegalArgumentException("message is empty");
+        }
+        return myChatbox.addChatMessage(message, from);
     }
 
     /**
@@ -353,6 +349,11 @@ public class Game
             if (roundNo == 0)
             {
                 System.out.println("BEGIN GAME");
+                
+                //Timer will keep going until game end
+                long interval = 10; //10 ms for a max 100fps
+                puckTimer.scheduleAtFixedRate(myPuck, 1000, interval);
+                
                 this.startRound();
                 return true;
             }
@@ -436,16 +437,12 @@ public class Game
         System.out.println("--BEGIN PUCK MOVEMENT");
 
         myPuck.clearEndData();
-        
+
         //Continue       
         if (!isPaused && myPuck != null)
         {
-            //OLD:
-            //myPuck.run();
-                                           
-            //Timer will keep going until someone scored
-            long interval = 10; //10 ms for a max 100fps
-            puckTimer.scheduleAtFixedRate(myPuck, 0, interval);
+            //Start new round
+            this.myPuck.resetPuck(); 
         }
         
         System.out.println("--BEGIN BOT MOVEMENT");
@@ -471,16 +468,6 @@ public class Game
         this.roundNo++;
         System.out.println("-ROUND " + roundNo);
 
-//            //Countdown
-//            try
-//            {
-//                //SHOULD BE IMPLEMENTED IN JAVAFX
-//                Thread.sleep(1000);
-//            }
-//            catch (InterruptedException ex)
-//            {
-//                
-//            }
         this.continueRun = true;
         this.isPaused = false;
             
@@ -488,14 +475,9 @@ public class Game
     }
     
     public void endRound()
-    {
-        puckTimer.cancel();
-        
+    {        
          //END OF PUCK MOVEMENT
         System.out.println("--END PUCK MOVEMENT");
-
-        //Start new round
-        this.myPuck.resetPuck();
         
         if (roundNo < maxRounds)
         {

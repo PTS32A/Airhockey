@@ -129,7 +129,8 @@ public class Puck extends TimerTask
 
         this.defaultRunCount = 5;
         
-        resetPuck();
+        // now called at the start of a round
+        //resetPuck();
     }
 
     public void resetPuck()
@@ -176,13 +177,20 @@ public class Puck extends TimerTask
     @Override
     public void run()
     {
+        // idle state between rounds
+        if (this.runCount == -1)
+        {      
+            return;
+        }
+        
         if (this.runCount == 0)
         {
+            this.runCount--;
             myGame.endRound();
         }
         else
         {
-            updatePosition(speed);
+            updatePosition(speed / 100);
             this.runCount--;
             setEndData();
         }
