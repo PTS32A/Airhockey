@@ -5,16 +5,12 @@
  */
 package s32a.airhockey.gui;
 
-import java.io.IOException;
+import com.sun.prism.paint.Color;
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -24,6 +20,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,6 +56,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @FXML Label lblScoreP1;
     @FXML Label lblScoreP2;
     @FXML Label lblScoreP3;
+    @FXML Label lblRound;
     @FXML Label lblTime;
     @FXML Button btnStart;
     @FXML Button btnPause;
@@ -69,7 +67,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
     private int height = 0;
     private GraphicsContext graphics;
     private @Getter boolean started = false;
-    private @Getter Calendar start;
+    private int sec = 0;
+    private int min = 0;
     
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -80,7 +79,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
     public void setUp()
     {
         Game myGame;
-        Player me;
+        Player me = null;
         if (Lobby.getSingle().getCurrentPerson() instanceof Player)
         {   
             myGame = Lobby.getSingle().getPlayedGame();
@@ -93,13 +92,24 @@ public class GameFX extends AirhockeyGUI implements Initializable
             //Spectator
             myGame = Lobby.getSingle().getSpectatedGames().get(Lobby.getSingle()
                     .getSpectatedGames().size()-1);
-            me = null;
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             lblTime.setText("00:00");
         }
-        lblScoreP1.setText(String.valueOf(myGame.getMyPlayers().get(0).getScore()));
-        //lblScoreP2.setText(String.valueOf(myGame.getMyPlayers().get(1).getScore()));
-        //lblScoreP3.setText(String.valueOf(myGame.getMyPlayers().get(2).getScore()));
+        if (me == null) 
+        {
+            lblScoreP1.setText(String.valueOf(myGame.getMyPlayers().get(0).getScore()));
+            lblScoreP2.setText(String.valueOf(myGame.getMyPlayers().get(1).getScore()));
+            lblScoreP3.setText(String.valueOf(myGame.getMyPlayers().get(2).getScore())); 
+        }
+        else
+        {
+            lblScoreP1.setText("20");
+            lblScoreP2.setText("20");
+            lblScoreP3.setText("20");
+        }
+        lblScoreP1.setTextFill(Paint.valueOf("RED"));
+        lblScoreP2.setTextFill(Paint.valueOf("BLUE"));
+        lblScoreP3.setTextFill(Paint.valueOf("GREEN"));
         lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
         width = (int)canvas.getWidth();
         height = (int)canvas.getHeight();
@@ -110,32 +120,52 @@ public class GameFX extends AirhockeyGUI implements Initializable
     
     public void updateScore()
     {
-        int score = Integer.parseInt(lblScoreP1.getText());
-        score++;
-        lblScoreP1.setText(String.valueOf(score));
+        if (started) 
+        {
+            List<Player> p = Lobby.getSingle().getPlayedGame().getMyPlayers();
+            int score1 = p.get(0).getScore();
+            int score2 = p.get(1).getScore();
+            int score3 = p.get(2).getScore();
+            lblScoreP1.setText(String.valueOf(score1));
+            lblScoreP2.setText(String.valueOf(score2));
+            lblScoreP3.setText(String.valueOf(score3));
+            lblRound.setText(Integer.toString(Lobby.getSingle().getPlayedGame().getRoundNo()));
+        }
     }
     
     /**
      * updates the Time label to math the elapsed time since the game was started
      */
     public void updateTime()
-    {
-        long elapsed = Calendar.getInstance().getTimeInMillis() 
-                - start.getTimeInMillis();
-        TimeUnit tU = TimeUnit.MINUTES;
-        long minute = tU.convert(elapsed, TimeUnit.MILLISECONDS);
-        tU = TimeUnit.SECONDS;
-        long second = tU.convert(elapsed, TimeUnit.MILLISECONDS);
-        lblTime.setText(minute + ":" + second);
+    {   
+        if (started) 
+        {
+            sec++;
+            if (sec > 59) 
+            {
+                sec = 0;
+                min++;
+            }
+            String second = Integer.toString(sec);
+            if (sec < 10) 
+            {
+               second = "0" + Integer.toString(sec); 
+            }
+            String minute = "0" + Integer.toString(min);
+            lblTime.setText(minute + ":" + second);
+        }
     }
     
     public void draw()
     {
-        Game myGame = Lobby.getSingle().getPlayedGame();
-        myGame.getMyPlayers().get(0).draw(graphics);
-        //myGame.getMyPlayers().get(1).draw(graphics);
-        //myGame.getMyPlayers().get(2).draw(graphics);
-        myGame.getMyPuck().draw(graphics);
+        if (started)
+        {
+            Game myGame = Lobby.getSingle().getPlayedGame();
+            myGame.getMyPlayers().get(0).draw(graphics);
+            myGame.getMyPlayers().get(1).draw(graphics);
+            myGame.getMyPlayers().get(2).draw(graphics);
+            myGame.getMyPuck().draw(graphics);
+        }
     }
     public void drawEdges()
     {
@@ -145,9 +175,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
     public void startClick(Event evt)
     {
         addKeyEvents();
-        start = Calendar.getInstance();
+        started = true;
         Lobby.getSingle().getPlayedGame().run();
-        updateTime();
     }
     
     public void pauseClick(Event evt)
@@ -172,12 +201,19 @@ public class GameFX extends AirhockeyGUI implements Initializable
                 if (keyEvent.getCode() == KeyCode.A 
                         || keyEvent.getCode() == KeyCode.LEFT) 
                 {
-                    me.moveBat(-1);
+                    if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+                    {
+                        me.moveBat(-1);
+                    }
+                    
                 } 
                 else if (keyEvent.getCode() == KeyCode.D 
                         || keyEvent.getCode() == KeyCode.RIGHT) 
                 {
-                    me.moveBat(1);
+                    if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+                    {
+                        me.moveBat(1);
+                    }
                 }
             }
         };
