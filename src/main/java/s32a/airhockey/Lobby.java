@@ -164,8 +164,7 @@ public class Lobby
                 g.removeSpectator(spectInput);
             }
         }
-
-        if (input == currentPerson)
+        if (input.getName().equals(this.currentPerson.getName()))
         {
             currentPerson = null;
         }
@@ -241,9 +240,17 @@ public class Lobby
 
         try
         {
-            person = new Player(person.getName(), person.getRating(), game.getNextColor());
-            this.activePersons.replace(person.getName(), person);
-            if (person.equals(this.currentPerson))
+            Player player = new Player(person.getName(), person.getRating(), 
+                    game.getNextColor());
+            if(game.addPlayer(player))
+            {
+                this.activePersons.replace(person.getName(), player);
+            }
+            else
+            {
+                return null;
+            }
+            if (player.getName().equals(this.currentPerson.getName()))
             {
                 this.playedGame = game;
             }
@@ -281,7 +288,7 @@ public class Lobby
                 return null;
             }
             this.activePersons.replace(person.getName(), person);
-            if (this.currentPerson.equals(person))
+            if (this.currentPerson.getName().equals(person.getName()))
             {
                 this.spectatedGames.add(game);
             }
@@ -367,7 +374,7 @@ public class Lobby
         try
         {
             this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.getRating()));
-            if (this.currentPerson == participant)
+            if (this.currentPerson.getName().equals(participant.getName()))
             {
                 this.currentPerson = (Person) this.activePersons.get(participant.getName());
             }

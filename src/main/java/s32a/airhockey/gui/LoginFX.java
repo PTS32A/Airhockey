@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import s32a.airhockey.Lobby;
 
 /**
@@ -37,21 +39,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        LoginFX loginFX = this;
-        EventHandler acceptButton = new EventHandler<KeyEvent>()
-        {
-
-            @Override
-            public void handle(KeyEvent ke)
-            {
-                if (ke.getCode().equals(KeyCode.ENTER))
-                {
-                    loginFX.login(null);
-                }
-            }
-        };
-        this.tfUserName.setOnKeyPressed(acceptButton);
-        this.pwfPassword.setOnKeyPressed(acceptButton);
+        
     }
 
     /**

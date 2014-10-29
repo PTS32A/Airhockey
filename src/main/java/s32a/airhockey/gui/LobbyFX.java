@@ -26,6 +26,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import s32a.airhockey.*;
@@ -67,6 +69,19 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent ke)
+            {
+                if(ke.getCode() == KeyCode.ENTER)
+                {
+                    sendChatMessage(null);
+                }
+            }
+        });
+        
+        
             highScores = FXCollections.observableArrayList(new ArrayList<Person>());
             messages = FXCollections.observableArrayList(new ArrayList<String>());
             games = FXCollections.observableArrayList(new ArrayList<Game>());
@@ -87,21 +102,11 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             this.updatePlayerInfo();
         } catch (Exception ex)
         {
-            super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+            super.showDialog("Error", "Unable to initialise Lobby: " + ex.getMessage());
         }
 
         this.lobbyTimer = new LobbyTimer(this, 3000);
-        this.lobbyTimer.start();
-        
-        this.getThisStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle(WindowEvent event)
-            {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
+        this.lobbyTimer.start();   
     }
 
     /**

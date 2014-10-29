@@ -7,6 +7,7 @@ package s32a.airhockey.gui;
 
 import java.io.IOException;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -15,8 +16,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.airhockey.Lobby;
+import s32a.airhockey.Person;
 
 /**
  *
@@ -33,6 +36,21 @@ public class AirhockeyGUI extends Application
         
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
+        
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event)
+            {
+                Person person = Lobby.getSingle().getCurrentPerson();
+                if(person != null)
+                {
+                    Lobby.getSingle().logOut(person);
+                }
+                Platform.exit();
+                System.exit(0);
+            }
+        });
         
         Scene scene = new Scene(root);
         stage.setScene(scene);

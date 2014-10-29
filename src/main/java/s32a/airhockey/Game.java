@@ -129,7 +129,7 @@ public class Game
      */
     private StringProperty playerNameProp(int index)
     {
-        if(this.myPlayers.get(index) == null)
+        if(this.myPlayers.size() <= index)
         {
             return new SimpleStringProperty("--");
         }
