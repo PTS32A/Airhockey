@@ -88,6 +88,11 @@ public class Game
             this.statusProp.set("Paused");
             return this.statusProp;
         }
+        else if(!continueRun && !gameOver)
+        {
+            this.statusProp.set("Ready");
+            return this.statusProp;
+        }
         else
         {
             this.statusProp.set("Playing");
@@ -445,19 +450,12 @@ public class Game
         
         System.out.println("--BEGIN BOT MOVEMENT");
         
-        List<Bot> bots = new ArrayList();
         for(Player p : myPlayers)
         {
-            if(p.isBot())
+            if(p instanceof Bot)
             {
-                //Don't know if this will work.
-                bots.add((Bot)p);
+                ((Bot)p).moveBat();
             }
-        }
-        
-        for(Bot b : bots)
-        {
-            b.moveBat();
         }
         
         System.out.println("--END BOT MOVEMENT");

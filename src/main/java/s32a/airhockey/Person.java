@@ -30,17 +30,31 @@ public class Person
     @Setter
     private boolean isBot = false;
 
+    /**
+     * Garden variety setter - also sets ratingProperty
+     * @param input 
+     */
     public void setRating(double input)
     {
         this.rating = input;
         this.ratingProp.set(input);
     }
     
+    /**
+     * Garden variety getter, not linked through lombok for naming reasons.
+     * Used by JavaFX for display.
+     * @return 
+     */
     public StringProperty nameProperty()
     {
         return this.nameProp;
     }
     
+    /**
+     * Garden variety getter, not linked through lombok for naming reasons.
+     * Used by JavaFX for display.
+     * @return 
+     */
     public DoubleProperty ratingProperty()
     {
         return this.ratingProp;

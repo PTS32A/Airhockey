@@ -504,6 +504,7 @@ public class Lobby
         Game game = this.startGame((Person) this.activePersons.get("bot1"));
         this.joinGame(game, (Person) this.activePersons.get("bot2"));
         this.joinGame(game, (Person) this.activePersons.get("bot3"));
+        game.beginGame();
 
         game = this.startGame((Person) this.activePersons.get("bot4"));
         this.joinGame(game, (Person) this.activePersons.get("bot5"));
@@ -513,6 +514,7 @@ public class Lobby
         game = this.startGame((Person) this.activePersons.get("bot7"));
         this.joinGame(game, (Person) this.activePersons.get("bot8"));
         this.joinGame(game, (Person) this.activePersons.get("bot9"));
+        game.beginGame();
 
         game = this.startGame((Person) this.activePersons.get("bot10"));
         this.joinGame(game, (Person) this.activePersons.get("bot8"));
