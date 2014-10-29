@@ -164,6 +164,7 @@ public class Lobby
                 g.removeSpectator(spectInput);
             }
         }
+        this.activePersons.remove(input.getName());
         if (input.getName().equals(this.currentPerson.getName()))
         {
             currentPerson = null;
@@ -208,7 +209,8 @@ public class Lobby
             newGame = new Game((Player) person);
             this.activePersons.replace(person.getName(), person);
             this.activeGames.add(newGame);
-            if (this.currentPerson.getName().equals(person.getName()))
+            if (this.currentPerson != null 
+                    && this.currentPerson.getName().equals(person.getName()))
             {
                 this.currentPerson = person;
                 this.playedGame = newGame;
@@ -514,7 +516,7 @@ public class Lobby
         game = this.startGame((Person) this.activePersons.get("bot7"));
         this.joinGame(game, (Person) this.activePersons.get("bot8"));
         this.joinGame(game, (Person) this.activePersons.get("bot9"));
-        game.beginGame();
+        game.pauseGame(true);
 
         game = this.startGame((Person) this.activePersons.get("bot10"));
         this.joinGame(game, (Person) this.activePersons.get("bot8"));

@@ -57,14 +57,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable
             try
             {
                 if (Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText()))
-                {
-                    // populates lobby
-                    Thread thread = new Thread(() ->
-                    {
-                        Lobby.getSingle().populate();
-                    });
-                    thread.start();
-
+                {                   
                     super.goToLobby(getThisStage());
                 } else
                 {
