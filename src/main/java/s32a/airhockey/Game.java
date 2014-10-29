@@ -25,6 +25,7 @@ public class Game
 {    
     private StringProperty difficultyProp, statusProp;
     
+    @Getter
     private Chatbox myChatbox;
     @Getter
     private Puck myPuck;

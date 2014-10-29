@@ -256,9 +256,10 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
                 {
                     Stage stage = new Stage();
                     base.goToGame(stage);
-                } catch (IOException ex)
+                } 
+                catch (IOException ex)
                 {
-                    Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
+                    base.showDialog("Error", "Could not open game");
                 }
             }
         });

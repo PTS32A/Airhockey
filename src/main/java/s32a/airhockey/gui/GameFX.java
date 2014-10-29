@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -64,6 +65,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @FXML Button btnStart;
     @FXML Button btnPause;
     @FXML Button btnQuit;
+    @FXML Button btnStopSpec;
+    @FXML ListView lvChatbox;
+    @FXML TextField tfChatbox;
     @FXML Canvas canvas;
     
     private int width = 0;
@@ -72,6 +76,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
     private boolean gameEnded = false;
     private int sec = 0;
     private int min = 0;
+    private @Getter boolean actionTaken = true;
     private GameTimer gameTimer;
     
     @Override
@@ -90,6 +95,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             me = (Player)Lobby.getSingle().getCurrentPerson();
             lblName.setText(Lobby.getSingle().getCurrentPerson().getName());
             lblTime.setText("00:00");
+            btnStopSpec.setVisible(false);
         }
         else
         {
@@ -98,6 +104,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     .getSpectatedGames().size()-1);
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             lblTime.setText("00:00");
+            btnStart.setVisible(false);
+            btnPause.setVisible(false);
+            btnQuit.setVisible(false);
         }
         if (me == null) 
         {
@@ -152,6 +161,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
             String minute = "0" + Integer.toString(min);
             lblTime.setText(minute + ":" + second); 
         }
+        lvChatbox.setItems(FXCollections.observableArrayList(Lobby.getSingle()
+                .getPlayedGame().getMyChatbox().getChat()));
     }
     
     public void draw()
@@ -164,7 +175,19 @@ public class GameFX extends AirhockeyGUI implements Initializable
     }
     public void drawEdges()
     {
-        //todo
+        // Left corner of triangle
+        double aX = 0;
+        double aY = 0;
+        // Top corner of triangle
+        double bX = 200;
+        double bY = 400 * Math.sin(60);
+        // Right corner of triangle
+        double cX = 400;
+        double cY = 0;
+        
+        graphics.strokeLine(aX, aY, bX, bY);
+        graphics.strokeLine(bX, bY, cX, cY);
+        graphics.strokeLine(cX, cY, aX, aY);
     }
     
     public void startClick(Event evt)
@@ -186,12 +209,25 @@ public class GameFX extends AirhockeyGUI implements Initializable
     {
         Lobby.getSingle().getPlayedGame().pauseGame(
                 !Lobby.getSingle().getPlayedGame().isPaused());
+        actionTaken = true;
     }
     
     public void quitClick(Event evt)
     {
         Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), 
                 (Player) Lobby.getSingle().getCurrentPerson());
+    }
+    
+    public void sendMessage(Event evt)
+    {
+        Lobby.getSingle().getPlayedGame().addChatMessage(tfChatbox.getText(), 
+                Lobby.getSingle().getCurrentPerson());
+        tfChatbox.setText("");
+    }
+    
+    public void stopSpectating(Event evt)
+    {
+        getThisStage().close();
     }
     
     private void addKeyEvents() 
@@ -208,7 +244,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     if (!Lobby.getSingle().getPlayedGame().isPaused()) 
                     {
                         me.moveBat(-1);
-                        System.out.println("moving");
+                        actionTaken = true;
                     }
                     
                 } 
@@ -218,6 +254,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     if (!Lobby.getSingle().getPlayedGame().isPaused()) 
                     {
                         me.moveBat(1);
+                        actionTaken = true;
                     }
                 }
             }
@@ -227,7 +264,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             public void handle(final KeyEvent keyEvent) 
             {
-                me.moveBat(0);
+                if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+                {
+                    me.moveBat(0);
+                    actionTaken = false;
+                }
             }
         };
         
