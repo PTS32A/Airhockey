@@ -32,17 +32,25 @@ import s32a.airhockey.*;
  */
 public class LobbyFX extends AirhockeyGUI implements Initializable
 {
-    @FXML TableView tvHighscores;
-    @FXML TableColumn tcHSName, tcHSRating;
-    
-    @FXML ListView lvChatbox;
-    @FXML TextField tfChatbox;
-    
-    @FXML TableView tvGameDisplay;
-    @FXML TableColumn tcGDDifficulty, tcGDPlayer1, 
+
+    @FXML
+    TableView tvHighscores;
+    @FXML
+    TableColumn tcHSName, tcHSRating;
+
+    @FXML
+    ListView lvChatbox;
+    @FXML
+    TextField tfChatbox;
+
+    @FXML
+    TableView tvGameDisplay;
+    @FXML
+    TableColumn tcGDDifficulty, tcGDPlayer1,
             tcGDPlayer2, tcGDPlayer3, tcGDStatus;
-    
-    @FXML ListView lvPlayerInfo;
+
+    @FXML
+    ListView lvPlayerInfo;
     ObservableList<Person> highScores;
     ObservableList<String> messages;
     ObservableList<Game> games;
@@ -56,75 +64,71 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             highScores = FXCollections.observableArrayList(Lobby.getSingle().getRankings());
             messages = FXCollections.observableArrayList(Lobby.getSingle().getMychatbox().getChat());
             games = FXCollections.observableArrayList(Lobby.getSingle().getActiveGames());
-        } 
-        catch (SQLException ex)
+        } catch (SQLException ex)
         {
             super.showDialog("Error", "Unable to retrieve data: " + ex.getMessage());
-        }
-        finally
+        } finally
         {
             highScores = FXCollections.observableArrayList(new ArrayList<Person>());
-            highScores.addListener(new ListChangeListener() 
+            highScores.addListener(new ListChangeListener()
             {
-            @Override
-                public void onChanged(ListChangeListener.Change change) 
+                @Override
+                public void onChanged(ListChangeListener.Change change)
                 {
                     tvHighscores.setItems(highScores);
                 }
             });
             messages = FXCollections.observableArrayList(new ArrayList<String>());
-            messages.addListener(new ListChangeListener() 
+            messages.addListener(new ListChangeListener()
             {
-            @Override
-                public void onChanged(ListChangeListener.Change change) 
+                @Override
+                public void onChanged(ListChangeListener.Change change)
                 {
-                    lvChatbox.setItems(messages); 
+                    lvChatbox.setItems(messages);
                 }
             });
             games = FXCollections.observableArrayList(new ArrayList<Game>());
-            games.addListener(new ListChangeListener() 
+            games.addListener(new ListChangeListener()
             {
-            @Override
-                public void onChanged(ListChangeListener.Change change) 
+                @Override
+                public void onChanged(ListChangeListener.Change change)
                 {
-                    tvGameDisplay.setItems(games); 
+                    tvGameDisplay.setItems(games);
                 }
             });
         }
-        
+
         try
         {
 
             tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));
             tcHSRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
-            
-            
+
             //Need to figure out best way to do this
             //tcGDDifficulty.setCellValueFactory(new PropertyValueFactory<Game,Puck>("myPuck"));
             //tcGDPlayer1.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
             //tcGDPlayer2.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
             //tcGDPlayer3.setCellValueFactory(new PropertyValueFactory<Game,List>("myPlayers"));
             //tcGDStatus.setCellValueFactory(new PropertyValueFactory<Game,Boolean>("isPaused"));
-            if (games != null) 
+            if (games != null)
             {
-              tvGameDisplay.setItems(games);  
+                tvGameDisplay.setItems(games);
             }
-            if (highScores != null) 
+            if (highScores != null)
             {
-              tvHighscores.setItems(highScores); 
+                tvHighscores.setItems(highScores);
             }
-            if (messages != null) 
+            if (messages != null)
             {
-              lvChatbox.setItems(messages); 
+                lvChatbox.setItems(messages);
             }
             update();
-        }
-        catch(Exception ex)
+        } catch (Exception ex)
         {
             super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
         }
     }
-    
+
     /**
      * updates relevant screens in display
      */
@@ -134,69 +138,67 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         playerInfo = FXCollections.observableArrayList("Name: " + p.getName(), "Rating: " + Double.toString(p.getRating()));
         lvPlayerInfo.setItems(playerInfo);
     }
-    
+
     /**
      * starts a new game. opens game window in new window
-     * @param evt 
+     *
+     * @param evt
      */
     public void newGame(Event evt)
     {
-        try 
+        try
         {
             if (Lobby.getSingle().getCurrentPerson() instanceof Person)
             {
                 if (Lobby.getSingle().startGame(Lobby.getSingle().getCurrentPerson()) != null)
                 {
                     openNew(evt);
-                }
-                else
+                } else
                 {
                     super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
                 }
-            }
-            else
+            } else
             {
                 super.showDialog("Error", "You are currently spectating or playing a game");
             }
-        } 
-        catch (Exception ex) 
+        } catch (Exception ex)
         {
             super.showDialog("Error", "Unable to open new game: " + ex.getMessage());
         }
     }
-    
+
     /**
      * joins an already existing game. opens game in new window
-     * @param evt 
+     *
+     * @param evt
      */
     public void joinGame(Event evt)
     {
-        try 
+        try
         {
             if (Lobby.getSingle().getCurrentPerson() instanceof Person)
             {
                 if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null)
                 {
-                    if (Lobby.getSingle().joinGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson()) != null)
+                    if (Lobby.getSingle().joinGame((Game) this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson()) != null)
                     {
                         openNew(evt);
-                    }
-                    else
+                    } else
                     {
                         super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
                     }
                 }
             }
-        } 
-        catch (Exception ex) 
+        } catch (Exception ex)
         {
             super.showDialog("Error", "Unable to join game: " + ex.getMessage());
         }
     }
-    
+
     /**
      * spectates a game. opens in new window
-     * @param evt 
+     *
+     * @param evt
      */
     public void spectateGame(Event evt)
     {
@@ -205,45 +207,45 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             super.showDialog("Error", "You are playing a game and can't spectate at the same time");
             return;
         }
-        
+
         if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null)
         {
-            if (Lobby.getSingle().spectateGame((Game)this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson()) != null)
+            if (Lobby.getSingle().spectateGame((Game) this.tvGameDisplay.getSelectionModel().getSelectedItem(), Lobby.getSingle().getCurrentPerson()) != null)
             {
                 openNew(evt);
-            }
-            else
+            } else
             {
                 super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
             }
         }
     }
-    
+
     /**
      * logs out current user, ends his active game
-     * @param evt 
+     *
+     * @param evt
      */
     public void logOut(Event evt)
     {
-        try 
+        try
         {
             Lobby.getSingle().logOut(Lobby.getSingle().getCurrentPerson());
             super.goToLogin(getThisStage());
-        } 
-        catch (IOException ex) 
+        } catch (IOException ex)
         {
             super.showDialog("Error", "Unable to log out: " + ex.getMessage());
         }
     }
-    
+
     /**
      * sends a lobby chat message
-     * @param evt 
+     *
+     * @param evt
      */
     public void sendChatMessage(Event evt)
     {
         Lobby l = Lobby.getSingle();
-        if(!tfChatbox.getText().equals(""))
+        if (!tfChatbox.getText().equals(""))
         {
             l.addChatMessage(tfChatbox.getText(), l.getCurrentPerson());
 
@@ -251,31 +253,60 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             tfChatbox.setText("");
         }
     }
-    
-    private Stage getThisStage() 
+
+    private Stage getThisStage()
     {
         return (Stage) tfChatbox.getScene().getWindow();
     }
-    
+
     //Opening new game window
     public void openNew(Event evt)
     {
-        final AirhockeyGUI base = this;        
-        javafx.application.Platform.runLater(new Runnable() 
+        final AirhockeyGUI base = this;
+        javafx.application.Platform.runLater(new Runnable()
         {
             @Override
-            public void run() 
-            {           
+            public void run()
+            {
                 try
                 {
                     Stage stage = new Stage();
                     base.goToGame(stage);
-                } 
-                catch (IOException ex)
+                } catch (IOException ex)
                 {
                     Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex);
-                }          
+                }
             }
         });
+    }
+
+    /**
+     * Updates the highscores view
+     *
+     * @param plist
+     */
+    public void setHighscore(List<Person> plist)
+    {
+        tvHighscores.setItems(FXCollections.observableArrayList(plist));
+    }
+
+    /**
+     * Updates the active games view
+     *
+     * @param glist
+     */
+    public void setActiveGames(List<Game> glist)
+    {
+        tvGameDisplay.setItems(FXCollections.observableArrayList(glist));
+    }
+
+    /**
+     * Updates the chatbox
+     *
+     * @param chatMessages
+     */
+    public void setChatMessages(List<String> chatMessages)
+    {
+        lvChatbox.setItems(FXCollections.observableArrayList(chatMessages);
     }
 }
