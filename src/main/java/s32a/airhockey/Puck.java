@@ -38,9 +38,11 @@ public class Puck extends TimerTask
     @Setter
     boolean isMoving;
 
+    @Getter
     private float sideLength;
     private float middleLine;
 
+    @Getter
     private Vector2 centre;
 
     @Getter
@@ -129,12 +131,12 @@ public class Puck extends TimerTask
 
         this.defaultRunCount = 5;
         
-        // now called at the start of a round
-        //resetPuck();
+        resetPuck();
     }
 
     public void resetPuck()
     {
+        System.out.println("Resetting puck");
         this.position = centre;
         this.direction = new Random().nextFloat() * 360;
         this.runCount = defaultRunCount;
@@ -178,21 +180,31 @@ public class Puck extends TimerTask
     public void run()
     {
         // idle state between rounds
-        if (this.runCount == -1)
-        {      
+        if (myGame.isContinueRun() == false)
+        {
             return;
         }
         
-        if (this.runCount == 0)
+        if (this.runCount <= -1)
         {
-            this.runCount--;
-            myGame.endRound();
+            //runCount is not used (Default setting for the actual product)
+            //Round will end only end when a goal has been scored
+            updatePosition(speed / 100);
         }
         else
         {
-            updatePosition(speed / 100);
-            this.runCount--;
-            setEndData();
+            //runCount is used (used for unittesting only)
+            //Round will end when a goal has been scored OR when runCount reaches 0
+            if (this.runCount == 0)
+            {
+                myGame.endRound();
+            }
+            else
+            {
+                updatePosition(speed / 100);
+                this.runCount--;
+                setEndData();
+            }
         }
     }
 
@@ -259,8 +271,6 @@ public class Puck extends TimerTask
                     this.endGoalHit = whoLostScore;
 
                     //End round
-                    //myGame.setContinueRun(false);
-                    this.runCount = 0;
                     myGame.endRound();
                 } else
                 {

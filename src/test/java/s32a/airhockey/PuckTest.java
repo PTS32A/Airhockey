@@ -30,6 +30,9 @@ public class PuckTest
     float puckSpeed;
     float direction;
     int runCount;
+    float distance;
+    
+    float sideLength;
     
     public PuckTest()
     {
@@ -52,6 +55,8 @@ public class PuckTest
         
         game.addPlayer(p2);
         game.addPlayer(p3);
+        
+        sideLength = game.getMyPuck().getSideLength();
     }
     
     @After
@@ -62,20 +67,23 @@ public class PuckTest
     @Test
     public void testUpdatePositionMovePuck()
     {
-        position = new Vector2(0, 10);
+        System.out.println("!!!MOVE PUCK TEST!!!");
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 90; //Move to the right
-        runCount = 5;
+        
+        //Small distance, no bounce
+        distance = sideLength / 3;
+        
+        runCount = calculateNeededRunCount();
+        
+        float expX = position.x + distance;
+        float expY = position.y;
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
 
         waitForPuck();
-        
-        //No bounce
-        //Exspected X is the ammount of times moving (runCount) * the speed (distance traveling) of the puck (runSpeed)
-        float expX = runCount * puckSpeed;
-        float expY = 10;
         
         Vector2 expResult = new Vector2(expX,expY);
         Vector2 result = game.getMyPuck().getEndPosition();
@@ -271,5 +279,15 @@ public class PuckTest
             //Wait indefinitly for Puck to finish
             System.out.print("");
         }
+    }
+    
+    private int calculateNeededRunCount()
+    {
+        int runCount = 0;
+        
+        runCount = (int)(distance / puckSpeed);
+        runCount++; //To ensure 5.2 (rounded to 5) becomces 6 and not 5. (It doesn't matter that 5.8 (rounded to 6) becomes 7)
+        
+        return runCount;
     }
 }

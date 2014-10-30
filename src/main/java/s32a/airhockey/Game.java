@@ -178,7 +178,8 @@ public class Game
         float defaultSpeed = 10;
         this.myPuck = new Puck(defaultSpeed, this);
         this.maxRounds = 10;      
-        this.puckTimer = new Timer();       
+        this.puckTimer = new Timer();
+        this.continueRun = false;
         this.gameOver = false;
     }
     
@@ -434,16 +435,16 @@ public class Game
      */
     public void run()
     {
-        //BEGIN PUCK MOVEMENT
-        System.out.println("--BEGIN PUCK MOVEMENT");
-
         myPuck.clearEndData();
 
         //Continue       
         if (!isPaused && myPuck != null)
         {
-            //Start new round
-            this.myPuck.resetPuck(); 
+            //this.myPuck.resetPuck();      -- This is moved to endRound to allow customSetup to make changes to Puck for just round 1, which is used by PuckTest only.
+            
+            //BEGIN PUCK MOVEMENT
+            System.out.println("--BEGIN PUCK MOVEMENT");
+            this.continueRun = true; //This allows Puck to be moved
         }
         
         System.out.println("--BEGIN BOT MOVEMENT");
@@ -469,7 +470,6 @@ public class Game
         this.roundNo++;
         System.out.println("-ROUND " + roundNo);
 
-        this.continueRun = true;
         this.isPaused = false;
             
         this.run();
@@ -478,10 +478,12 @@ public class Game
     public void endRound()
     {        
          //END OF PUCK MOVEMENT
+        this.continueRun = false;
         System.out.println("--END PUCK MOVEMENT");
         
         if (roundNo < maxRounds)
         {
+            this.myPuck.resetPuck();
             startRound();
         } else
         {
@@ -561,7 +563,7 @@ public class Game
             this.myPuck.setDirection(direction);
         }
 
-        if (runCount > 0 && runCount < 100)
+        if (runCount > 0 && runCount < 1000)
         {
             this.myPuck.setRunCount(runCount);
         }
