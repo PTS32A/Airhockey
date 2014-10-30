@@ -70,7 +70,7 @@ public class Lobby
         this.spectatedGames = new ArrayList<>();
         this.airhockeySettings = new HashMap<>();
         airhockeySettings.put("Goal Default", new Vector2(0, 0));
-        airhockeySettings.put("Side Length", 400f);
+        airhockeySettings.put("Side Length", 560f);
         //this.populate();
     }
 
@@ -347,7 +347,7 @@ public class Lobby
             {
                 if (this.getActivePersons().get(player.getName()) instanceof Player)
                 {
-                    player.setRating(this.myDatabaseControls.getNewRating(player, hasLeft));
+                    player.setRating(this.myDatabaseControls.getNewRating((Person)player, hasLeft));
                     this.returnToLobby(player);
                 }
             }

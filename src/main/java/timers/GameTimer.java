@@ -36,7 +36,7 @@ public class GameTimer extends AnimationTimer
         {
             lastAction = now;
         }
-        if (now - lastAction > 6000000000L) 
+        if (now - lastAction > 60000000000L) 
         {
             gameFX.quitClick(null);
         }

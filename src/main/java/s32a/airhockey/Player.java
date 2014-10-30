@@ -63,7 +63,7 @@ public class Player extends Person
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         batWidth = (int) (sideLength / 100 * 8);
-        this.batPos = new Vector2(goalPos.x, goalPos.y + 5f);
+        this.batPos = new Vector2(goalPos.x, goalPos.y);
         rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
         this.score = 20;
     }
@@ -131,11 +131,10 @@ public class Player extends Person
         return myGame.pauseGame(isPaused);
     }
     
-    public void draw(GraphicsContext graphics)
+    public void draw(GraphicsContext graphics, double width, double height)
     {
-        int radius = batWidth/2;
-        int x = rec.x - radius;
-        int y = rec.y - radius;
+        int x = rec.x + (int)(width/2) - batWidth/2;
+        int y = rec.y + (int)height - batWidth;
         graphics.fillOval(x, y, batWidth, batWidth);
     }
 }

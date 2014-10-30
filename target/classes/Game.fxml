@@ -9,12 +9,12 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="807.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="s32a.airhockey.gui.GameFX">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="807.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="s32a.airhockey.gui.GameFX">
   <children>
-    <Button fx:id="btnQuit" layoutX="739.0" layoutY="448.0" mnemonicParsing="false" onAction="#quitClick" prefWidth="52.0" text="Quit" />
-    <Button fx:id="btnPause" layoutX="739.0" layoutY="412.0" mnemonicParsing="false" onAction="#pauseClick" text="Pause" />
-    <Button fx:id="btnStart" layoutX="739.0" layoutY="371.0" mnemonicParsing="false" onAction="#startClick" prefWidth="51.000099999997474" text="Start" />
-    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" layoutX="294.0" layoutY="455.0" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" wrapText="true" />
+    <Button fx:id="btnQuit" layoutX="735.0" layoutY="543.0" mnemonicParsing="false" onAction="#quitClick" prefWidth="52.0" text="Quit" />
+    <Button fx:id="btnPause" layoutX="735.0" layoutY="507.0" mnemonicParsing="false" onAction="#pauseClick" text="Pause" />
+    <Button fx:id="btnStart" layoutX="735.0" layoutY="466.0" mnemonicParsing="false" onAction="#startClick" prefWidth="51.000099999997474" text="Start" />
+    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" layoutX="362.0" layoutY="555.0" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" wrapText="true" />
     <Label layoutX="14.0" layoutY="14.0" text="Name:">
       <font>
         <Font size="24.0" fx:id="x1" />
@@ -27,16 +27,16 @@
     <Label id="lblDifficult" fx:id="lblDifficulty" font="$x1" layoutX="120.0" layoutY="50.0" text="" />
     <Label id="lblScore" fx:id="lblScoreP1" font="$x1" layoutX="720.0" layoutY="44.0" prefHeight="35.0" prefWidth="69.0" text="" textFill="RED" />
     <Label fx:id="lblTime" font="$x1" layoutX="720.0" layoutY="8.0" prefHeight="35.0" prefWidth="69.0" text="" />
-    <Canvas fx:id="canvas" height="400.0" layoutX="165.0" layoutY="50.0" width="560.0" />
+    <Canvas fx:id="canvas" height="500.0" layoutX="165.0" layoutY="50.0" width="560.0" />
     <Label font="$x1" layoutX="619.0" layoutY="76.0" text="Score P2:" textFill="BLUE" />
     <Label id="lblScore" fx:id="lblScoreP2" font="$x1" layoutX="722.0" layoutY="76.0" prefHeight="35.0" prefWidth="69.0" text="" textFill="BLUE" />
     <Label font="$x1" layoutX="619.0" layoutY="108.0" text="Score P3:" textFill="LIME" />
     <Label id="lblScore" fx:id="lblScoreP3" font="$x1" layoutX="722.0" layoutY="108.0" prefHeight="35.0" prefWidth="69.0" text="" textFill="LIME" />
-      <Label font="$x1" layoutX="303.0" layoutY="14.0" text="Round:" />
-      <Label fx:id="lblRound" font="$x1" layoutX="385.0" layoutY="14.0" prefHeight="35.0" prefWidth="69.0" />
-      <Button fx:id="btnStopSpec" layoutX="692.0" layoutY="461.0" mnemonicParsing="false" onAction="#stopSpectating" text="Stop Spectating" />
-      <Button layoutX="157.0" layoutY="458.0" mnemonicParsing="false" onAction="#sendMessage" text="Send" />
-      <ListView fx:id="lvChatbox" layoutX="15.0" layoutY="243.0" prefHeight="217.0" prefWidth="142.0" />
-      <TextField fx:id="tfChatbox" layoutX="14.0" layoutY="459.0" prefHeight="25.0" prefWidth="142.0" promptText="Enter Message" text="" />
+      <Label font="$x1" layoutX="329.0" layoutY="14.0" text="Round:" />
+      <Label fx:id="lblRound" font="$x1" layoutX="411.0" layoutY="14.0" prefHeight="35.0" prefWidth="69.0" />
+      <Button fx:id="btnStopSpec" layoutX="688.0" layoutY="556.0" mnemonicParsing="false" onAction="#stopSpectating" text="Stop Spectating" />
+      <Button layoutX="163.0" layoutY="556.0" mnemonicParsing="false" onAction="#sendMessage" text="Send" />
+      <ListView fx:id="lvChatbox" layoutX="21.0" layoutY="341.0" prefHeight="217.0" prefWidth="142.0" />
+      <TextField fx:id="tfChatbox" layoutX="20.0" layoutY="557.0" prefHeight="25.0" prefWidth="142.0" promptText="Enter Message" text="" />
   </children>
 </AnchorPane>

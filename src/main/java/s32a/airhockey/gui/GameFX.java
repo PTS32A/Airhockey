@@ -32,25 +32,7 @@ import timers.GameTimer;
 
 /**
  * Notes: 
- * ? check whether using initialize doesn't mess things up, as it occupies a weird spot in the call order
- * x Support for spectating games is lacking
- * x Lobby.startGame returns a game, use this
- * x Lobby.startGame should be called in LobbyFX, to check whether player is allowed to start a game at all
- * x if you're using a local variable for player, consistently use him --- its used what it is needed for.
- * x beyond that, Lobby already has playedGame.
  * - add Error handling - replace logging with showdialogs in all places
- * x what if game is null, or currentPerson? Handled in lobby
- * ? any timed function for redrawing the game is absent -- wanted to make observer/observable, will discuss
- * x why are player and puck responsible for drawing objects? ask them puck / bat position, 
- *          but domain classes should not import anything javafx related --- game engine orientated programming
- * x score always starts @ 20 - see URS
- * x check whether keyevents don't propagate outside game. --- stage.addEventFilter takes care of that
- * x currently keyevents do not support continuous movement --- this will be fixed in player class
- * x Game and puck are drawing an AWT element, not javaFX
- * 
- * - overall flow should be that game and its items update their stats, 
- *      and that GUI on a regular basis (every 10-20ms or so) redraws itself based on their info
- *      - preferably initial drawing on a second graphics element, which is not shown onscreen until it's finished drawing
  * @author Luke
  */
 public class GameFX extends AirhockeyGUI implements Initializable
@@ -122,7 +104,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         }
         lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
         width = (int)canvas.getWidth();
-        height = (int)canvas.getHeight();
+        height = (int)canvas.getHeight() - 1;
         graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, width, height);
         drawEdges();
@@ -130,14 +112,17 @@ public class GameFX extends AirhockeyGUI implements Initializable
     
     public void updateScore()
     {
-        List<Player> p = Lobby.getSingle().getPlayedGame().getMyPlayers();
-        int score1 = p.get(0).getScore();
-        int score2 = p.get(1).getScore();
-        int score3 = p.get(2).getScore();
-        lblScoreP1.setText(String.valueOf(score1));
-        lblScoreP2.setText(String.valueOf(score2));
-        lblScoreP3.setText(String.valueOf(score3));
-        lblRound.setText(Integer.toString(Lobby.getSingle().getPlayedGame().getRoundNo()));
+        if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+        {
+            List<Player> p = Lobby.getSingle().getPlayedGame().getMyPlayers();
+            int score1 = p.get(0).getScore();
+            int score2 = p.get(1).getScore();
+            int score3 = p.get(2).getScore();
+            lblScoreP1.setText(String.valueOf(score1));
+            lblScoreP2.setText(String.valueOf(score2));
+            lblScoreP3.setText(String.valueOf(score3));
+            lblRound.setText(Integer.toString(Lobby.getSingle().getPlayedGame().getRoundNo()));
+        }
     }
     
     /**
@@ -167,27 +152,33 @@ public class GameFX extends AirhockeyGUI implements Initializable
     
     public void draw()
     {
-        Game myGame = Lobby.getSingle().getPlayedGame();
-        myGame.getMyPlayers().get(0).draw(graphics);
-        myGame.getMyPlayers().get(1).draw(graphics);
-        myGame.getMyPlayers().get(2).draw(graphics);
-        myGame.getMyPuck().draw(graphics);
+        if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+        {
+            graphics.clearRect(0, 0, width, height);
+            Game myGame = Lobby.getSingle().getPlayedGame();
+            myGame.getMyPlayers().get(0).draw(graphics, width, height);
+            myGame.getMyPlayers().get(1).draw(graphics, width, height);
+            myGame.getMyPlayers().get(2).draw(graphics, width, height);
+            myGame.getMyPuck().draw(graphics);
+        }
     }
     public void drawEdges()
     {
         // Left corner of triangle
         double aX = 0;
-        double aY = 0;
+        double aY = height;
         // Top corner of triangle
-        double bX = 200;
-        double bY = 400 * Math.sin(60);
+        double bX = width/2;
+        double bY = height - (width * Math.sin(Math.toRadians(60)));
         // Right corner of triangle
-        double cX = 400;
-        double cY = 0;
+        double cX = width;
+        double cY = height;
         
         graphics.strokeLine(aX, aY, bX, bY);
         graphics.strokeLine(bX, bY, cX, cY);
         graphics.strokeLine(cX, cY, aX, aY);
+        Player p = (Player)Lobby.getSingle().getCurrentPerson();
+        p.draw(graphics, width, height);
     }
     
     public void startClick(Event evt)
@@ -214,8 +205,13 @@ public class GameFX extends AirhockeyGUI implements Initializable
     
     public void quitClick(Event evt)
     {
+        if (gameTimer != null)
+        {
+            gameTimer.stop();
+        }
         Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), 
-                (Player) Lobby.getSingle().getCurrentPerson());
+                (Player)Lobby.getSingle().getCurrentPerson());
+        getThisStage().close();
     }
     
     public void sendMessage(Event evt)
@@ -243,7 +239,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                 {
                     if (!Lobby.getSingle().getPlayedGame().isPaused()) 
                     {
-                        me.moveBat(-1);
+                        me.moveBat(-5);
                         actionTaken = true;
                     }
                     
@@ -253,7 +249,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                 {
                     if (!Lobby.getSingle().getPlayedGame().isPaused()) 
                     {
-                        me.moveBat(1);
+                        me.moveBat(5);
                         actionTaken = true;
                     }
                 }
