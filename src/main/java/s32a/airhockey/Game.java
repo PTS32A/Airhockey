@@ -435,8 +435,6 @@ public class Game
      */
     public void run()
     {
-        myPuck.clearEndData();
-
         //Continue       
         if (!isPaused && myPuck != null)
         {
@@ -481,9 +479,10 @@ public class Game
         this.continueRun = false;
         System.out.println("--END PUCK MOVEMENT");
         
+        this.myPuck.resetPuck();
+        
         if (roundNo < maxRounds)
         {
-            this.myPuck.resetPuck();
             startRound();
         } else
         {
@@ -563,7 +562,7 @@ public class Game
             this.myPuck.setDirection(direction);
         }
 
-        if (runCount > 0 && runCount < 1000)
+        if (runCount > 0 && runCount < 5000)
         {
             this.myPuck.setRunCount(runCount);
         }

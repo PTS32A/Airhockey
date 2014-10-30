@@ -133,11 +133,13 @@ public class Puck extends TimerTask
         this.defaultRunCount = 5;
         
         resetPuck();
+        clearEndData();
     }
 
     public void resetPuck()
     {
-        System.out.println("Resetting puck");
+        setEndData();
+        
         this.position = centre;
         this.direction = new Random().nextFloat() * 360;
         this.runCount = defaultRunCount;
@@ -158,12 +160,16 @@ public class Puck extends TimerTask
         {
             this.endBatHit = hitBy.get(hitBy.size() - 1);
         }
+        else
+        {
+            this.endBatHit = null;
+        }
     }
 
     /**
      * Clears the EndData variables at the start of each round.
      */
-    public void clearEndData()
+    private void clearEndData()
     {
         //DATA for after a round; used by unittests.
         this.endPosition = null;
@@ -191,7 +197,7 @@ public class Puck extends TimerTask
         {
             return;
         }
-        
+               
         if (this.runCount <= -1)
         {
             //runCount is not used (Default setting for the actual product)
@@ -210,7 +216,6 @@ public class Puck extends TimerTask
             {
                 updatePosition(speed / 100);
                 this.runCount--;
-                setEndData();
             }
         }
     }
@@ -234,10 +239,7 @@ public class Puck extends TimerTask
 
             float newX = oldX + (float) (Math.sin(radians) * (double) distance);
             float newY = oldY + (float) (Math.cos(radians) * (double) distance);
-
-            newX = Math.round(newX * 100) / 100;
-            newY = Math.round(newY * 100) / 100;
-
+           
             Vector2 newPosition = new Vector2(newX, newY);
 
             Vector2 bouncePosition = isOutsideField(newPosition);
@@ -246,15 +248,14 @@ public class Puck extends TimerTask
             {
                 //Inside field
                 position = newPosition;
-                printMessage("Position: " + newX + ", " + newY);
+                printMessage("Position: " + roundPosition(newPosition));
             } else
             {
                 //Outside field or in collission with wall
                 position = bouncePosition;
 
-                printMessage("  Wanted Position: " + newX + ", " + newY);
-                printMessage("  Bounce Position: " + bouncePosition.x + ", " 
-                        + bouncePosition.y);
+                printMessage("  Wanted Position: " + roundPosition(newPosition));
+                printMessage("  Bounce Position: " + roundPosition(bouncePosition));
 
                 //Detect wheter a goal has been hit 
                 //(includes detection of bat blocking the puck)
@@ -613,6 +614,13 @@ public class Puck extends TimerTask
         {
             System.out.println("   " + message);
         }
+    }
+    
+    private String roundPosition(Vector2 pos)
+    {
+        float xRounded = Math.round(pos.x * 100) / 100;
+        float yRounded = Math.round(pos.y * 100) / 100;
+        return xRounded + ", " + yRounded;
     }
     
     public void draw(GraphicsContext graphics)

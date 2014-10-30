@@ -318,8 +318,9 @@ public class PuckTest
     {
         int runCount = 0;
         
-        runCount = (int)(distance / puckSpeed);
+        runCount = (int)(distance / (puckSpeed / 100));
         
+        System.out.print("Needed runcount: " + runCount);
         return runCount;
     }
     
