@@ -73,7 +73,7 @@ public class PuckTest
         direction = 90; //Move to the right
         
         //Small distance, no bounce
-        distance = sideLength / 3;
+        distance = sideLength / 4;
         
         runCount = calculateNeededRunCount();
         
@@ -88,16 +88,20 @@ public class PuckTest
         Vector2 expResult = new Vector2(expX,expY);
         Vector2 result = game.getMyPuck().getEndPosition();
         
-        assertEquals("Pucks position is incorrect", expResult, result);
+        assertTrue("Pucks position is incorrect", checkEqualPositions(expResult, result));
     }
     
     @Test
     public void testUpdatePositionBounceRight()
     {
-        position = null; //Keep default start position
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 90; //Move to the right
-        runCount = 10;
+        
+        //Half the sideLength which is a little bit more then the distance from centre to the right wall, so a wall bounce can occur.
+        distance = sideLength / 2;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
@@ -114,10 +118,14 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceLeft()
     {
-        position = null; //Keep default start position
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 270; //Move to the left
-        runCount = 10;
+        
+        //Half the sideLength which is a little bit more then the distance from centre to the left wall, so a wall bounce can occur.
+        distance = sideLength / 2;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
@@ -134,10 +142,14 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceUp()
     {
-        position = null; //Keep default start position
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 0; //Move up
-        runCount = 20;
+        
+        //75% the sideLength which is a little bit more then the distance from centre to the left wall, so a wall bounce can occur.
+        distance = sideLength * 0.75f;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
@@ -154,10 +166,14 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceDown()
     {
-        position = null; //Keep default start position
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 180; //Move down
-        runCount = 15;
+        
+        //Half the sideLength which is a little bit more then the distance from centre to the bottom wall, so a wall bounce can occur.
+        distance = sideLength / 2;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
@@ -174,10 +190,14 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceDiagonalTowardsBottomWall()
     {
-        position = new Vector2(50, 10); //Keep default start position
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 160; //Move diagonally down towards the bottom wall
-        runCount = 5;
+        
+        //Half the sideLength which is a little bit more then the distance from centre diagonally to the bottom wall, so a wall bounce can occur.
+        distance = sideLength / 2;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
@@ -193,10 +213,14 @@ public class PuckTest
     
     public void testUpdatePositionBounceDiagonalTowardsLeftWall()
     {
-        position = new Vector2(50, 10); //Keep default start position
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 290; //Move diagonally down towards the bottom wall
-        runCount = 5;
+        
+        //Half the sideLength which is a little bit more then the distance from centre diagonally to the left wall, so a wall bounce can occur.
+        distance = sideLength / 2;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
@@ -213,17 +237,22 @@ public class PuckTest
     @Test
     public void testUpdatePositionGoalHit()
     {
-        position = new Vector2(0, 95);
+        position = game.getMyPuck().getCentre(); //Set position to centre
+        position.x += game.getMyPuck().getBatWidth() * 0.75f;
         puckSpeed = 10;
-        direction = 90; //Move to the right
-        runCount = 10;
+        direction = 180; //Move towards the bottom
+        
+        //Half the sideLength which is a little bit more then the distance from centre to the right wall, so a wall bounce can occur.
+        distance = sideLength / 2;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
 
         waitForPuck();
         
-        Player expResult = game.getMyPlayers().get(1); //Player blue
+        Player expResult = game.getMyPlayers().get(0); //Player Red
         Player result = game.getMyPuck().getEndGoalHit();
         
         assertEquals("Pucks position is incorrect", expResult, result);
@@ -232,10 +261,14 @@ public class PuckTest
     @Test
     public void testUpdatePositionBatHit()
     {
-        position = null; //Keep default start position
+        position = game.getMyPuck().getCentre(); //Set position to centre
         puckSpeed = 10;
-        direction = 90; //Move towards the bottom
-        runCount = 10;
+        direction = 90; //Move towards the right
+        
+        //Half the sideLength which is a little bit more then the distance from centre diagonally to the left wall, so a wall bounce can occur.
+        distance = sideLength / 2;
+        
+        runCount = calculateNeededRunCount();
         
         game.customSetup(position, puckSpeed, direction, runCount, 1);
         game.beginGame();
@@ -286,8 +319,19 @@ public class PuckTest
         int runCount = 0;
         
         runCount = (int)(distance / puckSpeed);
-        runCount++; //To ensure 5.2 (rounded to 5) becomces 6 and not 5. (It doesn't matter that 5.8 (rounded to 6) becomes 7)
         
         return runCount;
+    }
+    
+    private boolean checkEqualPositions(Vector2 p1, Vector2 p2)
+    {
+        if (p1.x < p2.x + puckSpeed && p1.x > p2.x - puckSpeed)
+        {
+            if (p1.y < p2.y + puckSpeed && p1.y > p2.y - puckSpeed)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -51,6 +51,7 @@ public class Puck extends TimerTask
     private float sideGoalMaxY;
     private float bottomGoalMinX;
     private float bottomGoalMaxX;
+    @Getter
     private float batWidth;
     private float puckSize;
 
@@ -181,6 +182,12 @@ public class Puck extends TimerTask
     {
         // idle state between rounds
         if (myGame.isContinueRun() == false)
+        {
+            return;
+        }
+        
+        // Game is paused
+        if (myGame.isPaused() == true)
         {
             return;
         }
