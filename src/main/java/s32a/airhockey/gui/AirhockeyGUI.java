@@ -8,6 +8,8 @@ package s32a.airhockey.gui;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -56,6 +58,7 @@ public class AirhockeyGUI extends Application
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
 
         // populates lobby
@@ -112,20 +115,22 @@ public class AirhockeyGUI extends Application
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+//        stage.setResizable(false);
+        stage.setMinHeight(root.minHeight(700));
+        stage.setMinWidth(root.minWidth(1100));
+        
+        stage.widthProperty().addListener(new ChangeListener<Number>()
         {
-
             @Override
-            public void handle(WindowEvent event)
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldStageWidth, Number newStageWidth)
             {
-                Player person = (Player) Lobby.getSingle().getCurrentPerson();
-                if (person != null)
+                if(newStageWidth.doubleValue() < 1100)
                 {
-                    Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), person);
+                    stage.setWidth(1100);
                 }
-                stage.close();
             }
         });
+        
         stage.show();
     }
 

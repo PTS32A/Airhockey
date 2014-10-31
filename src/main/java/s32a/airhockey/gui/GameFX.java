@@ -13,6 +13,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -54,8 +60,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @FXML TextField tfChatbox;
     @FXML Canvas canvas;
     
-    private int width = 0;
-    private int height = 0;
+    private DoubleProperty width;
+    private DoubleProperty height;
     private GraphicsContext graphics;
     private boolean gameEnded = false;
     private int sec = 0;
@@ -66,6 +72,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        this.width = new SimpleDoubleProperty(.0);
+        this.height = new SimpleDoubleProperty(.0);
         setUp();
     }
     
@@ -105,10 +113,23 @@ public class GameFX extends AirhockeyGUI implements Initializable
             lblScoreP3.setText("20");
         }
         lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
-        width = (int)canvas.getWidth();
-        height = (int)canvas.getHeight() - 1;
+        this.width.bind(this.canvas.widthProperty());
+        this.height.bind(Bindings.subtract(this.canvas.heightProperty(), 1));
         graphics = canvas.getGraphicsContext2D();
-        graphics.clearRect(0, 0, width, height);
+        graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
+        
+        ChangeListener<Number> sizeChanged = new ChangeListener<Number>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
+            {
+                // REDRAW SHIT - maybe add listener to height 
+            }
+        };
+        
+        this.width.addListener(sizeChanged);
+        //this.height.addListener(sizeChanged);
+        
         drawEdges();
     }
     
@@ -156,11 +177,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
     {
         if (!Lobby.getSingle().getPlayedGame().isPaused()) 
         {
-            graphics.clearRect(0, 0, width, height);
+            graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
             Game myGame = Lobby.getSingle().getPlayedGame();
-            myGame.getMyPlayers().get(0).draw(graphics, width, height);
-            myGame.getMyPlayers().get(1).draw(graphics, width, height);
-            myGame.getMyPlayers().get(2).draw(graphics, width, height);
+            myGame.getMyPlayers().get(0).draw(graphics, width.doubleValue(), height.doubleValue());
+            myGame.getMyPlayers().get(1).draw(graphics, width.doubleValue(), height.doubleValue());
+            myGame.getMyPlayers().get(2).draw(graphics, width.doubleValue(), height.doubleValue());
             myGame.getMyPuck().draw(graphics);
         }
     }
@@ -168,13 +189,13 @@ public class GameFX extends AirhockeyGUI implements Initializable
     {
         // Left corner of triangle
         double aX = 0;
-        double aY = height;
+        double aY = height.doubleValue();
         // Top corner of triangle
-        double bX = width/2;
-        double bY = height - (width * Math.sin(Math.toRadians(60)));
+        double bX = width.doubleValue()/2;
+        double bY = height.doubleValue() - (width.doubleValue() * Math.sin(Math.toRadians(60)));
         // Right corner of triangle
-        double cX = width;
-        double cY = height;
+        double cX = width.doubleValue();
+        double cY = height.doubleValue();
         
         // Bottom goal
         Vector2 aXY1 = new Vector2((float)(aX + ((cX - aX)/100*30)), (float)(aY + ((cY - aY)/100*30)) - 1);
@@ -198,7 +219,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         graphics.strokeLine(cXY1.x, cXY1.y, cXY2.x, cXY2.y);
         graphics.setStroke(Paint.valueOf("BLACK"));
         Player p = (Player)Lobby.getSingle().getCurrentPerson();
-        p.draw(graphics, width, height);
+        p.draw(graphics, width.doubleValue(), height.doubleValue());
         //double y = (height - (bX * Math.sin(Math.toRadians(30))));
         //Point3D point = new Point3D(0,0,1+y);
         //canvas.setRotationAxis(point);

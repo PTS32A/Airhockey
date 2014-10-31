@@ -43,7 +43,7 @@ public class LobbyTimer extends AnimationTimer
             prevUpdate = now;
 //            java.util.Date date= new java.util.Date();
 //            System.out.println(new Timestamp(date.getTime()));
-            System.out.println("lobbytimer hit");
+//            System.out.println("lobbytimer hit");
             try
             {
                 //change values
