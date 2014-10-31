@@ -17,7 +17,7 @@ import lombok.Setter;
 
 /**
  *
- * @author Kargathia
+ * @author Luke
  */
 public class Player extends Person
 {

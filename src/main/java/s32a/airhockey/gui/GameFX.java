@@ -5,6 +5,7 @@
  */
 package s32a.airhockey.gui;
 
+import com.badlogic.gdx.math.Vector2;
 import com.sun.prism.paint.Color;
 import java.net.URL;
 import java.util.Calendar;
@@ -17,6 +18,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point3D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -174,11 +176,32 @@ public class GameFX extends AirhockeyGUI implements Initializable
         double cX = width;
         double cY = height;
         
+        // Bottom goal
+        Vector2 aXY1 = new Vector2((float)(aX + ((cX - aX)/100*30)), (float)(aY + ((cY - aY)/100*30)) - 1);
+        Vector2 aXY2 = new Vector2((float)(aX + ((cX - aX)/100*70)), (float)(aY + ((cY - aY)/100*70)) - 1);
+        // Left goal
+        Vector2 bXY1 = new Vector2((float)(aX + ((bX - aX)/100*30)) + 1, (float)(aY + ((bY - aY)/100*30)));
+        Vector2 bXY2 = new Vector2((float)(aX + ((bX - aX)/100*70)) + 1, (float)(aY + ((bY - aY)/100*70)));
+        // Right goal
+        Vector2 cXY1 = new Vector2((float)(cX + ((bX - cX)/100*30)) - 1, (float)(cY + ((bY - cY)/100*30)));
+        Vector2 cXY2 = new Vector2((float)(cX + ((bX - cX)/100*70)) - 1, (float)(cY + ((bY - cY)/100*70)));
+        
         graphics.strokeLine(aX, aY, bX, bY);
         graphics.strokeLine(bX, bY, cX, cY);
         graphics.strokeLine(cX, cY, aX, aY);
+        graphics.setLineWidth(2);
+        graphics.setStroke(Paint.valueOf("RED"));
+        graphics.strokeLine(aXY1.x, aXY1.y, aXY2.x, aXY2.y);
+        graphics.setStroke(Paint.valueOf("LIME"));
+        graphics.strokeLine(bXY1.x, bXY1.y, bXY2.x, bXY2.y);
+        graphics.setStroke(Paint.valueOf("BLUE"));
+        graphics.strokeLine(cXY1.x, cXY1.y, cXY2.x, cXY2.y);
+        graphics.setStroke(Paint.valueOf("BLACK"));
         Player p = (Player)Lobby.getSingle().getCurrentPerson();
         p.draw(graphics, width, height);
+        //double y = (height - (bX * Math.sin(Math.toRadians(30))));
+        //Point3D point = new Point3D(0,0,1+y);
+        //canvas.setRotationAxis(point);
     }
     
     public void startClick(Event evt)
@@ -194,6 +217,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             super.showDialog("Warning", "Not enough players to begin game.");
         }
+        canvas.setRotate(120);
     }
     
     public void pauseClick(Event evt)
@@ -201,6 +225,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         Lobby.getSingle().getPlayedGame().pauseGame(
                 !Lobby.getSingle().getPlayedGame().isPaused());
         actionTaken = true;
+        canvas.setRotate(-120);
     }
     
     public void quitClick(Event evt)
@@ -219,6 +244,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         Lobby.getSingle().getPlayedGame().addChatMessage(tfChatbox.getText(), 
                 Lobby.getSingle().getCurrentPerson());
         tfChatbox.setText("");
+        canvas.setRotate(0);
     }
     
     public void stopSpectating(Event evt)
