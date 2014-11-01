@@ -374,6 +374,21 @@ public class Lobby
         }
         return true;
     }
+    
+    /**
+     * returns given person to lobby, and removes him from the spectators of given game.
+     * @param game
+     * @param spectator 
+     */
+    public void stopSpectating(Game game, Person spectator)
+    {
+        if(spectator == null || game == null|| !(spectator instanceof Spectator))
+        {
+            return;
+        }
+        game.removeSpectator((Spectator) spectator);
+        this.returnToLobby(spectator);
+    }
 
     /**
      * returns a specific person's status from Player or Spectator back to

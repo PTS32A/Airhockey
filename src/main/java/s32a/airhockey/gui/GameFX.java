@@ -325,8 +325,15 @@ public class GameFX extends AirhockeyGUI implements Initializable
         tfChatbox.setText("");
     }
     
+    /**
+     * Closes window, removes spectator from game, and returns spectator to Personhood.
+     * @param evt 
+     */
     public void stopSpectating(Event evt)
     {
+        Game game = Lobby.getSingle().getPlayedGame();
+        Person person = Lobby.getSingle().getCurrentPerson();
+        Lobby.getSingle().stopSpectating(game, person);
         getThisStage().close();
     }
     
