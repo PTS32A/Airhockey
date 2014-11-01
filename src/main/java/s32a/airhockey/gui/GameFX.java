@@ -6,28 +6,20 @@
 package s32a.airhockey.gui;
 
 import com.badlogic.gdx.math.Vector2;
-import com.sun.prism.paint.Color;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Point3D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -35,18 +27,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import lombok.Getter;
-import lombok.Setter;
 import s32a.airhockey.*;
 import timers.GameTimer;
 
 /**
- * Notes: - Puck and bots are not moving. Bot code has been updated to more
- * efficient usage. -- bots are now properly initialised as bots whenever an
- * activePerson with
  *
- * @author Luke
+ * @author Luke, Bob
  */
 public class GameFX extends AirhockeyGUI implements Initializable
 {
@@ -67,15 +54,14 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @FXML
     CheckBox cbxCustomDifficulty;
 
-    private DoubleProperty width;
-    private DoubleProperty height;
+    private DoubleProperty width, height;
+    private IntegerProperty score1, score2, score3;
     private GraphicsContext graphics;
-    private boolean gameEnded = false;
     private boolean gameStart = false;
     private int sec = 0;
     private int min = 0;
-    private @Getter
-    boolean actionTaken = true;
+    @Getter
+    private boolean actionTaken = true;
     private GameTimer gameTimer;
     private double top;
 
@@ -95,19 +81,21 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void setUp()
     {
-        Game myGame;
+        Game myGame = null;
         Player me = null;
-        if (Lobby.getSingle().getCurrentPerson() instanceof Player)
+        Lobby lobby = Lobby.getSingle();
+        if (lobby.getCurrentPerson() instanceof Player)
         {
-            myGame = Lobby.getSingle().getPlayedGame();
-            me = (Player) Lobby.getSingle().getCurrentPerson();
-            lblName.setText(Lobby.getSingle().getCurrentPerson().getName());
+            // Player
+            myGame = lobby.getPlayedGame();
+            me = (Player) lobby.getCurrentPerson();
+            lblName.setText(lobby.getCurrentPerson().getName());
             lblTime.setText("00:00");
             btnStopSpec.setVisible(false);
             lblRound.setText("1");
-        } else
+        } else if (lobby.getCurrentPerson() instanceof Spectator)
         {
-            //Spectator
+            // Spectator
             myGame = Lobby.getSingle().getSpectatedGames().get(Lobby.getSingle()
                     .getSpectatedGames().size() - 1);
             lblName.setText(myGame.getMyPlayers().get(0).getName());
@@ -116,50 +104,42 @@ public class GameFX extends AirhockeyGUI implements Initializable
             btnPause.setVisible(false);
             btnQuit.setVisible(false);
         }
-        lblScoreP1.setText("20");
-        lblScoreP2.setText("20");
-        lblScoreP3.setText("20");
+        // score properties
+        this.score1 = new SimpleIntegerProperty(20);
+        this.score2 = new SimpleIntegerProperty(20);
+        this.score3 = new SimpleIntegerProperty(20);
+
+        // round number
+        this.lblRound.textProperty().bind(myGame.getRoundNo().asString());
+
+        // Chatbox
+        this.lvChatbox.setItems(myGame.getMyChatbox().chatProperty());
+
+        // Difficulty 
         lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
+
+        // binds width / height for redrawing to canvas size
         this.width.bind(this.canvas.widthProperty());
         this.height.bind(Bindings.subtract(this.canvas.heightProperty(), 1));
+
+        // initialises graphics object
         graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
 
+        // adds listener to screen size change. Possibly redundant with bound values
         ChangeListener<Number> sizeChanged = new ChangeListener<Number>()
         {
-
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
             {
                 // REDRAW SHIT - maybe add listener to height 
             }
         };
-
         this.width.addListener(sizeChanged);
         //this.height.addListener(sizeChanged);
 
-        this.lvChatbox.setItems(myGame.getMyChatbox().chatProperty());
-
-        drawEdges();
-    }
-
-    /**
-     * If game is not paused then updates all player scores and round number.
-     * Currently this is updated every 20ms along with draw().
-     */
-    public void updateScore()
-    {
-        if (!Lobby.getSingle().getPlayedGame().isPaused())
-        {
-            List<Player> p = Lobby.getSingle().getPlayedGame().getMyPlayers();
-            int score1 = p.get(0).getScore();
-            int score2 = p.get(1).getScore();
-            int score3 = p.get(2).getScore();
-            lblScoreP1.setText(String.valueOf(score1));
-            lblScoreP2.setText(String.valueOf(score2));
-            lblScoreP3.setText(String.valueOf(score3));
-            lblRound.setText(Integer.toString(Lobby.getSingle().getPlayedGame().getRoundNo()));
-        }
+        // draws the canvas
+        this.drawEdges();
     }
 
     /**
@@ -287,7 +267,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void startClick(Event evt)
     {
-        if (Lobby.getSingle().getPlayedGame().getMyPlayers().size() == 3)
+        Game myGame = Lobby.getSingle().getPlayedGame();
+        if (myGame != null && myGame.getMyPlayers().size() == 3)
         {
             if (Lobby.getSingle().getPlayedGame().beginGame())
             {
@@ -297,6 +278,15 @@ public class GameFX extends AirhockeyGUI implements Initializable
                 btnStart.setDisable(true);
                 this.sldCustomDifficulty.setDisable(true);
                 this.cbxCustomDifficulty.setDisable(true);
+
+                // binds score labels to player scores
+                this.lblScoreP1.textProperty().bind(myGame.getMyPlayers()
+                        .get(0).getScore().asString());
+                this.lblScoreP2.textProperty().bind(myGame.getMyPlayers()
+                        .get(1).getScore().asString());
+                this.lblScoreP3.textProperty().bind(myGame.getMyPlayers()
+                        .get(2).getScore().asString());
+
             } else
             {
                 super.showDialog("Error", "Failed to begin game");
@@ -349,7 +339,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             gameTimer.stop();
         }
-        if (Lobby.getSingle().getPlayedGame().statusProperty().getValue().equals("Game Over"))
+        if (Lobby.getSingle().getPlayedGame().isGameOver())
         {
             Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), null);
         } else
@@ -451,7 +441,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     Number oldValue, Number newValue)
             {
                 cbxCustomDifficulty.setText("custom: " + newValue.toString());
-                if(cbxCustomDifficulty.isSelected())
+                if (cbxCustomDifficulty.isSelected())
                 {
                     customDifficultySelect(null);
                 }

@@ -431,9 +431,9 @@ public class Lobby
         {
             throw new IllegalArgumentException("game wasn't full");
         }
-        int player1score = input.getMyPlayers().get(0).getScore();
-        int player2score = input.getMyPlayers().get(1).getScore();
-        int player3score = input.getMyPlayers().get(2).getScore();
+        int player1score = input.getMyPlayers().get(0).getScore().get();
+        int player2score = input.getMyPlayers().get(1).getScore().get();
+        int player3score = input.getMyPlayers().get(2).getScore().get();
 
         double player1rating = input.getMyPlayers().get(0).getRating();
         double player2rating = input.getMyPlayers().get(1).getRating();
@@ -462,9 +462,9 @@ public class Lobby
         // adjusts score based on whether the game ended prematurely
         if (earlyEnding)
         {
-            player1score = (player1score - 20) * 10 / input.getRoundNo() + 20;
-            player2score = (player2score - 20) * 10 / input.getRoundNo() + 20;
-            player3score = (player3score - 20) * 10 / input.getRoundNo() + 20;
+            player1score = (player1score - 20) * 10 / input.getRoundNo().get() + 20;
+            player2score = (player2score - 20) * 10 / input.getRoundNo().get() + 20;
+            player3score = (player3score - 20) * 10 / input.getRoundNo().get() + 20;
         }
 
         input.getMyPlayers().get(0).setScore(player1score);

@@ -43,7 +43,6 @@ public class GameTimer extends AnimationTimer
         if (now - prevUpd > refreshInMili * 1000000)
         {
             gameFX.draw();
-            gameFX.updateScore();
             if (now - prevTime > 1000000000)
             {
                 gameFX.updateTime();

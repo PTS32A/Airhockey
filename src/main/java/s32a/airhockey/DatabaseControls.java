@@ -283,9 +283,9 @@ public class DatabaseControls
             throw new IllegalArgumentException("Game contained less than three players");
         }
 
-        if (game.getMyPlayers().get(0).getScore() < 0
-                || game.getMyPlayers().get(1).getScore() < 0
-                || game.getMyPlayers().get(2).getScore() < 0)
+        if (game.getMyPlayers().get(0).getScore().get() < 0
+                || game.getMyPlayers().get(1).getScore().get() < 0
+                || game.getMyPlayers().get(2).getScore().get() < 0)
         {
             throw new IllegalArgumentException("One or more players had negative scores");
         }
@@ -306,9 +306,9 @@ public class DatabaseControls
             java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
             prepStat.setTimestamp(2, sqlDate);
 
-            prepStat.setInt(3, game.getMyPlayers().get(0).getScore());
-            prepStat.setInt(4, game.getMyPlayers().get(1).getScore());
-            prepStat.setInt(5, game.getMyPlayers().get(2).getScore());
+            prepStat.setInt(3, game.getMyPlayers().get(0).getScore().get());
+            prepStat.setInt(4, game.getMyPlayers().get(1).getScore().get());
+            prepStat.setInt(5, game.getMyPlayers().get(2).getScore().get());
 
             prepStat.setString(6, game.getMyPlayers().get(0).getName());
             prepStat.setString(7, game.getMyPlayers().get(1).getName());

@@ -101,7 +101,7 @@ public class PlayerTest
     {
         System.out.println("getScore");
         int expResult = 20;
-        int result = player.getScore();
+        int result = player.getScore().get();
         assertEquals("Score incorrect",expResult, result);
     }
     

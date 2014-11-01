@@ -270,12 +270,12 @@ public class Puck extends TimerTask
                     if (hitBy.size() > 0)
                     {
                         whoScored = hitBy.get(hitBy.size() - 1);
-                        whoScored.setScore(whoScored.getScore() + 1);
+                        whoScored.setScore(whoScored.getScore().get() + 1);
                     }
 
                     //Player whose goal is hit
                     Player whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
-                    whoLostScore.setScore(whoLostScore.getScore() - 1);
+                    whoLostScore.setScore(whoLostScore.getScore().get() - 1);
                     this.endGoalHit = whoLostScore;
 
                     //End round

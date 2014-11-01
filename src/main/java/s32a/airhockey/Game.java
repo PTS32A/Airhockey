@@ -12,19 +12,22 @@ import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
+import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-//import static org.lwjgl.Sys.getTime;
 /**
  * @author Kargathia
  */
 public class Game
-{    
+{
+
     private StringProperty difficultyProp, statusProp;
-    
+
     @Getter
     private Chatbox myChatbox;
     @Getter
@@ -42,105 +45,119 @@ public class Game
     @Getter
     private boolean isPaused;
     @Getter
-    private int roundNo;
+    private IntegerProperty roundNo;
 
     @Getter
     @Setter
     private boolean continueRun;
 
     private int maxRounds;
-    
+
     @Getter
     private boolean gameOver;
-    
+
     private Timer puckTimer;
-    
+
+    /**
+     * threadsafe set of roundNo
+     *
+     * @param input
+     */
+    private void setRoundNo(int input)
+    {
+        Platform.runLater(() ->
+        {
+            this.roundNo.set(input);
+        });
+    }
+
     /**
      * getter for difficulty as a property
-     * @return 
+     *
+     * @return
      */
     public StringProperty difficultyProperty()
     {
-        if(this.difficultyProp == null)
+        if (this.difficultyProp == null)
         {
             this.difficultyProp = new SimpleStringProperty(String.valueOf(this.myPuck.getSpeed()));
         }
         return this.difficultyProp;
     }
-    
+
     /**
      * Returns the current game status, formatted as StringProperty
-     * @return 
+     *
+     * @return
      */
     public StringProperty statusProperty()
     {
-        if(this.statusProp == null)
+        if (this.statusProp == null)
         {
             this.statusProp = new SimpleStringProperty("");
         }
-        
-        if(this.gameOver)
+
+        if (this.gameOver)
         {
             this.statusProp.set("Game Over");
-        }
-        else if(this.myPlayers.size() < 3)
+        } else if (this.myPlayers.size() < 3)
         {
             this.statusProp.set("Setting Up");
-        }      
-        else if (isPaused)
+        } else if (isPaused)
         {
             this.statusProp.set("Paused");
-        }
-        else if(!continueRun)
+        } else if (!continueRun)
         {
             this.statusProp.set("Ready");
-        }
-        else
+        } else
         {
             this.statusProp.set("Playing");
         }
         return this.statusProp;
     }
-    
+
     /**
      * loads the name of player 1 in a StringProperty
-     * @return 
+     *
+     * @return
      */
     public StringProperty player1NameProperty()
     {
         return this.playerNameProp(0);
     }
-    
+
     /**
      * loads the name of player 2 in a StringProperty
-     * @return 
+     *
+     * @return
      */
     public StringProperty player2NameProperty()
     {
         return this.playerNameProp(1);
     }
-    
+
     /**
      * loads the name of Player 3 in a StringProperty
-     * @return 
+     *
+     * @return
      */
     public StringProperty player3NameProperty()
     {
         return this.playerNameProp(2);
     }
-    
+
     /**
      * returns playername property at given index - used by player<X>Property
+     *
      * @param index
-     * @return 
+     * @return
      */
     private StringProperty playerNameProp(int index)
     {
-        if(this.myPlayers.size() <= index)
+        if (this.myPlayers.size() <= index)
         {
             return new SimpleStringProperty("--");
-        }
-        else
+        } else
         {
             return this.myPlayers.get(index).nameProperty();
         }
@@ -174,17 +191,17 @@ public class Game
                 + String.valueOf(getInstance().get(Calendar.SECOND)));
         this.gameInfo.put("nextColor", this.getNextColor());
 
-        this.roundNo = 0;
+        this.roundNo = new SimpleIntegerProperty(0);
         float defaultSpeed = 15;
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
-        this.maxRounds = 10;      
+        this.maxRounds = 10;
         this.puckTimer = new Timer();
         this.continueRun = false;
         this.gameOver = false;
         this.myChatbox = new Chatbox();
     }
-    
+
     /**
      * Calls ChatBox.addMessage(string) with a pre-formatted message - this
      * includes player name and timestamp appended to the message string
@@ -233,7 +250,6 @@ public class Game
                     this.adjustDifficulty();
 
                     //setBatPosition(player, myPlayers.size() - 1);
-
                     return true;
                 }
             }
@@ -246,8 +262,9 @@ public class Game
 
     /**
      * sets initial bat position for given player
+     *
      * @param p
-     * @param playerID 
+     * @param playerID
      */
     private void setBatPosition(Player p, int playerID)
     {
@@ -356,20 +373,20 @@ public class Game
     {
         if (myPlayers.size() == 3)
         {
-            if (roundNo == 0)
+            if (roundNo.get() == 0)
             {
                 System.out.println("BEGIN GAME");
-                
+
                 //Timer will keep going until game end
                 long interval = 20; //10 ms for a max 50fps
                 puckTimer.scheduleAtFixedRate(myPuck, 1000, interval);
-                
-                if (myPlayers.get(0) instanceof Bot && myPlayers.get(1) instanceof Bot 
-                    && myPlayers.get(2) instanceof Bot)
+
+                if (myPlayers.get(0) instanceof Bot && myPlayers.get(1) instanceof Bot
+                        && myPlayers.get(2) instanceof Bot)
                 {
                     myPuck.setPrintMessages(false);
                 }
-                
+
                 this.startRound();
                 return true;
             }
@@ -389,7 +406,7 @@ public class Game
      */
     public boolean adjustDifficulty(float puckSpeed)
     {
-        if (this.roundNo == 0)
+        if (this.roundNo.get() == 0)
         {
             float min = 10;
             float max = 40;
@@ -408,24 +425,25 @@ public class Game
             return false;
         }
     }
-    
+
     /**
      * lets the game decide what the difficulty should be for his players
+     *
      * @return true if successfully set puckspeed
      */
     public boolean adjustDifficulty()
     {
-        if(myPlayers.isEmpty())
+        if (myPlayers.isEmpty())
         {
             return false;
         }
         double averageRating = 0;
-        for(Player p : myPlayers)
+        for (Player p : myPlayers)
         {
             averageRating += p.getRating();
         }
         averageRating = averageRating / myPlayers.size();
-        return adjustDifficulty((float)averageRating);
+        return adjustDifficulty((float) averageRating);
     }
 
     /**
@@ -472,24 +490,24 @@ public class Game
         if (!isPaused && myPuck != null)
         {
             //this.myPuck.resetPuck();      -- This is moved to endRound to allow customSetup to make changes to Puck for just round 1, which is used by PuckTest only.
-            
+
             //BEGIN PUCK MOVEMENT
             System.out.println("--BEGIN PUCK MOVEMENT");
             this.continueRun = true; //This allows Puck to be moved
         }
-        
+
         System.out.println("--BEGIN BOT MOVEMENT");
-        
-        for(Player p : myPlayers)
+
+        for (Player p : myPlayers)
         {
-            if(p instanceof Bot)
+            if (p instanceof Bot)
             {
-                ((Bot)p).moveBot();
+                ((Bot) p).moveBot();
             }
         }
-        
+
         System.out.println("--END BOT MOVEMENT");
-    } 
+    }
 
     /**
      * Starts a new round within the running game rounds are ended automatically
@@ -498,23 +516,23 @@ public class Game
     private void startRound()
     {
         //Start new round
-        this.roundNo++;
-        System.out.println("-ROUND " + roundNo);
+        this.setRoundNo(this.roundNo.get() + 1);
+        System.out.println("-ROUND " + roundNo.get());
 
         this.isPaused = false;
-            
+
         this.run();
     }
-    
+
     void endRound()
-    {        
-         //END OF PUCK MOVEMENT
+    {
+        //END OF PUCK MOVEMENT
         this.continueRun = false;
         System.out.println("--END PUCK MOVEMENT");
-        
+
         this.myPuck.resetPuck();
-        
-        if (roundNo < maxRounds)
+
+        if (roundNo.get() < maxRounds)
         {
             startRound();
         } else
@@ -567,7 +585,7 @@ public class Game
      * called
      * @param maxRounds
      */
-    public void customSetup(Vector2 position, float puckSpeed, 
+    public void customSetup(Vector2 position, float puckSpeed,
             float direction, int runCount, int maxRounds)
     {
         //Caution: puck position and direction are reset to default after the first round has ended

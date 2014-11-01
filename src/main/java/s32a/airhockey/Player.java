@@ -11,6 +11,9 @@ import com.badlogic.gdx.math.Vector2;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Calendar;
+import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.GraphicsContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,9 +30,11 @@ public class Player extends Person
     private Vector2 batPos;
     @Getter
     private Colors color;
+    /**
+     * returns score as Integerproperty
+     */
     @Getter
-    @Setter
-    private int score;
+    private IntegerProperty score;
     @Getter
     @Setter
     private boolean isStarter;
@@ -50,6 +55,19 @@ public class Player extends Person
     private int batWidth;
 
     /**
+     * sets both int and property values
+     *
+     * @param input
+     */
+    public void setScore(int input)
+    {
+        Platform.runLater(() ->
+        {
+            score.setValue(input);
+        });
+    }
+
+    /**
      *
      * @param name provided by Person
      * @param rating provided by Person
@@ -63,29 +81,30 @@ public class Player extends Person
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         batWidth = (int) (sideLength / 100 * 8);
-        if (color == Colors.Red) 
+        if (color == Colors.Red)
         {
             this.batPos = new Vector2(goalPos.x, goalPos.y);
             rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
         }
-        if (color == Colors.Blue) 
+        if (color == Colors.Blue)
         {
-            this.batPos = new Vector2(sideLength/3*2, sideLength/2);
+            this.batPos = new Vector2(sideLength / 3 * 2, sideLength / 2);
             rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
         }
-        if (color == Colors.Green) 
+        if (color == Colors.Green)
         {
-            this.batPos = new Vector2(sideLength/3, sideLength/2);
+            this.batPos = new Vector2(sideLength / 3, sideLength / 2);
             rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
         }
-        this.score = 20;
+        this.score = new SimpleIntegerProperty(20);
     }
 
     /**
      * Adjusts the bat position a given distance to left or right Bat is unable
      * to move if game is paused
      *
-     * @param amount in a direction 1 for positive movement -1 for negative movement
+     * @param amount in a direction 1 for positive movement -1 for negative
+     * movement
      * @return True if all went well False otherwise, including paused game
      * Eventually throws IllegalArgumentException if amount exceeds min or max
      * value
@@ -96,44 +115,40 @@ public class Player extends Person
         if (myGame.isPaused())
         {
             return false;
-        } 
-        else
+        } else
         {
-              // Will reimplement this later.
+            // Will reimplement this later.
 //            float check = this.batPos.x + amount;
 //            if (check >= sideLength / 2 || check <= -(sideLength / 2))
 //            {
 //                throw new IllegalArgumentException();
 //            }
-            if (this.getColor() == Colors.Red) 
+            if (this.getColor() == Colors.Red)
             {
-                if (amount == 1) 
+                if (amount == 1)
                 {
                     direction = 0;
-                }
-                else
+                } else
                 {
                     direction = 180;
                 }
             }
-            if (this.getColor() == Colors.Blue) 
+            if (this.getColor() == Colors.Blue)
             {
-                if (amount == 1) 
+                if (amount == 1)
                 {
                     direction = 240;
-                }
-                else
+                } else
                 {
                     direction = 60;
                 }
             }
-            if (this.getColor() == Colors.Green) 
+            if (this.getColor() == Colors.Green)
             {
-                if (amount == 1) 
+                if (amount == 1)
                 {
                     direction = 300;
-                }
-                else
+                } else
                 {
                     direction = 120;
                 }
@@ -182,11 +197,11 @@ public class Player extends Person
     {
         return myGame.pauseGame(isPaused);
     }
-    
+
     public void draw(GraphicsContext graphics, double width, double height)
     {
-        int x = rec.x + (int)(width/2) - batWidth/2;
-        int y = rec.y + (int)height - batWidth;
+        int x = rec.x + (int) (width / 2) - batWidth / 2;
+        int y = rec.y + (int) height - batWidth;
         graphics.fillOval(x, y, batWidth, batWidth);
     }
 }
