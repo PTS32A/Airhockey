@@ -103,7 +103,7 @@ public class Puck extends TimerTask
         //Inner triangle for centre of Puck to bounce against so that 
         // the edges of the circle of the Puck will look like bouncing of the real triangle
         this.puckSize = (float) (this.sideLength * 0.04);
-        this.sideLength = this.sideLength - (float) (2 * puckSize * Math.sqrt(3));
+        this.sideLength = this.sideLength - (float) (2 * (puckSize / 2) * Math.sqrt(3));
 
         this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2) 
                 - Math.pow(sideLength / 2, 2));
@@ -285,6 +285,7 @@ public class Puck extends TimerTask
                     //Position is set to bouncePosition and new direction has been calculated
                     //Repeat process with remaining distance to travel
                     distance = getDistance(bouncePosition, newPosition);
+                    distance = Math.round(distance);
                     if (distance > 0)
                     {
                         updatePosition(distance);
@@ -388,8 +389,9 @@ public class Puck extends TimerTask
             Vector2 linePos1, Vector2 linePos2)
     {
         /**
-         * Line Formula: y = a*x + b a = (change in y) / (change in x) b = y - a
-         * * x
+         * Line Formula: y = a*x + b
+         * a = (change in y) / (change in x)
+         * b = y - a * x
          */
         //Line 1:
         float a1 = (oldPos.y - newPos.y) / (oldPos.x - newPos.x);
