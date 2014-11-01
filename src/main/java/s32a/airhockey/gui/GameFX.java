@@ -52,33 +52,20 @@ public class GameFX extends AirhockeyGUI implements Initializable
 {
 
     @FXML
-    Label lblName;
+    Label lblName, lblDifficulty, lblScoreP1,
+            lblScoreP2, lblScoreP3, lblRound, lblTime;
     @FXML
-    Label lblDifficulty;
-    @FXML
-    Label lblScoreP1;
-    @FXML
-    Label lblScoreP2;
-    @FXML
-    Label lblScoreP3;
-    @FXML
-    Label lblRound;
-    @FXML
-    Label lblTime;
-    @FXML
-    Button btnStart;
-    @FXML
-    Button btnPause;
-    @FXML
-    Button btnQuit;
-    @FXML
-    Button btnStopSpec;
+    Button btnStart, btnPause, btnQuit, btnStopSpec;
     @FXML
     ListView lvChatbox;
     @FXML
     TextField tfChatbox;
     @FXML
     Canvas canvas;
+    @FXML
+    Slider sldCustomDifficulty;
+    @FXML
+    CheckBox cbxCustomDifficulty;
 
     private DoubleProperty width;
     private DoubleProperty height;
@@ -199,7 +186,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             {
                 minute = "0" + Integer.toString(min);
             }
-            
+
             lblTime.setText(minute + ":" + second);
         }
 //        lvChatbox.setItems(FXCollections.observableArrayList(Lobby.getSingle()
@@ -304,12 +291,13 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             if (Lobby.getSingle().getPlayedGame().beginGame())
             {
-                addKeyEvents();
+                addEvents();
                 gameTimer = new GameTimer(this);
                 gameTimer.start();
                 btnStart.setDisable(true);
-            }
-            else
+                this.sldCustomDifficulty.setDisable(true);
+                this.cbxCustomDifficulty.setDisable(true);
+            } else
             {
                 super.showDialog("Error", "Failed to begin game");
             }
@@ -318,6 +306,24 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             super.showDialog("Warning", "Not enough players to begin game.");
         }
+    }
+
+    /**
+     * Selects or unselect custom difficulty
+     *
+     * @param evt
+     */
+    public void customDifficultySelect(Event evt)
+    {
+        Game game = Lobby.getSingle().getPlayedGame();
+        if (cbxCustomDifficulty.isSelected())
+        {
+            game.adjustDifficulty((float) sldCustomDifficulty.getValue());
+        } else
+        {
+            game.adjustDifficulty();
+        }
+        lblDifficulty.setText(Float.toString(game.getMyPuck().getSpeed()));
     }
 
     /**
@@ -343,15 +349,14 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             gameTimer.stop();
         }
-        if(Lobby.getSingle().getPlayedGame().statusProperty().getValue().equals("Game Over"))
+        if (Lobby.getSingle().getPlayedGame().statusProperty().getValue().equals("Game Over"))
         {
             Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), null);
-        }
-        else
+        } else
         {
             Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(),
-                (Player) Lobby.getSingle().getCurrentPerson());
-        }       
+                    (Player) Lobby.getSingle().getCurrentPerson());
+        }
         getThisStage().close();
     }
 
@@ -379,7 +384,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         getThisStage().close();
     }
 
-    private void addKeyEvents()
+    private void addEvents()
     {
         //Moving left or right
         Player me = (Player) Lobby.getSingle().getCurrentPerson();
@@ -424,6 +429,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
 
+        // adds chatbox accept event
         this.tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>()
         {
 
@@ -433,6 +439,21 @@ public class GameFX extends AirhockeyGUI implements Initializable
                 if (ke.getCode() == KeyCode.ENTER)
                 {
                     sendMessage(null);
+                }
+            }
+        });
+
+        // Listen for Slider value changes
+        this.sldCustomDifficulty.valueProperty().addListener(new ChangeListener<Number>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable,
+                    Number oldValue, Number newValue)
+            {
+                cbxCustomDifficulty.setText("custom: " + newValue.toString());
+                if(cbxCustomDifficulty.isSelected())
+                {
+                    customDifficultySelect(null);
                 }
             }
         });

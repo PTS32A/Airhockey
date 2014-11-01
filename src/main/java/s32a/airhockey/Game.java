@@ -177,6 +177,7 @@ public class Game
         this.roundNo = 1;
         float defaultSpeed = 10;
         this.myPuck = new Puck(defaultSpeed, this);
+        this.adjustDifficulty();
         this.maxRounds = 10;      
         this.puckTimer = new Timer();
         this.continueRun = false;
@@ -229,6 +230,7 @@ public class Game
 
                     myPlayers.add(player);
                     player.setMyGame(this);
+                    this.adjustDifficulty();
 
                     //setBatPosition(player, myPlayers.size() - 1);
 
@@ -383,10 +385,10 @@ public class Game
     {
         if (this.roundNo == 0)
         {
-            float min = 0;
-            float max = 101;
+            float min = 10;
+            float max = 40;
 
-            if (puckSpeed > min && puckSpeed < max)
+            if (puckSpeed >= min && puckSpeed <= max)
             {
                 myPuck.setSpeed(puckSpeed);
                 return true;
@@ -399,6 +401,25 @@ public class Game
             //Can't adjust difficulty if game has already begun
             return false;
         }
+    }
+    
+    /**
+     * lets the game decide what the difficulty should be for his players
+     * @return true if successfully set puckspeed
+     */
+    public boolean adjustDifficulty()
+    {
+        if(myPlayers.isEmpty())
+        {
+            return false;
+        }
+        double averageRating = 0;
+        for(Player p : myPlayers)
+        {
+            averageRating += p.getRating();
+        }
+        averageRating = averageRating / myPlayers.size();
+        return adjustDifficulty((float)averageRating);
     }
 
     /**

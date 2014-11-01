@@ -374,15 +374,17 @@ public class Lobby
         }
         return true;
     }
-    
+
     /**
-     * returns given person to lobby, and removes him from the spectators of given game.
+     * returns given person to lobby, and removes him from the spectators of
+     * given game.
+     *
      * @param game
-     * @param spectator 
+     * @param spectator
      */
     public void stopSpectating(Game game, Person spectator)
     {
-        if(spectator == null || game == null|| !(spectator instanceof Spectator))
+        if (spectator == null || game == null || !(spectator instanceof Spectator))
         {
             return;
         }
@@ -436,6 +438,22 @@ public class Lobby
         double player1rating = input.getMyPlayers().get(0).getRating();
         double player2rating = input.getMyPlayers().get(1).getRating();
         double player3rating = input.getMyPlayers().get(2).getRating();
+
+        double averageRating = (player1rating + player2rating + player3rating) / 3;
+        double speedRating;
+        try
+        {
+            speedRating = Math.round(input.getMyPuck().getSpeed());
+            if (speedRating > averageRating)
+            {
+                player1rating = speedRating;
+                player2rating = speedRating;
+                player3rating = speedRating;
+            }
+        } catch (Exception ex)
+        {
+            // do nothing, and just let player ratings sort it out
+        }
 
         player1score += (player2rating + player3rating - 2 * player1rating) / 8;
         player2score += (player1rating + player3rating - 2 * player2rating) / 8;
@@ -585,7 +603,7 @@ public class Lobby
         bot = this.activePersons.get("bot11");
         bot.setBot(true);
 
-         // adds two bots to the system.
+        // adds two bots to the system.
         // should only be run on a fresh database
         try
         {

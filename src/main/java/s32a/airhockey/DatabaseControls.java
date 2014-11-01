@@ -216,7 +216,7 @@ public class DatabaseControls
     public List<Person> getRankings() throws SQLException
     {
         List<Person> output = new ArrayList<>();
-        String query = "SELECT playername, rating FROM player ORDER BY rating DESC LIMIT 10";
+        String query = "SELECT playername, rating FROM player ORDER BY rating DESC LIMIT 5";
         Statement stat = null;
 
         try
