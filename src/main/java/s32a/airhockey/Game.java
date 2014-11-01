@@ -174,8 +174,8 @@ public class Game
                 + String.valueOf(getInstance().get(Calendar.SECOND)));
         this.gameInfo.put("nextColor", this.getNextColor());
 
-        this.roundNo = 1;
-        float defaultSpeed = 10;
+        this.roundNo = 0;
+        float defaultSpeed = 150;
         this.myPuck = new Puck(defaultSpeed, this);
         this.maxRounds = 10;      
         this.puckTimer = new Timer();
@@ -354,13 +354,19 @@ public class Game
     {
         if (myPlayers.size() == 3)
         {
-            if (roundNo == 1)
+            if (roundNo == 0)
             {
                 System.out.println("BEGIN GAME");
                 
                 //Timer will keep going until game end
-                long interval = 10; //10 ms for a max 100fps
+                long interval = 20; //10 ms for a max 50fps
                 puckTimer.scheduleAtFixedRate(myPuck, 1000, interval);
+                
+                if (myPlayers.get(0) instanceof Bot && myPlayers.get(1) instanceof Bot 
+                    && myPlayers.get(2) instanceof Bot)
+                {
+                    myPuck.setPrintMessages(false);
+                }
                 
                 this.startRound();
                 return true;

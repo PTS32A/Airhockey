@@ -6,13 +6,11 @@
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Paint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -72,6 +70,8 @@ public class Puck extends TimerTask
     @Setter
     private int defaultRunCount;
 
+    @Getter
+    @Setter
     private boolean printMessages = true;
 
     /**
@@ -610,9 +610,16 @@ public class Puck extends TimerTask
      */
     private void printMessage(String message)
     {
-        if (printMessages)
+        try
         {
-            System.out.println("   " + message);
+            if (printMessages)
+            {
+                System.out.println("   " + message);
+            }
+        }
+        catch (StackOverflowError ex)
+        {
+            
         }
     }
     
@@ -628,7 +635,7 @@ public class Puck extends TimerTask
     {
         int radius = (int)(puckSize/2);
         int x = (int)position.x + (int)width/2 - radius;
-        int y = (int)height - (int)position.y - radius;
+        int y = (int)height - (int)(position.y + puckSize / 2) - radius;
         graphics.fillOval(x, y, (int)puckSize, (int)puckSize);
     }
 }
