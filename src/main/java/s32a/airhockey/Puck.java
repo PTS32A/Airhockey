@@ -618,8 +618,8 @@ public class Puck extends TimerTask
     
     private String roundPosition(Vector2 pos)
     {
-        float xRounded = Math.round(pos.x * 100) / 100;
-        float yRounded = Math.round(pos.y * 100) / 100;
+        int xRounded = Math.round(pos.x * 100) / 100;
+        int yRounded = Math.round(pos.y * 100) / 100;
         return xRounded + ", " + yRounded;
     }
     

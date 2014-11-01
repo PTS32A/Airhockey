@@ -194,7 +194,12 @@ public class GameFX extends AirhockeyGUI implements Initializable
             {
                 second = "0" + Integer.toString(sec);
             }
-            String minute = "0" + Integer.toString(min);
+            String minute = Integer.toString(min);
+            if (min < 10)
+            {
+                minute = "0" + Integer.toString(min);
+            }
+            
             lblTime.setText(minute + ":" + second);
         }
 //        lvChatbox.setItems(FXCollections.observableArrayList(Lobby.getSingle()
@@ -338,8 +343,15 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             gameTimer.stop();
         }
-        Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(),
+        if(Lobby.getSingle().getPlayedGame().statusProperty().getValue().equals("Game Over"))
+        {
+            Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), null);
+        }
+        else
+        {
+            Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(),
                 (Player) Lobby.getSingle().getCurrentPerson());
+        }       
         getThisStage().close();
     }
 
