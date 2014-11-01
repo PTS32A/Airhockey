@@ -72,7 +72,7 @@ public class Puck extends TimerTask
 
     @Getter
     @Setter
-    private boolean printMessages = true;
+    private boolean printMessages = false;
 
     /**
      * initialises a game's puck position is randomised, speed is a given
@@ -296,6 +296,7 @@ public class Puck extends TimerTask
     }
 
     /**
+     * @param newPosition
      * @return the wall position that the puck bounces off returns null if the
      * puck is not in collision with any walls
      */
@@ -394,11 +395,17 @@ public class Puck extends TimerTask
          * b = y - a * x
          */
         //Line 1:
-        float a1 = (oldPos.y - newPos.y) / (oldPos.x - newPos.x);
+        float tempY = (oldPos.y - newPos.y);
+        float tempX = (oldPos.x - newPos.x);
+        
+        float a1 = tempY / tempX;
         float b1 = oldPos.y - a1 * oldPos.x;
 
         //Line 2:
-        float a2 = (linePos1.y - linePos2.y) / (linePos1.x - linePos2.x);
+        tempY = (linePos1.y - linePos2.y);
+        tempX = (linePos1.x - linePos2.x);
+        
+        float a2 = tempY / tempX;
         float b2 = linePos1.y - a2 * linePos1.x;
 
         float x;

@@ -19,6 +19,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
+import timers.GameTimeTask;
 
 /**
  * @author Kargathia
@@ -57,7 +58,19 @@ public class Game
     private boolean gameOver;
 
     private Timer puckTimer;
+    
+    @Getter
+    private StringProperty gameTime;
 
+    /**
+     * Sets gameTime - non threadsafe
+     * @param input 
+     */
+    public void setGameTime(String input)
+    {
+        this.gameTime.set(input);
+    }
+    
     /**
      * threadsafe set of roundNo
      *
@@ -197,6 +210,8 @@ public class Game
         this.adjustDifficulty();
         this.maxRounds = 10;
         this.puckTimer = new Timer();
+        this.gameTime = new SimpleStringProperty("00:00");
+        
         this.continueRun = false;
         this.gameOver = false;
         this.myChatbox = new Chatbox();
@@ -380,6 +395,8 @@ public class Game
                 //Timer will keep going until game end
                 long interval = 20; //10 ms for a max 50fps
                 puckTimer.scheduleAtFixedRate(myPuck, 1000, interval);
+                //Starts new Timer for gameTime
+                puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);
 
                 if (myPlayers.get(0) instanceof Bot && myPlayers.get(1) instanceof Bot
                         && myPlayers.get(2) instanceof Bot)

@@ -9,11 +9,9 @@ import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -32,6 +30,7 @@ import s32a.airhockey.*;
 import timers.GameTimer;
 
 /**
+ * NOTES: - SetBatPosition in DrawEdges should probably be moved to game
  *
  * @author Luke, Bob
  */
@@ -54,12 +53,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @FXML
     CheckBox cbxCustomDifficulty;
 
-    private DoubleProperty width, height;
-    private IntegerProperty score1, score2, score3;
+    private DoubleProperty width, height, customSpeed;
     private GraphicsContext graphics;
     private boolean gameStart = false;
-    private int sec = 0;
-    private int min = 0;
     @Getter
     private boolean actionTaken = true;
     private GameTimer gameTimer;
@@ -92,22 +88,32 @@ public class GameFX extends AirhockeyGUI implements Initializable
             lblName.setText(lobby.getCurrentPerson().getName());
             lblTime.setText("00:00");
             btnStopSpec.setVisible(false);
-            lblRound.setText("1");
+
+            // bind custom difficulty indicators
+            this.customSpeed = new SimpleDoubleProperty(15);
+            this.customSpeed.bindBidirectional(this.sldCustomDifficulty.valueProperty());
+            this.cbxCustomDifficulty.textProperty().bind(customSpeed.asString());
+
+            // bot 10 and 11 were added in lobby.populate, and are currently not busy
+            Person bot = Lobby.getSingle().getActivePersons().get("bot10");
+            Lobby.getSingle().joinGame(myGame, bot);
+            bot = Lobby.getSingle().getActivePersons().get("bot11");
+            Lobby.getSingle().joinGame(myGame, bot);
+
         } else if (lobby.getCurrentPerson() instanceof Spectator)
         {
             // Spectator
             myGame = Lobby.getSingle().getSpectatedGames().get(Lobby.getSingle()
                     .getSpectatedGames().size() - 1);
             lblName.setText(myGame.getMyPlayers().get(0).getName());
-            lblTime.setVisible(false);
             btnStart.setVisible(false);
             btnPause.setVisible(false);
             btnQuit.setVisible(false);
+            this.sldCustomDifficulty.setVisible(false);
+            this.cbxCustomDifficulty.setVisible(false);
         }
-        // score properties
-        this.score1 = new SimpleIntegerProperty(20);
-        this.score2 = new SimpleIntegerProperty(20);
-        this.score3 = new SimpleIntegerProperty(20);
+        // binds upDateTime property
+        this.lblTime.textProperty().bind(myGame.getGameTime());
 
         // round number
         this.lblRound.textProperty().bind(myGame.getRoundNo().asString());
@@ -127,67 +133,64 @@ public class GameFX extends AirhockeyGUI implements Initializable
         graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
 
         // adds listener to screen size change. Possibly redundant with bound values
-        ChangeListener<Number> sizeChanged = new ChangeListener<Number>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
-            {
-                // REDRAW SHIT - maybe add listener to height 
-            }
-        };
+        ChangeListener<Number> sizeChanged
+                = (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
+                {
+                    // REDRAW SHIT - maybe add listener to height
+                };
         this.width.addListener(sizeChanged);
         //this.height.addListener(sizeChanged);
 
+        // adds chatbox accept event
+        this.tfChatbox.setOnKeyPressed((KeyEvent ke) ->
+        {
+            if (ke.getCode() == KeyCode.ENTER)
+            {
+                sendMessage(null);
+            }
+        });
+
+        // Whenever custom difficulty value is changed, checkbox is unchecked
+        this.sldCustomDifficulty.valueProperty().addListener(
+                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
+                {
+                    if (this.cbxCustomDifficulty.isSelected())
+                    {
+                        this.cbxCustomDifficulty.setSelected(false);
+                    }
+                });
+
         // draws the canvas
         this.drawEdges();
-    }
-
-    /**
-     * If game is not paused then time label is updated every second. Game
-     * chatbox is also updated here.
-     */
-    public void updateTime()
-    {
-        if (!Lobby.getSingle().getPlayedGame().isPaused())
+        
+        /**
+         * if currentPerson is spectator, graphics can start now.
+         * If he were a player, they start when startGame is called.
+         */
+        if(lobby.getCurrentPerson() instanceof Spectator)
         {
-            sec++;
-            if (sec > 59)
-            {
-                sec = 0;
-                min++;
-            }
-            String second = Integer.toString(sec);
-            if (sec < 10)
-            {
-                second = "0" + Integer.toString(sec);
-            }
-            String minute = Integer.toString(min);
-            if (min < 10)
-            {
-                minute = "0" + Integer.toString(min);
-            }
-
-            lblTime.setText(minute + ":" + second);
+            this.startGraphics(myGame);
         }
-//        lvChatbox.setItems(FXCollections.observableArrayList(Lobby.getSingle()
-//                .getPlayedGame().getMyChatbox().getChat()));
     }
 
     /**
      * Draw is called every 20ms for a frame rate of 50 frames per second.
      * Redraws all bats and the puck in their correct position.
+     * @param g
      */
-    public void draw()
+    public void draw(Game g)
     {
-        if (!Lobby.getSingle().getPlayedGame().isPaused())
+        if (!g.isPaused())
         {
             double bat = (double) width.doubleValue() / 100 * 8;
-            graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
-            drawEdges();
-            Game g = Lobby.getSingle().getPlayedGame();
-            g.getMyPlayers().get(0).draw(graphics, width.doubleValue(), height.doubleValue());
-            graphics.fillOval(g.getMyPlayers().get(1).getBatPos().x, g.getMyPlayers().get(1).getBatPos().y, bat, bat);
-            graphics.fillOval(g.getMyPlayers().get(2).getBatPos().x, g.getMyPlayers().get(2).getBatPos().y, bat, bat);
+            this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
+            this.drawEdges();
+            g.getMyPlayers().get(0).draw(graphics, width.doubleValue(),
+                    height.doubleValue());
+            this.graphics.fillOval(g.getMyPlayers().get(1).getBatPos().x,
+                    g.getMyPlayers().get(1).getBatPos().y, bat, bat);
+            this.graphics.fillOval(g.getMyPlayers().get(2).getBatPos().x,
+                    g.getMyPlayers().get(2).getBatPos().y, bat, bat);
             g.getMyPuck().draw(graphics, width.doubleValue(), height.doubleValue());
         }
     }
@@ -202,21 +205,28 @@ public class GameFX extends AirhockeyGUI implements Initializable
         double aY = height.doubleValue();
         // Top corner of triangle
         double bX = width.doubleValue() / 2;
-        double bY = top = height.doubleValue() - (width.doubleValue() * Math.sin(Math.toRadians(60)));
+        double bY = top = height.doubleValue() - (width.doubleValue()
+                * Math.sin(Math.toRadians(60)));
         top += height.doubleValue();
         // Right corner of triangle
         double cX = width.doubleValue();
         double cY = height.doubleValue();
 
         // Bottom goal
-        Vector2 aXY1 = new Vector2((float) (aX + ((cX - aX) / 100 * 30)), (float) (aY + ((cY - aY) / 100 * 30)) - 1);
-        Vector2 aXY2 = new Vector2((float) (aX + ((cX - aX) / 100 * 70)), (float) (aY + ((cY - aY) / 100 * 70)) - 1);
+        Vector2 aXY1 = new Vector2((float) (aX + ((cX - aX) / 100 * 30)),
+                (float) (aY + ((cY - aY) / 100 * 30)) - 1);
+        Vector2 aXY2 = new Vector2((float) (aX + ((cX - aX) / 100 * 70)),
+                (float) (aY + ((cY - aY) / 100 * 70)) - 1);
         // Left goal
-        Vector2 bXY1 = new Vector2((float) (aX + ((bX - aX) / 100 * 30)) + 1, (float) (aY + ((bY - aY) / 100 * 30)));
-        Vector2 bXY2 = new Vector2((float) (aX + ((bX - aX) / 100 * 70)) + 1, (float) (aY + ((bY - aY) / 100 * 70)));
+        Vector2 bXY1 = new Vector2((float) (aX + ((bX - aX) / 100 * 30)) + 1,
+                (float) (aY + ((bY - aY) / 100 * 30)));
+        Vector2 bXY2 = new Vector2((float) (aX + ((bX - aX) / 100 * 70)) + 1,
+                (float) (aY + ((bY - aY) / 100 * 70)));
         // Right goal
-        Vector2 cXY1 = new Vector2((float) (cX + ((bX - cX) / 100 * 30)) - 1, (float) (cY + ((bY - cY) / 100 * 30)));
-        Vector2 cXY2 = new Vector2((float) (cX + ((bX - cX) / 100 * 70)) - 1, (float) (cY + ((bY - cY) / 100 * 70)));
+        Vector2 cXY1 = new Vector2((float) (cX + ((bX - cX) / 100 * 30)) - 1,
+                (float) (cY + ((bY - cY) / 100 * 30)));
+        Vector2 cXY2 = new Vector2((float) (cX + ((bX - cX) / 100 * 70)) - 1,
+                (float) (cY + ((bY - cY) / 100 * 70)));
 
         graphics.strokeLine(aX, aY, bX, bY);
         graphics.strokeLine(bX, bY, cX, cY);
@@ -233,30 +243,42 @@ public class GameFX extends AirhockeyGUI implements Initializable
         //Draws and adds players for the first time
         if (!gameStart)
         {
-            Player p = (Player) Lobby.getSingle().getCurrentPerson();
+            Lobby lobby = Lobby.getSingle();
+            Game myGame = null;
+
+            // Checks whether Application user is Player or Spectator
+            if (lobby.getCurrentPerson() instanceof Player)
+            {
+                myGame = lobby.getPlayedGame();
+            } else if (lobby.getCurrentPerson() instanceof Spectator)
+            {
+                myGame = lobby.getSpectatedGames().get(lobby.getSpectatedGames().size() - 1);
+            } else
+            {
+                this.quitClick(null);
+                super.showDialog("Error", "currentPerson was neither Player nor Spectator - Unable to load");
+            }
+
+            Player p = myGame.getMyPlayers().get(0);
             p.draw(graphics, width.doubleValue(), height.doubleValue());
-            Lobby.getSingle().getPlayedGame().getMyPuck().draw(graphics, width.doubleValue(), height.doubleValue());
+            myGame.getMyPuck().draw(graphics,
+                    width.doubleValue(), height.doubleValue());
             double bat = (double) width.doubleValue() / 100 * 8;
+
+            // This should probably be moved to Game
             Vector2 bat1 = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + 3,
                     (float) ((aY + ((bY - aY) / 100 * 50)) - bat / 2));
             Vector2 bat2 = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
                     - (float) bat - 3, (float) ((cY + ((bY - cY) / 100 * 50)) - bat / 2));
 
-            Game g = Lobby.getSingle().getPlayedGame();
-
-            // bot 10 and 11 were added in lobby.populate, and are currently not busy
-            Person bot = Lobby.getSingle().getActivePersons().get("bot10");
-            Lobby.getSingle().joinGame(g, bot);
-            bot = Lobby.getSingle().getActivePersons().get("bot11");
-            Lobby.getSingle().joinGame(g, bot);
-
-            g.getMyPlayers().get(1).setBatPos(bat2);
-            g.getMyPlayers().get(2).setBatPos(bat1);
-            graphics.fillOval(g.getMyPlayers().get(1).getBatPos().x, g.getMyPlayers().get(1).getBatPos().y, bat, bat);
-            graphics.fillOval(g.getMyPlayers().get(2).getBatPos().x, g.getMyPlayers().get(2).getBatPos().y, bat, bat);
+            myGame.getMyPlayers().get(1).setBatPos(bat2);
+            myGame.getMyPlayers().get(2).setBatPos(bat1);
+            graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
+                    myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
+            graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
+                    myGame.getMyPlayers().get(2).getBatPos().y, bat, bat);
             gameStart = true;
         }
-
     }
 
     /**
@@ -273,20 +295,10 @@ public class GameFX extends AirhockeyGUI implements Initializable
             if (Lobby.getSingle().getPlayedGame().beginGame())
             {
                 addEvents();
-                gameTimer = new GameTimer(this);
-                gameTimer.start();
                 btnStart.setDisable(true);
                 this.sldCustomDifficulty.setDisable(true);
                 this.cbxCustomDifficulty.setDisable(true);
-
-                // binds score labels to player scores
-                this.lblScoreP1.textProperty().bind(myGame.getMyPlayers()
-                        .get(0).getScore().asString());
-                this.lblScoreP2.textProperty().bind(myGame.getMyPlayers()
-                        .get(1).getScore().asString());
-                this.lblScoreP3.textProperty().bind(myGame.getMyPlayers()
-                        .get(2).getScore().asString());
-
+                this.startGraphics(myGame);
             } else
             {
                 super.showDialog("Error", "Failed to begin game");
@@ -296,6 +308,24 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             super.showDialog("Warning", "Not enough players to begin game.");
         }
+    }
+
+    /**
+     * Starts display timer and binds score displays
+     * @param myGame 
+     */
+    private void startGraphics(Game myGame)
+    {
+        // binds score labels to player scores
+        this.lblScoreP1.textProperty().bind(myGame.getMyPlayers()
+                .get(0).getScore().asString());
+        this.lblScoreP2.textProperty().bind(myGame.getMyPlayers()
+                .get(1).getScore().asString());
+        this.lblScoreP3.textProperty().bind(myGame.getMyPlayers()
+                .get(2).getScore().asString());
+
+        gameTimer = new GameTimer(this, myGame);
+        gameTimer.start();
     }
 
     /**
@@ -335,28 +365,46 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void quitClick(Event evt)
     {
+        Lobby lobby = Lobby.getSingle();
         if (gameTimer != null)
         {
             gameTimer.stop();
         }
-        if (Lobby.getSingle().getPlayedGame().isGameOver())
+        if (lobby.getCurrentPerson() instanceof Spectator)
+        {   // TODO: FIND OUT WHAT GAME THIS IS
+            lobby.stopSpectating(
+                    lobby.getSpectatedGames().get(0),
+                    lobby.getCurrentPerson());
+        } else if (lobby.getPlayedGame().isGameOver()
+                || lobby.getPlayedGame().getRoundNo().get() == 0)
         {
-            Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), null);
+            lobby.endGame(lobby.getPlayedGame(), null);
         } else
         {
-            Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(),
-                    (Player) Lobby.getSingle().getCurrentPerson());
+            lobby.endGame(Lobby.getSingle().getPlayedGame(),
+                    (Player) lobby.getCurrentPerson());
         }
         getThisStage().close();
     }
 
     /**
      * Send message in chatbox
+     *
+     * @param evt
      */
     public void sendMessage(Event evt)
-    {
-        Lobby.getSingle().getPlayedGame().addChatMessage(tfChatbox.getText(),
-                Lobby.getSingle().getCurrentPerson());
+    {   
+        Lobby lobby = Lobby.getSingle();
+        Person currentPerson = lobby.getCurrentPerson();
+        
+        if(currentPerson instanceof Player)
+        {
+            lobby.getPlayedGame().addChatMessage(tfChatbox.getText(), currentPerson);
+        }
+        else if (currentPerson instanceof Spectator)
+        {   // TODO: If spectating, find out what game it is
+            lobby.getSpectatedGames().get(0).addChatMessage(tfChatbox.getText(), currentPerson);
+        }    
         tfChatbox.setText("");
     }
 
@@ -378,75 +426,37 @@ public class GameFX extends AirhockeyGUI implements Initializable
     {
         //Moving left or right
         Player me = (Player) Lobby.getSingle().getCurrentPerson();
-        final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>()
+        final EventHandler<KeyEvent> keyPressed = (final KeyEvent keyEvent) ->
         {
-            @Override
-            public void handle(final KeyEvent keyEvent)
+            if (keyEvent.getCode() == KeyCode.A
+                    || keyEvent.getCode() == KeyCode.LEFT)
             {
-                if (keyEvent.getCode() == KeyCode.A
-                        || keyEvent.getCode() == KeyCode.LEFT)
+                if (!Lobby.getSingle().getPlayedGame().isPaused())
                 {
-                    if (!Lobby.getSingle().getPlayedGame().isPaused())
-                    {
-                        me.moveBat(-1);
-                        actionTaken = true;
-                    }
-
-                } else if (keyEvent.getCode() == KeyCode.D
-                        || keyEvent.getCode() == KeyCode.RIGHT)
+                    me.moveBat(-1);
+                    actionTaken = true;
+                }
+            } else if (keyEvent.getCode() == KeyCode.D
+                    || keyEvent.getCode() == KeyCode.RIGHT)
+            {
+                if (!Lobby.getSingle().getPlayedGame().isPaused())
                 {
-                    if (!Lobby.getSingle().getPlayedGame().isPaused())
-                    {
-                        me.moveBat(1);
-                        actionTaken = true;
-                    }
+                    me.moveBat(1);
+                    actionTaken = true;
                 }
             }
         };
         //Stop moving
-        final EventHandler<KeyEvent> keyReleased = new EventHandler<KeyEvent>()
+        final EventHandler<KeyEvent> keyReleased = (final KeyEvent keyEvent) ->
         {
-            @Override
-            public void handle(final KeyEvent keyEvent)
+            if (!Lobby.getSingle().getPlayedGame().isPaused())
             {
-                if (!Lobby.getSingle().getPlayedGame().isPaused())
-                {
-                    actionTaken = false;
-                }
+                actionTaken = false;
             }
         };
 
         getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
-
-        // adds chatbox accept event
-        this.tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>()
-        {
-
-            @Override
-            public void handle(KeyEvent ke)
-            {
-                if (ke.getCode() == KeyCode.ENTER)
-                {
-                    sendMessage(null);
-                }
-            }
-        });
-
-        // Listen for Slider value changes
-        this.sldCustomDifficulty.valueProperty().addListener(new ChangeListener<Number>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable,
-                    Number oldValue, Number newValue)
-            {
-                cbxCustomDifficulty.setText("custom: " + newValue.toString());
-                if (cbxCustomDifficulty.isSelected())
-                {
-                    customDifficultySelect(null);
-                }
-            }
-        });
     }
 
     private Stage getThisStage()

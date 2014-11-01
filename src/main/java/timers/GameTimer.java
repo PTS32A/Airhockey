@@ -6,6 +6,7 @@
 package timers;
 
 import javafx.animation.AnimationTimer;
+import s32a.airhockey.Game;
 import s32a.airhockey.gui.GameFX;
 
 /**
@@ -15,17 +16,17 @@ import s32a.airhockey.gui.GameFX;
 public class GameTimer extends AnimationTimer
 {
     private final GameFX gameFX;
-    private long refreshInMili;
+    private long refreshInMS;
     private long prevUpd;
-    private long prevTime;
     private long lastAction;
+    private Game myGame;
     
-    public GameTimer(GameFX gameFX)
+    public GameTimer(GameFX gameFX, Game game)
     {
         this.gameFX = gameFX;
-        this.refreshInMili = 20;
+        this.myGame = game;
+        this.refreshInMS = 20;
         this.prevUpd = 0;
-        this.prevTime = 0;
         this.lastAction = 0;
     }
 
@@ -40,14 +41,9 @@ public class GameTimer extends AnimationTimer
         {
             gameFX.quitClick(null);
         }
-        if (now - prevUpd > refreshInMili * 1000000)
+        if (now - prevUpd > refreshInMS * 1000000)
         {
-            gameFX.draw();
-            if (now - prevTime > 1000000000)
-            {
-                gameFX.updateTime();
-                prevTime = now;
-            }
+            gameFX.draw(myGame);
             prevUpd = now;
         }
     }
