@@ -153,7 +153,7 @@ public class Game
      *
      * @param starter The player that starts the game initially
      */
-    public Game(Player starter)
+    Game(Player starter)
     {
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
@@ -217,7 +217,7 @@ public class Game
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
      */
-    public boolean addPlayer(Player player)
+    boolean addPlayer(Player player)
     {
         if (player != null)
         {
@@ -242,6 +242,11 @@ public class Game
         return false;
     }
 
+    /**
+     * sets initial bat position for given player
+     * @param p
+     * @param playerID 
+     */
     private void setBatPosition(Player p, int playerID)
     {
         float sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
@@ -296,7 +301,7 @@ public class Game
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
      */
-    public boolean addSpectator(Spectator spectator) throws IllegalArgumentException
+    boolean addSpectator(Spectator spectator) throws IllegalArgumentException
     {
         if (spectator != null)
         {
@@ -322,7 +327,7 @@ public class Game
      * game
      * @return returns true if the spectator was successfully removed
      */
-    public boolean removeSpectator(Spectator spectator)
+    boolean removeSpectator(Spectator spectator)
     {
         if (spectator != null)
         {
@@ -349,7 +354,7 @@ public class Game
     {
         if (myPlayers.size() == 3)
         {
-            if (roundNo == 0)
+            if (roundNo == 1)
             {
                 System.out.println("BEGIN GAME");
                 
@@ -434,7 +439,7 @@ public class Game
      * This method cycles to a new frame (puck position, bot position)
      * ToBeImplemented
      */
-    public void run()
+    void run()
     {
         //Continue       
         if (!isPaused && myPuck != null)
@@ -474,7 +479,7 @@ public class Game
         this.run();
     }
     
-    public void endRound()
+    void endRound()
     {        
          //END OF PUCK MOVEMENT
         this.continueRun = false;
@@ -500,7 +505,7 @@ public class Game
      * @return the color the next player should have, cycling red, blue, green
      * returns null if game already has three players
      */
-    public Colors getNextColor()
+    Colors getNextColor()
     {
         switch (myPlayers.size())
         {

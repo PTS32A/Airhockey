@@ -42,28 +42,44 @@ import s32a.airhockey.*;
 import timers.GameTimer;
 
 /**
- * Notes: 
- * - Puck and bots are not moving. Bot code has been updated to more efficient usage.
- *      -- bots are now properly initialised as bots whenever an activePerson with
+ * Notes: - Puck and bots are not moving. Bot code has been updated to more
+ * efficient usage. -- bots are now properly initialised as bots whenever an
+ * activePerson with
+ *
  * @author Luke
  */
 public class GameFX extends AirhockeyGUI implements Initializable
 {
-    @FXML Label lblName;
-    @FXML Label lblDifficulty;
-    @FXML Label lblScoreP1;
-    @FXML Label lblScoreP2;
-    @FXML Label lblScoreP3;
-    @FXML Label lblRound;
-    @FXML Label lblTime;
-    @FXML Button btnStart;
-    @FXML Button btnPause;
-    @FXML Button btnQuit;
-    @FXML Button btnStopSpec;
-    @FXML ListView lvChatbox;
-    @FXML TextField tfChatbox;
-    @FXML Canvas canvas;
-    
+
+    @FXML
+    Label lblName;
+    @FXML
+    Label lblDifficulty;
+    @FXML
+    Label lblScoreP1;
+    @FXML
+    Label lblScoreP2;
+    @FXML
+    Label lblScoreP3;
+    @FXML
+    Label lblRound;
+    @FXML
+    Label lblTime;
+    @FXML
+    Button btnStart;
+    @FXML
+    Button btnPause;
+    @FXML
+    Button btnQuit;
+    @FXML
+    Button btnStopSpec;
+    @FXML
+    ListView lvChatbox;
+    @FXML
+    TextField tfChatbox;
+    @FXML
+    Canvas canvas;
+
     private DoubleProperty width;
     private DoubleProperty height;
     private GraphicsContext graphics;
@@ -71,10 +87,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
     private boolean gameStart = false;
     private int sec = 0;
     private int min = 0;
-    private @Getter boolean actionTaken = true;
+    private @Getter
+    boolean actionTaken = true;
     private GameTimer gameTimer;
     private double top;
-    
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
@@ -82,7 +99,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         this.height = new SimpleDoubleProperty(.0);
         setUp();
     }
-    
+
     /**
      * Sets all labels up for players and spectators. Button layout for Player
      * and Spectator is different, buttons.setVisible is set to false depending
@@ -94,19 +111,18 @@ public class GameFX extends AirhockeyGUI implements Initializable
         Game myGame;
         Player me = null;
         if (Lobby.getSingle().getCurrentPerson() instanceof Player)
-        {   
+        {
             myGame = Lobby.getSingle().getPlayedGame();
-            me = (Player)Lobby.getSingle().getCurrentPerson();
+            me = (Player) Lobby.getSingle().getCurrentPerson();
             lblName.setText(Lobby.getSingle().getCurrentPerson().getName());
             lblTime.setText("00:00");
             btnStopSpec.setVisible(false);
             lblRound.setText("1");
-        }
-        else
+        } else
         {
             //Spectator
             myGame = Lobby.getSingle().getSpectatedGames().get(Lobby.getSingle()
-                    .getSpectatedGames().size()-1);
+                    .getSpectatedGames().size() - 1);
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             lblTime.setVisible(false);
             btnStart.setVisible(false);
@@ -121,8 +137,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
         this.height.bind(Bindings.subtract(this.canvas.heightProperty(), 1));
         graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
-        
-        ChangeListener<Number> sizeChanged = new ChangeListener<Number>() {
+
+        ChangeListener<Number> sizeChanged = new ChangeListener<Number>()
+        {
 
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
@@ -130,22 +147,22 @@ public class GameFX extends AirhockeyGUI implements Initializable
                 // REDRAW SHIT - maybe add listener to height 
             }
         };
-        
+
         this.width.addListener(sizeChanged);
         //this.height.addListener(sizeChanged);
-        
+
         this.lvChatbox.setItems(myGame.getMyChatbox().chatProperty());
-        
+
         drawEdges();
     }
-    
+
     /**
      * If game is not paused then updates all player scores and round number.
      * Currently this is updated every 20ms along with draw().
      */
     public void updateScore()
     {
-        if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+        if (!Lobby.getSingle().getPlayedGame().isPaused())
         {
             List<Player> p = Lobby.getSingle().getPlayedGame().getMyPlayers();
             int score1 = p.get(0).getScore();
@@ -157,42 +174,42 @@ public class GameFX extends AirhockeyGUI implements Initializable
             lblRound.setText(Integer.toString(Lobby.getSingle().getPlayedGame().getRoundNo()));
         }
     }
-    
+
     /**
-     * If game is not paused then time label is updated every second. Game 
+     * If game is not paused then time label is updated every second. Game
      * chatbox is also updated here.
      */
     public void updateTime()
-    {   
-        if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+    {
+        if (!Lobby.getSingle().getPlayedGame().isPaused())
         {
             sec++;
-            if (sec > 59) 
+            if (sec > 59)
             {
                 sec = 0;
                 min++;
             }
             String second = Integer.toString(sec);
-            if (sec < 10) 
+            if (sec < 10)
             {
-               second = "0" + Integer.toString(sec); 
+                second = "0" + Integer.toString(sec);
             }
             String minute = "0" + Integer.toString(min);
-            lblTime.setText(minute + ":" + second); 
+            lblTime.setText(minute + ":" + second);
         }
 //        lvChatbox.setItems(FXCollections.observableArrayList(Lobby.getSingle()
 //                .getPlayedGame().getMyChatbox().getChat()));
     }
-    
+
     /**
-     * Draw is called every 20ms for a frame rate of 50 frames per second. Redraws
-     * all bats and the puck in their correct position.
+     * Draw is called every 20ms for a frame rate of 50 frames per second.
+     * Redraws all bats and the puck in their correct position.
      */
     public void draw()
     {
-        if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+        if (!Lobby.getSingle().getPlayedGame().isPaused())
         {
-            double bat = (double)width.doubleValue()/100*8;
+            double bat = (double) width.doubleValue() / 100 * 8;
             graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
             drawEdges();
             Game g = Lobby.getSingle().getPlayedGame();
@@ -202,7 +219,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             g.getMyPuck().draw(graphics, width.doubleValue(), height.doubleValue());
         }
     }
-    
+
     /**
      * Draws all edges and goals. Is redrawn along with draw()
      */
@@ -212,23 +229,23 @@ public class GameFX extends AirhockeyGUI implements Initializable
         double aX = 0;
         double aY = height.doubleValue();
         // Top corner of triangle
-        double bX = width.doubleValue()/2;
+        double bX = width.doubleValue() / 2;
         double bY = top = height.doubleValue() - (width.doubleValue() * Math.sin(Math.toRadians(60)));
         top += height.doubleValue();
         // Right corner of triangle
         double cX = width.doubleValue();
         double cY = height.doubleValue();
-        
+
         // Bottom goal
-        Vector2 aXY1 = new Vector2((float)(aX + ((cX - aX)/100*30)), (float)(aY + ((cY - aY)/100*30)) - 1);
-        Vector2 aXY2 = new Vector2((float)(aX + ((cX - aX)/100*70)), (float)(aY + ((cY - aY)/100*70)) - 1);
+        Vector2 aXY1 = new Vector2((float) (aX + ((cX - aX) / 100 * 30)), (float) (aY + ((cY - aY) / 100 * 30)) - 1);
+        Vector2 aXY2 = new Vector2((float) (aX + ((cX - aX) / 100 * 70)), (float) (aY + ((cY - aY) / 100 * 70)) - 1);
         // Left goal
-        Vector2 bXY1 = new Vector2((float)(aX + ((bX - aX)/100*30)) + 1, (float)(aY + ((bY - aY)/100*30)));
-        Vector2 bXY2 = new Vector2((float)(aX + ((bX - aX)/100*70)) + 1, (float)(aY + ((bY - aY)/100*70)));
+        Vector2 bXY1 = new Vector2((float) (aX + ((bX - aX) / 100 * 30)) + 1, (float) (aY + ((bY - aY) / 100 * 30)));
+        Vector2 bXY2 = new Vector2((float) (aX + ((bX - aX) / 100 * 70)) + 1, (float) (aY + ((bY - aY) / 100 * 70)));
         // Right goal
-        Vector2 cXY1 = new Vector2((float)(cX + ((bX - cX)/100*30)) - 1, (float)(cY + ((bY - cY)/100*30)));
-        Vector2 cXY2 = new Vector2((float)(cX + ((bX - cX)/100*70)) - 1, (float)(cY + ((bY - cY)/100*70)));
-        
+        Vector2 cXY1 = new Vector2((float) (cX + ((bX - cX) / 100 * 30)) - 1, (float) (cY + ((bY - cY) / 100 * 30)));
+        Vector2 cXY2 = new Vector2((float) (cX + ((bX - cX) / 100 * 70)) - 1, (float) (cY + ((bY - cY) / 100 * 70)));
+
         graphics.strokeLine(aX, aY, bX, bY);
         graphics.strokeLine(bX, bY, cX, cY);
         graphics.strokeLine(cX, cY, aX, aY);
@@ -240,60 +257,68 @@ public class GameFX extends AirhockeyGUI implements Initializable
         graphics.setStroke(Paint.valueOf("BLUE"));
         graphics.strokeLine(cXY1.x, cXY1.y, cXY2.x, cXY2.y);
         graphics.setStroke(Paint.valueOf("BLACK"));
-        
+
         //Draws and adds players for the first time
-        if (!gameStart) 
+        if (!gameStart)
         {
-            Player p = (Player)Lobby.getSingle().getCurrentPerson();
+            Player p = (Player) Lobby.getSingle().getCurrentPerson();
             p.draw(graphics, width.doubleValue(), height.doubleValue());
             Lobby.getSingle().getPlayedGame().getMyPuck().draw(graphics, width.doubleValue(), height.doubleValue());
-            double bat = (double)width.doubleValue()/100*8;
-            Vector2 bat1 = new Vector2((float)(aX + ((bX - aX)/100*50)) + 3, 
-                    (float)((aY + ((bY - aY)/100*50)) - bat/2));
-            Vector2 bat2 = new Vector2((float)(cX + ((bX - cX)/100*50)) - 
-                    (float)bat - 3, (float)((cY + ((bY - cY)/100*50)) - bat/2));
+            double bat = (double) width.doubleValue() / 100 * 8;
+            Vector2 bat1 = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + 3,
+                    (float) ((aY + ((bY - aY) / 100 * 50)) - bat / 2));
+            Vector2 bat2 = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
+                    - (float) bat - 3, (float) ((cY + ((bY - cY) / 100 * 50)) - bat / 2));
 
             Game g = Lobby.getSingle().getPlayedGame();
-            
+
             // bot 10 and 11 were added in lobby.populate, and are currently not busy
             Person bot = Lobby.getSingle().getActivePersons().get("bot10");
             Lobby.getSingle().joinGame(g, bot);
             bot = Lobby.getSingle().getActivePersons().get("bot11");
             Lobby.getSingle().joinGame(g, bot);
-            
+
             g.getMyPlayers().get(1).setBatPos(bat2);
             g.getMyPlayers().get(2).setBatPos(bat1);
             graphics.fillOval(g.getMyPlayers().get(1).getBatPos().x, g.getMyPlayers().get(1).getBatPos().y, bat, bat);
             graphics.fillOval(g.getMyPlayers().get(2).getBatPos().x, g.getMyPlayers().get(2).getBatPos().y, bat, bat);
             gameStart = true;
         }
-        
+
     }
-    
+
     /**
-     * Checks if there are enough players to start. Disables start button
-     * when clicked and start is successful 
-     * @param evt 
+     * Checks if there are enough players to start. Disables start button when
+     * clicked and start is successful
+     *
+     * @param evt
      */
     public void startClick(Event evt)
     {
-        if (Lobby.getSingle().getPlayedGame().getMyPlayers().size() == 3) 
+        if (Lobby.getSingle().getPlayedGame().getMyPlayers().size() == 3)
         {
-            addKeyEvents();
-            gameTimer = new GameTimer(this);
-            gameTimer.start(); 
-            Lobby.getSingle().getPlayedGame().run();
-            btnStart.setDisable(true);
-        }
-        else
+            if (Lobby.getSingle().getPlayedGame().beginGame())
+            {
+                addKeyEvents();
+                gameTimer = new GameTimer(this);
+                gameTimer.start();
+                btnStart.setDisable(true);
+            }
+            else
+            {
+                super.showDialog("Error", "Failed to begin game");
+            }
+
+        } else
         {
             super.showDialog("Warning", "Not enough players to begin game.");
         }
     }
-    
+
     /**
      * Pauses and unpauses game
-     * @param evt 
+     *
+     * @param evt
      */
     public void pauseClick(Event evt)
     {
@@ -301,10 +326,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
                 !Lobby.getSingle().getPlayedGame().isPaused());
         actionTaken = true;
     }
-    
+
     /**
      * Calls lobby.endGame(). Currently causing some errors.
-     * @param evt 
+     *
+     * @param evt
      */
     public void quitClick(Event evt)
     {
@@ -312,24 +338,26 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             gameTimer.stop();
         }
-        Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), 
-                (Player)Lobby.getSingle().getCurrentPerson());
+        Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(),
+                (Player) Lobby.getSingle().getCurrentPerson());
         getThisStage().close();
     }
-    
+
     /**
      * Send message in chatbox
      */
     public void sendMessage(Event evt)
     {
-        Lobby.getSingle().getPlayedGame().addChatMessage(tfChatbox.getText(), 
+        Lobby.getSingle().getPlayedGame().addChatMessage(tfChatbox.getText(),
                 Lobby.getSingle().getCurrentPerson());
         tfChatbox.setText("");
     }
-    
+
     /**
-     * Closes window, removes spectator from game, and returns spectator to Personhood.
-     * @param evt 
+     * Closes window, removes spectator from game, and returns spectator to
+     * Personhood.
+     *
+     * @param evt
      */
     public void stopSpectating(Event evt)
     {
@@ -338,30 +366,29 @@ public class GameFX extends AirhockeyGUI implements Initializable
         Lobby.getSingle().stopSpectating(game, person);
         getThisStage().close();
     }
-    
-    private void addKeyEvents() 
+
+    private void addKeyEvents()
     {
         //Moving left or right
-        Player me = (Player)Lobby.getSingle().getCurrentPerson();
-        final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() 
+        Player me = (Player) Lobby.getSingle().getCurrentPerson();
+        final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>()
         {
             @Override
-            public void handle(final KeyEvent keyEvent) 
+            public void handle(final KeyEvent keyEvent)
             {
-                if (keyEvent.getCode() == KeyCode.A 
-                        || keyEvent.getCode() == KeyCode.LEFT) 
+                if (keyEvent.getCode() == KeyCode.A
+                        || keyEvent.getCode() == KeyCode.LEFT)
                 {
-                    if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+                    if (!Lobby.getSingle().getPlayedGame().isPaused())
                     {
                         me.moveBat(-1);
                         actionTaken = true;
                     }
-                    
-                } 
-                else if (keyEvent.getCode() == KeyCode.D 
-                        || keyEvent.getCode() == KeyCode.RIGHT) 
+
+                } else if (keyEvent.getCode() == KeyCode.D
+                        || keyEvent.getCode() == KeyCode.RIGHT)
                 {
-                    if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+                    if (!Lobby.getSingle().getPlayedGame().isPaused())
                     {
                         me.moveBat(1);
                         actionTaken = true;
@@ -370,38 +397,38 @@ public class GameFX extends AirhockeyGUI implements Initializable
             }
         };
         //Stop moving
-        final EventHandler<KeyEvent> keyReleased = new EventHandler<KeyEvent>() 
+        final EventHandler<KeyEvent> keyReleased = new EventHandler<KeyEvent>()
         {
             @Override
-            public void handle(final KeyEvent keyEvent) 
+            public void handle(final KeyEvent keyEvent)
             {
-                if (!Lobby.getSingle().getPlayedGame().isPaused()) 
+                if (!Lobby.getSingle().getPlayedGame().isPaused())
                 {
                     actionTaken = false;
                 }
             }
         };
-        
+
         getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
-        
-        this.tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+        this.tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>()
+        {
 
             @Override
             public void handle(KeyEvent ke)
             {
-                if(ke.getCode() == KeyCode.ENTER)
+                if (ke.getCode() == KeyCode.ENTER)
                 {
                     sendMessage(null);
                 }
             }
         });
     }
-    
-    private Stage getThisStage() 
+
+    private Stage getThisStage()
     {
         return (Stage) lblName.getScene().getWindow();
     }
-    
-    
+
 }
