@@ -49,7 +49,6 @@ public class LobbyTimer extends AnimationTimer
                 //change values
                 lobbyFX.setActiveGames(lobby.getActiveGames());
                 lobbyFX.setHighscore(lobby.getRankings());
-                lobbyFX.setChatMessages(lobby.getMychatbox().getChat());
             } catch (Exception ex)
             {
                 System.out.println("error in LobbyTimer: " + ex.getMessage());

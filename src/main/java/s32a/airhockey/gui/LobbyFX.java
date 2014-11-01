@@ -88,6 +88,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
 
         try
         {
+            this.lvChatbox.setItems(Lobby.getSingle().getMychatbox().chatProperty());
             this.tvHighscores.setItems(highScores);
             this.tvGameDisplay.setItems(games);
 
@@ -309,15 +310,5 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
                 items.add(0, item);
             }
         });
-    }
-
-    /**
-     * Updates the chatbox
-     *
-     * @param input
-     */
-    public void setChatMessages(List<String> input)
-    {
-        this.lvChatbox.setItems(FXCollections.observableArrayList(input));
     }
 }
