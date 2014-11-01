@@ -103,7 +103,7 @@ public class Puck extends TimerTask
         //Inner triangle for centre of Puck to bounce against so that 
         // the edges of the circle of the Puck will look like bouncing of the real triangle
         this.puckSize = (float) (this.sideLength * 0.04);
-        this.sideLength = this.sideLength - (float) (2 * (puckSize / 2) * Math.sqrt(3));
+        this.sideLength = this.sideLength - (float) (puckSize * Math.sqrt(3));
 
         this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2) 
                 - Math.pow(sideLength / 2, 2));
@@ -202,7 +202,7 @@ public class Puck extends TimerTask
         {
             //runCount is not used (Default setting for the actual product)
             //Round will end only end when a goal has been scored
-            updatePosition(speed / 100);
+            updatePosition(speed / 10);
         }
         else
         {
@@ -214,7 +214,7 @@ public class Puck extends TimerTask
             }
             else
             {
-                updatePosition(speed / 100);
+                updatePosition(speed / 10);
                 this.runCount--;
             }
         }
