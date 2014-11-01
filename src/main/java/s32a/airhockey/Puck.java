@@ -130,7 +130,7 @@ public class Puck extends TimerTask
         this.myGame = myGame;
 
 
-        this.defaultRunCount = 5;
+        this.defaultRunCount = -1;
         
         resetPuck();
         clearEndData();
