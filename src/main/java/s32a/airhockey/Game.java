@@ -175,7 +175,7 @@ public class Game
         this.gameInfo.put("nextColor", this.getNextColor());
 
         this.roundNo = 0;
-        float defaultSpeed = 150;
+        float defaultSpeed = 15;
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
         this.maxRounds = 10;      
