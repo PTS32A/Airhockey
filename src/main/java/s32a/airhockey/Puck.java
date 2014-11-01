@@ -72,7 +72,7 @@ public class Puck extends TimerTask
     @Setter
     private int defaultRunCount;
 
-    private boolean printMessages = false;
+    private boolean printMessages = true;
 
     /**
      * initialises a game's puck position is randomised, speed is a given
@@ -254,8 +254,8 @@ public class Puck extends TimerTask
                 //Outside field or in collission with wall
                 position = bouncePosition;
 
-                printMessage("  Wanted Position: " + roundPosition(newPosition));
-                printMessage("  Bounce Position: " + roundPosition(bouncePosition));
+//                printMessage("  Wanted Position: " + roundPosition(newPosition));
+//                printMessage("  Bounce Position: " + roundPosition(bouncePosition));
 
                 //Detect wheter a goal has been hit 
                 //(includes detection of bat blocking the puck)
@@ -620,7 +620,8 @@ public class Puck extends TimerTask
     {
         int xRounded = Math.round(pos.x * 100) / 100;
         int yRounded = Math.round(pos.y * 100) / 100;
-        return xRounded + ", " + yRounded;
+        String output = xRounded + ", " + yRounded;
+        return output;
     }
     
     public void draw(GraphicsContext graphics, double width, double height)
