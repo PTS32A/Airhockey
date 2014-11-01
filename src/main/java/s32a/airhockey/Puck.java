@@ -72,7 +72,7 @@ public class Puck extends TimerTask
     @Setter
     private int defaultRunCount;
 
-    private boolean printMessages = true;
+    private boolean printMessages = false;
 
     /**
      * initialises a game's puck position is randomised, speed is a given
@@ -248,7 +248,7 @@ public class Puck extends TimerTask
             {
                 //Inside field
                 position = newPosition;
-                printMessage("Position: " + roundPosition(newPosition));
+//                printMessage("Position: " + roundPosition(newPosition));
             } else
             {
                 //Outside field or in collission with wall
