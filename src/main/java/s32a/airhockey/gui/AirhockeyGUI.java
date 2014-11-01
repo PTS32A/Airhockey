@@ -8,22 +8,17 @@ package s32a.airhockey.gui;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.airhockey.*;
 
 /**
- *
+ *  NOTES: find out what game is currently active for the closeGame click event
  * @author Kargathia
  */
 public class AirhockeyGUI extends Application
@@ -118,34 +113,25 @@ public class AirhockeyGUI extends Application
 //        stage.setResizable(false);
         stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
-        
-        stage.widthProperty().addListener(new ChangeListener<Number>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldStageWidth, Number newStageWidth)
-            {
-                if(newStageWidth.doubleValue() < 1100)
-                {
-                    stage.setWidth(1100);
-                }
-            }
-        });
-        
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
-        {
 
-            @Override
-            public void handle(WindowEvent event)
+        stage.setOnCloseRequest((WindowEvent event) ->
+        {
+            Lobby lobby = Lobby.getSingle();
+            
+            if (lobby.getCurrentPerson() instanceof Spectator)
+            { // TODO FIND OUT WHAT GAME CURRENTLY IS ACTIVE
+                lobby.stopSpectating(lobby.getSpectatedGames().get(0), lobby.getCurrentPerson());
+            } else if (lobby.getCurrentPerson() instanceof Player)
             {
-                Player person = (Player)Lobby.getSingle().getCurrentPerson();
+                Player person = (Player) Lobby.getSingle().getCurrentPerson();
                 if (person != null)
                 {
                     Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), person);
                 }
-                stage.close();
             }
+            stage.close();
         });
-        
+
         stage.show();
     }
 

@@ -298,6 +298,7 @@ public class Lobby
             if (this.currentPerson.getName().equals(person.getName()))
             {
                 this.spectatedGames.add(game);
+                this.currentPerson = this.activePersons.get(person.getName());
             }
         } catch (Exception ex)
         {
@@ -341,7 +342,7 @@ public class Lobby
             return false;
         }
 
-        if (game.getMyPlayers().size() == 3)
+        if (game.getMyPlayers().size() == 3 && game.getRoundNo().get() > 0)
         {
             try
             {

@@ -137,7 +137,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             {
                 if (Lobby.getSingle().startGame(Lobby.getSingle().getCurrentPerson()) != null)
                 {
-                    openNewGame(evt);
+                    openNewGameWindow(evt);
                 } else
                 {
                     super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
@@ -169,7 +169,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
                             (Game) this.tvGameDisplay.getSelectionModel().getSelectedItem(), 
                             Lobby.getSingle().getCurrentPerson()) != null)
                     {
-                        openNewGame(evt);
+                        openNewGameWindow(evt);
                     } else
                     {
                         super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
@@ -196,13 +196,18 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             return;
         }
 
+        
         if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null)
         {
-            if (Lobby.getSingle().spectateGame(
-                    (Game) this.tvGameDisplay.getSelectionModel().getSelectedItem(), 
+            Game game = (Game) this.tvGameDisplay.getSelectionModel().getSelectedItem();
+            if(game.isGameOver() || game.getRoundNo().get() == 0)
+            {
+                super.showDialog("Error", "Unable to watch inactive games");
+            }
+            else if (Lobby.getSingle().spectateGame(game, 
                     Lobby.getSingle().getCurrentPerson()) != null)
             {
-                openNewGame(evt);
+                openNewGameWindow(evt);
             } else
             {
                 super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
@@ -254,7 +259,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
      * Opens new game window
      * @param evt 
      */
-    public void openNewGame(Event evt)
+    public void openNewGameWindow(Event evt)
     {
         final AirhockeyGUI base = this;
         javafx.application.Platform.runLater(new Runnable()
