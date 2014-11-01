@@ -63,8 +63,21 @@ public class Player extends Person
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         batWidth = (int) (sideLength / 100 * 8);
-        this.batPos = new Vector2(goalPos.x, goalPos.y);
-        rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
+        if (color == Colors.Red) 
+        {
+            this.batPos = new Vector2(goalPos.x, goalPos.y);
+            rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
+        }
+        if (color == Colors.Blue) 
+        {
+            this.batPos = new Vector2(sideLength/3*2, sideLength/2);
+            rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
+        }
+        if (color == Colors.Green) 
+        {
+            this.batPos = new Vector2(sideLength/3, sideLength/2);
+            rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
+        }
         this.score = 20;
     }
 
@@ -72,26 +85,65 @@ public class Player extends Person
      * Adjusts the bat position a given distance to left or right Bat is unable
      * to move if game is paused
      *
-     * @param amount on an X-scale - negative values are allowed max and min
-     * values as of yet undetermined
+     * @param amount in a direction 1 for positive movement -1 for negative movement
      * @return True if all went well False otherwise, including paused game
      * Eventually throws IllegalArgumentException if amount exceeds min or max
      * value
      */
     public boolean moveBat(float amount) throws IllegalArgumentException
     {
+        double direction = 0;
         if (myGame.isPaused())
         {
             return false;
-        } else
+        } 
+        else
         {
-            float check = this.batPos.x + amount;
-            if (check >= sideLength / 2 || check <= -(sideLength / 2))
+              // Will reimplement this later.
+//            float check = this.batPos.x + amount;
+//            if (check >= sideLength / 2 || check <= -(sideLength / 2))
+//            {
+//                throw new IllegalArgumentException();
+//            }
+            if (this.getColor() == Colors.Red) 
             {
-                throw new IllegalArgumentException();
+                if (amount == 1) 
+                {
+                    direction = 0;
+                }
+                else
+                {
+                    direction = 180;
+                }
             }
-            this.batPos.x += amount;
+            if (this.getColor() == Colors.Blue) 
+            {
+                if (amount == 1) 
+                {
+                    direction = 240;
+                }
+                else
+                {
+                    direction = 60;
+                }
+            }
+            if (this.getColor() == Colors.Green) 
+            {
+                if (amount == 1) 
+                {
+                    direction = 300;
+                }
+                else
+                {
+                    direction = 120;
+                }
+            }
+            double x = Math.cos(Math.toRadians(direction)) * 5;
+            double y = Math.sin(Math.toRadians(direction)) * 5;
+            this.batPos.x += x;
+            this.batPos.y += y;
             this.rec.x = (int) batPos.x;
+            this.rec.y = (int) batPos.y;
             return true;
         }
 

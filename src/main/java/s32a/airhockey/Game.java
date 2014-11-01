@@ -174,7 +174,7 @@ public class Game
                 + String.valueOf(getInstance().get(Calendar.SECOND)));
         this.gameInfo.put("nextColor", this.getNextColor());
 
-        this.roundNo = 0;
+        this.roundNo = 1;
         float defaultSpeed = 10;
         this.myPuck = new Puck(defaultSpeed, this);
         this.maxRounds = 10;      
@@ -229,7 +229,7 @@ public class Game
                     myPlayers.add(player);
                     player.setMyGame(this);
 
-                    setBatPosition(player, myPlayers.size() - 1);
+                    //setBatPosition(player, myPlayers.size() - 1);
 
                     return true;
                 }
@@ -451,7 +451,7 @@ public class Game
         {
             if(p instanceof Bot)
             {
-                ((Bot)p).moveBat();
+                ((Bot)p).moveBot();
             }
         }
         

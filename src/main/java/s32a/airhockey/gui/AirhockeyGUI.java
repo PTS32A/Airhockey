@@ -116,7 +116,7 @@ public class AirhockeyGUI extends Application
         Scene scene = new Scene(root);
         stage.setScene(scene);
 //        stage.setResizable(false);
-        stage.setMinHeight(root.minHeight(700));
+        stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
         
         stage.widthProperty().addListener(new ChangeListener<Number>()
@@ -128,6 +128,21 @@ public class AirhockeyGUI extends Application
                 {
                     stage.setWidth(1100);
                 }
+            }
+        });
+        
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        {
+
+            @Override
+            public void handle(WindowEvent event)
+            {
+                Player person = (Player)Lobby.getSingle().getCurrentPerson();
+                if (person != null)
+                {
+                    Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), person);
+                }
+                stage.close();
             }
         });
         

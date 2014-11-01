@@ -20,22 +20,6 @@ import lombok.Setter;
 public class Bot extends Player
 {
 
-    @Getter
-    private Vector2 batPos;
-    @Getter
-    private Colors color;
-    @Getter
-    private int score;
-    @Getter
-    private int rotation;
-    @Getter
-    private Vector2 goalPos;
-    @Getter
-    @Setter
-    private Game myGame;
-    @Getter
-    private Rectangle rec;
-
     /**
      *
      * @param name
@@ -45,26 +29,20 @@ public class Bot extends Player
     public Bot(String name, double rating, Colors color)
     {
         super(name, rating, color);
-        this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
-        float sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
-        int batWidth = (int) (sideLength / 100 * 8);
-        this.batPos = new Vector2(goalPos.x, goalPos.y + 5);
-        rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
-        this.score = 0;
     }
     
-    public void moveBat()
+    public void moveBot()
     {
-        if(!myGame.isPaused())
+        if(!getMyGame().isPaused())
         {
-            if(myGame.getMyPuck().getEndPosition().x >= goalPos.x 
-                    && myGame.getMyPuck().getEndPosition().x 
-                    <= goalPos.x + myGame.getMyPuck().getGoalLength())
+            if(getMyGame().getMyPuck().getPosition().y >= getBatPos().y)
             {
-                batPos.x = myGame.getMyPuck().getEndPosition().x;
-                rec.x = (int)batPos.x;
+                moveBat(1);
+            } 
+            if(getMyGame().getMyPuck().getPosition().y <= getBatPos().y)
+            {
+                moveBat(-1);
             } 
         }
     }
-
 }

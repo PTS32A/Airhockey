@@ -623,11 +623,11 @@ public class Puck extends TimerTask
         return xRounded + ", " + yRounded;
     }
     
-    public void draw(GraphicsContext graphics)
+    public void draw(GraphicsContext graphics, double width, double height)
     {
         int radius = (int)(puckSize/2);
-        int x = (int)position.x - radius;
-        int y = (int)position.y - radius;
+        int x = (int)position.x + (int)width/2 - radius;
+        int y = (int)height - (int)position.y - radius;
         graphics.fillOval(x, y, (int)puckSize, (int)puckSize);
     }
 }

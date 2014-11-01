@@ -13,11 +13,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
  * @author Kargathia
  */
+@Ignore
 public class PuckTest
 {
     Player p1 = new Player("playerRed", (double)10, Colors.Red);

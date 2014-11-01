@@ -10,19 +10,19 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1100.0" prefHeight="700.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="s32a.airhockey.gui.GameFX">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1100.0" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="s32a.airhockey.gui.GameFX">
   <children>
     <Button fx:id="btnQuit" mnemonicParsing="false" onAction="#quitClick" prefWidth="52.0" text="Quit" AnchorPane.bottomAnchor="36.0" AnchorPane.rightAnchor="20.0" />
     <Button fx:id="btnPause" mnemonicParsing="false" onAction="#pauseClick" text="Pause" AnchorPane.bottomAnchor="72.0" AnchorPane.rightAnchor="21.0" />
     <Button fx:id="btnStart" mnemonicParsing="false" onAction="#startClick" prefWidth="51.000099999997474" text="Start" AnchorPane.bottomAnchor="113.0" AnchorPane.rightAnchor="20.0" />
-    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" wrapText="true" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="362.0" />
+    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" layoutX="577.0" layoutY="562.0" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" wrapText="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="577.0" />
     <Label text="Name:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
       <font>
         <Font size="24.0" fx:id="x1" />
       </font>
     </Label>
     <Label font="$x1" text="Difficulty:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="50.0" />
-    <Canvas fx:id="canvas" height="500.0" width="560.0" AnchorPane.bottomAnchor="99.0" AnchorPane.leftAnchor="266.0" AnchorPane.rightAnchor="265.0" AnchorPane.topAnchor="99.0" />
+    <Canvas fx:id="canvas" height="500.0" layoutX="330.0" layoutY="50.0" width="560.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="330.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="50.0" />
     <Label font="$x1" text="Score P1:" textFill="RED" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="44.0" />
     <Label font="$x1" text="Time:" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="8.0" />
     <Label fx:id="lblName" font="$x1" layoutX="88.0" layoutY="14.0" text="" />
@@ -34,7 +34,7 @@
     <Label font="$x1" text="Score P3:" textFill="LIME" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="108.0" />
     <Label id="lblScore" fx:id="lblScoreP3" font="$x1" prefHeight="35.0" prefWidth="69.0" text="---" textFill="LIME" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="107.0" />
     <Label font="$x1" prefWidth="152.0" text="Round:" textAlignment="CENTER" AnchorPane.leftAnchor="474.0" AnchorPane.rightAnchor="474.0" AnchorPane.topAnchor="18.0" />
-    <Label fx:id="lblRound" font="$x1" layoutX="411.0" layoutY="14.0" prefHeight="35.0" prefWidth="69.0" />
+    <Label fx:id="lblRound" font="$x1" layoutX="555.0" layoutY="17.0" prefHeight="35.0" prefWidth="69.0" />
     <Button fx:id="btnStopSpec" mnemonicParsing="false" onAction="#stopSpectating" text="Stop Spectating" AnchorPane.bottomAnchor="23.0" AnchorPane.rightAnchor="14.0" />
     <Button mnemonicParsing="false" onAction="#sendMessage" text="Send" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="293.0" />
     <ListView fx:id="lvChatbox" prefHeight="217.0" prefWidth="245.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="21.0" />

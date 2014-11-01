@@ -23,6 +23,7 @@ public class PlayerTest
 {
     Player player;
     Game game;
+    float sideLength;
     
     public PlayerTest()
     {
@@ -44,6 +45,7 @@ public class PlayerTest
         player = new Player("Test", (double)15, Colors.Red);
         game = new Game(player);
         player.setMyGame(game);
+        sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
     }
     
     @After
@@ -55,7 +57,7 @@ public class PlayerTest
     (expected = IllegalArgumentException.class)
     public void testBatMoveGreaterEx()
     {
-        player.moveBat(101);
+        player.moveBat(sideLength/2);
         fail("Moved out of field to the right");
     }
     
@@ -63,7 +65,7 @@ public class PlayerTest
     (expected = IllegalArgumentException.class)
     public void testBatMoveLessEx()
     {
-        player.moveBat(-101);
+        player.moveBat(-(sideLength/2));
         fail("Moved out of field to the left");
     }
     
@@ -74,7 +76,7 @@ public class PlayerTest
     public void testGetBatPos()
     {
         System.out.println("getBatPos");
-        Vector2 expResult = new Vector2(0,5);
+        Vector2 expResult = new Vector2(0,0);
         Vector2 result = player.getBatPos();
         assertEquals("Expected result does not match given result",expResult, result);
     }
@@ -107,11 +109,11 @@ public class PlayerTest
     public void testMoveBat()
     {
         System.out.println("moveBat");
-        Vector2 expResult = new Vector2(5,5);
+        Vector2 expResult = new Vector2(5,0);
         player.moveBat(5f);
         Vector2 result = player.getBatPos();
         assertEquals("Bat not moved properly",expResult, result);
-        expResult = new Vector2(0,5);
+        expResult = new Vector2(0,0);
         player.moveBat(-5f);
         result = player.getBatPos();
         assertEquals("Bat not moved properly",expResult, result);
