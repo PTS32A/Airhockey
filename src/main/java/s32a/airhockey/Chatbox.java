@@ -8,6 +8,8 @@ package s32a.airhockey;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Calendar;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 
 /**
@@ -19,13 +21,21 @@ public class Chatbox
 
     @Getter
     private List<String> chat;
+    
+    private ObservableList<String> chatProp;
 
+    public ObservableList<String> chatProperty()
+    {
+        return this.chatProp;
+    }
+    
     /**
      * The chat box element.
      */
     public Chatbox()
     {
         this.chat = new ArrayList<>();
+        this.chatProp = FXCollections.observableArrayList(this.chat);
     }
 
     /**
@@ -50,6 +60,7 @@ public class Chatbox
         if (message.startsWith("<") && message.contains(">[") && message.contains("]:") && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1) && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1))
         {
             chat.add(message);
+            this.chatProp.add(message);
             return true;
         } else
         {

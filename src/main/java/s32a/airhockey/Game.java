@@ -181,6 +181,7 @@ public class Game
         this.puckTimer = new Timer();
         this.continueRun = false;
         this.gameOver = false;
+        this.myChatbox = new Chatbox();
     }
     
     /**

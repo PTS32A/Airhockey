@@ -134,6 +134,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
         this.width.addListener(sizeChanged);
         //this.height.addListener(sizeChanged);
         
+        this.lvChatbox.setItems(myGame.getMyChatbox().chatProperty());
+        
         drawEdges();
     }
     
@@ -382,6 +384,18 @@ public class GameFX extends AirhockeyGUI implements Initializable
         
         getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
+        
+        this.tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent ke)
+            {
+                if(ke.getCode() == KeyCode.ENTER)
+                {
+                    sendMessage(null);
+                }
+            }
+        });
     }
     
     private Stage getThisStage() 
