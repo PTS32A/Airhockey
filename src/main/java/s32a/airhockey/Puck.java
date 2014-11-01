@@ -241,14 +241,33 @@ public class Puck extends TimerTask
             float newY = oldY + (float) (Math.cos(radians) * (double) distance);
            
             Vector2 newPosition = new Vector2(newX, newY);
-
+           
+            //Check whether the puck is outside the field
             Vector2 bouncePosition = isOutsideField(newPosition);
 
             if (bouncePosition == null)
             {
                 //Inside field
-                position = newPosition;
-//                printMessage("Position: " + roundPosition(newPosition));
+                //Check whether the puck is bouncing of a bat
+                
+                Vector2 batBouncePosition = checkBatBounce(newPosition);
+                
+                if(batBouncePosition == null)
+                {
+                    //No bat bounce
+                    position = newPosition;
+//                  printMessage("Position: " + roundPosition(newPosition));
+                }
+                else
+                {
+                    //Bat bounce
+                    position = batBouncePosition;
+                    
+                    //Continue the position with the remaining distance, calculated using batBouncePosition and newPosition
+                    continueUpdatePosition(batBouncePosition, newPosition);
+                }
+
+                    
             } else
             {
                 //Outside field or in collission with wall
@@ -282,16 +301,22 @@ public class Puck extends TimerTask
                     myGame.endRound();
                 } else
                 {
-                    //Position is set to bouncePosition and new direction has been calculated
-                    //Repeat process with remaining distance to travel
-                    distance = getDistance(bouncePosition, newPosition);
-                    distance = Math.round(distance);
-                    if (distance > 0)
-                    {
-                        updatePosition(distance);
-                    }
+                    //Continue the position with the remaining distance, calculated using bouncePosition and newPosition
+                    continueUpdatePosition(bouncePosition, newPosition);
                 }
             }
+        }
+    }
+    
+    private void continueUpdatePosition(Vector2 bouncePosition, Vector2 newPosition)
+    {
+        //Position is set to bouncePosition and new direction has been calculated
+        //Repeat process with remaining distance to travel
+        float distance = getDistance(bouncePosition, newPosition);
+        distance = Math.round(distance);
+        if (distance > 0)
+        {
+            updatePosition(distance);
         }
     }
 
@@ -530,7 +555,9 @@ public class Puck extends TimerTask
     }
 
     /**
-     * Checks wheter a position on the goalline is blocked by the corresponding Bat.
+     * USED FOR Bat AS LINE WHICH IS A PART OF THE CORRESPONDING GOAL LINE.
+     * FOR Bat AS ROUND OBJECT GO TO checkBatBounce()
+     * Checks whether a position on the goalline is blocked by the corresponding Bat.
      * @param playerID The ID of the player whose Bat should be checked
      * @param pos The position on the goalline to be checked
      * @return Returns a boolean containing whether a Bat has blocked the Puck or not
@@ -575,6 +602,82 @@ public class Puck extends TimerTask
                 return false;
             }
         }
+    }
+    
+    /**
+     * USED FOR Bat AS ROUND OBJECT.
+     * FOR Bat AS LINE GO TO checkBatBlock()
+     * @param pos
+     * @return Returns a the player whose bat the position is on.
+     * Return null if the position is not on any bats.
+     */
+    private Vector2 checkBatBounce(Vector2 pos)
+    {
+        /**
+         * Formulas:
+         * A point (x, y) is on or within a circle if (x - Xcentre)^2 + y-Ycentre)^2 <= radius^2
+         * Where Xcentre and Ycentre make up the centre of the circle and
+         * radius is the radius of the circle
+         */
+        Vector2 batCentre;
+        
+        for (Player p : myGame.getMyPlayers())
+        {
+            batCentre = p.getBatPos();
+            
+            if (Math.pow(pos.x - batCentre.x, 2) + Math.pow(pos.y - batCentre.y, 2) <= Math.pow(batWidth, 2))
+            {
+                //Vector2 pos is on or within the circle
+                
+                Vector2 batBouncePosition = getIntersection(position, pos, batCentre, batWidth);
+                
+                if (batBouncePosition == null)
+                {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Vector2 getIntersectionWithCircle(Vector2 lineA, Vector2 lineB, Vector2 circleCentre, float radius)
+    {
+        /**
+         * Formulas
+         * 
+         * Point on Line: y = a*x + b
+         * a = (change in y) / (change in x)
+         * b = y - a * x
+         * 
+         * Point on Circle: (x - Xcentre)^2 + y-Ycentre)^2 == radius^2
+         * (y-Ycentre)^2 == radius^2 - (x-Xcentre)^2
+         * y-Ycentre == SQRT(radius^2 - (x-Xcentre)^2)
+         * y = SQRT(radius^2 - (x-Xcentre)^2) + ycentre
+         */
+        
+        float a = (lineA.y - lineB.y) / (lineA.x - lineB.x);
+        float b = lineA.y - a * lineA.x;
+        
+        float Xcentre = circleCentre.x;
+        float Ycentre = circleCentre.y;
+        
+        /**
+         * Equate the formulas:
+         * 
+         * y = a*x + b
+         * y = SQRT(radius^2 - (x-Xcentre)^2) + ycentre
+         * 
+         * a*x + b = SQRT(radius^2 - (x-Xcentre)^2) + ycentre
+         * a*x + (b - Ycentre) = SQRT(radius^2 - (x-Xcentre)^2)
+         * a^2*x^2 + 2*(b-Ycentre)*a*x + (b - Ycentre)^2 = radius^2 - (x-Xcentre)^2
+         * 
+         * TODO continue maths
+         */
+        
+        float x = 0;
+        float y = 0;
+        
+        return null;
     }
 
     /**
