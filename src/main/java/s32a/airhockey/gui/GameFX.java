@@ -8,10 +8,13 @@ package s32a.airhockey.gui;
 import com.badlogic.gdx.math.Vector2;
 import com.sun.prism.paint.Color;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
@@ -40,9 +43,8 @@ import timers.GameTimer;
 
 /**
  * Notes: 
- * - lobby.endGame() is currently causing some errors. Specifically in for loop
- * players.
  * - Puck and bots are not moving. Bot code has been updated to more efficient usage.
+ *      -- bots are now properly initialised as bots whenever an activePerson with
  * @author Luke
  */
 public class GameFX extends AirhockeyGUI implements Initializable
@@ -250,8 +252,13 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     (float)bat - 3, (float)((cY + ((bY - cY)/100*50)) - bat/2));
 
             Game g = Lobby.getSingle().getPlayedGame();
-            g.addPlayer(new Bot("Bot1", 15, Colors.Blue));
-            g.addPlayer(new Bot("Bot2", 15, Colors.Green));
+            
+            // bot 10 and 11 were added in lobby.populate, and are currently not busy
+            Person bot = Lobby.getSingle().getActivePersons().get("bot10");
+            Lobby.getSingle().joinGame(g, bot);
+            bot = Lobby.getSingle().getActivePersons().get("bot11");
+            Lobby.getSingle().joinGame(g, bot);
+            
             g.getMyPlayers().get(1).setBatPos(bat2);
             g.getMyPlayers().get(2).setBatPos(bat1);
             graphics.fillOval(g.getMyPlayers().get(1).getBatPos().x, g.getMyPlayers().get(1).getBatPos().y, bat, bat);

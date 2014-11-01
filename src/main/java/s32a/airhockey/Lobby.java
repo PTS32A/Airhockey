@@ -153,13 +153,12 @@ public class Lobby
 
         if (input instanceof Player)
         {
-            Player playerInput = (Player)input;
+            Player playerInput = (Player) input;
             this.endGame(playerInput.getMyGame(), playerInput);
-        }
-        else if (input instanceof Spectator)
+        } else if (input instanceof Spectator)
         {
-            Spectator spectInput = (Spectator)input;
-            for(Game g : activeGames)
+            Spectator spectInput = (Spectator) input;
+            for (Game g : activeGames)
             {
                 g.removeSpectator(spectInput);
             }
@@ -209,7 +208,7 @@ public class Lobby
             newGame = new Game((Player) person);
             this.activePersons.replace(person.getName(), person);
             this.activeGames.add(newGame);
-            if (this.currentPerson != null 
+            if (this.currentPerson != null
                     && this.currentPerson.getName().equals(person.getName()))
             {
                 this.currentPerson = person;
@@ -242,13 +241,19 @@ public class Lobby
 
         try
         {
-            Player player = new Player(person.getName(), person.getRating(), 
-                    game.getNextColor());
-            if(game.addPlayer(player))
+            Player player;
+            if (person.isBot())
+            {
+                player = new Bot(person.getName(), person.getRating(), game.getNextColor());
+            } else
+            {
+                player = new Player(person.getName(), person.getRating(),
+                        game.getNextColor());
+            }
+            if (game.addPlayer(player))
             {
                 this.activePersons.replace(person.getName(), player);
-            }
-            else
+            } else
             {
                 return null;
             }
@@ -267,7 +272,7 @@ public class Lobby
 
     /**
      * lets currentPerson spectate an existing game currentPerson is converted
-     * to Spectator currentPerson can't already be a Player currentPerson can
+     * to Spectator. currentPerson can't already be a Player. currentPerson can
      * already be a Spectator
      *
      * @param game can't be null
@@ -338,7 +343,17 @@ public class Lobby
 
         if (game.getMyPlayers().size() == 3)
         {
-            game = this.adjustScore(game, (hasLeft != null));
+            try
+            {
+                game = this.adjustScore(game, (hasLeft != null));
+                if (game == null)
+                {
+                    return false;
+                }
+            } catch (IllegalArgumentException ex)
+            {
+                return false;
+            }
         }
 
         try
@@ -347,7 +362,7 @@ public class Lobby
             {
                 if (this.getActivePersons().get(player.getName()) instanceof Player)
                 {
-                    player.setRating(this.myDatabaseControls.getNewRating((Person)player, hasLeft));
+                    player.setRating(this.myDatabaseControls.getNewRating((Person) player, hasLeft));
                     this.returnToLobby(player);
                 }
             }
@@ -375,7 +390,9 @@ public class Lobby
         }
         try
         {
+            boolean isBot = participant.isBot();
             this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.getRating()));
+            this.activePersons.get(participant.getName()).setBot(isBot);
             if (this.currentPerson.getName().equals(participant.getName()))
             {
                 this.currentPerson = (Person) this.activePersons.get(participant.getName());
@@ -427,7 +444,8 @@ public class Lobby
             this.myDatabaseControls.saveGame(input);
         } catch (SQLException ex)
         {
-            return null;
+            throw new IllegalArgumentException("failed to save game: "
+                    + ex.getMessage());
         }
 
         return input;
@@ -503,23 +521,64 @@ public class Lobby
         this.activePersons.put("bot10", new Person("bot10", (double) 15));
         this.activePersons.put("bot11", new Person("bot11", (double) 15));
 
-        Game game = this.startGame((Person) this.activePersons.get("bot1"));
-        this.joinGame(game, (Person) this.activePersons.get("bot2"));
-        this.joinGame(game, (Person) this.activePersons.get("bot3"));
+        //game 1
+        Person bot = this.activePersons.get("bot1");
+        bot.setBot(true);
+        Game game = this.startGame(bot);
+
+        bot = this.activePersons.get("bot2");
+        bot.setBot(true);
+        this.joinGame(game, bot);
+
+        bot = this.activePersons.get("bot3");
+        bot.setBot(true);
+        this.joinGame(game, bot);
         game.beginGame();
 
-        game = this.startGame((Person) this.activePersons.get("bot4"));
-        this.joinGame(game, (Person) this.activePersons.get("bot5"));
-        this.joinGame(game, (Person) this.activePersons.get("bot6"));
+        //game 2
+        bot = this.activePersons.get("bot4");
+        bot.setBot(true);
+        game = this.startGame(bot);
+
+        bot = this.activePersons.get("bot5");
+        bot.setBot(true);
+        this.joinGame(game, bot);
+
+        bot = this.activePersons.get("bot6");
+        bot.setBot(true);
+        this.joinGame(game, bot);
         game.pauseGame(true);
 
-        game = this.startGame((Person) this.activePersons.get("bot7"));
-        this.joinGame(game, (Person) this.activePersons.get("bot8"));
-        this.joinGame(game, (Person) this.activePersons.get("bot9"));
+        // game 3
+        bot = this.activePersons.get("bot7");
+        bot.setBot(true);
+        game = this.startGame(bot);
+
+        bot = this.activePersons.get("bot8");
+        bot.setBot(true);
+        this.joinGame(game, bot);
+
+        bot = this.activePersons.get("bot9");
+        bot.setBot(true);
+        this.joinGame(game, bot);
         game.pauseGame(true);
 
-        game = this.startGame((Person) this.activePersons.get("bot10"));
-        this.joinGame(game, (Person) this.activePersons.get("bot8"));
+        // loose change
+        bot = this.activePersons.get("bot10");
+        bot.setBot(true);
+
+        bot = this.activePersons.get("bot11");
+        bot.setBot(true);
+
+         // adds two bots to the system.
+        // should only be run on a fresh database
+        try
+        {
+            Lobby.getSingle().addPerson("bot10", "test");
+            Lobby.getSingle().addPerson("bot11", "test");
+        } catch (IllegalArgumentException | SQLException ex)
+        {
+        }
     }
 
 }

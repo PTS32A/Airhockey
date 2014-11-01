@@ -265,7 +265,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
                 } 
                 catch (IOException ex)
                 {
-                    base.showDialog("Error", "Could not open game");
+                    base.showDialog("Error", "Could not open game: " + ex.getMessage());
                 }
             }
         });
