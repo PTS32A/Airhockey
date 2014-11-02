@@ -398,11 +398,11 @@ public class Game
                 //Starts new Timer for gameTime
                 puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);
 
-                if (myPlayers.get(0).getName().equals("testey") || myPlayers.get(1).getName().equals("testey")
-                        || myPlayers.get(2).getName().equals("testey"))
+                if (myPlayers.get(0).getName().equals("j") || myPlayers.get(1).getName().equals("j")
+                        || myPlayers.get(2).getName().equals("j"))
                 {
-                    //this.printMessages = true;
-                    //this.myPuck.setPrintMessages(true);
+                    this.printMessages = true;
+                    this.myPuck.setPrintMessages(true);
                 }
 
                 this.startRound();
