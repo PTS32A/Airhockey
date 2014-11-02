@@ -166,7 +166,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             double bat = (double) width.doubleValue() / 100 * 8;
             this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
             this.drawEdges();
-            this.graphics.fillOval(width.doubleValue()/2 - myGame.getMyPlayers().get(0).getBatPos().x - bat/2,
+            this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(0).getBatPos().x - bat/2,
                     height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat, bat, bat);
             this.graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
@@ -400,7 +400,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
             {
                 if (!myGame.isPaused())
                 {
-                    me.moveBat(1);
+                    System.out.println(me.getBatPos().x);
+                    me.moveBat(-1);
+                    System.out.println(me.getBatPos().x);
                     actionTaken = true;
                 }
             } else if (keyEvent.getCode() == KeyCode.D
@@ -408,7 +410,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
             {
                 if (!myGame.isPaused())
                 {
-                    me.moveBat(-1);
+                    System.out.println(me.getBatPos().x);
+                    me.moveBat(1);
+                    System.out.println(me.getBatPos().x);
                     actionTaken = true;
                 }
             }

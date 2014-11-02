@@ -127,10 +127,10 @@ public class Player extends Person
                 float aX1 = (float)(aX + ((cX - aX) / 100 * 30));
                 float aX2 = (float)(aX + ((cX - aX) / 100 * 70));
                 
-                if (batPos.x < aX1 || batPos.x > aX2) 
-                {
-                    return false;
-                }
+//                if (batPos.x < aX1 || batPos.x > aX2) 
+//                {
+//                    return false;
+//                }
                 if (amount == 1)
                 {
                     direction = 0;
@@ -144,10 +144,10 @@ public class Player extends Person
                 // Left goal
                 float bY1 = (float)(aY + ((bY - aY) / 100 * 30));
                 float bY2 = (float)(aY + ((bY - aY) / 100 * 70));
-                if (batPos.y < bY1 || batPos.y > bY2) 
-                {
-                    return false;
-                }
+//                if (batPos.y < bY1 || batPos.y > bY2) 
+//                {
+//                    return false;
+//                }
                 if (amount == 1)
                 {
                     direction = 240;
@@ -161,10 +161,10 @@ public class Player extends Person
                 // Right goal
                 float cY1 = (float)(cY + ((bY - cY) / 100 * 30));
                 float cY2 = (float)(cY + ((bY - cY) / 100 * 70));
-                if (batPos.y < cY1 || batPos.y > cY2) 
-                {
-                    return false;
-                }
+//                if (batPos.y < cY1 || batPos.y > cY2) 
+//                {
+//                    return false;
+//                }
                 if (amount == 1)
                 {
                     direction = 300;
