@@ -181,11 +181,4 @@ public class Player extends Person
     {
         return myGame.pauseGame(isPaused);
     }
-
-    public void draw(GraphicsContext graphics, double width, double height)
-    {
-        int x = rec.x + (int) (width / 2) - batWidth / 2;
-        int y = rec.y + (int) height - batWidth;
-        graphics.fillOval(x, y, batWidth, batWidth);
-    }
 }

@@ -57,7 +57,6 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @Getter
     private boolean actionTaken = true;
     private GameTimer gameTimer;
-    private double top;
     private Game myGame;
 
     @Override
@@ -167,10 +166,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
             double bat = (double) width.doubleValue() / 100 * 8;
             this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
             this.drawEdges();
-            g.getMyPlayers().get(0).draw(graphics, width.doubleValue(),
-                    height.doubleValue());
-            this.graphics.fillOval(width.doubleValue()/2 - g.getMyPlayers().get(0).getBatPos().x,
-                    height.doubleValue() - g.getMyPlayers().get(0).getBatPos().y, bat, bat);
+            this.graphics.fillOval(width.doubleValue()/2 - myGame.getMyPlayers().get(0).getBatPos().x - bat/2,
+                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat, bat, bat);
             this.graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
             this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
@@ -206,9 +203,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
         double aY = height.doubleValue();
         // Top corner of triangle
         double bX = width.doubleValue() / 2;
-        double bY = top = height.doubleValue() - (width.doubleValue()
+        double bY = height.doubleValue() - (width.doubleValue()
                 * Math.sin(Math.toRadians(60)));
-        top += height.doubleValue();
         // Right corner of triangle
         double cX = width.doubleValue();
         double cY = height.doubleValue();
@@ -246,14 +242,15 @@ public class GameFX extends AirhockeyGUI implements Initializable
         {
             Lobby lobby = Lobby.getSingle();
 
-            Player p = myGame.getMyPlayers().get(0);
-            p.draw(graphics, width.doubleValue(), height.doubleValue());
-            this.drawPuck(myGame.getMyPuck().getPuckLocation());
             double bat = (double) width.doubleValue() / 100 * 8;
+            Player p = myGame.getMyPlayers().get(0);
+            this.graphics.fillOval(width.doubleValue()/2 - myGame.getMyPlayers().get(0).getBatPos().x - bat/2,
+                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat, bat, bat);
             this.graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
             this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
                     height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y, bat, bat);
+            this.drawPuck(myGame.getMyPuck().getPuckLocation());
             gameStart = true;
         }
     }
