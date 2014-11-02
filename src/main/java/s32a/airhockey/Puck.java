@@ -573,22 +573,9 @@ public class Puck extends TimerTask
             return -1;
         } else
         {
-            //Goal hit, but possible block by bat
-            if (checkBatBlock(playerID, pos))
-            {
-                //Bat blocked the puck
-                printMessage("BAT BOUNCE AT PLAYER " + getColorName(playerID));
-                hitBy.add(myGame.getMyPlayers().get(playerID));
-
-                //No goal hit
-                return -1;
-            } else
-            {
-                //Bat did not block the puck
-                //Goal hit of player with playerID
-                printMessage("GOAL AT PLAYER " + getColorName(playerID));
-                return playerID;
-            }
+            //Goal hit of player with playerID
+            printMessage("GOAL AT PLAYER " + getColorName(playerID));
+            return playerID;
         }
     }
 
@@ -670,7 +657,17 @@ public class Puck extends TimerTask
                     this.hitBy.add(p);
                     
                     //Basic formula: new direction = 180 - old direction - 2 * sin^-1((circleX - batBouncePosition.x) / radius)
-                    double angleDecider = Math.asin((batCentre.x - batBouncePosition.x) / radius);
+                    double angleDecider = Math.toDegrees(Math.asin((batCentre.x - batBouncePosition.x) / radius));
+                    
+                    while (angleDecider > 359)
+                    {
+                        angleDecider -= 360;
+                    }
+                    
+                    while (angleDecider < 0)
+                    {
+                        angleDecider += 360;
+                    }
                     
                     if (angleDecider < 180 - direction)
                     {
