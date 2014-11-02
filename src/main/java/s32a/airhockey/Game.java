@@ -316,7 +316,7 @@ public class Game
             else
             {
                 batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
-                         - (float)bat - 3, (float) ((cY + ((bY - cY) / 100 * 50))) + (float)bat/2);
+                         - 3, (float) ((cY + ((bY - cY) / 100 * 50))) + (float)bat/2);
             }
 //            //Player blue or green
 //            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));

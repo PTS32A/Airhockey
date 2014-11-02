@@ -170,7 +170,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat, bat, bat);
             this.graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
-            this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
+            this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x - bat,
                     height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y, bat, bat);
             this.drawPuck(g.getMyPuck().getPuckLocation());
         }
@@ -248,7 +248,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat, bat, bat);
             this.graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
-            this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
+            this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x - bat,
                     height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y, bat, bat);
             this.drawPuck(myGame.getMyPuck().getPuckLocation());
             gameStart = true;
@@ -400,7 +400,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             {
                 if (!myGame.isPaused())
                 {
-                    me.moveBat(-1);
+                    me.moveBat(1);
                     actionTaken = true;
                 }
             } else if (keyEvent.getCode() == KeyCode.D
@@ -408,7 +408,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             {
                 if (!myGame.isPaused())
                 {
-                    me.moveBat(1);
+                    me.moveBat(-1);
                     actionTaken = true;
                 }
             }
