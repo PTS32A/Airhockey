@@ -204,14 +204,14 @@ public class Puck extends TimerTask
         }
         
         //Find out where the batPosition are
-        this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(0).getBatPos().y);
-        this.position.y += batWidth;
+        //this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(0).getBatPos().y);
+        //this.position.y += batWidth;
         
         if (this.runCount <= -1)
         {
             //runCount is not used (Default setting for the actual product)
             //Round will end only end when a goal has been scored
-            //updatePosition(speed.get() / 10);
+            updatePosition(speed.get() / 10);
         }
         else
         {
