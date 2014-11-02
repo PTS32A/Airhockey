@@ -61,6 +61,8 @@ public class Game
     
     @Getter
     private StringProperty gameTime;
+    
+    private boolean printMessages = false;
 
     /**
      * Sets gameTime - non threadsafe
@@ -388,7 +390,7 @@ public class Game
         {
             if (roundNo.get() == 0)
             {
-                System.out.println("BEGIN GAME");
+                printMessage("BEGIN GAME");
 
                 //Timer will keep going until game end
                 long interval = 20; //10 ms for a max 50fps
@@ -396,10 +398,11 @@ public class Game
                 //Starts new Timer for gameTime
                 puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);
 
-                if (myPlayers.get(0) instanceof Bot && myPlayers.get(1) instanceof Bot
-                        && myPlayers.get(2) instanceof Bot)
+                if (myPlayers.get(0).getName().equals("testey") || myPlayers.get(1).getName().equals("testey")
+                        || myPlayers.get(2).getName().equals("testey"))
                 {
-                    myPuck.setPrintMessages(false);
+                    //this.printMessages = true;
+                    //this.myPuck.setPrintMessages(true);
                 }
 
                 this.startRound();
@@ -507,11 +510,11 @@ public class Game
             //this.myPuck.resetPuck();      -- This is moved to endRound to allow customSetup to make changes to Puck for just round 1, which is used by PuckTest only.
 
             //BEGIN PUCK MOVEMENT
-            System.out.println("--BEGIN PUCK MOVEMENT");
+            printMessage("--BEGIN PUCK MOVEMENT");
             this.continueRun = true; //This allows Puck to be moved
         }
 
-        System.out.println("--BEGIN BOT MOVEMENT");
+        printMessage("--BEGIN BOT MOVEMENT");
 
         for (Player p : myPlayers)
         {
@@ -521,7 +524,7 @@ public class Game
             }
         }
 
-        System.out.println("--END BOT MOVEMENT");
+        printMessage("--END BOT MOVEMENT");
     }
 
     /**
@@ -532,7 +535,7 @@ public class Game
     {
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
-        System.out.println("-ROUND " + roundNo.get());
+        printMessage("-ROUND " + roundNo.get());
 
         this.isPaused = false;
 
@@ -543,7 +546,7 @@ public class Game
     {
         //END OF PUCK MOVEMENT
         this.continueRun = false;
-        System.out.println("--END PUCK MOVEMENT");
+        printMessage("--END PUCK MOVEMENT");
 
         this.myPuck.resetPuck();
 
@@ -553,8 +556,8 @@ public class Game
         } else
         {
             //End game
-            System.out.println("END GAME");
-            System.out.println("");
+            printMessage("END GAME");
+            printMessage("");
             this.gameOver = true;
         }
     }
@@ -636,6 +639,14 @@ public class Game
         if (maxRounds > 0 && maxRounds <= 10)
         {
             this.maxRounds = maxRounds;
+        }
+    }
+    
+    private void printMessage(String message)
+    {
+        if (printMessages)
+        {
+            System.out.println(message);
         }
     }
 }
