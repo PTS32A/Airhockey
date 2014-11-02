@@ -149,8 +149,8 @@ public class Puck extends TimerTask
         setEndData();
         
         this.position = centre;
-        //this.direction = new Random().nextFloat() * 360;
-        this.direction = 180;
+        this.direction = new Random().nextFloat() * 360;
+        //this.direction = 180;
         this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
     }
@@ -372,7 +372,7 @@ public class Puck extends TimerTask
         {
             //Left of field
 
-            printMessage("Left wall bounce");
+            printMessage("Left Wall-Bounce");
 
             Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
             Vector2 linePos2 = new Vector2(0, (float) middleLine);
@@ -383,7 +383,7 @@ public class Puck extends TimerTask
         {
             //Right of field
 
-            printMessage("Right wall bounce");
+            printMessage("Right Wall-Bounce");
 
             Vector2 linePos1 = new Vector2((float) (sideLength / 2), 0);
             Vector2 linePos2 = new Vector2(0, (float) middleLine);
@@ -396,7 +396,7 @@ public class Puck extends TimerTask
             {
                 //Underneath field
 
-                printMessage("Bottom wall bounce");
+                printMessage("Bottom Wall-Bounce");
 
                 Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
                 Vector2 linePos2 = new Vector2((float) (sideLength / 2), 0);
@@ -408,7 +408,7 @@ public class Puck extends TimerTask
             {
                 //Above field
 
-                printMessage("Top corner bounce");
+                printMessage("Top Corner-Bounce");
 
                 updateDirection(180);
                 return new Vector2(0, (float) middleLine);
@@ -565,12 +565,12 @@ public class Puck extends TimerTask
         {
             if (pos.x < 0)
             {
-                //Blue goal
-                playerID = 2;
-            } else
-            {
                 //Green goal
                 playerID = 1;
+            } else
+            {
+                //Blue goal
+                playerID = 2;
             }
         } else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0)
         {
@@ -585,7 +585,7 @@ public class Puck extends TimerTask
         } else
         {
             //Goal hit of player with playerID
-            printMessage("GOAL AT PLAYER " + getColorName(playerID));
+            printMessage("Goal @ player " + myGame.getMyPlayers().get(playerID).getColor());
             return playerID;
         }
     }
@@ -684,7 +684,7 @@ public class Puck extends TimerTask
                 if (batBouncePosition != null)
                 {
                     //Bat bounce by player p
-                    printMessage("BAT BOUNCE AT PLAYER: " + p.getColor());
+                    printMessage("Bat-Bounce @ player " + p.getColor());
                     this.hitBy.add(p);
                     this.lastBouncerID = myGame.getMyPlayers().indexOf(p);
                     

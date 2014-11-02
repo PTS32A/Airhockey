@@ -528,17 +528,8 @@ public class Game
         //Continue       
         if (!isPaused && myPuck != null)
         {
-            //this.myPuck.resetPuck();      -- This is moved to endRound to allow customSetup to make changes to Puck for just round 1, which is used by PuckTest only.
-
             //BEGIN PUCK MOVEMENT
-            printMessage("--BEGIN PUCK MOVEMENT");
             this.continueRun = true; //This allows Puck to be moved
-            
-            printMessage("--BEGIN BOT MOVEMENT");
-
-            
-
-            printMessage("--END BOT MOVEMENT");
         }
     }
 
@@ -550,7 +541,7 @@ public class Game
     {
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
-        printMessage("-ROUND " + roundNo.get());
+        printMessage("-ROUND " + (roundNo.get() + 1)); //Added +1 because roundNo seems to be starting at 0 without it
 
         this.isPaused = false;
 
@@ -561,7 +552,6 @@ public class Game
     {
         //END OF PUCK MOVEMENT
         this.continueRun = false;
-        printMessage("--END PUCK MOVEMENT");
 
         this.myPuck.resetPuck();
 
