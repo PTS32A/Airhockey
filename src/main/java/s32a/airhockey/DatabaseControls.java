@@ -17,11 +17,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -314,7 +311,7 @@ public class DatabaseControls
             prepStat.setString(7, game.getMyPlayers().get(1).getName());
             prepStat.setString(8, game.getMyPlayers().get(2).getName());
 
-            prepStat.setFloat(9, game.getMyPuck().getSpeed());
+            prepStat.setFloat(9, game.getMyPuck().getSpeed().get());
 
             prepStat.executeUpdate();
         } finally
@@ -329,7 +326,6 @@ public class DatabaseControls
      * scores should have been adjusted before this
      *
      * @param player
-     * @param lastGame currently not used TODO: remove this
      * @param hasLeft can be null
      * @return his new rating
      * @throws java.sql.SQLException
@@ -338,10 +334,8 @@ public class DatabaseControls
     {
         this.initConnection();
         double output = -1;
-        CallableStatement callStat = null;
         try
-        {
-            callStat = conn.prepareCall("{? = call getNewRating(?, ?)}");
+        (CallableStatement callStat = conn.prepareCall("{? = call getNewRating(?, ?)}")) {
             callStat.registerOutParameter(1, java.sql.Types.DOUBLE);
             callStat.setString(2, player.getName());
             if (hasLeft != null)
@@ -355,7 +349,6 @@ public class DatabaseControls
             output = callStat.getInt(1);
         } finally
         {
-            callStat.close();
             this.closeConnection();
         }
         return output;

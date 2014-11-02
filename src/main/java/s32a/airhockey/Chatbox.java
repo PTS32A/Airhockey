@@ -42,14 +42,15 @@ public class Chatbox
      * Message should be preformatted "<PlayerName>[HH:MM:SS]: message"
      *
      * @param message The message that is going to be sent to the chat box
+     * @param from
      * @return returns true if the message was sent successfully returns
      * IllegalArgumentException if message wasn't formatted correctly
      */
     public boolean addChatMessage(String message, Person from)
     {
         StringBuilder builder = new StringBuilder();
-        String time = "";
-        time = String.valueOf(Calendar.getInstance().getTime()).substring(11, 19); //Gets only the time of the day out of the calendar.
+        String time = String.valueOf(Calendar.getInstance().getTime()).substring(11, 19); 
+        //Gets only the time of the day out of the calendar.
 
         builder.append("<").append(from.getName()).append(">");
         builder.append("[").append(time).append("]");
@@ -57,7 +58,10 @@ public class Chatbox
         message = builder.toString();
 
         System.out.println(message);
-        if (message.startsWith("<") && message.contains(">[") && message.contains("]:") && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1) && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1))
+        if (message.startsWith("<") && message.contains(">[") 
+                && message.contains("]:") 
+                && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1) 
+                && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1))
         {
             chat.add(message);
             this.chatProp.add(message);

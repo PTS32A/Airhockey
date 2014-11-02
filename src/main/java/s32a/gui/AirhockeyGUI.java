@@ -35,20 +35,15 @@ public class AirhockeyGUI extends Application
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
 
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        stage.setOnCloseRequest((WindowEvent event) ->
         {
-
-            @Override
-            public void handle(WindowEvent event)
+            Person person = Lobby.getSingle().getCurrentPerson();
+            if (person != null)
             {
-                Person person = Lobby.getSingle().getCurrentPerson();
-                if (person != null)
-                {
-                    Lobby.getSingle().logOut(person);
-                }
-                Platform.exit();
-                System.exit(0);
+                Lobby.getSingle().logOut(person);
             }
+            Platform.exit();
+            System.exit(0);
         });
 
         Scene scene = new Scene(root);
@@ -79,6 +74,8 @@ public class AirhockeyGUI extends Application
 
     /**
      *
+     * @param stage
+     * @throws java.io.IOException
      */
     public void goToRegister(Stage stage) throws IOException
     {

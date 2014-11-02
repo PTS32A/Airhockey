@@ -11,6 +11,5 @@ package s32a.airhockey;
  */
 public enum Colors
 {
-
     Red, Green, Blue;
 }

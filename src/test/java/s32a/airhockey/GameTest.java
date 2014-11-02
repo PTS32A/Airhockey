@@ -45,7 +45,7 @@ public class GameTest
         //Player starter
         starter = new Player("testPlayer", (double)0, Colors.Red);
         game = new Game(starter);
-        spec = new Spectator("testSpectator", (double)0, game);
+        spec = new Spectator("testSpectator", (double)0);
         game.addSpectator(spec);
     }
     
@@ -161,7 +161,7 @@ public class GameTest
     @Test
     public void testRemoveSpectatorNotAParticipant()
     {
-        Spectator spec2 = new Spectator("testSpectator2", (double)0, game);
+        Spectator spec2 = new Spectator("testSpectator2", (double)0);
         
         Boolean expResult = false;
         Boolean result = game.removeSpectator(spec2);

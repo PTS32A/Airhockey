@@ -8,7 +8,6 @@ package s32a.timers;
 import java.util.TimerTask;
 import javafx.application.Platform;
 import s32a.airhockey.Game;
-import s32a.airhockey.Lobby;
 
 /**
  *

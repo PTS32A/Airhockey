@@ -7,12 +7,9 @@ package s32a.gui;
 
 import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -53,7 +50,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
     @FXML
     CheckBox cbxCustomDifficulty;
 
-    private DoubleProperty width, height, customSpeed;
+    private DoubleProperty width, height;
+    private IntegerProperty customSpeed;
     private GraphicsContext graphics;
     private boolean gameStart = false;
     @Getter
@@ -88,15 +86,19 @@ public class GameFX extends AirhockeyGUI implements Initializable
             btnStopSpec.setVisible(false);
 
             // bind custom difficulty indicators
-            this.customSpeed = new SimpleDoubleProperty(15);
+            this.customSpeed = new SimpleIntegerProperty(15);
             this.customSpeed.bindBidirectional(this.sldCustomDifficulty.valueProperty());
-            this.cbxCustomDifficulty.textProperty().bind(customSpeed.asString());
+            this.cbxCustomDifficulty.textProperty().bind(
+                    Bindings.concat("Use custom Speed: ", customSpeed.asString()));
 
             // bot 10 and 11 were added in lobby.populate, and are currently not busy
             Person bot = lobby.getActivePersons().get("bot10");
             lobby.joinGame(myGame, bot);
             bot = lobby.getActivePersons().get("bot11");
             lobby.joinGame(myGame, bot);
+            
+            // adds listeners governing custom difficulty
+            this.addDifficultyListeners();
 
         } else if (lobby.getCurrentPerson() instanceof Spectator)
         {
@@ -120,7 +122,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         this.lvChatbox.setItems(myGame.getMyChatbox().chatProperty());
 
         // Difficulty 
-        lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
+        this.lblDifficulty.textProperty().bind(myGame.getMyPuck().getSpeed().asString());
 
         // binds width / height for redrawing to canvas size
         this.width.bind(this.canvas.widthProperty());
@@ -129,15 +131,6 @@ public class GameFX extends AirhockeyGUI implements Initializable
         // initialises graphics object
         graphics = canvas.getGraphicsContext2D();
         graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
-
-        // adds listener to screen size change. Possibly redundant with bound values
-        ChangeListener<Number> sizeChanged
-                = (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
-                {
-                    // REDRAW SHIT - maybe add listener to height
-                };
-        this.width.addListener(sizeChanged);
-        //this.height.addListener(sizeChanged);
 
         // adds chatbox accept event
         this.tfChatbox.setOnKeyPressed((KeyEvent ke) ->
@@ -148,24 +141,14 @@ public class GameFX extends AirhockeyGUI implements Initializable
             }
         });
 
-        // Whenever custom difficulty value is changed, checkbox is unchecked
-        this.sldCustomDifficulty.valueProperty().addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
-                {
-                    if (this.cbxCustomDifficulty.isSelected())
-                    {
-                        this.cbxCustomDifficulty.setSelected(false);
-                    }
-                });
-
         // draws the canvas
         this.drawEdges();
-        
+
         /**
-         * if currentPerson is spectator, graphics can start now.
-         * If he were a player, they start when startGame is called.
+         * if currentPerson is spectator, graphics can start now. If he were a
+         * player, they start when startGame is called.
          */
-        if(lobby.getCurrentPerson() instanceof Spectator)
+        if (lobby.getCurrentPerson() instanceof Spectator)
         {
             this.startGraphics(myGame);
         }
@@ -174,6 +157,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
     /**
      * Draw is called every 20ms for a frame rate of 50 frames per second.
      * Redraws all bats and the puck in their correct position.
+     *
      * @param g
      */
     public void draw(Game g)
@@ -192,7 +176,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             this.drawPuck(g.getMyPuck().getPuckLocation());
         }
     }
-    
+
     /**
      * Draws puck on given canvas
      *
@@ -209,7 +193,6 @@ public class GameFX extends AirhockeyGUI implements Initializable
         int y = (int) canvas.getHeight() - (int) (positionY + puckSize / 2) - radius;
         graphics.fillOval(x, y, (int) puckSize, (int) puckSize);
     }
-
 
     /**
      * Draws all edges and goals. Is redrawn along with draw()
@@ -312,7 +295,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
 
     /**
      * Starts display timer and binds score displays
-     * @param myGame 
+     *
+     * @param myGame
      */
     private void startGraphics(Game myGame)
     {
@@ -337,12 +321,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
     {
         if (cbxCustomDifficulty.isSelected())
         {
-            myGame.adjustDifficulty((float) sldCustomDifficulty.getValue());
+            myGame.adjustDifficulty((float) Math.round(sldCustomDifficulty.getValue()));
         } else
         {
             myGame.adjustDifficulty();
         }
-        lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
     }
 
     /**
@@ -369,7 +352,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             gameTimer.stop();
         }
         if (lobby.getCurrentPerson() instanceof Spectator)
-        {   
+        {
             lobby.stopSpectating(myGame, lobby.getCurrentPerson());
         } else if (myGame.isGameOver()
                 || myGame.getRoundNo().get() == 0)
@@ -389,18 +372,17 @@ public class GameFX extends AirhockeyGUI implements Initializable
      * @param evt
      */
     public void sendMessage(Event evt)
-    {   
+    {
         Lobby lobby = Lobby.getSingle();
         Person currentPerson = lobby.getCurrentPerson();
-        
-        if(currentPerson instanceof Player)
+
+        if (currentPerson instanceof Player)
+        {
+            myGame.addChatMessage(tfChatbox.getText(), currentPerson);
+        } else if (currentPerson instanceof Spectator)
         {
             myGame.addChatMessage(tfChatbox.getText(), currentPerson);
         }
-        else if (currentPerson instanceof Spectator)
-        {
-            myGame.addChatMessage(tfChatbox.getText(), currentPerson);
-        }    
         tfChatbox.setText("");
     }
 
@@ -452,6 +434,35 @@ public class GameFX extends AirhockeyGUI implements Initializable
 
         getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
+    }
+
+    /**
+     * Adds listeners to the slider and checkbox used to govern custom difficulty
+     */
+    private void addDifficultyListeners()
+    {
+        // Whenever custom difficulty value is changed, checkbox is unchecked
+        this.sldCustomDifficulty.valueProperty().addListener(
+                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
+                {
+                    if (this.cbxCustomDifficulty.isSelected())
+                    {
+                        this.cbxCustomDifficulty.setSelected(false);
+                    }
+                });
+
+        // Whenever custom difficulty checkbox is checked, value is saved
+        this.cbxCustomDifficulty.selectedProperty().addListener(
+                (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) ->
+                {
+                    if (cbxCustomDifficulty.isSelected())
+                    {
+                        myGame.adjustDifficulty((float) customSpeed.get());
+                    } else
+                    {
+                        myGame.adjustDifficulty();
+                    }
+                });
     }
 
     private Stage getThisStage()

@@ -55,11 +55,9 @@ public class Dialog extends Stage {
         gridPane.add(taMessage, 0, 0);
 
         Button btClose = new Button("Close");
-        btClose.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                close();
-            }
+        btClose.setOnAction((ActionEvent event) ->
+        {
+            close();
         });
 
         BorderPane buttonRegion = new BorderPane();

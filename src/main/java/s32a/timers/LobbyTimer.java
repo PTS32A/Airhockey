@@ -5,7 +5,6 @@
  */
 package s32a.timers;
 
-import java.sql.Timestamp;
 import s32a.gui.LobbyFX;
 import javafx.animation.AnimationTimer;
 import s32a.airhockey.Lobby;
@@ -41,14 +40,12 @@ public class LobbyTimer extends AnimationTimer
         if (now - prevUpdate > refreshRate)
         {
             prevUpdate = now;
-//            java.util.Date date= new java.util.Date();
-//            System.out.println(new Timestamp(date.getTime()));
-//            System.out.println("lobbytimer hit");
             try
             {
                 //change values
-                lobbyFX.setActiveGames(lobby.getActiveGames());
-                lobbyFX.setHighscore(lobby.getRankings());
+                this.lobbyFX.setGames(lobby.getActiveGames());
+                this.lobbyFX.setHighScores(lobby.getRankings());
+                this.lobbyFX.updatePlayerInfo();
             } catch (Exception ex)
             {
                 System.out.println("error in LobbyTimer: " + ex.getMessage());

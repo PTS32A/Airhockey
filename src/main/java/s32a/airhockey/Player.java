@@ -5,10 +5,7 @@
  */
 package s32a.airhockey;
 
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Calendar;
 import javafx.application.Platform;

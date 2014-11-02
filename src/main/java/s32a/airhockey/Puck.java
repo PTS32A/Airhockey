@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
+import javafx.application.Platform;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.scene.canvas.GraphicsContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,12 +29,9 @@ public class Puck extends TimerTask
     private Vector2 position;
     @Getter
     @Setter
-    private float speed;
+    private float direction;
     @Getter
     private List<Player> hitBy;
-    @Getter
-    @Setter
-    private float direction;
     @Getter
     @Setter
     boolean isMoving;
@@ -44,14 +44,9 @@ public class Puck extends TimerTask
     private Vector2 centre;
 
     @Getter
-    private float goalLength;
-    private float sideGoalMinY;
-    private float sideGoalMaxY;
-    private float bottomGoalMinX;
-    private float bottomGoalMaxX;
+    private float goalLength, sideGoalMinY, sideGoalMaxY, bottomGoalMinX, bottomGoalMaxX;
     @Getter
-    private float batWidth;
-    private float puckSize;
+    private float batWidth, puckSize;
 
     private Game myGame;
 
@@ -60,19 +55,29 @@ public class Puck extends TimerTask
     @Getter
     private float endDirection;
     @Getter
-    private Player endGoalHit;
-    @Getter
-    private Player endBatHit;
+    private Player endGoalHit, endBatHit;
     @Getter
     @Setter
-    private int runCount;
-    @Getter
-    @Setter
-    private int defaultRunCount;
+    private int runCount, defaultRunCount;
 
     @Getter
     @Setter
     private boolean printMessages = false;
+    
+    @Getter
+    private FloatProperty speed;
+    
+    /**
+     * Threadsafe property set
+     * @param input 
+     */
+    void setSpeed(float input)
+    {
+        Platform.runLater(() ->
+        {
+            this.speed.set(input);
+        });
+    }
 
     /**
      * initialises a game's puck position is randomised, speed is a given
@@ -92,7 +97,7 @@ public class Puck extends TimerTask
             throw new IllegalArgumentException("myGame parameter was null");
         }
 
-        this.speed = speed;
+        this.speed = new SimpleFloatProperty(speed);
         this.hitBy = new ArrayList<>();
 
         this.sideLength = (float) Lobby.getSingle()
@@ -202,7 +207,7 @@ public class Puck extends TimerTask
         {
             //runCount is not used (Default setting for the actual product)
             //Round will end only end when a goal has been scored
-            updatePosition(speed / 10);
+            updatePosition(speed.get() / 10);
         }
         else
         {
@@ -214,7 +219,7 @@ public class Puck extends TimerTask
             }
             else
             {
-                updatePosition(speed / 10);
+                updatePosition(speed.get() / 10);
                 this.runCount--;
             }
         }
@@ -587,15 +592,8 @@ public class Puck extends TimerTask
             float batMinX = batPos.x - (float) (0.5 * batWidth);
             float batMaxX = batPos.x + (float) (0.5 * batWidth);
 
-            if (pos.x > batMinX && pos.x < batMaxX)
-            {
-                //Bat blocked the puck
-                return true;
-            } else
-            {
-                //Bat did not block the puck
-                return false;
-            }
+            // returns whether bat blocked the puck
+            return (pos.x > batMinX && pos.x < batMaxX);
         } else
         {
             //Player Blue or Green (side bat)

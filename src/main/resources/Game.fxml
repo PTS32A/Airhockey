@@ -39,7 +39,7 @@
     <Button mnemonicParsing="false" onAction="#sendMessage" text="Send" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="274.0" />
     <ListView fx:id="lvChatbox" prefHeight="217.0" prefWidth="245.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="21.0" />
     <TextField fx:id="tfChatbox" prefHeight="25.0" prefWidth="246.0" promptText="Enter Message" text="" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="20.0" />
-    <Slider fx:id="sldCustomDifficulty" blockIncrement="5.0" layoutX="14.0" layoutY="90.0" majorTickUnit="5.0" max="50.0" min="5.0" minorTickCount="1" showTickLabels="true" showTickMarks="false" value="10.0" />
+    <Slider fx:id="sldCustomDifficulty" blockIncrement="5.0" layoutX="14.0" layoutY="90.0" majorTickUnit="5.0" max="40.0" min="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="false" value="10.0" />
     <CheckBox fx:id="cbxCustomDifficulty" layoutX="154.0" layoutY="88.0" mnemonicParsing="false" text="Custom:" />
   </children>
 </AnchorPane>

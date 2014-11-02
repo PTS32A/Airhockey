@@ -6,10 +6,8 @@
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
-import com.mysql.jdbc.SQLError;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -288,8 +286,7 @@ public class Lobby
 
         try
         {
-            person = new Spectator(person.getName(),
-                    person.getRating(), game);
+            person = new Spectator(person.getName(), person.getRating());
             if (!game.addSpectator((Spectator) person))
             {
                 return null;
@@ -444,7 +441,7 @@ public class Lobby
         double speedRating;
         try
         {
-            speedRating = Math.round(input.getMyPuck().getSpeed());
+            speedRating = Math.round(input.getMyPuck().getSpeed().get());
             if (speedRating > averageRating)
             {
                 player1rating = speedRating;

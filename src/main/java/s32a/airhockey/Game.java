@@ -91,10 +91,6 @@ public class Game
      */
     public StringProperty difficultyProperty()
     {
-        if (this.difficultyProp == null)
-        {
-            this.difficultyProp = new SimpleStringProperty(String.valueOf(this.myPuck.getSpeed()));
-        }
         return this.difficultyProp;
     }
 
@@ -208,6 +204,8 @@ public class Game
         float defaultSpeed = 15;
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
+        this.difficultyProp = new SimpleStringProperty("speed");
+        this.difficultyProp.bind(myPuck.getSpeed().asString());
         this.maxRounds = 10;
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
@@ -430,7 +428,7 @@ public class Game
 
             if (puckSpeed >= min && puckSpeed <= max)
             {
-                myPuck.setSpeed(puckSpeed);
+                myPuck.setSpeed(Math.round(puckSpeed));
                 return true;
             } else
             {

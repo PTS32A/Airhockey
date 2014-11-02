@@ -7,21 +7,15 @@ package s32a.gui;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
-import static javafx.collections.FXCollections.observableArrayList;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -29,7 +23,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import s32a.airhockey.*;
 import s32a.timers.LobbyTimer;
 
@@ -59,12 +52,37 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     @FXML
     ListView lvPlayerInfo;
 
-    ObservableList<Person> highScores;
-    ObservableList<String> messages;
-    ObservableList<Game> games;
-    ObservableList<String> playerInfo;
+    private ObservableList<Person> highScores;
+    private ObservableList<String> messages;
+    private ObservableList<Game> games;
 
     private AnimationTimer lobbyTimer;
+
+    /**
+     * chucks a given list of persons into the observableList
+     *
+     * @param input
+     */
+    public void setHighScores(List<Person> input)
+    {
+        Platform.runLater(() ->
+        {
+            this.highScores.setAll(input);
+        });
+    }
+
+    /**
+     * chucks a given list of games into the observablelist
+     *
+     * @param input
+     */
+    public void setGames(List<Game> input)
+    {
+        Platform.runLater(() ->
+        {
+            this.games.setAll(input);
+        });
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -80,6 +98,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         highScores = FXCollections.observableArrayList(new ArrayList<Person>());
         messages = FXCollections.observableArrayList(new ArrayList<String>());
         games = FXCollections.observableArrayList(new ArrayList<Game>());
+        ObservableList<Property> playerInfo;
 
         try
         {
@@ -87,14 +106,21 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             this.tvHighscores.setItems(highScores);
             this.tvGameDisplay.setItems(games);
 
+            // sets valuefactories high scores
             this.tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));
             this.tcHSRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
 
+            // sets valuefactories for game display
             this.tcGDDifficulty.setCellValueFactory(new PropertyValueFactory<>("difficulty"));
             this.tcGDStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
             this.tcGDPlayer1.setCellValueFactory(new PropertyValueFactory<>("player1Name"));
             this.tcGDPlayer2.setCellValueFactory(new PropertyValueFactory<>("player2Name"));
             this.tcGDPlayer3.setCellValueFactory(new PropertyValueFactory<>("player3Name"));
+
+            // binds lists for game and high score display
+            this.tvGameDisplay.setItems(games);
+            this.tvHighscores.setItems(highScores);
+
             this.updatePlayerInfo();
         } catch (Exception ex)
         {
@@ -108,14 +134,13 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     /**
      * updates relevant screens in display
      */
-    private void updatePlayerInfo()
+    public void updatePlayerInfo()
     {
         Person p = Lobby.getSingle().getCurrentPerson();
         if (p != null)
         {
-            playerInfo = FXCollections.observableArrayList("Name: "
-                    + p.getName(), "Rating: " + Double.toString(p.getRating()));
-            lvPlayerInfo.setItems(playerInfo);
+            lvPlayerInfo.setItems(FXCollections.observableArrayList("Name: "
+                    + p.nameProperty().get(), "Rating: " + Double.toString(p.ratingProperty().get())));
         }
     }
 
@@ -161,7 +186,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
                 if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null)
                 {
                     if (Lobby.getSingle().joinGame(
-                            (Game) this.tvGameDisplay.getSelectionModel().getSelectedItem(), 
+                            (Game) this.tvGameDisplay.getSelectionModel().getSelectedItem(),
                             Lobby.getSingle().getCurrentPerson()) != null)
                     {
                         openNewGameWindow(evt);
@@ -186,20 +211,18 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     {
         if (Lobby.getSingle().getCurrentPerson() instanceof Player)
         {
-            super.showDialog("Error", 
+            super.showDialog("Error",
                     "You are playing a game and can't spectate at the same time");
             return;
         }
 
-        
         if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null)
         {
             Game game = (Game) this.tvGameDisplay.getSelectionModel().getSelectedItem();
-            if(game.isGameOver() || game.getRoundNo().get() == 0)
+            if (game.isGameOver() || game.getRoundNo().get() == 0)
             {
                 super.showDialog("Error", "Unable to watch inactive games");
-            }
-            else if (Lobby.getSingle().spectateGame(game, 
+            } else if (Lobby.getSingle().spectateGame(game,
                     Lobby.getSingle().getCurrentPerson()) != null)
             {
                 openNewGameWindow(evt);
@@ -252,7 +275,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
 
     /**
      * Opens new game window
-     * @param evt 
+     *
+     * @param evt
      */
     public void openNewGameWindow(Event evt)
     {
@@ -263,46 +287,10 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
             {
                 Stage stage1 = new Stage();
                 base.goToGame(stage1);
-            }catch (IOException ex)
+            } catch (IOException ex)
             {
                 base.showDialog("Error", "Could not open game: " + ex.getMessage());
             }
-        });
-    }
-
-    /**
-     * Updates the highscores view
-     *
-     * @param input
-     */
-    public void setHighscore(List<Person> input)
-    {
-        this.tvHighscores.setItems(null);
-        this.tvHighscores.setItems(FXCollections.observableArrayList(input));
-    }
-
-    /**
-     * Updates the active games view
-     * Forces the damn thing to actually update with a bit of a dirty hack
-     *
-     * @param input
-     */
-    public void setActiveGames(List<Game> input)
-    {
-        this.tvGameDisplay.setItems(FXCollections.observableArrayList(input));
-
-        // it works, but it sure as hell is ugly
-        final List<Game> items = tvGameDisplay.getItems();
-        if (items == null || items.isEmpty())
-        {
-            return;
-        }
-
-        final Game item = (Game) tvGameDisplay.getItems().get(0);
-        items.remove(0);
-        Platform.runLater(() ->
-        {
-            items.add(0, item);
         });
     }
 }
