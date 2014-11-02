@@ -169,6 +169,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
             this.drawEdges();
             g.getMyPlayers().get(0).draw(graphics, width.doubleValue(),
                     height.doubleValue());
+            this.graphics.fillOval(g.getMyPlayers().get(0).getBatPos().x,
+                    g.getMyPlayers().get(0).getBatPos().y, bat, bat);
             this.graphics.fillOval(g.getMyPlayers().get(1).getBatPos().x,
                     g.getMyPlayers().get(1).getBatPos().y, bat, bat);
             this.graphics.fillOval(g.getMyPlayers().get(2).getBatPos().x,
@@ -255,8 +257,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
             Vector2 bat2 = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
                     - (float) bat - 3, (float) ((cY + ((bY - cY) / 100 * 50)) - bat / 2));
 
-            myGame.getMyPlayers().get(1).setBatPos(bat2);
-            myGame.getMyPlayers().get(2).setBatPos(bat1);
+            //myGame.getMyPlayers().get(1).setBatPos(bat2);
+            //myGame.getMyPlayers().get(2).setBatPos(bat1);
             graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
                     myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
             graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
@@ -354,14 +356,14 @@ public class GameFX extends AirhockeyGUI implements Initializable
         if (lobby.getCurrentPerson() instanceof Spectator)
         {
             lobby.stopSpectating(myGame, lobby.getCurrentPerson());
-        } else if (myGame.isGameOver()
-                || myGame.getRoundNo().get() == 0)
+        } 
+        else if (myGame.isGameOver() || myGame.getRoundNo().get() == 0)
         {
             lobby.endGame(myGame, null);
-        } else
+        } 
+        else
         {
-            lobby.endGame(myGame,
-                    (Player) lobby.getCurrentPerson());
+            lobby.endGame(myGame,(Player) lobby.getCurrentPerson());
         }
         getThisStage().close();
     }

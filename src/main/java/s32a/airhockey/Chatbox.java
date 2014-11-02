@@ -63,10 +63,10 @@ public class Chatbox
                 && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1) 
                 && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1))
         {
-            chat.add(message);
             this.chatProp.add(message);
             return true;
-        } else
+        } 
+        else
         {
             return false;
         }

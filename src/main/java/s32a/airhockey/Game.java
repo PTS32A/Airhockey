@@ -262,7 +262,7 @@ public class Game
                     player.setMyGame(this);
                     this.adjustDifficulty();
 
-                    //setBatPosition(player, myPlayers.size() - 1);
+                    setBatPosition(player, myPlayers.size() - 1);
                     return true;
                 }
             }
