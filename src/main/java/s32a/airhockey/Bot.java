@@ -34,10 +34,8 @@ public class Bot extends Player
     
     public void moveBot()
     {
-        return;
         if(!getMyGame().isPaused())
         {
-
             if(this.getColor() == Colors.Red)
             {
                 if(getMyGame().getMyPuck().getPosition().x >= getBatPos().x)
