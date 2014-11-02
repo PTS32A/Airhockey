@@ -96,10 +96,24 @@ public class Player extends Person
     public boolean moveBat(float amount) throws IllegalArgumentException
     {
         double direction = 0;
+        double x;
+        double y;
+                
+        // Left corner of triangle
+        double aX = 0;
+        double aY = 0;
+        // Top corner of triangle
+        double bX = sideLength / 2;
+        double bY = sideLength * Math.sin(Math.toRadians(60));
+        // Right corner of triangle
+        double cX = sideLength;
+        double cY = 0;
+        
         if (myGame.isPaused())
         {
             return false;
-        } else
+        } 
+        else
         {
             // Will reimplement this later.
 //            float check = this.batPos.x + amount;
@@ -109,6 +123,14 @@ public class Player extends Person
 //            }
             if (this.getColor() == Colors.Red)
             {
+                // Bottom goal
+                float aX1 = (float)(aX + ((cX - aX) / 100 * 30));
+                float aX2 = (float)(aX + ((cX - aX) / 100 * 70));
+                
+                if (batPos.x < aX1 || batPos.x > aX2) 
+                {
+                    return false;
+                }
                 if (amount == 1)
                 {
                     direction = 0;
@@ -119,6 +141,13 @@ public class Player extends Person
             }
             if (this.getColor() == Colors.Blue)
             {
+                // Left goal
+                float bY1 = (float)(aY + ((bY - aY) / 100 * 30));
+                float bY2 = (float)(aY + ((bY - aY) / 100 * 70));
+                if (batPos.y < bY1 || batPos.y > bY2) 
+                {
+                    return false;
+                }
                 if (amount == 1)
                 {
                     direction = 240;
@@ -129,6 +158,13 @@ public class Player extends Person
             }
             if (this.getColor() == Colors.Green)
             {
+                // Right goal
+                float cY1 = (float)(cY + ((bY - cY) / 100 * 30));
+                float cY2 = (float)(cY + ((bY - cY) / 100 * 70));
+                if (batPos.y < cY1 || batPos.y > cY2) 
+                {
+                    return false;
+                }
                 if (amount == 1)
                 {
                     direction = 300;
@@ -137,8 +173,8 @@ public class Player extends Person
                     direction = 120;
                 }
             }
-            double x = Math.cos(Math.toRadians(direction)) * 5;
-            double y = Math.sin(Math.toRadians(direction)) * 5;
+            x = Math.cos(Math.toRadians(direction)) * 5;
+            y = Math.sin(Math.toRadians(direction)) * 5;
             this.batPos.x += x;
             this.batPos.y += y;
             this.rec.x = (int) batPos.x;

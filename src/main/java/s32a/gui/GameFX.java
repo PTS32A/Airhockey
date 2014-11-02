@@ -231,9 +231,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
         graphics.setLineWidth(2);
         graphics.setStroke(Paint.valueOf("RED"));
         graphics.strokeLine(aXY1.x, aXY1.y, aXY2.x, aXY2.y);
-        graphics.setStroke(Paint.valueOf("LIME"));
-        graphics.strokeLine(bXY1.x, bXY1.y, bXY2.x, bXY2.y);
         graphics.setStroke(Paint.valueOf("BLUE"));
+        graphics.strokeLine(bXY1.x, bXY1.y, bXY2.x, bXY2.y);
+        graphics.setStroke(Paint.valueOf("LIME"));
         graphics.strokeLine(cXY1.x, cXY1.y, cXY2.x, cXY2.y);
         graphics.setStroke(Paint.valueOf("BLACK"));
 
