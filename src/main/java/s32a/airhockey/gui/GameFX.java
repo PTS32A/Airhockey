@@ -95,15 +95,15 @@ public class GameFX extends AirhockeyGUI implements Initializable
             this.cbxCustomDifficulty.textProperty().bind(customSpeed.asString());
 
             // bot 10 and 11 were added in lobby.populate, and are currently not busy
-            Person bot = Lobby.getSingle().getActivePersons().get("bot10");
-            Lobby.getSingle().joinGame(myGame, bot);
-            bot = Lobby.getSingle().getActivePersons().get("bot11");
-            Lobby.getSingle().joinGame(myGame, bot);
+            Person bot = lobby.getActivePersons().get("bot10");
+            lobby.joinGame(myGame, bot);
+            bot = lobby.getActivePersons().get("bot11");
+            lobby.joinGame(myGame, bot);
 
         } else if (lobby.getCurrentPerson() instanceof Spectator)
         {
             // Spectator
-            myGame = Lobby.getSingle().getSpectatedGames().get(Lobby.getSingle()
+            myGame = lobby.getSpectatedGames().get(Lobby.getSingle()
                     .getSpectatedGames().size() - 1);
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             btnStart.setVisible(false);
@@ -191,9 +191,27 @@ public class GameFX extends AirhockeyGUI implements Initializable
                     g.getMyPlayers().get(1).getBatPos().y, bat, bat);
             this.graphics.fillOval(g.getMyPlayers().get(2).getBatPos().x,
                     g.getMyPlayers().get(2).getBatPos().y, bat, bat);
-            g.getMyPuck().draw(graphics, width.doubleValue(), height.doubleValue());
+            this.drawPuck(g.getMyPuck().getPuckLocation());
         }
     }
+    
+    /**
+     * Draws puck on given canvas
+     *
+     * @param location
+     */
+    private void drawPuck(float[] location)
+    {
+        float positionX = location[0];
+        float positionY = location[1];
+        float puckSize = location[2];
+
+        int radius = (int) (puckSize / 2);
+        int x = (int) positionX + (int) canvas.getWidth() / 2 - radius;
+        int y = (int) canvas.getHeight() - (int) (positionY + puckSize / 2) - radius;
+        graphics.fillOval(x, y, (int) puckSize, (int) puckSize);
+    }
+
 
     /**
      * Draws all edges and goals. Is redrawn along with draw()
@@ -261,8 +279,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
 
             Player p = myGame.getMyPlayers().get(0);
             p.draw(graphics, width.doubleValue(), height.doubleValue());
-            myGame.getMyPuck().draw(graphics,
-                    width.doubleValue(), height.doubleValue());
+            this.drawPuck(myGame.getMyPuck().getPuckLocation());
             double bat = (double) width.doubleValue() / 100 * 8;
 
             // This should probably be moved to Game

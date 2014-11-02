@@ -824,12 +824,13 @@ public class Puck extends TimerTask
         String output = xRounded + ", " + yRounded;
         return output;
     }
-    
-    public void draw(GraphicsContext graphics, double width, double height)
+
+    /**
+     * Returns X-coord, Y-coord, and pucksize of puck
+     * @return 
+     */
+    public float[] getPuckLocation()
     {
-        int radius = (int)(puckSize/2);
-        int x = (int)position.x + (int)width/2 - radius;
-        int y = (int)height - (int)(position.y + puckSize / 2) - radius;
-        graphics.fillOval(x, y, (int)puckSize, (int)puckSize);
+        return new float[]{position.x, position.y, puckSize};
     }
 }
