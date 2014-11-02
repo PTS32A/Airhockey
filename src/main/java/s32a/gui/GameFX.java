@@ -60,6 +60,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
     private boolean actionTaken = true;
     private GameTimer gameTimer;
     private double top;
+    private Game myGame;
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -77,7 +78,6 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void setUp()
     {
-        Game myGame = null;
         Player me = null;
         Lobby lobby = Lobby.getSingle();
         if (lobby.getCurrentPerson() instanceof Player)
@@ -85,8 +85,6 @@ public class GameFX extends AirhockeyGUI implements Initializable
             // Player
             myGame = lobby.getPlayedGame();
             me = (Player) lobby.getCurrentPerson();
-            lblName.setText(lobby.getCurrentPerson().getName());
-            lblTime.setText("00:00");
             btnStopSpec.setVisible(false);
 
             // bind custom difficulty indicators
@@ -262,20 +260,6 @@ public class GameFX extends AirhockeyGUI implements Initializable
         if (!gameStart)
         {
             Lobby lobby = Lobby.getSingle();
-            Game myGame = null;
-
-            // Checks whether Application user is Player or Spectator
-            if (lobby.getCurrentPerson() instanceof Player)
-            {
-                myGame = lobby.getPlayedGame();
-            } else if (lobby.getCurrentPerson() instanceof Spectator)
-            {
-                myGame = lobby.getSpectatedGames().get(lobby.getSpectatedGames().size() - 1);
-            } else
-            {
-                this.quitClick(null);
-                super.showDialog("Error", "currentPerson was neither Player nor Spectator - Unable to load");
-            }
 
             Player p = myGame.getMyPlayers().get(0);
             p.draw(graphics, width.doubleValue(), height.doubleValue());
@@ -306,10 +290,9 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void startClick(Event evt)
     {
-        Game myGame = Lobby.getSingle().getPlayedGame();
         if (myGame != null && myGame.getMyPlayers().size() == 3)
         {
-            if (Lobby.getSingle().getPlayedGame().beginGame())
+            if (myGame.beginGame())
             {
                 addEvents();
                 btnStart.setDisable(true);
@@ -352,15 +335,14 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void customDifficultySelect(Event evt)
     {
-        Game game = Lobby.getSingle().getPlayedGame();
         if (cbxCustomDifficulty.isSelected())
         {
-            game.adjustDifficulty((float) sldCustomDifficulty.getValue());
+            myGame.adjustDifficulty((float) sldCustomDifficulty.getValue());
         } else
         {
-            game.adjustDifficulty();
+            myGame.adjustDifficulty();
         }
-        lblDifficulty.setText(Float.toString(game.getMyPuck().getSpeed()));
+        lblDifficulty.setText(Float.toString(myGame.getMyPuck().getSpeed()));
     }
 
     /**
@@ -370,8 +352,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void pauseClick(Event evt)
     {
-        Lobby.getSingle().getPlayedGame().pauseGame(
-                !Lobby.getSingle().getPlayedGame().isPaused());
+        myGame.pauseGame(!myGame.isPaused());
         actionTaken = true;
     }
 
@@ -388,17 +369,15 @@ public class GameFX extends AirhockeyGUI implements Initializable
             gameTimer.stop();
         }
         if (lobby.getCurrentPerson() instanceof Spectator)
-        {   // TODO: FIND OUT WHAT GAME THIS IS
-            lobby.stopSpectating(
-                    lobby.getSpectatedGames().get(0),
-                    lobby.getCurrentPerson());
-        } else if (lobby.getPlayedGame().isGameOver()
-                || lobby.getPlayedGame().getRoundNo().get() == 0)
+        {   
+            lobby.stopSpectating(myGame, lobby.getCurrentPerson());
+        } else if (myGame.isGameOver()
+                || myGame.getRoundNo().get() == 0)
         {
-            lobby.endGame(lobby.getPlayedGame(), null);
+            lobby.endGame(myGame, null);
         } else
         {
-            lobby.endGame(Lobby.getSingle().getPlayedGame(),
+            lobby.endGame(myGame,
                     (Player) lobby.getCurrentPerson());
         }
         getThisStage().close();
@@ -416,11 +395,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
         
         if(currentPerson instanceof Player)
         {
-            lobby.getPlayedGame().addChatMessage(tfChatbox.getText(), currentPerson);
+            myGame.addChatMessage(tfChatbox.getText(), currentPerson);
         }
         else if (currentPerson instanceof Spectator)
-        {   // TODO: If spectating, find out what game it is
-            lobby.getSpectatedGames().get(0).addChatMessage(tfChatbox.getText(), currentPerson);
+        {
+            myGame.addChatMessage(tfChatbox.getText(), currentPerson);
         }    
         tfChatbox.setText("");
     }
@@ -433,9 +412,8 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void stopSpectating(Event evt)
     {
-        Game game = Lobby.getSingle().getPlayedGame();
         Person person = Lobby.getSingle().getCurrentPerson();
-        Lobby.getSingle().stopSpectating(game, person);
+        Lobby.getSingle().stopSpectating(myGame, person);
         getThisStage().close();
     }
 
@@ -448,7 +426,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             if (keyEvent.getCode() == KeyCode.A
                     || keyEvent.getCode() == KeyCode.LEFT)
             {
-                if (!Lobby.getSingle().getPlayedGame().isPaused())
+                if (!myGame.isPaused())
                 {
                     me.moveBat(-1);
                     actionTaken = true;
@@ -456,7 +434,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             } else if (keyEvent.getCode() == KeyCode.D
                     || keyEvent.getCode() == KeyCode.RIGHT)
             {
-                if (!Lobby.getSingle().getPlayedGame().isPaused())
+                if (!myGame.isPaused())
                 {
                     me.moveBat(1);
                     actionTaken = true;
@@ -466,7 +444,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
         //Stop moving
         final EventHandler<KeyEvent> keyReleased = (final KeyEvent keyEvent) ->
         {
-            if (!Lobby.getSingle().getPlayedGame().isPaused())
+            if (myGame.isPaused())
             {
                 actionTaken = false;
             }

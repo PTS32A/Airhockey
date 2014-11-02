@@ -69,16 +69,11 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
-        tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>()
+        tfChatbox.setOnKeyPressed((KeyEvent ke) ->
         {
-
-            @Override
-            public void handle(KeyEvent ke)
+            if (ke.getCode() == KeyCode.ENTER)
             {
-                if (ke.getCode() == KeyCode.ENTER)
-                {
-                    sendChatMessage(null);
-                }
+                sendChatMessage(null);
             }
         });
 
@@ -262,20 +257,15 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
     public void openNewGameWindow(Event evt)
     {
         final AirhockeyGUI base = this;
-        javafx.application.Platform.runLater(new Runnable()
+        javafx.application.Platform.runLater(() ->
         {
-            @Override
-            public void run()
+            try
             {
-                try
-                {
-                    Stage stage = new Stage();
-                    base.goToGame(stage);
-                } 
-                catch (IOException ex)
-                {
-                    base.showDialog("Error", "Could not open game: " + ex.getMessage());
-                }
+                Stage stage1 = new Stage();
+                base.goToGame(stage1);
+            }catch (IOException ex)
+            {
+                base.showDialog("Error", "Could not open game: " + ex.getMessage());
             }
         });
     }
@@ -303,20 +293,16 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
 
         // it works, but it sure as hell is ugly
         final List<Game> items = tvGameDisplay.getItems();
-        if (items == null || items.size() == 0)
+        if (items == null || items.isEmpty())
         {
             return;
         }
 
         final Game item = (Game) tvGameDisplay.getItems().get(0);
         items.remove(0);
-        Platform.runLater(new Runnable()
+        Platform.runLater(() ->
         {
-            @Override
-            public void run()
-            {
-                items.add(0, item);
-            }
+            items.add(0, item);
         });
     }
 }

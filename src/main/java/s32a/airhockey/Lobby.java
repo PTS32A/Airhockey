@@ -581,7 +581,7 @@ public class Lobby
         bot = this.activePersons.get("bot6");
         bot.setBot(true);
         this.joinGame(game, bot);
-        game.pauseGame(true);
+        game.beginGame();
 
         // game 3
         bot = this.activePersons.get("bot7");
