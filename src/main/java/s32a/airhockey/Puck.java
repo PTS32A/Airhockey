@@ -209,21 +209,20 @@ public class Puck extends TimerTask
         }
         
         //Find out where the batPosition are
-        this.position = new Vector2(myGame.getMyPlayers().get(0).getBatPos().x, myGame.getMyPlayers().get(0).getBatPos().y);
-        this.position.y += batWidth * 2;
+        //this.position = new Vector2(myGame.getMyPlayers().get(1).getBatPos().x, myGame.getMyPlayers().get(1).getBatPos().y);
+        //this.position.y -= batWidth;
         //this.position.y += puckSize / 2;
-        //this.position.x -= batWidth / 2;
-        //this.position.x -= puckSize / 3;
+        //this.position.x += batWidth / 2;
         
         //System.out.println("Red: " + myGame.getMyPlayers().get(0).getBatPos());
-        //System.out.println("Blue: " + myGame.getMyPlayers().get(1).getBatPos());
-        //System.out.println("Green: " + myGame.getMyPlayers().get(2).getBatPos());
+        //System.out.println("Green: " + myGame.getMyPlayers().get(1).getBatPos());
+        //System.out.println("Blue: " + myGame.getMyPlayers().get(2).getBatPos());
         
         if (this.runCount <= -1)
         {
             //runCount is not used (Default setting for the actual product)
             //Round will end only end when a goal has been scored
-            //updatePosition(speed.get() / 10);
+            updatePosition(speed.get() / 10);
         }
         else
         {
@@ -566,11 +565,11 @@ public class Puck extends TimerTask
         {
             if (pos.x < 0)
             {
-                //Green goal
+                //Blue goal
                 playerID = 2;
             } else
             {
-                //Blue goal
+                //Green goal
                 playerID = 1;
             }
         } else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0)
@@ -657,23 +656,26 @@ public class Puck extends TimerTask
             batCentre = new Vector2(p.getBatPos().x, p.getBatPos().y);
             batCentre.y += puckSize / 2;
             
-            if (myGame.getMyPlayers().indexOf(p) == 1)
+            if (myGame.getMyPlayers().indexOf(p) == 0)
             {
-                //Blue
-                batCentre.x -= batWidth;
+                //batCentre.x = -batCentre.x;
+            }
+            else if (myGame.getMyPlayers().indexOf(p) == 1)
+            {
+                //Green
+                batCentre.x += batWidth / 2;
                 batCentre.y -= batWidth;
             }
             else if (myGame.getMyPlayers().indexOf(p) == 2)
             {
-                //Green
-                batCentre.x += batWidth;
+                //Blue
+                batCentre.x -= batWidth / 2;
                 batCentre.y -= batWidth;
             }
             
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
             {
                 //A second bounce from the same bat, means that the bat has moved into the puck and this should not happen.
-                //printMessage(p.getColor() + " already bounced");
                 break;
             }
                         
@@ -712,9 +714,8 @@ public class Puck extends TimerTask
                         direction += 180;
                     }
                                  
-                    //direction = -direction;
+                    direction = -direction;
                     
-                    //direction += 180;
                     correctDirection();
                     
                     return batBouncePosition;
@@ -729,7 +730,6 @@ public class Puck extends TimerTask
         if (Math.pow(pos.x - circleCentre.x, 2) + Math.pow(pos.y - circleCentre.y, 2) <= Math.pow(radius, 2))
         {
             //Position pos in circle
-            printMessage("In circle");
             return true;
         }
         return false;
@@ -801,9 +801,7 @@ public class Puck extends TimerTask
         {
             intersectionCount = 2;
         }
-        
-        printMessage("IntersectionCount: " + intersectionCount);
-        
+                
         x1 = (float)((-B - Math.sqrt(Math.pow(B, 2) - 4*A*C))/(2*A));
         x2 = (float)((-B + Math.sqrt(Math.pow(B, 2) - 4*A*C))/(2*A));
 
@@ -834,13 +832,12 @@ public class Puck extends TimerTask
                  
         //The bounce position on the circle of the bat
         Vector2 batBouncePosition = new Vector2(x, y);
-        printMessage("BAT BOUNCE: " + roundPosition(batBouncePosition));
         return batBouncePosition;
     }
 
     /**
      * Gets the corresponding color of the player with id playerID, where 0 is Red,
-     * 1 is Blue and 2 is Green.
+     * 1 is Green and 2 is Blue.
      * @param playerID The id of the player
      * @return Return a string containing the name of the color of the player whose id is playerID
      * returns "unknown" if the playerID can't be matched with a player.
