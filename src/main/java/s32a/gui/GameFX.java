@@ -83,7 +83,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             myGame = lobby.getPlayedGame();
             me = (Player) lobby.getCurrentPerson();
             btnStopSpec.setVisible(false);
-
+            lblName.setText(me.getName());
             // bind custom difficulty indicators
             this.customSpeed = new SimpleIntegerProperty(15);
             this.customSpeed.bindBidirectional(this.sldCustomDifficulty.valueProperty());
