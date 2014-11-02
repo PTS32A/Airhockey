@@ -297,13 +297,13 @@ public class Game
         else
         {
             // Left corner of triangle
-            double aX = 0;
+            double aX = -width/2;
             double aY = 0;
             // Top corner of triangle
-            double bX = width / 2;
+            double bX = 0;
             double bY = width * Math.sin(Math.toRadians(60));
             // Right corner of triangle
-            double cX = width;
+            double cX = width/2;
             double cY = 0;
             
             double bat = width / 100 * 8;
