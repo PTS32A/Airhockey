@@ -661,6 +661,12 @@ public class Puck extends TimerTask
                 batCentre.x -= batWidth;
                 batCentre.y -= batWidth;
             }
+            else if (myGame.getMyPlayers().indexOf(p) == 2)
+            {
+                //Green
+                batCentre.x += batWidth;
+                batCentre.y -= batWidth;
+            }
             
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
             {
