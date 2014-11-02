@@ -283,46 +283,67 @@ public class Game
      */
     private void setBatPosition(Player p, int playerID)
     {
-        float sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
+        float width = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
 
         float x;
         float y;
+        Vector2 batPos;
 
         if (playerID == 0)
         {
             //Player red
-            x = 0;
-            y = 0;
-        } else
+            batPos = new Vector2(0,0);
+        } 
+        else
         {
-            //Player blue or green
-            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));
-
-            float middleLine = (float) Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
-
-            Vector2 linePos1 = new Vector2(0, (float) middleLine);
-            Vector2 linePos2;
-
-            if (playerID == 1)
+            // Left corner of triangle
+            double aX = 0;
+            double aY = 0;
+            // Top corner of triangle
+            double bX = width / 2;
+            double bY = width * Math.sin(Math.toRadians(60));
+            // Right corner of triangle
+            double cX = width;
+            double cY = 0;
+            
+            double bat = width / 100 * 8;
+            
+            if (playerID == 1) 
             {
-                //Player blue
-                linePos2 = new Vector2((float) (sideLength / 2), 0);
-            } else
-            {
-                //Player green
-                linePos2 = new Vector2((float) (-(sideLength / 2)), 0);
+                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + 3,
+                    (float) ((aY + ((bY - aY) / 100 * 50))) + (float)bat/2);
             }
-
-            float a = (linePos1.y - linePos2.y) / (linePos1.x - linePos2.x);
-            float b = linePos1.y - a * linePos1.x;
-
-            //y = a*x + b
-            //a*x = y - b
-            //x = (y - b) / a
-            x = (y - b) / a;
+            else
+            {
+                batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
+                         - (float)bat - 3, (float) ((cY + ((bY - cY) / 100 * 50))) + (float)bat/2);
+            }
+//            //Player blue or green
+//            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));
+//
+//            float middleLine = (float) Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
+//
+//            Vector2 linePos1 = new Vector2(0, (float) middleLine);
+//            Vector2 linePos2;
+//
+//            if (playerID == 1)
+//            {
+//                //Player blue
+//                linePos2 = new Vector2((float) (sideLength / 2), 0);
+//            } else
+//            {
+//                //Player green
+//                linePos2 = new Vector2((float) (-(sideLength / 2)), 0);
+//            }
+//
+//            float a = (linePos1.y - linePos2.y) / (linePos1.x - linePos2.x);
+//            float b = linePos1.y - a * linePos1.x;
+//
+//            //y = a*x + b
+//            //a*x = y - b
+//            //x = (y - b) / a
+//            x = (y - b) / a;
         }
-
-        Vector2 batPos = new Vector2(x, y);
         p.setBatPos(batPos);
     }
 

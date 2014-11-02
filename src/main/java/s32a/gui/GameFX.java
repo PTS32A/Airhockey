@@ -169,12 +169,12 @@ public class GameFX extends AirhockeyGUI implements Initializable
             this.drawEdges();
             g.getMyPlayers().get(0).draw(graphics, width.doubleValue(),
                     height.doubleValue());
-            this.graphics.fillOval(g.getMyPlayers().get(0).getBatPos().x,
-                    g.getMyPlayers().get(0).getBatPos().y, bat, bat);
-            this.graphics.fillOval(g.getMyPlayers().get(1).getBatPos().x,
-                    g.getMyPlayers().get(1).getBatPos().y, bat, bat);
-            this.graphics.fillOval(g.getMyPlayers().get(2).getBatPos().x,
-                    g.getMyPlayers().get(2).getBatPos().y, bat, bat);
+            this.graphics.fillOval(width.doubleValue()/2 - g.getMyPlayers().get(0).getBatPos().x,
+                    height.doubleValue() - g.getMyPlayers().get(0).getBatPos().y, bat, bat);
+            this.graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
+                    height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
+            this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
+                    height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y, bat, bat);
             this.drawPuck(g.getMyPuck().getPuckLocation());
         }
     }
@@ -250,19 +250,10 @@ public class GameFX extends AirhockeyGUI implements Initializable
             p.draw(graphics, width.doubleValue(), height.doubleValue());
             this.drawPuck(myGame.getMyPuck().getPuckLocation());
             double bat = (double) width.doubleValue() / 100 * 8;
-
-            // This should probably be moved to Game
-            Vector2 bat1 = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + 3,
-                    (float) ((aY + ((bY - aY) / 100 * 50)) - bat / 2));
-            Vector2 bat2 = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
-                    - (float) bat - 3, (float) ((cY + ((bY - cY) / 100 * 50)) - bat / 2));
-
-            //myGame.getMyPlayers().get(1).setBatPos(bat2);
-            //myGame.getMyPlayers().get(2).setBatPos(bat1);
-            graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
-                    myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
-            graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
-                    myGame.getMyPlayers().get(2).getBatPos().y, bat, bat);
+            this.graphics.fillOval(myGame.getMyPlayers().get(1).getBatPos().x,
+                    height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y, bat, bat);
+            this.graphics.fillOval(myGame.getMyPlayers().get(2).getBatPos().x,
+                    height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y, bat, bat);
             gameStart = true;
         }
     }

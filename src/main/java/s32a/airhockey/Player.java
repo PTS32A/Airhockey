@@ -78,21 +78,8 @@ public class Player extends Person
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         batWidth = (int) (sideLength / 100 * 8);
-        if (color == Colors.Red)
-        {
-            this.batPos = new Vector2(goalPos.x, goalPos.y);
-            rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
-        }
-        if (color == Colors.Blue)
-        {
-            this.batPos = new Vector2(sideLength / 3 * 2, sideLength / 2);
-            rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
-        }
-        if (color == Colors.Green)
-        {
-            this.batPos = new Vector2(sideLength / 3, sideLength / 2);
-            rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
-        }
+        this.batPos = new Vector2(goalPos.x, goalPos.y);
+        rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
         this.score = new SimpleIntegerProperty(20);
     }
 
