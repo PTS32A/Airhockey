@@ -41,22 +41,22 @@ public class Bot extends Player
             {
                 if(getMyGame().getMyPuck().getPosition().x >= getBatPos().x)
                 {
-                    moveBat(1);
+                    moveBat(-1);
                 } 
                 if(getMyGame().getMyPuck().getPosition().x <= getBatPos().x)
                 {
-                    moveBat(-1);
+                    moveBat(1);
                 }
             }
             else
             {
                 if(getMyGame().getMyPuck().getPosition().y >= getBatPos().y)
                 {
-                    moveBat(1);
+                    moveBat(-1);
                 } 
                 if(getMyGame().getMyPuck().getPosition().y <= getBatPos().y)
                 {
-                    moveBat(-1);
+                    moveBat(1);
                 } 
             }
         }
