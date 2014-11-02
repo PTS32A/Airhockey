@@ -209,8 +209,8 @@ public class Puck extends TimerTask
         }
         
         //Find out where the batPosition are
-        //this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(2).getBatPos().y);
-        //this.position.y -= batWidth;
+        this.position = new Vector2(myGame.getMyPlayers().get(0).getBatPos().x, myGame.getMyPlayers().get(0).getBatPos().y);
+        this.position.y += batWidth * 2;
         //this.position.y += puckSize / 2;
         //this.position.x -= batWidth / 2;
         //this.position.x -= puckSize / 3;
@@ -223,7 +223,7 @@ public class Puck extends TimerTask
         {
             //runCount is not used (Default setting for the actual product)
             //Round will end only end when a goal has been scored
-            updatePosition(speed.get() / 10);
+            //updatePosition(speed.get() / 10);
         }
         else
         {
@@ -270,7 +270,6 @@ public class Puck extends TimerTask
             {
                 //Inside field
                 //Check whether the puck is bouncing of a bat
-                
                 Vector2 batBouncePosition = checkBatBounce(newPosition);
                 
                 if(batBouncePosition == null)
@@ -667,27 +666,17 @@ public class Puck extends TimerTask
             else if (myGame.getMyPlayers().indexOf(p) == 2)
             {
                 //Green
-                //batCentre.x += batWidth;
-                //batCentre.y -= batWidth;
+                batCentre.x += batWidth;
+                batCentre.y -= batWidth;
             }
             
-            //if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
-            //{
-                //A second bounce from the same bat, means that the bat has moved into the puck and this should not happen.
-            //    printMessage(p.getColor() + " already bounced");
-            //    break;
-            //}
-
-            //if (isInCircle(position, batCentre, radius))
-            //{
-                //Original position is in a bat circle. This means the bat has moved during puck motion.
-                //Therefor, bouncing should be ignored this frame, as the puck would bounce from within the bat.
-                //return null;
-            //}
-            
-            if (Math.pow(pos.x - batCentre.x, 2) + Math.pow(pos.y - batCentre.y, 2) <= Math.pow(radius, 2))
+            if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
             {
-                //Vector2 pos is on or within the circle
+                //A second bounce from the same bat, means that the bat has moved into the puck and this should not happen.
+                //printMessage(p.getColor() + " already bounced");
+                break;
+            }
+                        
                 Vector2 batBouncePosition = getIntersectionWithCircle(position, pos, batCentre, radius);
                 
                 if (batBouncePosition != null)
@@ -729,7 +718,6 @@ public class Puck extends TimerTask
                     correctDirection();
                     
                     return batBouncePosition;
-                }
             }
         }
         
@@ -770,7 +758,7 @@ public class Puck extends TimerTask
             //Not in circle
             return null;
         }
-               
+                      
         /**
          * Equate the formulas:
          * 
