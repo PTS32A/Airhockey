@@ -98,15 +98,16 @@ public class Player extends Person
         double direction = 0;
         double x;
         double y;
+        boolean out = false;
                 
         // Left corner of triangle
-        double aX = 0;
+        double aX = -sideLength/2;
         double aY = 0;
         // Top corner of triangle
-        double bX = sideLength / 2;
+        double bX = 0;
         double bY = sideLength * Math.sin(Math.toRadians(60));
         // Right corner of triangle
-        double cX = sideLength;
+        double cX = sideLength/2;
         double cY = 0;
         
         if (myGame.isPaused())
@@ -127,14 +128,17 @@ public class Player extends Person
                 float aX1 = (float)(aX + ((cX - aX) / 100 * 30));
                 float aX2 = (float)(aX + ((cX - aX) / 100 * 70));
                 
-//                if (batPos.x < aX1 || batPos.x > aX2) 
+//                if (batPos.x + Math.cos(Math.toRadians(direction)) * 5 < aX1  
+//                        || batPos.x + Math.cos(Math.toRadians(direction)) * 5 > aX2) 
 //                {
-//                    return false;
+//                    out = true;
+//                    batPos.x -= Math.cos(Math.toRadians(direction)) * 5;
 //                }
                 if (amount == 1)
                 {
                     direction = 0;
-                } else
+                } 
+                else
                 {
                     direction = 180;
                 }
@@ -144,14 +148,16 @@ public class Player extends Person
                 // Left goal
                 float bY1 = (float)(aY + ((bY - aY) / 100 * 30));
                 float bY2 = (float)(aY + ((bY - aY) / 100 * 70));
-//                if (batPos.y < bY1 || batPos.y > bY2) 
+//                if (batPos.y  + Math.sin(Math.toRadians(direction)) * 5 < bY1  
+//                        || batPos.y  + Math.sin(Math.toRadians(direction)) * 5 > bY2) 
 //                {
-//                    return false;
+//                    out = true;
 //                }
                 if (amount == 1)
                 {
                     direction = 240;
-                } else
+                } 
+                else
                 {
                     direction = 60;
                 }
@@ -161,20 +167,30 @@ public class Player extends Person
                 // Right goal
                 float cY1 = (float)(cY + ((bY - cY) / 100 * 30));
                 float cY2 = (float)(cY + ((bY - cY) / 100 * 70));
-//                if (batPos.y < cY1 || batPos.y > cY2) 
+//                if (batPos.y + (Math.sin(Math.toRadians(direction)) * 5)*2 < cY1  
+//                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > cY2 ) 
 //                {
-//                    return false;
+//                    out = true;
 //                }
                 if (amount == 1)
                 {
                     direction = 300;
-                } else
+                } 
+                else
                 {
                     direction = 120;
                 }
             }
-            x = Math.cos(Math.toRadians(direction)) * 5;
-            y = Math.sin(Math.toRadians(direction)) * 5;
+            if (out) 
+            {
+                x = 0;
+                y = 0;
+            }
+            else
+            {
+                x = Math.cos(Math.toRadians(direction)) * 5;
+                y = Math.sin(Math.toRadians(direction)) * 5;
+            }
             this.batPos.x += x;
             this.batPos.y += y;
             this.rec.x = (int) batPos.x;
