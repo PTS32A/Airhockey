@@ -67,6 +67,8 @@ public class Puck extends TimerTask
     @Getter
     private FloatProperty speed;
     
+    private int lastBouncerID;
+    
     /**
      * Threadsafe property set
      * @param input 
@@ -133,7 +135,8 @@ public class Puck extends TimerTask
         this.isMoving = true;
 
         this.myGame = myGame;
-
+        
+        this.lastBouncerID = -1;
 
         this.defaultRunCount = -1;
         
@@ -146,8 +149,10 @@ public class Puck extends TimerTask
         setEndData();
         
         this.position = centre;
-        this.direction = new Random().nextFloat() * 360;
+        //this.direction = new Random().nextFloat() * 360;
+        this.direction = 180;
         this.runCount = defaultRunCount;
+        this.lastBouncerID = -1;
     }
 
     /**
@@ -204,8 +209,12 @@ public class Puck extends TimerTask
         }
         
         //Find out where the batPosition are
-        //this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(0).getBatPos().y);
+        //this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(2).getBatPos().y);
         //this.position.y += batWidth;
+        
+        //System.out.println("Red: " + myGame.getMyPlayers().get(0).getBatPos());
+        //System.out.println("Blue: " + myGame.getMyPlayers().get(1).getBatPos());
+        //System.out.println("Green: " + myGame.getMyPlayers().get(2).getBatPos());
         
         if (this.runCount <= -1)
         {
@@ -281,6 +290,7 @@ public class Puck extends TimerTask
             {
                 //Outside field or in collission with wall
                 position = bouncePosition;
+                lastBouncerID = -1;
 
 //                printMessage("  Wanted Position: " + roundPosition(newPosition));
 //                printMessage("  Bounce Position: " + roundPosition(bouncePosition));
@@ -645,6 +655,26 @@ public class Puck extends TimerTask
             batCentre = new Vector2(p.getBatPos().x, p.getBatPos().y);
             batCentre.y += puckSize / 2;
             
+            if (myGame.getMyPlayers().indexOf(p) == 1)
+            {
+                //Blue
+                batCentre.x -= batWidth;
+                batCentre.y -= batWidth;
+            }
+            
+            if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
+            {
+                //A second bounce from the same bat, means that the bat has moved into the puck and this should not happen.
+                return null;
+            }
+
+            if (isInCircle(position, batCentre, radius))
+            {
+                //Original position is in a bat circle. This means the bat has moved during puck motion.
+                //Therefor, bouncing should be ignored this frame, as the puck would bounce from within the bat.
+                //return null;
+            }
+            
             if (Math.pow(pos.x - batCentre.x, 2) + Math.pow(pos.y - batCentre.y, 2) <= Math.pow(radius, 2))
             {
                 //Vector2 pos is on or within the circle
@@ -655,6 +685,7 @@ public class Puck extends TimerTask
                     //Bat bounce by player p
                     printMessage("BAT BOUNCE AT PLAYER: " + p.getColor());
                     this.hitBy.add(p);
+                    this.lastBouncerID = myGame.getMyPlayers().indexOf(p);
                     
                     //Basic formula: new direction = 180 - old direction - 2 * sin^-1((circleX - batBouncePosition.x) / radius)
                     double angleDecider = Math.toDegrees(Math.asin((batCentre.x - batBouncePosition.x) / radius));
@@ -668,7 +699,7 @@ public class Puck extends TimerTask
                     {
                         angleDecider += 360;
                     }
-                    
+                                        
                     if (angleDecider < 180 - direction)
                     {
                         direction = (float)(180 - direction - 2 * angleDecider);
@@ -681,6 +712,8 @@ public class Puck extends TimerTask
                     {
                         direction += 180;
                     }
+                                 
+                    direction = -direction;
                     
                     //direction += 180;
                     correctDirection();
@@ -691,6 +724,16 @@ public class Puck extends TimerTask
         }
         
         return null;
+    }
+    
+    private boolean isInCircle(Vector2 pos, Vector2 circleCentre, double radius)
+    {
+        if (Math.pow(pos.x - circleCentre.x, 2) + Math.pow(pos.y - circleCentre.y, 2) <= Math.pow(radius, 2))
+        {
+            //Position pos in circle
+            return true;
+        }
+        return false;
     }
     
     private Vector2 getIntersectionWithCircle(Vector2 lineA, Vector2 lineB, Vector2 circleCentre, double radius)
@@ -711,14 +754,12 @@ public class Puck extends TimerTask
         float Xcentre = circleCentre.x;
         float Ycentre = circleCentre.y;
         
-        if (Math.pow(lineB.x - Xcentre, 2) + Math.pow(lineB.y - Ycentre, 2) > Math.pow(radius, 2))
+        if (!isInCircle(lineB, circleCentre, radius))
         {
-            //Point is not withing circle
+            //Not in circle
             return null;
         }
-        
-        printMessage("PUCK IS IN CIRCLE");
-        
+               
         /**
          * Equate the formulas:
          * 
