@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package timers;
+package s32a.timers;
 
 import java.util.TimerTask;
 import javafx.application.Platform;

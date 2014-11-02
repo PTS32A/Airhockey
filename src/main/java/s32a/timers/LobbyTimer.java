@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package timers;
+package s32a.timers;
 
 import java.sql.Timestamp;
-import s32a.airhockey.gui.LobbyFX;
+import s32a.gui.LobbyFX;
 import javafx.animation.AnimationTimer;
 import s32a.airhockey.Lobby;
 

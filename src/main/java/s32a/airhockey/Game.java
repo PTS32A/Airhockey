@@ -19,7 +19,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
-import timers.GameTimeTask;
+import s32a.timers.GameTimeTask;
 
 /**
  * @author Kargathia

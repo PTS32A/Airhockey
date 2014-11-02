@@ -10,7 +10,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1100.0" prefHeight="600.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="s32a.airhockey.gui.GameFX">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="1100.0" prefHeight="600.0" prefWidth="1100.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="s32a.gui.GameFX">
   <children>
     <Button fx:id="btnQuit" mnemonicParsing="false" onAction="#quitClick" prefWidth="52.0" text="Quit" AnchorPane.bottomAnchor="36.0" AnchorPane.rightAnchor="20.0" />
     <Button fx:id="btnPause" mnemonicParsing="false" onAction="#pauseClick" text="Pause" AnchorPane.bottomAnchor="72.0" AnchorPane.rightAnchor="21.0" />

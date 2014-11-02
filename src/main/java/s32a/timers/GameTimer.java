@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package timers;
+package s32a.timers;
 
 import javafx.animation.AnimationTimer;
 import s32a.airhockey.Game;
-import s32a.airhockey.gui.GameFX;
+import s32a.gui.GameFX;
 
 /**
  *

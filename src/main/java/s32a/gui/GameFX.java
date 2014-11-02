@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package s32a.airhockey.gui;
+package s32a.gui;
 
 import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
@@ -27,7 +27,7 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import lombok.Getter;
 import s32a.airhockey.*;
-import timers.GameTimer;
+import s32a.timers.GameTimer;
 
 /**
  * NOTES: - SetBatPosition in DrawEdges should probably be moved to game
