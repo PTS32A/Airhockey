@@ -74,7 +74,7 @@ public class ChatboxTest
         System.out.println("getChat");
 
         String expResult = "<piet>[" + String.valueOf(Calendar.getInstance().getTime()).substring(11, 19) + "]: Ik ben piet";
-        String result = instance.getChat().get(0);
+        String result = instance.chatProperty().get(0);
         assertEquals(expResult, result);
     }
     

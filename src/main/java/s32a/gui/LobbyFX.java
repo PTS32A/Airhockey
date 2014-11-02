@@ -262,8 +262,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         if (!tfChatbox.getText().equals(""))
         {
             l.addChatMessage(tfChatbox.getText(), l.getCurrentPerson());
-
-            lvChatbox.setItems(FXCollections.observableArrayList(l.getMychatbox().getChat()));
             tfChatbox.setText("");
         }
     }

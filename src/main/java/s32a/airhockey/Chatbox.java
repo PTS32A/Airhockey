@@ -18,10 +18,7 @@ import lombok.Getter;
  */
 public class Chatbox
 {
-
-    @Getter
-    private List<String> chat;
-    
+    private List<String> chat;   
     private ObservableList<String> chatProp;
 
     public ObservableList<String> chatProperty()
