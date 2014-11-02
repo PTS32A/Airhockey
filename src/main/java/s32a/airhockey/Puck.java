@@ -357,7 +357,7 @@ public class Puck extends TimerTask
             Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
             Vector2 linePos2 = new Vector2(0, (float) middleLine);
 
-            updateDirection(90);
+            updateDirection(60);
             return getIntersection(position, newPosition, linePos1, linePos2);
         } else if (outside == 1)
         {
@@ -368,7 +368,7 @@ public class Puck extends TimerTask
             Vector2 linePos1 = new Vector2((float) (sideLength / 2), 0);
             Vector2 linePos2 = new Vector2(0, (float) middleLine);
 
-            updateDirection(-90);
+            updateDirection(-60);
             return getIntersection(position, newPosition, linePos1, linePos2);
         } else
         {
@@ -499,6 +499,21 @@ public class Puck extends TimerTask
             direction += 360;
         }
     }
+    
+    private float getAdjustValue(int angle)
+    {
+        //Horizontal wall (0 degrees corner) gives 180
+        //Diagonal line (30 degrees corner)gives 120
+        //Diagonal line (45 degrees corner) gives 90
+        //Diagonal walls (60 degrees corner) gives 60
+        //Vertical walls (90 degrees corner) gives 0
+        //Diagonal line (120 degrees corner) gives -60 = 300
+        //Diagonal line (135 degrees corner) gives -90 = 270
+        //Diagonal line (150 degrees corner) gives -120 = 240
+        //Horizontal wall (180 degrees corner) gives -180 = 180
+        //Formula: adjustvalue = 180 - 2x corner
+        return 180 - 2 * angle;
+    }
 
     /**
      * Calculate whether a Vector2 position is in a goal
@@ -628,12 +643,16 @@ public class Puck extends TimerTask
             if (Math.pow(pos.x - batCentre.x, 2) + Math.pow(pos.y - batCentre.y, 2) <= Math.pow(batWidth, 2))
             {
                 //Vector2 pos is on or within the circle
+                Vector2 batBouncePosition = getIntersectionWithCircle(position, pos, batCentre, batWidth / 2);
                 
-                Vector2 batBouncePosition = getIntersection(position, pos, batCentre, batWidth);
-                
-                if (batBouncePosition == null)
+                if (batBouncePosition != null)
                 {
-                    return null;
+                    //Bat bounce by player p
+                    printMessage("BAT BOUNCE AT PLAYER: " + p.getColor());
+                    this.hitBy.add(p);
+                    
+                    //TODO get corner angle as parameter for getAdjustValue() (now wrongly defaulted to 0)
+                    updateDirection(getAdjustValue(0));
                 }
             }
         }
@@ -649,10 +668,7 @@ public class Puck extends TimerTask
          * a = (change in y) / (change in x)
          * b = y - a * x
          * 
-         * Point on Circle: (x - Xcentre)^2 + y-Ycentre)^2 == radius^2
-         * (y-Ycentre)^2 == radius^2 - (x-Xcentre)^2
-         * y-Ycentre == SQRT(radius^2 - (x-Xcentre)^2)
-         * y = SQRT(radius^2 - (x-Xcentre)^2) + ycentre
+         * Point on Circle: (x - Xcentre)^2 + (y-Ycentre)^2 == radius^2
          */
         
         float a = (lineA.y - lineB.y) / (lineA.x - lineB.x);
@@ -664,20 +680,86 @@ public class Puck extends TimerTask
         /**
          * Equate the formulas:
          * 
-         * y = a*x + b
-         * y = SQRT(radius^2 - (x-Xcentre)^2) + ycentre
+         * y = a*x + b & (x - Xcentre)^2 + (y-Ycentre)^2 == radius^2
          * 
-         * a*x + b = SQRT(radius^2 - (x-Xcentre)^2) + ycentre
-         * a*x + (b - Ycentre) = SQRT(radius^2 - (x-Xcentre)^2)
-         * a^2*x^2 + 2*(b-Ycentre)*a*x + (b - Ycentre)^2 = radius^2 - (x-Xcentre)^2
-         * 
-         * TODO continue maths
+         * (x - Xcentre)^2 + (a*x + b - Ycentre)^2 == radius^2
+         * (a^2 + 1)*x^2 + 2*(a*b - a*Ycentre - Xcentre)*x + (Ycentre^2 − radius^2 + Xcentre^2 − 2*b*Ycentre + b^2) = 0
+         * This compares to: A*x^2 + B*X + C = 0
+         * Which gives: x = (-B + SQRT(B^2 - 4*AC)) / (2*A) OR x = (-B - SQRT(B^2 - 4*AC)) / (2*A)
          */
+        double A = Math.pow(a, 2) + 1;
+        double B = 2 * Math.pow(a * b - a * Ycentre - Xcentre, 2);
+        double C = Math.pow(Ycentre, 2) - Math.pow(radius, 2) + Math.pow(Xcentre, 2) - 2*b*Ycentre + Math.pow(b, 2);
         
-        float x = 0;
-        float y = 0;
+        float x1 = 0;
+        float x2 = 0;
         
-        return null;
+        boolean x1Exists = true;
+        boolean x2Exists = true;
+        
+        try
+        {
+            x1 = (float)((-B - Math.sqrt(Math.pow(B, 2) - 4*A*C))/(2*A));
+        }
+        catch (Exception ex)
+        {
+            x1Exists = false;
+        }
+        
+        try
+        {
+            x2 = (float)((-B + Math.sqrt(Math.pow(B, 2) - 4*A*C))/(2*A));
+        }
+        catch (Exception ex)
+        {
+            x2Exists = false;
+        }
+          
+        float x;
+        float y;
+        
+        if (x1Exists == true)
+        {
+            if (x2Exists == true)
+            {
+                //y = a*x+b
+                float y1 = a * x1 + b;
+                float y2 = a * x2 + b;
+                
+                //Check which of the two points is the closed to the original position, that is the bounce position
+                if (getDistance(position, new Vector2(x1, y1)) < getDistance(position, new Vector2(x2, y2)))
+                {
+                    x = x1;
+                    y = y1;
+                }
+                else
+                {
+                    x = x2;
+                    y = y2;
+                }
+            }
+            else
+            {
+                x = x1;
+                y = a * x + b;
+            }
+        }
+        else
+        {
+            if (x2Exists == true)
+            {
+                x = x2;
+                y = a * x + b;
+            }
+            else
+            {
+                //No intersection with the circle, so no collision with a bat
+                return null;
+            }
+        }
+        
+        //The bounce position on the circle of the bat
+        return new Vector2(x, y);
     }
 
     /**
