@@ -6,6 +6,7 @@
 package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
+import com.sun.prism.paint.Color;
 import java.awt.Rectangle;
 import java.util.Calendar;
 import lombok.Getter;
@@ -35,14 +36,29 @@ public class Bot extends Player
     {
         if(!getMyGame().isPaused())
         {
-            if(getMyGame().getMyPuck().getPosition().y >= getBatPos().y)
+
+            if(this.getColor() == Colors.Red)
             {
-                moveBat(1);
-            } 
-            if(getMyGame().getMyPuck().getPosition().y <= getBatPos().y)
+                if(getMyGame().getMyPuck().getPosition().x >= getBatPos().x)
+                {
+                    moveBat(1);
+                } 
+                if(getMyGame().getMyPuck().getPosition().x <= getBatPos().x)
+                {
+                    moveBat(-1);
+                }
+            }
+            else
             {
-                moveBat(-1);
-            } 
+                if(getMyGame().getMyPuck().getPosition().y >= getBatPos().y)
+                {
+                    moveBat(1);
+                } 
+                if(getMyGame().getMyPuck().getPosition().y <= getBatPos().y)
+                {
+                    moveBat(-1);
+                } 
+            }
         }
     }
 }

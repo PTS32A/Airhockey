@@ -533,19 +533,20 @@ public class Game
             //BEGIN PUCK MOVEMENT
             printMessage("--BEGIN PUCK MOVEMENT");
             this.continueRun = true; //This allows Puck to be moved
-        }
+            
+            printMessage("--BEGIN BOT MOVEMENT");
 
-        printMessage("--BEGIN BOT MOVEMENT");
-
-        for (Player p : myPlayers)
-        {
-            if (p instanceof Bot)
+            for (Player p : myPlayers)
             {
-                ((Bot) p).moveBot();
+                if (p instanceof Bot)
+                {
+                    Bot b = (Bot)p;
+                    b.moveBot();
+                }
             }
-        }
 
-        printMessage("--END BOT MOVEMENT");
+            printMessage("--END BOT MOVEMENT");
+        }
     }
 
     /**
