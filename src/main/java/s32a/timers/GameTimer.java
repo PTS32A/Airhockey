@@ -6,7 +6,9 @@
 package s32a.timers;
 
 import javafx.animation.AnimationTimer;
+import s32a.airhockey.Bot;
 import s32a.airhockey.Game;
+import s32a.airhockey.Player;
 import s32a.gui.GameFX;
 
 /**
@@ -45,6 +47,15 @@ public class GameTimer extends AnimationTimer
         {
             gameFX.draw(myGame);
             prevUpd = now;
+        }
+        
+        for (Player p : myGame.getMyPlayers())
+        {
+            if (p instanceof Bot)
+            {
+                Bot b = (Bot)p;
+                b.moveBot();
+            }
         }
     }
 }

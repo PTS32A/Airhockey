@@ -536,14 +536,7 @@ public class Game
             
             printMessage("--BEGIN BOT MOVEMENT");
 
-            for (Player p : myPlayers)
-            {
-                if (p instanceof Bot)
-                {
-                    Bot b = (Bot)p;
-                    b.moveBot();
-                }
-            }
+            
 
             printMessage("--END BOT MOVEMENT");
         }
