@@ -210,7 +210,10 @@ public class Puck extends TimerTask
         
         //Find out where the batPosition are
         //this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(2).getBatPos().y);
-        //this.position.y += batWidth;
+        //this.position.y -= batWidth;
+        //this.position.y += puckSize / 2;
+        //this.position.x -= batWidth / 2;
+        //this.position.x -= puckSize / 3;
         
         //System.out.println("Red: " + myGame.getMyPlayers().get(0).getBatPos());
         //System.out.println("Blue: " + myGame.getMyPlayers().get(1).getBatPos());
@@ -282,7 +285,7 @@ public class Puck extends TimerTask
                     position = batBouncePosition;
                     
                     //Continue the position with the remaining distance, calculated using batBouncePosition and newPosition
-                    //continueUpdatePosition(batBouncePosition, newPosition);
+                    continueUpdatePosition(batBouncePosition, newPosition);
                 }
 
                     
@@ -371,7 +374,7 @@ public class Puck extends TimerTask
         {
             //Left of field
 
-            printMessage("OUTSIDE: Left of the field");
+            printMessage("Left wall bounce");
 
             Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
             Vector2 linePos2 = new Vector2(0, (float) middleLine);
@@ -382,7 +385,7 @@ public class Puck extends TimerTask
         {
             //Right of field
 
-            printMessage("OUTSIDE: Right of the field");
+            printMessage("Right wall bounce");
 
             Vector2 linePos1 = new Vector2((float) (sideLength / 2), 0);
             Vector2 linePos2 = new Vector2(0, (float) middleLine);
@@ -395,7 +398,7 @@ public class Puck extends TimerTask
             {
                 //Underneath field
 
-                printMessage("OUTSIDE: Underneath the field");
+                printMessage("Bottom wall bounce");
 
                 Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
                 Vector2 linePos2 = new Vector2((float) (sideLength / 2), 0);
@@ -407,7 +410,7 @@ public class Puck extends TimerTask
             {
                 //Above field
 
-                printMessage("OUTSIDE: Above the field");
+                printMessage("Top corner bounce");
 
                 updateDirection(180);
                 return new Vector2(0, (float) middleLine);
@@ -664,22 +667,23 @@ public class Puck extends TimerTask
             else if (myGame.getMyPlayers().indexOf(p) == 2)
             {
                 //Green
-                batCentre.x += batWidth;
-                batCentre.y -= batWidth;
+                //batCentre.x += batWidth;
+                //batCentre.y -= batWidth;
             }
             
-            if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
-            {
+            //if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
+            //{
                 //A second bounce from the same bat, means that the bat has moved into the puck and this should not happen.
-                return null;
-            }
+            //    printMessage(p.getColor() + " already bounced");
+            //    break;
+            //}
 
-            if (isInCircle(position, batCentre, radius))
-            {
+            //if (isInCircle(position, batCentre, radius))
+            //{
                 //Original position is in a bat circle. This means the bat has moved during puck motion.
                 //Therefor, bouncing should be ignored this frame, as the puck would bounce from within the bat.
                 //return null;
-            }
+            //}
             
             if (Math.pow(pos.x - batCentre.x, 2) + Math.pow(pos.y - batCentre.y, 2) <= Math.pow(radius, 2))
             {
@@ -719,7 +723,7 @@ public class Puck extends TimerTask
                         direction += 180;
                     }
                                  
-                    direction = -direction;
+                    //direction = -direction;
                     
                     //direction += 180;
                     correctDirection();
@@ -737,6 +741,7 @@ public class Puck extends TimerTask
         if (Math.pow(pos.x - circleCentre.x, 2) + Math.pow(pos.y - circleCentre.y, 2) <= Math.pow(radius, 2))
         {
             //Position pos in circle
+            printMessage("In circle");
             return true;
         }
         return false;
