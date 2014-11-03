@@ -71,6 +71,8 @@ public class Puck extends TimerTask
     
     private int lastBouncerID;
     
+    private boolean beingPushed;
+    
     /**
      * Threadsafe property set
      * @param input 
@@ -139,6 +141,7 @@ public class Puck extends TimerTask
         this.myGame = myGame;
         
         this.lastBouncerID = -1;
+        this.beingPushed = false;
 
         this.defaultRunCount = -1;
         
@@ -151,8 +154,9 @@ public class Puck extends TimerTask
         setEndData();
         
         this.position = centre;
+        //this.position = new Vector2(0, centre.y * 2);
         //this.direction = new Random().nextFloat() * 360;
-        this.direction = 60;
+        this.direction = 180;
         this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
     }
@@ -222,6 +226,8 @@ public class Puck extends TimerTask
         {
             //runCount is not used (Default setting for the actual product)
             //Round will end only end when a goal has been scored
+            
+            //Check wheter puck is being pushed.
             updatePosition(speed.get() / 10);
         }
         else
@@ -257,11 +263,18 @@ public class Puck extends TimerTask
 
             double radians = Math.toRadians((double) direction);
 
+            if (beingPushed)
+            {
+                distance = distance * 2;
+                beingPushed = false;
+            }
+            
+            
             float newX = oldX + (float) (Math.sin(radians) * (double) distance);
             float newY = oldY + (float) (Math.cos(radians) * (double) distance);
            
             Vector2 newPosition = new Vector2(newX, newY);
-           
+            
             //Check whether the puck is outside the field
             Vector2 bouncePosition = isOutsideField(newPosition);
 
@@ -673,8 +686,21 @@ public class Puck extends TimerTask
             
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
             {
-                //A second bounce from the same bat, means that the bat has moved into the puck and this should not happen.
-                return null;
+                //If the current bat has last bounced the puck and Puck is now within the circle of this Bat,
+                //Then the Puck should be pushed in the same direction instead of bounced.
+                if (isInCircle(position, batCentre, radius))
+                {
+                    //Push
+                    beingPushed = true; //This will use increased speed for next frame's movement and will be reset after that.
+                    
+                    //No bouncing, only pushing, so no need to check other bats.
+                    return null;
+                }
+                else
+                {
+                    //Continue checking for next bat
+                    continue;
+                }
             }
                         
                 Vector2 batBouncePosition = getIntersectionWithCircle(position, pos, batCentre, radius);
@@ -706,9 +732,10 @@ public class Puck extends TimerTask
                                         
                     if (angleDecider < 180 - direction)
                     {
-                        direction = (float)(180 - direction - 2 * angleDecider);
+                        //direction = (float)(180 - direction - 2 * angleDecider);
+                        direction = (float)(direction + 2*angleDecider - 180);
                     }
-                    else if (angleDecider > 180 - direction)
+                    else if (angleDecider >= 180 - direction)
                     {
                         direction = (float)(direction + 2*angleDecider - 180);
                     }
