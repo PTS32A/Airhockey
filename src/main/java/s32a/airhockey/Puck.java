@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleFloatProperty;
@@ -301,9 +303,7 @@ public class Puck extends TimerTask
                 int goalHitPlayerID = checkGoalHit(bouncePosition);
 
                 if (goalHitPlayerID != -1)
-                {
-                    //Round is over
-
+                {                   
                     //Player who scored
                     Player whoScored = null;
                     if (hitBy.size() > 0)

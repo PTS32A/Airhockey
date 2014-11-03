@@ -58,21 +58,22 @@ public class Game
     private boolean gameOver;
 
     private Timer puckTimer;
-    
+
     @Getter
     private StringProperty gameTime;
-    
+
     private boolean printMessages = false;
 
     /**
      * Sets gameTime - non threadsafe
-     * @param input 
+     *
+     * @param input
      */
     public void setGameTime(String input)
     {
         this.gameTime.set(input);
     }
-    
+
     /**
      * threadsafe set of roundNo
      *
@@ -211,7 +212,7 @@ public class Game
         this.maxRounds = 10;
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
-        
+
         this.continueRun = false;
         this.gameOver = false;
         this.myChatbox = new Chatbox();
@@ -292,29 +293,27 @@ public class Game
         if (playerID == 0)
         {
             //Player red
-            batPos = new Vector2(0,0 + bat/2);
-        } 
-        else
+            batPos = new Vector2(0, 0 + bat / 2);
+        } else
         {
             // Left corner of triangle
-            double aX = -width/2;
+            double aX = -width / 2;
             double aY = 0;
             // Top corner of triangle
             double bX = 0;
             double bY = width * Math.sin(Math.toRadians(60));
             // Right corner of triangle
-            double cX = width/2;
+            double cX = width / 2;
             double cY = 0;
-            
-            if (playerID == 1) 
+
+            if (playerID == 1)
             {
-                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + bat/2,
-                    (float) ((aY + ((bY - aY) / 100 * 50))));
-            }
-            else
+                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + bat / 2,
+                        (float) ((aY + ((bY - aY) / 100 * 50))));
+            } else
             {
                 batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
-                         - bat/2, (float) ((cY + ((bY - cY) / 100 * 50))));
+                        - bat / 2, (float) ((cY + ((bY - cY) / 100 * 50))));
             }
 //            //Player blue or green
 //            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));
@@ -644,7 +643,7 @@ public class Game
             this.maxRounds = maxRounds;
         }
     }
-    
+
     private void printMessage(String message)
     {
         if (printMessages)

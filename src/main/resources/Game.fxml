@@ -15,7 +15,7 @@
     <Button fx:id="btnQuit" mnemonicParsing="false" onAction="#quitClick" prefWidth="52.0" text="Quit" AnchorPane.bottomAnchor="36.0" AnchorPane.rightAnchor="20.0" />
     <Button fx:id="btnPause" mnemonicParsing="false" onAction="#pauseClick" text="Pause" AnchorPane.bottomAnchor="72.0" AnchorPane.rightAnchor="21.0" />
     <Button fx:id="btnStart" mnemonicParsing="false" onAction="#startClick" prefWidth="51.000099999997474" text="Start" AnchorPane.bottomAnchor="113.0" AnchorPane.rightAnchor="20.0" />
-    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" wrapText="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="577.0" />
+    <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" visible="false" wrapText="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="577.0" />
     <Label text="Name:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
       <font>
         <Font size="24.0" fx:id="x1" />
