@@ -22,6 +22,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.airhockey.*;
 import s32a.timers.GameTimer;
@@ -83,6 +84,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             myGame = lobby.getPlayedGame();
             me = (Player) lobby.getCurrentPerson();
             btnStopSpec.setVisible(false);
+            btnPause.setDisable(true);
             lblName.setText(me.getName());
             // bind custom difficulty indicators
             this.customSpeed = new SimpleIntegerProperty(15);
@@ -167,7 +169,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
             this.drawEdges();
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(0).getBatPos().x - bat/2,
-                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat, bat, bat);
+                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat/2, bat, bat);
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat /2 + 3,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y - bat/2, bat, bat);
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(2).getBatPos().x - bat /2 - 3,
@@ -245,7 +247,7 @@ public class GameFX extends AirhockeyGUI implements Initializable
             double bat = (double) width.doubleValue() / 100 * 8;
             Player p = myGame.getMyPlayers().get(0);
             this.graphics.fillOval(width.doubleValue()/2 - myGame.getMyPlayers().get(0).getBatPos().x - bat/2,
-                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat, bat, bat);
+                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat/2, bat, bat);
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat /2 + 3,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y - bat/2, bat, bat);
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(2).getBatPos().x - bat /2 - 3,
@@ -263,12 +265,17 @@ public class GameFX extends AirhockeyGUI implements Initializable
      */
     public void startClick(Event evt)
     {
+        getThisStage().setOnCloseRequest((WindowEvent event) ->
+        {
+            this.quitClick(null);
+        });
         if (myGame != null && myGame.getMyPlayers().size() == 3)
         {
             if (myGame.beginGame())
             {
                 addEvents();
                 btnStart.setDisable(true);
+                btnPause.setDisable(false);
                 this.sldCustomDifficulty.setDisable(true);
                 this.cbxCustomDifficulty.setDisable(true);
                 this.startGraphics(myGame);

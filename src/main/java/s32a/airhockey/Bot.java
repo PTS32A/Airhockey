@@ -38,22 +38,22 @@ public class Bot extends Player
         {
             if(this.getColor() == Colors.Red)
             {
-                if(getMyGame().getMyPuck().getPosition().x >= getBatPos().x - 50)
+                if(getMyGame().getMyPuck().getPosition().x >= getBatPos().x)
                 {
                     moveBat(-1);
                 } 
-                if(getMyGame().getMyPuck().getPosition().x <= getBatPos().x - 50)
+                if(getMyGame().getMyPuck().getPosition().x <= getBatPos().x)
                 {
                     moveBat(1);
                 }
             }
             else
             {
-                if(getMyGame().getMyPuck().getPosition().y >= getBatPos().y - 50)
+                if(getMyGame().getMyPuck().getPosition().y >= getBatPos().y)
                 {
                     moveBat(-1);
                 } 
-                if(getMyGame().getMyPuck().getPosition().y <= getBatPos().y - 50)
+                if(getMyGame().getMyPuck().getPosition().y <= getBatPos().y)
                 {
                     moveBat(1);
                 } 

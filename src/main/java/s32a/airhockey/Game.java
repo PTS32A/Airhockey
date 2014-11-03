@@ -284,7 +284,7 @@ public class Game
     private void setBatPosition(Player p, int playerID)
     {
         float width = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
-
+        float bat = width / 100 * 8;
         float x;
         float y;
         Vector2 batPos;
@@ -292,7 +292,7 @@ public class Game
         if (playerID == 0)
         {
             //Player red
-            batPos = new Vector2(0,0);
+            batPos = new Vector2(0,0 + bat/2);
         } 
         else
         {
@@ -306,17 +306,15 @@ public class Game
             double cX = width/2;
             double cY = 0;
             
-            double bat = width / 100 * 8;
-            
             if (playerID == 1) 
             {
-                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + (float)bat/2,
+                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + bat/2,
                     (float) ((aY + ((bY - aY) / 100 * 50))));
             }
             else
             {
                 batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
-                         - (float)bat/2, (float) ((cY + ((bY - cY) / 100 * 50))));
+                         - bat/2, (float) ((cY + ((bY - cY) / 100 * 50))));
             }
 //            //Player blue or green
 //            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));

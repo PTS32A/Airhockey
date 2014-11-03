@@ -402,7 +402,6 @@ public class Puck extends TimerTask
                 Vector2 linePos2 = new Vector2((float) (sideLength / 2), 0);
 
                 updateDirection(180);
-
                 return getIntersection(position, newPosition, linePos1, linePos2);
             } else if (y > middleLine)
             {
@@ -654,24 +653,24 @@ public class Puck extends TimerTask
         for (Player p : myGame.getMyPlayers())
         {           
             batCentre = new Vector2(p.getBatPos().x, p.getBatPos().y);
-            batCentre.y += puckSize / 2;
+            //batCentre.y += puckSize / 2;
             
-            if (myGame.getMyPlayers().indexOf(p) == 0)
-            {
-                //batCentre.x = -batCentre.x;
-            }
-            else if (myGame.getMyPlayers().indexOf(p) == 1)
-            {
-                //Blue  
-                batCentre.x += batWidth / 2;
-                batCentre.y -= batWidth;
-            }
-            else if (myGame.getMyPlayers().indexOf(p) == 2)
-            {
-                //Green
-                batCentre.x -= batWidth / 2;
-                batCentre.y -= batWidth;
-            }
+//            if (myGame.getMyPlayers().indexOf(p) == 0)
+//            {
+//                //batCentre.x = -batCentre.x;
+//            }
+//            else if (myGame.getMyPlayers().indexOf(p) == 1)
+//            {
+//                //Blue  
+//                batCentre.x -= batWidth / 2;
+//                batCentre.y -= batWidth;
+//            }
+//            else if (myGame.getMyPlayers().indexOf(p) == 2)
+//            {
+//                //Green
+//                batCentre.x += batWidth / 2;
+//                batCentre.y -= batWidth;
+//            }
             
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
             {
