@@ -151,8 +151,8 @@ public class Puck extends TimerTask
         setEndData();
         
         this.position = centre;
-        this.direction = new Random().nextFloat() * 360;
-        //this.direction = 180;
+        //this.direction = new Random().nextFloat() * 360;
+        this.direction = 180;
         this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
     }
@@ -211,10 +211,8 @@ public class Puck extends TimerTask
         }
         
         //Find out where the batPosition are
-        //this.position = new Vector2(myGame.getMyPlayers().get(1).getBatPos().x, myGame.getMyPlayers().get(1).getBatPos().y);
-        //this.position.y -= batWidth;
-        //this.position.y += puckSize / 2;
-        //this.position.x += batWidth / 2;
+        //this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(2).getBatPos().y);
+        //this.position.y -= puckSize / 2;
         
         //System.out.println("Red: " + myGame.getMyPlayers().get(0).getBatPos());
         //System.out.println("Green: " + myGame.getMyPlayers().get(1).getBatPos());
@@ -653,24 +651,25 @@ public class Puck extends TimerTask
         for (Player p : myGame.getMyPlayers())
         {           
             batCentre = new Vector2(p.getBatPos().x, p.getBatPos().y);
-            //batCentre.y += puckSize / 2;
             
             if (myGame.getMyPlayers().indexOf(p) == 0)
             {
-                batCentre.y -= puckSize/2;
+                batCentre.y -= puckSize / 2;
             }
-//            else if (myGame.getMyPlayers().indexOf(p) == 1)
-//            {
-//                //Blue  
+            else if (myGame.getMyPlayers().indexOf(p) == 1)
+            {
+                //Blue  
 //                batCentre.x -= batWidth / 2;
-//                batCentre.y -= batWidth;
-//            }
-//            else if (myGame.getMyPlayers().indexOf(p) == 2)
-//            {
+ //               batCentre.y -= batWidth;
+                  batCentre.y -= puckSize / 2;
+            }
+            else if (myGame.getMyPlayers().indexOf(p) == 2)
+            {
 //                //Green
 //                batCentre.x += batWidth / 2;
 //                batCentre.y -= batWidth;
-//            }
+                  batCentre.y -= puckSize / 2;
+            }
             
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
             {
