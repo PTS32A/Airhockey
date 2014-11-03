@@ -152,7 +152,7 @@ public class Puck extends TimerTask
         
         this.position = centre;
         //this.direction = new Random().nextFloat() * 360;
-        this.direction = 180;
+        this.direction = 60;
         this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
     }
@@ -674,13 +674,18 @@ public class Puck extends TimerTask
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
             {
                 //A second bounce from the same bat, means that the bat has moved into the puck and this should not happen.
-                break;
+                return null;
             }
                         
                 Vector2 batBouncePosition = getIntersectionWithCircle(position, pos, batCentre, radius);
                 
                 if (batBouncePosition != null)
                 {
+                    //while(true)
+                    //{
+                    //    position = batBouncePosition;
+                    //}
+                    
                     //Bat bounce by player p
                     printMessage("Bat-Bounce @ player " + p.getColor());
                     this.hitBy.add(p);
@@ -812,20 +817,28 @@ public class Puck extends TimerTask
         double circlePoint1 = Math.pow(x1 - Xcentre, 2) + Math.pow(y1 - Ycentre, 2);
         double circlePoint2 = Math.pow(x2 - Xcentre, 2) + Math.pow(y2 - Ycentre, 2);
         
+        boolean p1Correct = false;
+        boolean p2Correct = false;
+        
         if (circlePoint1 < Math.pow(radius, 2) + 1 && circlePoint1 > Math.pow(radius, 2) - 1)
+        {
+            p1Correct = true;
+        }
+        if (circlePoint2 < Math.pow(radius, 2) + 1 && circlePoint2 > Math.pow(radius, 2) - 1)
+        {
+            p2Correct = true;
+        }
+        
+        
+        if (getDistance(lineA, new Vector2(x1, y1)) < getDistance(lineA, new Vector2(x2, y2)))
         {
             x = x1;
             y = y1;
         }
-        else if (circlePoint2 < Math.pow(radius, 2) + 1 && circlePoint2 > Math.pow(radius, 2) - 1)
+        else
         {
             x = x2;
             y = y2;
-        }
-        else
-        {
-            x = 0;
-            y = 0;
         }
                  
         //The bounce position on the circle of the bat

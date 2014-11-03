@@ -20,6 +20,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -168,13 +169,21 @@ public class GameFX extends AirhockeyGUI implements Initializable
             double bat = (double) width.doubleValue() / 100 * 8;
             this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
             this.drawEdges();
+            //Red           
+            this.graphics.setFill(Color.RED);
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(0).getBatPos().x - bat/2,
                     height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat/2, bat, bat);
+            //Blue           
+            this.graphics.setFill(Color.BLUE);
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat /2 + 3,
                     height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y - bat/2, bat, bat);
+            this.graphics.setFill(Color.GREEN);
             this.graphics.fillOval(width.doubleValue()/2 - -myGame.getMyPlayers().get(2).getBatPos().x - bat /2 - 3,
                     height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y - bat/2, bat, bat);
+            //Reset to black
+            this.graphics.setFill(Color.BLACK);
             this.drawPuck(g.getMyPuck().getPuckLocation());
+            
         }
     }
 
