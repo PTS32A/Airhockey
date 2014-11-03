@@ -127,13 +127,6 @@ public class Player extends Person
                 // Bottom goal
                 float aX1 = (float)(aX + ((cX - aX) / 100 * 30));
                 float aX2 = (float)(aX + ((cX - aX) / 100 * 70));
-                
-//                if (batPos.x + Math.cos(Math.toRadians(direction)) * 5 < aX1  
-//                        || batPos.x + Math.cos(Math.toRadians(direction)) * 5 > aX2) 
-//                {
-//                    out = true;
-//                    batPos.x -= Math.cos(Math.toRadians(direction)) * 5;
-//                }
                 if (amount == 1)
                 {
                     direction = 0;
@@ -142,17 +135,19 @@ public class Player extends Person
                 {
                     direction = 180;
                 }
+                if (batPos.x + Math.cos(Math.toRadians(direction)) * 5 < aX1  
+                        || batPos.x + Math.cos(Math.toRadians(direction)) * 5 > aX2) 
+                {
+                    out = true;
+                    batPos.x -= Math.cos(Math.toRadians(direction)) * 5;
+                }
             }
             if (this.getColor() == Colors.Blue)
             {
                 // Left goal
                 float bY1 = (float)(aY + ((bY - aY) / 100 * 30));
                 float bY2 = (float)(aY + ((bY - aY) / 100 * 70));
-//                if (batPos.y  + Math.sin(Math.toRadians(direction)) * 5 < bY1  
-//                        || batPos.y  + Math.sin(Math.toRadians(direction)) * 5 > bY2) 
-//                {
-//                    out = true;
-//                }
+                
                 if (amount == 1)
                 {
                     direction = 240;
@@ -161,17 +156,17 @@ public class Player extends Person
                 {
                     direction = 60;
                 }
+                if (batPos.y  + Math.sin(Math.toRadians(direction)) * 5 < bY1  
+                        || batPos.y  + Math.sin(Math.toRadians(direction)) * 5 > bY2) 
+                {
+                    out = true;
+                }
             }
             if (this.getColor() == Colors.Green)
             {
                 // Right goal
                 float cY1 = (float)(cY + ((bY - cY) / 100 * 30));
                 float cY2 = (float)(cY + ((bY - cY) / 100 * 70));
-//                if (batPos.y + (Math.sin(Math.toRadians(direction)) * 5)*2 < cY1  
-//                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > cY2 ) 
-//                {
-//                    out = true;
-//                }
                 if (amount == 1)
                 {
                     direction = 300;
@@ -179,6 +174,11 @@ public class Player extends Person
                 else
                 {
                     direction = 120;
+                }
+                if (batPos.y + Math.sin(Math.toRadians(direction)) * 5 < cY1  
+                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > cY2 ) 
+                {
+                    out = true;
                 }
             }
             if (out) 
