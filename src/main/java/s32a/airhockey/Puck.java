@@ -655,10 +655,10 @@ public class Puck extends TimerTask
             batCentre = new Vector2(p.getBatPos().x, p.getBatPos().y);
             //batCentre.y += puckSize / 2;
             
-//            if (myGame.getMyPlayers().indexOf(p) == 0)
-//            {
-//                //batCentre.x = -batCentre.x;
-//            }
+            if (myGame.getMyPlayers().indexOf(p) == 0)
+            {
+                batCentre.y -= puckSize/2;
+            }
 //            else if (myGame.getMyPlayers().indexOf(p) == 1)
 //            {
 //                //Blue  
