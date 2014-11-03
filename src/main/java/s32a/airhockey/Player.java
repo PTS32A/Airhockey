@@ -139,7 +139,6 @@ public class Player extends Person
                         || batPos.x + Math.cos(Math.toRadians(direction)) * 5 > aX2) 
                 {
                     out = true;
-                    batPos.x -= Math.cos(Math.toRadians(direction)) * 5;
                 }
             }
             if (this.getColor() == Colors.Blue)

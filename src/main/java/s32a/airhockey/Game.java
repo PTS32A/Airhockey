@@ -310,13 +310,13 @@ public class Game
             
             if (playerID == 1) 
             {
-                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + 3,
-                    (float) ((aY + ((bY - aY) / 100 * 50))) + (float)bat/2);
+                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + (float)bat/2,
+                    (float) ((aY + ((bY - aY) / 100 * 50))));
             }
             else
             {
                 batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
-                         - 3, (float) ((cY + ((bY - cY) / 100 * 50))) + (float)bat/2);
+                         - (float)bat/2, (float) ((cY + ((bY - cY) / 100 * 50))));
             }
 //            //Player blue or green
 //            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));

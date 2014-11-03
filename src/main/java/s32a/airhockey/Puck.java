@@ -364,7 +364,7 @@ public class Puck extends TimerTask
             //Check outside field right
             if (y > -(middleLine / (sideLength / 2)) * x + middleLine)
             {
-                outside = +1;
+                outside = 1;
             }
         }
 
@@ -662,13 +662,13 @@ public class Puck extends TimerTask
             }
             else if (myGame.getMyPlayers().indexOf(p) == 1)
             {
-                //Green
+                //Blue  
                 batCentre.x += batWidth / 2;
                 batCentre.y -= batWidth;
             }
             else if (myGame.getMyPlayers().indexOf(p) == 2)
             {
-                //Blue
+                //Green
                 batCentre.x -= batWidth / 2;
                 batCentre.y -= batWidth;
             }
