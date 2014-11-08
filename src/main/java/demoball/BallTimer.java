@@ -19,9 +19,8 @@ import javafx.stage.Stage;
 public class BallTimer extends TimerTask
 {
 
-    private DoubleProperty xPos, yPos, radius;
+    private DoubleProperty xPos, yPos, radius, sceneWidth, sceneHeight;
     private double xMovement, yMovement;
-    private Stage bounds;
 
     /**
      * Instantiates a new BallTimer, with three properties to govern the given
@@ -44,9 +43,13 @@ public class BallTimer extends TimerTask
         ball.centerYProperty().bind(yPos);
         ball.radiusProperty().bind(radius);
 
-        // gets the stage the ball currently is active on.
-        // this is used to be able to update the location the ball should bounce at whenever the screen is resized
-        bounds = (Stage) ball.getScene().getWindow();
+        // binds sceneWidth and sceneHeight property to actual width and height
+        // this prevents having to refresh or hardcode screen size properties
+        this.sceneHeight = new SimpleDoubleProperty();
+        this.sceneHeight.bind(ball.getScene().heightProperty());
+        this.sceneWidth = new SimpleDoubleProperty();
+        this.sceneWidth.bind(ball.getScene().widthProperty());
+        
 
         // sets the default x/y distance the ball will change every time run() is called
         // this value will flip between -10 and +10, depending on whether the ball should go right/down or left/up
@@ -58,7 +61,7 @@ public class BallTimer extends TimerTask
     public void run()
     {
         // reverse x bounce movement whenever the ball would cross the right border on its current course
-        if (xMovement > 0 && xPos.get() + xMovement + radius.get() > bounds.getWidth())
+        if (xMovement > 0 && xPos.get() + xMovement + radius.get() > sceneWidth.get())
         {
             xMovement *= -1;
         }
@@ -68,7 +71,7 @@ public class BallTimer extends TimerTask
             xMovement *= -1;
         }
         // reverses y bounce movement if ball would cross bottom border
-        if( yMovement > 0 && yPos.get() + yMovement + radius.get() > bounds.getHeight())
+        if( yMovement > 0 && yPos.get() + yMovement + radius.get() > sceneHeight.get())
         {
             yMovement *= -1;
         }
