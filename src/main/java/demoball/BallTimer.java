@@ -53,8 +53,8 @@ public class BallTimer extends TimerTask
 
         // sets the default x/y distance the ball will change every time run() is called
         // this value will flip between -10 and +10, depending on whether the ball should go right/down or left/up
-        xMovement = 10;
-        yMovement = 10;
+        xMovement = 5;
+        yMovement = 5;
     }
 
     @Override

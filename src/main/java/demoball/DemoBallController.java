@@ -29,7 +29,6 @@ public class DemoBallController extends DemoBallMain implements Initializable
     Circle centerDemoBall;
     Timer timer;
     TimerTask ballTimer;
-    AnimationTimer animTimer;
 
     @FXML
     Label lblDemoBall;
@@ -61,11 +60,8 @@ public class DemoBallController extends DemoBallMain implements Initializable
             {
                 // schedules a new BallTimer as timertask. BallTimer is responsible for movement of given ball.
                 ballTimer = new BallTimer(demoBall);
-                timer.scheduleAtFixedRate(ballTimer, 100, 100);
-
-                // starts the animation timer, which will continuously update the label
-                animTimer = new AnimationBallTimer(lblDemoBall);
-                animTimer.start();
+                timer.scheduleAtFixedRate(ballTimer, 100, 50);
+                lblDemoBall.setVisible(false);
             }
         });
 
