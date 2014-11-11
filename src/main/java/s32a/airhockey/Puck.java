@@ -23,8 +23,7 @@ import lombok.Setter;
  *
  * @author Kargathia
  */
-public class Puck extends TimerTask
-{
+public class Puck extends TimerTask {
 
     @Getter
     @Setter
@@ -65,22 +64,22 @@ public class Puck extends TimerTask
     @Getter
     @Setter
     private boolean printMessages = false;
-    
+
     @Getter
     private FloatProperty speed;
-    
+
     private int lastBouncerID;
-    
+
     private boolean beingPushed;
-    
+    private boolean useRoundBats = true;
+
     /**
      * Threadsafe property set
-     * @param input 
+     *
+     * @param input
      */
-    void setSpeed(float input)
-    {
-        Platform.runLater(() ->
-        {
+    void setSpeed(float input) {
+        Platform.runLater(() -> {
             this.speed.set(input);
         });
     }
@@ -92,14 +91,11 @@ public class Puck extends TimerTask
      * @param speed
      * @param myGame
      */
-    public Puck(float speed, Game myGame)
-    {
-        if (speed <= 0)
-        {
+    public Puck(float speed, Game myGame) {
+        if (speed <= 0) {
             throw new IllegalArgumentException("Speed can't be negative");
         }
-        if (myGame == null)
-        {
+        if (myGame == null) {
             throw new IllegalArgumentException("myGame parameter was null");
         }
 
@@ -116,11 +112,11 @@ public class Puck extends TimerTask
         this.puckSize = (float) (this.sideLength * 0.04);
         this.sideLength = this.sideLength - (float) (puckSize * Math.sqrt(3));
 
-        this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2) 
+        this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2)
                 - Math.pow(sideLength / 2, 2));
 
         float centreX = 0;
-        float centreY = (float) (Math.tan(Math.toRadians(30)) 
+        float centreY = (float) (Math.tan(Math.toRadians(30))
                 * (0.5 * (double) sideLength));
 
         centreX = Math.round(centreX * 100) / 100;
@@ -128,8 +124,8 @@ public class Puck extends TimerTask
 
         this.centre = new Vector2(centreX, centreY);
 
-        this.sideGoalMinY = this.centre.y - 
-                (float) (Math.sin(Math.toRadians(0.5 * goalLength)));
+        this.sideGoalMinY = this.centre.y
+                - (float) (Math.sin(Math.toRadians(0.5 * goalLength)));
         this.sideGoalMaxY = this.centre.y + sideGoalMinY;
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
@@ -139,20 +135,19 @@ public class Puck extends TimerTask
         this.isMoving = true;
 
         this.myGame = myGame;
-        
+
         this.lastBouncerID = -1;
         this.beingPushed = false;
 
         this.defaultRunCount = -1;
-        
+
         resetPuck();
         clearEndData();
     }
 
-    public void resetPuck()
-    {
+    public void resetPuck() {
         setEndData();
-        
+
         this.position = centre;
         //this.position = new Vector2(0, centre.y * 2);
         //this.direction = new Random().nextFloat() * 360;
@@ -162,22 +157,18 @@ public class Puck extends TimerTask
     }
 
     /**
-     * Sets the EndData variables at the end of each round.
-     * These variables contain the last position and last direction of the Puck,
-     * the player whose Bat last touched the Puck.
+     * Sets the EndData variables at the end of each round. These variables
+     * contain the last position and last direction of the Puck, the player
+     * whose Bat last touched the Puck.
      */
-    private void setEndData()
-    {
+    private void setEndData() {
         //DATA for after a round; used by unittests.
         this.endPosition = position;
         this.endDirection = direction;
 
-        if (hitBy.size() > 0)
-        {
+        if (hitBy.size() > 0) {
             this.endBatHit = hitBy.get(hitBy.size() - 1);
-        }
-        else
-        {
+        } else {
             this.endBatHit = null;
         }
     }
@@ -185,8 +176,7 @@ public class Puck extends TimerTask
     /**
      * Clears the EndData variables at the start of each round.
      */
-    private void clearEndData()
-    {
+    private void clearEndData() {
         //DATA for after a round; used by unittests.
         this.endPosition = null;
         this.endDirection = 0;
@@ -200,46 +190,35 @@ public class Puck extends TimerTask
      * the pucks position and detection of goal hits
      */
     @Override
-    public void run()
-    {
+    public void run() {
         // idle state between rounds
-        if (myGame.isContinueRun() == false)
-        {
+        if (myGame.isContinueRun() == false) {
             return;
         }
-        
+
         // Game is paused
-        if (myGame.isPaused() == true)
-        {
+        if (myGame.getStatusProp().get().equals(GameStatus.Paused) == true) {
             return;
         }
-        
+
         //Find out where the batPosition are
         //this.position = new Vector2(myGame.getMyPlayers().get(2).getBatPos().x, myGame.getMyPlayers().get(2).getBatPos().y);
         //this.position.y -= puckSize / 2;
-        
         //System.out.println("Red: " + myGame.getMyPlayers().get(0).getBatPos());
         //System.out.println("Green: " + myGame.getMyPlayers().get(1).getBatPos());
         //System.out.println("Blue: " + myGame.getMyPlayers().get(2).getBatPos());
-        
-        if (this.runCount <= -1)
-        {
+        if (this.runCount <= -1) {
             //runCount is not used (Default setting for the actual product)
             //Round will end only end when a goal has been scored
-            
+
             //Check wheter puck is being pushed.
             updatePosition(speed.get() / 10);
-        }
-        else
-        {
+        } else {
             //runCount is used (used for unittesting only)
             //Round will end when a goal has been scored OR when runCount reaches 0
-            if (this.runCount == 0)
-            {
+            if (this.runCount == 0) {
                 myGame.endRound();
-            }
-            else
-            {
+            } else {
                 updatePosition(speed.get() / 10);
                 this.runCount--;
             }
@@ -254,71 +233,67 @@ public class Puck extends TimerTask
      * the current speed or the remaining distance the puck has to travel after
      * a bounce
      */
-    private void updatePosition(float distance)
-    {
-        if (isMoving)
-        {
+    private void updatePosition(float distance) {
+        if (isMoving) {
             float oldX = position.x;
             float oldY = position.y;
 
             double radians = Math.toRadians((double) direction);
 
-            if (beingPushed)
-            {
+            if (beingPushed) {
                 distance = distance * 2;
                 beingPushed = false;
             }
-            
-            
+
             float newX = oldX + (float) (Math.sin(radians) * (double) distance);
             float newY = oldY + (float) (Math.cos(radians) * (double) distance);
-           
+
             Vector2 newPosition = new Vector2(newX, newY);
-            
+
             //Check whether the puck is outside the field
             Vector2 bouncePosition = isOutsideField(newPosition);
 
-            if (bouncePosition == null)
-            {
+            if (bouncePosition == null) {
                 //Inside field
-                //Check whether the puck is bouncing of a bat
-                Vector2 batBouncePosition = checkBatBounce(newPosition);
                 
-                if(batBouncePosition == null)
+                if (useRoundBats == true)
                 {
-                    //No bat bounce
-                    position = newPosition;
-//                  printMessage("Position: " + roundPosition(newPosition));
+                    //Check whether the puck is bouncing of a bat
+                    Vector2 batBouncePosition = checkBatBounce(newPosition);
+
+                    if (batBouncePosition == null) {
+                        //No bat bounce
+                        position = newPosition;
+    //                  printMessage("Position: " + roundPosition(newPosition));
+                    } else {
+                        //Bat bounce
+                        position = batBouncePosition;
+
+                        //Continue the position with the remaining distance, calculated using batBouncePosition and newPosition
+                        continueUpdatePosition(batBouncePosition, newPosition);
+                    }
                 }
-                else
-                {
-                    //Bat bounce
-                    position = batBouncePosition;
-                    
-                    //Continue the position with the remaining distance, calculated using batBouncePosition and newPosition
-                    continueUpdatePosition(batBouncePosition, newPosition);
+                else {
+                    //Use flat bat bounce
+                    //No bounce, new position is correct.
+                    position = newPosition;
                 }
 
-                    
-            } else
-            {
+            } else {
                 //Outside field or in collission with wall
                 position = bouncePosition;
                 lastBouncerID = -1;
 
 //                printMessage("  Wanted Position: " + roundPosition(newPosition));
 //                printMessage("  Bounce Position: " + roundPosition(bouncePosition));
-
                 //Detect wheter a goal has been hit 
                 //(includes detection of bat blocking the puck)
                 int goalHitPlayerID = checkGoalHit(bouncePosition);
 
-                if (goalHitPlayerID != -1)
-                {                   
+                if (goalHitPlayerID != -1) {
                     //Player who scored
                     Player whoScored = null;
-                    if (hitBy.size() > 0)
-                    {
+                    if (hitBy.size() > 0) {
                         whoScored = hitBy.get(hitBy.size() - 1);
                         whoScored.setScore(whoScored.getScore().get() + 1);
                     }
@@ -330,23 +305,20 @@ public class Puck extends TimerTask
 
                     //End round
                     myGame.endRound();
-                } else
-                {
+                } else {
                     //Continue the position with the remaining distance, calculated using bouncePosition and newPosition
                     continueUpdatePosition(bouncePosition, newPosition);
                 }
             }
         }
     }
-    
-    private void continueUpdatePosition(Vector2 bouncePosition, Vector2 newPosition)
-    {
+
+    private void continueUpdatePosition(Vector2 bouncePosition, Vector2 newPosition) {
         //Position is set to bouncePosition and new direction has been calculated
         //Repeat process with remaining distance to travel
         float distance = getDistance(bouncePosition, newPosition);
         distance = Math.round(distance) - 1;
-        if (distance > 0)
-        {
+        if (distance > 0) {
             updatePosition(distance);
         }
     }
@@ -356,31 +328,25 @@ public class Puck extends TimerTask
      * @return the wall position that the puck bounces off returns null if the
      * puck is not in collision with any walls
      */
-    public Vector2 isOutsideField(Vector2 newPosition)
-    {
+    public Vector2 isOutsideField(Vector2 newPosition) {
         float x = newPosition.x;
         float y = newPosition.y;
 
         int outside = 0;
 
-        if (x < 0)
-        {
+        if (x < 0) {
             //Check outside field left
-            if (y > (middleLine / (sideLength / 2)) * x + middleLine)
-            {
+            if (y > (middleLine / (sideLength / 2)) * x + middleLine) {
                 outside = -1;
             }
-        } else if (x > 0)
-        {
+        } else if (x > 0) {
             //Check outside field right
-            if (y > -(middleLine / (sideLength / 2)) * x + middleLine)
-            {
+            if (y > -(middleLine / (sideLength / 2)) * x + middleLine) {
                 outside = 1;
             }
         }
 
-        if (outside == -1)
-        {
+        if (outside == -1) {
             //Left of field
 
             printMessage("Left Wall-Bounce");
@@ -390,8 +356,7 @@ public class Puck extends TimerTask
 
             updateDirection(60);
             return getIntersection(position, newPosition, linePos1, linePos2);
-        } else if (outside == 1)
-        {
+        } else if (outside == 1) {
             //Right of field
 
             printMessage("Right Wall-Bounce");
@@ -401,10 +366,8 @@ public class Puck extends TimerTask
 
             updateDirection(-60);
             return getIntersection(position, newPosition, linePos1, linePos2);
-        } else
-        {
-            if (y < 0)
-            {
+        } else {
+            if (y < 0) {
                 //Underneath field
 
                 printMessage("Bottom Wall-Bounce");
@@ -414,8 +377,7 @@ public class Puck extends TimerTask
 
                 updateDirection(180);
                 return getIntersection(position, newPosition, linePos1, linePos2);
-            } else if (y > middleLine)
-            {
+            } else if (y > middleLine) {
                 //Above field
 
                 printMessage("Top Corner-Bounce");
@@ -441,36 +403,32 @@ public class Puck extends TimerTask
      * generated by the given positions cross Returns null if no crossing
      * position is found
      */
-    private Vector2 getIntersection(Vector2 oldPos, Vector2 newPos, 
-            Vector2 linePos1, Vector2 linePos2)
-    {
+    private Vector2 getIntersection(Vector2 oldPos, Vector2 newPos,
+            Vector2 linePos1, Vector2 linePos2) {
         /**
-         * Line Formula: y = a*x + b
-         * a = (change in y) / (change in x)
-         * b = y - a * x
+         * Line Formula: y = a*x + b a = (change in y) / (change in x) b = y - a
+         * * x
          */
         //Line 1:
         float tempY = (oldPos.y - newPos.y);
         float tempX = (oldPos.x - newPos.x);
-        
+
         float a1 = tempY / tempX;
         float b1 = oldPos.y - a1 * oldPos.x;
 
         //Line 2:
         tempY = (linePos1.y - linePos2.y);
         tempX = (linePos1.x - linePos2.x);
-        
+
         float a2 = tempY / tempX;
         float b2 = linePos1.y - a2 * linePos1.x;
 
         float x;
 
-        if (oldPos.x == newPos.x)
-        {
+        if (oldPos.x == newPos.x) {
             //Vertical line
             x = oldPos.x;
-        } else
-        {
+        } else {
             //Curved line
 
             //Equate the two lines:
@@ -484,11 +442,9 @@ public class Puck extends TimerTask
         //y = a*x + b
         float y = a2 * x + b2;
 
-        try
-        {
+        try {
             return new Vector2(x, y);
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
             return null;
         }
@@ -501,11 +457,10 @@ public class Puck extends TimerTask
      * @param p2 Position two
      * @return Returns the distance between two Vector2 positions
      */
-    private float getDistance(Vector2 p1, Vector2 p2)
-    {
+    private float getDistance(Vector2 p1, Vector2 p2) {
         float distance = (float) Math.sqrt(
-                Math.pow((double) Math.abs(p1.x - p2.x), 2) 
-                        + Math.pow((double) Math.abs(p1.y - p2.y), 2));
+                Math.pow((double) Math.abs(p1.x - p2.x), 2)
+                + Math.pow((double) Math.abs(p1.y - p2.y), 2));
         return distance;
     }
 
@@ -515,37 +470,32 @@ public class Puck extends TimerTask
      * @param adjustValue The value the direction has to be adjusted with to get
      * the right bouncing position based on the direction of the wall
      */
-    private void updateDirection(float adjustValue)
-    {
+    private void updateDirection(float adjustValue) {
         direction = -direction + adjustValue;
         correctDirection();
     }
-    
+
     /**
      * Sets direction to be within 0 and 359
      */
-    private void correctDirection()
-    {
-        while (direction > 359)
-        {
+    private void correctDirection() {
+        while (direction > 359) {
             direction -= 360;
         }
 
-        while (direction < 0)
-        {
+        while (direction < 0) {
             direction += 360;
         }
     }
-    
+
     /**
-     * UNUSED
-     * Calculates the adjustvalue needed for updateDirection(),
-     *  depending on the angle of the new puck's direction relative to a horizontal line
+     * UNUSED Calculates the adjustvalue needed for updateDirection(), depending
+     * on the angle of the new puck's direction relative to a horizontal line
+     *
      * @param angle
-     * @return 
+     * @return
      */
-    private float getAdjustValue(int angle)
-    {
+    private float getAdjustValue(int angle) {
         //Horizontal wall (0 degrees corner) gives 180
         //Diagonal line (30 degrees corner)gives 120
         //Diagonal line (45 degrees corner) gives 90
@@ -564,324 +514,356 @@ public class Puck extends TimerTask
      *
      * @param pos
      * @return Return an int value to tell whose goal is hit where: 0 refers to
-     * player Red, 1 refers to player Blue and 2 refers to player Green.
-     * Returns 0 if no goal has been hit
+     * player Red, 1 refers to player Blue and 2 refers to player Green. Returns
+     * 0 if no goal has been hit
      */
-    private int checkGoalHit(Vector2 pos)
-    {
+    private int checkGoalHit(Vector2 pos) {
         int playerID = -1;
 
-        if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY)
-        {
-            if (pos.x < 0)
-            {
+        if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY) {
+            if (pos.x < 0) {
                 //Green goal
                 playerID = 1;
-            } else
-            {
+            } else {
                 //Blue goal
                 playerID = 2;
             }
-        } else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0)
-        {
+        } else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0) {
             //Red goal
             playerID = 0;
         }
 
-        if (playerID == -1)
-        {
+        if (playerID == -1) {
             //No goal hit
             return -1;
-        } else
-        {
+        } else {
             //Goal hit of player with playerID
-            printMessage("Goal @ player " + myGame.getMyPlayers().get(playerID).getColor());
-            return playerID;
+            if (checkBatBlock(playerID, pos)) {
+                //Bat bounce
+                this.hitBy.add(myGame.getMyPlayers().get(playerID));
+                printMessage("Bat Bounce at player " + myGame.getMyPlayers().get(playerID).getColor());
+
+                //No goal hit because Bat blocked it
+                return -1;
+            } else {
+                printMessage("Goal @ player " + myGame.getMyPlayers().get(playerID).getColor());
+                return playerID;
+            }
         }
     }
 
     /**
-     * USED FOR Bat AS LINE WHICH IS A PART OF THE CORRESPONDING GOAL LINE.
-     * FOR Bat AS ROUND OBJECT GO TO checkBatBounce()
-     * Checks whether a position on the goalline is blocked by the corresponding Bat.
+     * USED FOR Bat AS LINE WHICH IS A PART OF THE CORRESPONDING GOAL LINE. FOR
+     * Bat AS ROUND OBJECT GO TO checkBatBounce() Checks whether a position on
+     * the goalline is blocked by the corresponding Bat.
+     *
      * @param playerID The ID of the player whose Bat should be checked
      * @param pos The position on the goalline to be checked
-     * @return Returns a boolean containing whether a Bat has blocked the Puck or not
+     * @return Returns a boolean containing whether a Bat has blocked the Puck
+     * or not
      */
-    private boolean checkBatBlock(int playerID, Vector2 pos)
-    {
+    private boolean checkBatBlock(int playerID, Vector2 pos) {
+        
+        if (useRoundBats)
+        {
+            return false;
+        }
+        
         Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
 
-        if (playerID == 0)
-        {
+        if (playerID == 0) {
             //Player Red (bottom bat)
             float batMinX = batPos.x - (float) (0.5 * batWidth);
             float batMaxX = batPos.x + (float) (0.5 * batWidth);
 
             // returns whether bat blocked the puck
             return (pos.x > batMinX && pos.x < batMaxX);
-        } else
-        {
+        } else {
             //Player Blue or Green (side bat)
             //Correct batPosition because of inner triangle:
             float batY = batPos.y - (float) (0.5 * this.puckSize * Math.sqrt(3));
 
-            float batMinY = batY - 
-                    (float) (Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
-            float batMaxY = batY + 
-                    (float) (Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+            float batMinY = batY
+                    - (float) (Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
+            float batMaxY = batY
+                    + (float) (Math.sin(Math.toRadians(30)) * (0.5 * batWidth));
 
-            if (pos.y > batMinY && pos.y < batMaxY)
-            {
+            if (pos.y > batMinY && pos.y < batMaxY) {
                 //Bat blocked the puck
                 return true;
-            } else
-            {
+            } else {
                 //Bat did not block the puck
                 return false;
             }
         }
     }
-    
+
     /**
-     * USED FOR Bat AS ROUND OBJECT.
-     * FOR Bat AS LINE GO TO checkBatBlock()
+     * USED FOR Bat AS ROUND OBJECT. FOR Bat AS LINE GO TO checkBatBlock()
+     *
      * @param pos
-     * @return Returns a the player whose bat the position is on.
-     * Return null if the position is not on any bats.
+     * @return Returns a the player whose bat the position is on. Return null if
+     * the position is not on any bats.
      */
-    private Vector2 checkBatBounce(Vector2 pos)
-    {
+    private Vector2 checkBatBounce(Vector2 pos) {
         /**
-         * Formulas:
-         * A point (x, y) is on or within a circle if (x - Xcentre)^2 + y-Ycentre)^2 <= radius^2
-         * Where Xcentre and Ycentre make up the centre of the circle and
-         * radius is the radius of the circle
+         * Formulas: A point (x, y) is on or within a circle if (x - Xcentre)^2
+         * + y-Ycentre)^2 <= radius^2 Where Xcentre and Ycentre make up the
+         * centre of the circle and radius is the radius of the circle
          */
         Vector2 batCentre;
         double radius = batWidth / 2 + puckSize / 2;
-        
-        for (Player p : myGame.getMyPlayers())
-        {           
+
+        for (Player p : myGame.getMyPlayers()) {
             batCentre = new Vector2(p.getBatPos().x, p.getBatPos().y);
-            
-            if (myGame.getMyPlayers().indexOf(p) == 0)
-            {
+
+            if (myGame.getMyPlayers().indexOf(p) == 0) {
                 batCentre.y -= puckSize / 2;
-            }
-            else if (myGame.getMyPlayers().indexOf(p) == 1)
-            {
+            } else if (myGame.getMyPlayers().indexOf(p) == 1) {
                 //Blue  
 //                batCentre.x -= batWidth / 2;
- //               batCentre.y -= batWidth;
-                  batCentre.y -= puckSize / 2;
-            }
-            else if (myGame.getMyPlayers().indexOf(p) == 2)
-            {
+                //               batCentre.y -= batWidth;
+                batCentre.y -= puckSize / 2;
+            } else if (myGame.getMyPlayers().indexOf(p) == 2) {
 //                //Green
 //                batCentre.x += batWidth / 2;
 //                batCentre.y -= batWidth;
-                  batCentre.y -= puckSize / 2;
+                batCentre.y -= puckSize / 2;
             }
-            
-            if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID)
-            {
+
+            if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID) {
                 //If the current bat has last bounced the puck and Puck is now within the circle of this Bat,
                 //Then the Puck should be pushed in the same direction instead of bounced.
-                if (isInCircle(position, batCentre, radius))
-                {
+                if (isInCircle(position, batCentre, radius)) {
                     //Push
                     beingPushed = true; //This will use increased speed for next frame's movement and will be reset after that.
-                    
+
                     //No bouncing, only pushing, so no need to check other bats.
                     return null;
-                }
-                else
-                {
+                } else {
                     //Continue checking for next bat
                     continue;
                 }
             }
-                        
-                Vector2 batBouncePosition = getIntersectionWithCircle(position, pos, batCentre, radius);
+
+            Vector2 batBouncePosition = getIntersectionWithCircle(position, pos, batCentre, radius);
+
+            if (batBouncePosition != null) {
+
+                //Bat bounce by player p
+                printMessage("Bat-Bounce @ player " + p.getColor());
+                this.hitBy.add(p);
+                this.lastBouncerID = myGame.getMyPlayers().indexOf(p);
+
+                //DIRECTION CALCULATIONS
                 
-                if (batBouncePosition != null)
+                if (false)
                 {
-                    //while(true)
-                    //{
-                    //    position = batBouncePosition;
-                    //}
+                //Basic formula: new direction = 180 - old direction - 2 * sin^-1((circleX - batBouncePosition.x) / radius)
+                double angleDecider = Math.toDegrees(Math.asin((batCentre.x - batBouncePosition.x) / radius));
+
+                while (angleDecider > 359) {
+                    angleDecider -= 360;
+                }
+
+                while (angleDecider < 0) {
+                    angleDecider += 360;
+                }
+
+                if (angleDecider < 180 - direction) {
+                    //direction = (float)(180 - direction - 2 * angleDecider);
+                    direction = (float) (direction + 2 * angleDecider - 180);
+                } else if (angleDecider >= 180 - direction) {
+                    direction = (float) (direction + 2 * angleDecider - 180);
+                } else {
+                    direction += 180;
+                }
+                
+                direction = -direction;
+                }
+                
+                int index = myGame.getMyPlayers().indexOf(p);
+                
+                if (index == 0)
+                {
+                    //RED
+                    updateDirection(180);
                     
-                    //Bat bounce by player p
-                    printMessage("Bat-Bounce @ player " + p.getColor());
-                    this.hitBy.add(p);
-                    this.lastBouncerID = myGame.getMyPlayers().indexOf(p);
+                    float correction = 0;
                     
-                    //Basic formula: new direction = 180 - old direction - 2 * sin^-1((circleX - batBouncePosition.x) / radius)
-                    double angleDecider = Math.toDegrees(Math.asin((batCentre.x - batBouncePosition.x) / radius));
+                    float distanceFromCenter = pos.x - batCentre.x;
                     
-                    while (angleDecider > 359)
+                    if (distanceFromCenter > 0)
                     {
-                        angleDecider -= 360;
+                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * 90;
+                    }
+                    else if (distanceFromCenter < 0)
+                    {
+                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
                     }
                     
-                    while (angleDecider < 0)
-                    {
-                        angleDecider += 360;
-                    }
-                                        
-                    if (angleDecider < 180 - direction)
-                    {
-                        //direction = (float)(180 - direction - 2 * angleDecider);
-                        direction = (float)(direction + 2*angleDecider - 180);
-                    }
-                    else if (angleDecider >= 180 - direction)
-                    {
-                        direction = (float)(direction + 2*angleDecider - 180);
-                    }
-                    else
-                    {
-                        direction += 180;
-                    }
-                                 
-                    direction = -direction;
+                    direction += correction;
+                }
+                else if (index == 2) {
+                    //BLUE
+                    updateDirection(-60);
                     
-                    correctDirection();
+                    float correction = 0;
                     
-                    return batBouncePosition;
+                    float distanceFromCenter = pos.y - batCentre.y;
+                    
+                    if (distanceFromCenter > 0)
+                    {
+                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * 90;
+                    }
+                    else if (distanceFromCenter < 0)
+                    {
+                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
+                    }
+                    
+                    direction += correction;
+                }
+                else if (index == 1) {
+                    //GREEN
+                    updateDirection(60);
+                    
+                    float correction = 0;
+                    
+                    float distanceFromCenter = pos.y - batCentre.y;
+                    
+                    if (distanceFromCenter > 0)
+                    {
+                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * 90;
+                    }
+                    else if (distanceFromCenter < 0)
+                    {
+                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
+                    }
+                    
+                    direction += correction;
+                }
+                
+                correctDirection();
+
+                return batBouncePosition;
             }
         }
-        
+
         return null;
     }
-    
-    private boolean isInCircle(Vector2 pos, Vector2 circleCentre, double radius)
-    {
-        if (Math.pow(pos.x - circleCentre.x, 2) + Math.pow(pos.y - circleCentre.y, 2) <= Math.pow(radius, 2))
-        {
+
+    private boolean isInCircle(Vector2 pos, Vector2 circleCentre, double radius) {
+        if (Math.pow(pos.x - circleCentre.x, 2) + Math.pow(pos.y - circleCentre.y, 2) <= Math.pow(radius, 2)) {
             //Position pos in circle
             return true;
         }
         return false;
     }
-    
-    private Vector2 getIntersectionWithCircle(Vector2 lineA, Vector2 lineB, Vector2 circleCentre, double radius)
-    {
+
+    private Vector2 getIntersectionWithCircle(Vector2 lineA, Vector2 lineB, Vector2 circleCentre, double radius) {
         /**
          * Formulas
-         * 
-         * Point on Line: y = a*x + b
-         * a = (change in y) / (change in x)
-         * b = y - a * x
-         * 
+         *
+         * Point on Line: y = a*x + b a = (change in y) / (change in x) b = y -
+         * a * x
+         *
          * Point on Circle: (x - Xcentre)^2 + (y-Ycentre)^2 == radius^2
          */
-            
+
         float a = (lineA.y - lineB.y) / (lineA.x - lineB.x);
         float b = lineA.y - a * lineA.x;
-        
+
         float Xcentre = circleCentre.x;
         float Ycentre = circleCentre.y;
-        
-        if (!isInCircle(lineB, circleCentre, radius))
-        {
+
+        if (!isInCircle(lineB, circleCentre, radius)) {
             //Not in circle
             return null;
         }
-                      
+
         /**
          * Equate the formulas:
-         * 
+         *
          * y = a*x + b & (x - Xcentre)^2 + (y-Ycentre)^2 == radius^2
-         * 
-         * (x - Xcentre)^2 + (a*x + b - Ycentre)^2 == radius^2
-         * (a^2 + 1)*x^2 + 2*(a*b - a*Ycentre - Xcentre)*x + (Ycentre^2 − radius^2 + Xcentre^2 − 2*b*Ycentre + b^2) = 0
-         * This compares to: A*x^2 + B*X + C = 0
-         * Which gives: x = (-B + SQRT(B^2 - 4*AC)) / (2*A) OR x = (-B - SQRT(B^2 - 4*AC)) / (2*A)
+         *
+         * (x - Xcentre)^2 + (a*x + b - Ycentre)^2 == radius^2 (a^2 + 1)*x^2 +
+         * 2*(a*b - a*Ycentre - Xcentre)*x + (Ycentre^2 − radius^2 + Xcentre^2 −
+         * 2*b*Ycentre + b^2) = 0 This compares to: A*x^2 + B*X + C = 0 Which
+         * gives: x = (-B + SQRT(B^2 - 4*AC)) / (2*A) OR x = (-B - SQRT(B^2 -
+         * 4*AC)) / (2*A)
          */
         double A = Math.pow(a, 2) + 1;
         double B = 2 * (a * b - a * Ycentre - Xcentre);
-        double C = Math.pow(Ycentre, 2) - Math.pow(radius, 2) + Math.pow(Xcentre, 2) - 2*b*Ycentre + Math.pow(b, 2);
-        
+        double C = Math.pow(Ycentre, 2) - Math.pow(radius, 2) + Math.pow(Xcentre, 2) - 2 * b * Ycentre + Math.pow(b, 2);
+
         float x1 = 0;
         float x2 = 0;
         float y1 = 0;
         float y2 = 0;
-        
-        double intersectionValue = Math.pow(B, 2) - 4*A*C;
+
+        double intersectionValue = Math.pow(B, 2) - 4 * A * C;
         int intersectionCount;
-        
+
         //printMessage("x: " + lineB.x);
         //printMessage("y: " + lineB.y);
         //printMessage("A: " + A);
         //printMessage("B: " + B);
         //printMessage("C: " + C);
         //printMessage("intersectionValue: " + intersectionValue);
-        
-        if (intersectionValue < 0)
-        {
+        if (intersectionValue < 0) {
             //No intersection
             return null;
-        }
-        else if (intersectionValue == 0)
-        {
+        } else if (intersectionValue == 0) {
             intersectionCount = 1;
-        }
-        else
-        {
+        } else {
             intersectionCount = 2;
         }
-                
-        x1 = (float)((-B - Math.sqrt(Math.pow(B, 2) - 4*A*C))/(2*A));
-        x2 = (float)((-B + Math.sqrt(Math.pow(B, 2) - 4*A*C))/(2*A));
 
-        y1 = a*x1+b;
-        y2 = a*x2+b;
-        
+        x1 = (float) ((-B - Math.sqrt(Math.pow(B, 2) - 4 * A * C)) / (2 * A));
+        x2 = (float) ((-B + Math.sqrt(Math.pow(B, 2) - 4 * A * C)) / (2 * A));
+
+        y1 = a * x1 + b;
+        y2 = a * x2 + b;
+
         float x;
         float y;
-        
+
         double circlePoint1 = Math.pow(x1 - Xcentre, 2) + Math.pow(y1 - Ycentre, 2);
         double circlePoint2 = Math.pow(x2 - Xcentre, 2) + Math.pow(y2 - Ycentre, 2);
-        
+
         boolean p1Correct = false;
         boolean p2Correct = false;
-        
-        if (circlePoint1 < Math.pow(radius, 2) + 1 && circlePoint1 > Math.pow(radius, 2) - 1)
-        {
+
+        if (circlePoint1 < Math.pow(radius, 2) + 1 && circlePoint1 > Math.pow(radius, 2) - 1) {
             p1Correct = true;
         }
-        if (circlePoint2 < Math.pow(radius, 2) + 1 && circlePoint2 > Math.pow(radius, 2) - 1)
-        {
+        if (circlePoint2 < Math.pow(radius, 2) + 1 && circlePoint2 > Math.pow(radius, 2) - 1) {
             p2Correct = true;
         }
-        
-        
-        if (getDistance(lineA, new Vector2(x1, y1)) < getDistance(lineA, new Vector2(x2, y2)))
-        {
+
+        if (getDistance(lineA, new Vector2(x1, y1)) < getDistance(lineA, new Vector2(x2, y2))) {
             x = x1;
             y = y1;
-        }
-        else
-        {
+        } else {
             x = x2;
             y = y2;
         }
-                 
+
         //The bounce position on the circle of the bat
         Vector2 batBouncePosition = new Vector2(x, y);
         return batBouncePosition;
     }
 
     /**
-     * Gets the corresponding color of the player with id playerID, where 0 is Red,
-     * 1 is Green and 2 is Blue.
+     * Gets the corresponding color of the player with id playerID, where 0 is
+     * Red, 1 is Green and 2 is Blue.
+     *
      * @param playerID The id of the player
-     * @return Return a string containing the name of the color of the player whose id is playerID
-     * returns "unknown" if the playerID can't be matched with a player.
+     * @return Return a string containing the name of the color of the player
+     * whose id is playerID returns "unknown" if the playerID can't be matched
+     * with a player.
      */
-    private String getColorName(int playerID)
-    {
+    private String getColorName(int playerID) {
 //        switch (playerID)
 //        {
 //            case 0:
@@ -894,13 +876,10 @@ public class Puck extends TimerTask
 //                return "Unknown";
 //        }
         String output = "Unknown";
-        try
-        {
+        try {
             output = this.myGame.getMyPlayers().get(playerID).getColor().toString();
-        }
-        catch (NullPointerException ex)
-        {
-            System.out.println("Null pointer thrown in Puck.getColorName(): " 
+        } catch (NullPointerException ex) {
+            System.out.println("Null pointer thrown in Puck.getColorName(): "
                     + ex.getMessage());
             output = "Unknown";
         }
@@ -908,28 +887,23 @@ public class Puck extends TimerTask
     }
 
     /**
-     * A private method used to print messages about the status and events of the Puck.
-     * Checks whether a local boolean (printMessages) is true to print the messages.
-     * Used for testing only.
-     * @param message 
+     * A private method used to print messages about the status and events of
+     * the Puck. Checks whether a local boolean (printMessages) is true to print
+     * the messages. Used for testing only.
+     *
+     * @param message
      */
-    private void printMessage(String message)
-    {
-        try
-        {
-            if (printMessages)
-            {
+    private void printMessage(String message) {
+        try {
+            if (printMessages) {
                 System.out.println("   " + message);
             }
-        }
-        catch (StackOverflowError ex)
-        {
-            
+        } catch (StackOverflowError ex) {
+
         }
     }
-    
-    private String roundPosition(Vector2 pos)
-    {
+
+    private String roundPosition(Vector2 pos) {
         int xRounded = Math.round(pos.x * 100) / 100;
         int yRounded = Math.round(pos.y * 100) / 100;
         String output = xRounded + ", " + yRounded;
@@ -938,10 +912,10 @@ public class Puck extends TimerTask
 
     /**
      * Returns X-coord, Y-coord, and pucksize of puck
-     * @return 
+     *
+     * @return
      */
-    public float[] getPuckLocation()
-    {
+    public float[] getPuckLocation() {
         return new float[]{position.x, position.y, puckSize};
     }
 }

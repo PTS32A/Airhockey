@@ -29,6 +29,7 @@ import s32a.timers.GameTimeTask;
 public class Game {
 
     private StringProperty difficultyProp;
+    @Getter
     private ObjectProperty<GameStatus> statusProp;
 
     @Getter
@@ -252,6 +253,8 @@ public class Game {
         if (playerID == 0) {
             //Player red
             batPos = new Vector2(0, 0 + bat / 2);
+            //Half circle
+            batPos.y -= (width / 100 * 8) / 2;
         } else {
             // Left corner of triangle
             double aX = -width / 2;
@@ -266,9 +269,13 @@ public class Game {
             if (playerID == 1) {
                 batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + bat / 2,
                         (float) ((aY + ((bY - aY) / 100 * 50))));
+                //Half circle
+                batPos.x -= bat / 2;
             } else {
                 batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
                         - bat / 2, (float) ((cY + ((bY - cY) / 100 * 50))));
+                //Half circle
+                batPos.x -= bat / 2;
             }
 //            //Player blue or green
 //            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));

@@ -162,7 +162,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param g
      */
     public void draw(Game g) {
-        if (!g.isPaused()) {
+        if (!g.getStatusProp().get().equals(GameStatus.Paused)) {
             double bat = (double) width.doubleValue() / 100 * 8;
             this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
             this.drawEdges();
@@ -342,7 +342,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void pauseClick(Event evt) {
-        myGame.pauseGame(!myGame.isPaused());
+        myGame.pauseGame(!myGame.getStatusProp().get().equals(GameStatus.Paused));
         actionTaken = true;
     }
 
@@ -358,7 +358,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         }
         if (lobby.getCurrentPerson() instanceof Spectator) {
             lobby.stopSpectating(myGame, lobby.getCurrentPerson());
-        } else if (myGame.isGameOver() || myGame.getRoundNo().get() == 0) {
+        } else if (myGame.getStatusProp().get().equals(GameStatus.GameOver) || myGame.getRoundNo().get() == 0) {
             lobby.endGame(myGame, null);
         } else {
             lobby.endGame(myGame, (Player) lobby.getCurrentPerson());
@@ -401,13 +401,13 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         final EventHandler<KeyEvent> keyPressed = (final KeyEvent keyEvent) -> {
             if (keyEvent.getCode() == KeyCode.A
                     || keyEvent.getCode() == KeyCode.LEFT) {
-                if (!myGame.isPaused()) {
+                if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(-1);
                     actionTaken = true;
                 }
             } else if (keyEvent.getCode() == KeyCode.D
                     || keyEvent.getCode() == KeyCode.RIGHT) {
-                if (!myGame.isPaused()) {
+                if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(1);
                     actionTaken = true;
                 }
@@ -415,7 +415,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         };
         //Stop moving
         final EventHandler<KeyEvent> keyReleased = (final KeyEvent keyEvent) -> {
-            if (myGame.isPaused()) {
+            if (myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                 actionTaken = false;
             }
         };
