@@ -158,8 +158,7 @@ public class Player extends Person {
                 }
             }
             if (out) {
-                x = 0;
-                y = 0;
+                throw new IllegalArgumentException();
             } else {
                 x = Math.cos(Math.toRadians(direction)) * 5;
                 y = Math.sin(Math.toRadians(direction)) * 5;
@@ -191,16 +190,5 @@ public class Player extends Person {
      */
     public void addPowerUp(PowerUp powerUp) {
         //
-    }
-
-    /**
-     * Tries to pause or unpause current game
-     *
-     * @param isPaused the desired pausestate - false for unpause
-     * @return True if pause status was changed False if unable to change pause
-     * state, due to unexpected weirdness or if isPaused == game.isPaused
-     */
-    public boolean pauseGame(boolean isPaused) {
-        return myGame.pauseGame(isPaused);
     }
 }
