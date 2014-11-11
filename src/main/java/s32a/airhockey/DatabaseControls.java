@@ -24,8 +24,7 @@ import java.util.Properties;
  *
  * @author Kargathia
  */
-public class DatabaseControls
-{
+public class DatabaseControls {
 
     private Connection conn;
     private Properties props;
@@ -33,15 +32,12 @@ public class DatabaseControls
     /**
      * creates new instance of DatabaseControls
      */
-    public DatabaseControls()
-    {
+    public DatabaseControls() {
         this.conn = null;
         this.props = null;
-        try
-        {
+        try {
             this.configure();
-        } catch (IOException | NullPointerException ex)
-        {
+        } catch (IOException | NullPointerException ex) {
             System.out.println("unable to configure database: check database.properties");
         }
 
@@ -53,35 +49,26 @@ public class DatabaseControls
      *
      * @throws IOException if something went wrong
      */
-    public void configure() throws IOException
-    {
+    public void configure() throws IOException {
         this.props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties"))
-        {
+        try (FileInputStream in = new FileInputStream("database.properties")) {
             props.load(in);
-        } catch (FileNotFoundException ex)
-        {
+        } catch (FileNotFoundException ex) {
             // tries to load backup location (used in deployed version)
-            try (FileInputStream in = new FileInputStream("/database.properties"))
-            {
+            try (FileInputStream in = new FileInputStream("/database.properties")) {
                 props.load(in);
-            } catch (FileNotFoundException exc)
-            {
+            } catch (FileNotFoundException exc) {
                 throw new IOException("File not found: " + exc.getMessage());
             }
-        } catch (IOException ex)
-        {
+        } catch (IOException ex) {
             throw new IOException("IOException on props load: " + ex.getMessage());
         }
 
-        try
-        {
+        try {
             this.initConnection();
-        } catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             throw new IOException("SQL Exception on initConnection: " + ex.getMessage());
-        } finally
-        {
+        } finally {
             this.closeConnection();
         }
     }
@@ -91,11 +78,9 @@ public class DatabaseControls
      *
      * @throws SQLException
      */
-    private void initConnection() throws SQLException
-    {
+    private void initConnection() throws SQLException {
         if (props.get("url") == null || props.get("username") == null
-                || props.get("password") == null)
-        {
+                || props.get("password") == null) {
             throw new SQLException("props values not correctly configured");
         }
 
@@ -109,14 +94,11 @@ public class DatabaseControls
     /**
      * closes currently active connection
      */
-    private void closeConnection()
-    {
-        try
-        {
+    private void closeConnection() {
+        try {
             conn.close();
             conn = null;
-        } catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             System.err.println("closeConnection: " + ex.getMessage());
         }
     }
@@ -130,8 +112,7 @@ public class DatabaseControls
      * @return
      * @throws java.sql.SQLException
      */
-    public Person checkLogin(String playerName, String password) throws SQLException
-    {
+    public Person checkLogin(String playerName, String password) throws SQLException {
         this.initConnection();
         Person output = null;
 
@@ -139,17 +120,14 @@ public class DatabaseControls
         String query = "SELECT playername, rating FROM player WHERE playername = ? AND playerpassword = ?";
 
         // checks with the database whether that username / password combination exists
-        try
-        {
+        try {
             prepStat = conn.prepareStatement(query);
             prepStat.setString(1, playerName);
             prepStat.setString(2, password);
 
             ResultSet rs = prepStat.executeQuery();
-            while (rs.next())
-            {
-                if (output != null)
-                {
+            while (rs.next()) {
+                if (output != null) {
                     throw new SQLException("multiple players found");
                 }
                 double rating = rs.getDouble("rating");
@@ -157,8 +135,7 @@ public class DatabaseControls
                 output = new Person(name, rating);
             }
             return output;
-        } finally
-        {
+        } finally {
             prepStat.close();
             this.closeConnection();
         }
@@ -172,19 +149,16 @@ public class DatabaseControls
      * @return the newly added person, if applicable
      * @throws java.sql.SQLException
      */
-    public Person addPerson(String playerName, String password) throws SQLException
-    {
+    public Person addPerson(String playerName, String password) throws SQLException {
         this.initConnection();
 
         PreparedStatement prepStat = null;
         String query = "SELECT playername FROM player WHERE playername = ?";
-        try
-        {
+        try {
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);
             ResultSet rs = prepStat.executeQuery();
-            while (rs.next())
-            {
+            while (rs.next()) {
                 return null;
             }
 
@@ -195,8 +169,7 @@ public class DatabaseControls
             prepStat.setString(2, password);
             prepStat.setDouble(3, 15);
             prepStat.executeUpdate();
-        } finally
-        {
+        } finally {
             prepStat.close();
             this.closeConnection();
         }
@@ -210,28 +183,23 @@ public class DatabaseControls
      * @return the X highest rated players, sorted by rating
      * @throws java.sql.SQLException
      */
-    public List<Person> getRankings() throws SQLException
-    {
+    public List<Person> getRankings() throws SQLException {
         List<Person> output = new ArrayList<>();
         String query = "SELECT playername, rating FROM player ORDER BY rating DESC LIMIT 5";
         Statement stat = null;
 
-        try
-        {
+        try {
             this.initConnection();
             stat = conn.createStatement();
 
             ResultSet rs = stat.executeQuery(query);
-            while (rs.next())
-            {
+            while (rs.next()) {
                 String name = rs.getString("playername");
                 double rating = rs.getDouble("rating");
                 output.add(new Person(name, rating));
             }
-        } finally
-        {
-            if (stat != null)
-            {
+        } finally {
+            if (stat != null) {
                 stat.close();
             }
             this.closeConnection();
@@ -244,21 +212,18 @@ public class DatabaseControls
      *
      * @throws java.sql.SQLException
      */
-    public void clearDatabase() throws SQLException
-    {
+    public void clearDatabase() throws SQLException {
         String query = "DELETE FROM game";
         Statement stat = null;
 
-        try
-        {
+        try {
             this.initConnection();
             stat = conn.createStatement();
             stat.executeUpdate(query);
 
             query = "DELETE FROM player";
             stat.executeUpdate(query);
-        } finally
-        {
+        } finally {
             stat.close();
             this.closeConnection();
         }
@@ -273,17 +238,14 @@ public class DatabaseControls
      * @throws SQLException
      * @throws IllegalArgumentException when game doesn't have three players
      */
-    public void saveGame(Game game) throws SQLException, IllegalArgumentException
-    {
-        if (game.getMyPlayers().size() < 3)
-        {
+    public void saveGame(Game game) throws SQLException, IllegalArgumentException {
+        if (game.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("Game contained less than three players");
         }
 
         if (game.getMyPlayers().get(0).getScore().get() < 0
                 || game.getMyPlayers().get(1).getScore().get() < 0
-                || game.getMyPlayers().get(2).getScore().get() < 0)
-        {
+                || game.getMyPlayers().get(2).getScore().get() < 0) {
             throw new IllegalArgumentException("One or more players had negative scores");
         }
 
@@ -294,8 +256,7 @@ public class DatabaseControls
                 + "player1, player2, player3, puckspeed) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try
-        {
+        try {
             prepStat = this.conn.prepareStatement(query);
 
             prepStat.setString(1, (String) game.getGameInfo().get("gameID"));
@@ -314,8 +275,7 @@ public class DatabaseControls
             prepStat.setFloat(9, game.getMyPuck().getSpeed().get());
 
             prepStat.executeUpdate();
-        } finally
-        {
+        } finally {
             prepStat.close();
             this.closeConnection();
         }
@@ -330,25 +290,20 @@ public class DatabaseControls
      * @return his new rating
      * @throws java.sql.SQLException
      */
-    public double getNewRating(Person player, Player hasLeft) throws SQLException
-    {
+    public double getNewRating(Person player, Player hasLeft) throws SQLException {
         this.initConnection();
         double output = -1;
-        try
-        (CallableStatement callStat = conn.prepareCall("{? = call getNewRating(?, ?)}")) {
+        try (CallableStatement callStat = conn.prepareCall("{? = call getNewRating(?, ?)}")) {
             callStat.registerOutParameter(1, java.sql.Types.DOUBLE);
             callStat.setString(2, player.getName());
-            if (hasLeft != null)
-            {
+            if (hasLeft != null) {
                 callStat.setString(3, hasLeft.getName());
-            } else
-            {
+            } else {
                 callStat.setNull(3, Types.VARCHAR);
             }
             callStat.execute();
             output = callStat.getInt(1);
-        } finally
-        {
+        } finally {
             this.closeConnection();
         }
         return output;

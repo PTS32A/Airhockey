@@ -18,8 +18,7 @@ import lombok.Setter;
  *
  * @author Kargathia
  */
-public class Bot extends Player
-{
+public class Bot extends Player {
 
     /**
      *
@@ -27,36 +26,26 @@ public class Bot extends Player
      * @param rating
      * @param color
      */
-    public Bot(String name, double rating, Colors color)
-    {
+    public Bot(String name, double rating, Colors color) {
         super(name, rating, color);
     }
-    
-    public void moveBot()
-    {
-        if(!getMyGame().isPaused())
-        {
-            if(this.getColor() == Colors.Red)
-            {
-                if(getMyGame().getMyPuck().getPosition().x >= getBatPos().x)
-                {
+
+    public void moveBot() {
+        if (!getMyGame().isPaused()) {
+            if (this.getColor() == Colors.Red) {
+                if (getMyGame().getMyPuck().getPosition().x >= getBatPos().x) {
                     moveBat(-1);
-                } 
-                if(getMyGame().getMyPuck().getPosition().x <= getBatPos().x)
-                {
+                }
+                if (getMyGame().getMyPuck().getPosition().x <= getBatPos().x) {
                     moveBat(1);
                 }
-            }
-            else
-            {
-                if(getMyGame().getMyPuck().getPosition().y >= getBatPos().y)
-                {
+            } else {
+                if (getMyGame().getMyPuck().getPosition().y >= getBatPos().y) {
                     moveBat(-1);
-                } 
-                if(getMyGame().getMyPuck().getPosition().y <= getBatPos().y)
-                {
+                }
+                if (getMyGame().getMyPuck().getPosition().y <= getBatPos().y) {
                     moveBat(1);
-                } 
+                }
             }
         }
     }

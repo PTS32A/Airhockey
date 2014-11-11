@@ -13,46 +13,39 @@ import s32a.airhockey.Game;
  *
  * @author Kargathia
  */
-public class GameTimeTask extends TimerTask
-{
+public class GameTimeTask extends TimerTask {
+
     private Game myGame;
     private int min;
     private int sec;
-    
-    public GameTimeTask(Game game)
-    {
+
+    public GameTimeTask(Game game) {
         this.myGame = game;
         this.min = 0;
         this.sec = 0;
     }
-    
+
     @Override
-    public void run()
-    {
-        if (!myGame.isPaused())
-        {
+    public void run() {
+        if (!myGame.isPaused()) {
             sec++;
-            if (sec > 59)
-            {
+            if (sec > 59) {
                 sec = 0;
                 min++;
             }
             String second = Integer.toString(sec);
-            if (sec < 10)
-            {
+            if (sec < 10) {
                 second = "0" + Integer.toString(sec);
             }
             String minute = Integer.toString(min);
-            if (min < 10)
-            {
+            if (min < 10) {
                 minute = "0" + Integer.toString(min);
             }
             final String output = minute + ":" + second;
 
-            Platform.runLater(() ->
-            {
+            Platform.runLater(() -> {
                 myGame.setGameTime(output);
             });
         }
-    }  
+    }
 }

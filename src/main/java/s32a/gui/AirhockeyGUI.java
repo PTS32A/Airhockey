@@ -18,28 +18,25 @@ import lombok.Getter;
 import s32a.airhockey.*;
 
 /**
- *  NOTES: find out what game is currently active for the closeGame click event
+ * NOTES: find out what game is currently active for the closeGame click event
+ *
  * @author Kargathia
  */
-public class AirhockeyGUI extends Application
-{
+public class AirhockeyGUI extends Application {
 
     @Getter
     private Stage stage;
 
     @Override
-    public void start(Stage stage) throws Exception
-    {
+    public void start(Stage stage) throws Exception {
         Lobby.getSingle();
 
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
 
-        stage.setOnCloseRequest((WindowEvent event) ->
-        {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Person person = Lobby.getSingle().getCurrentPerson();
-            if (person != null)
-            {
+            if (person != null) {
                 Lobby.getSingle().logOut(person);
             }
             Platform.exit();
@@ -52,8 +49,7 @@ public class AirhockeyGUI extends Application
         stage.show();
 
         // populates lobby
-        Thread thread = new Thread(() ->
-        {
+        Thread thread = new Thread(() -> {
             Lobby.getSingle().populate();
         });
         thread.start();
@@ -63,8 +59,7 @@ public class AirhockeyGUI extends Application
     /**
      *
      */
-    void goToLogin(Stage stage) throws IOException
-    {
+    void goToLogin(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
 
         Scene scene = new Scene(root);
@@ -77,8 +72,7 @@ public class AirhockeyGUI extends Application
      * @param stage
      * @throws java.io.IOException
      */
-    public void goToRegister(Stage stage) throws IOException
-    {
+    public void goToRegister(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Register.fxml"));
 
         Scene scene = new Scene(root);
@@ -89,8 +83,7 @@ public class AirhockeyGUI extends Application
     /**
      *
      */
-    void goToLobby(Stage stage) throws IOException
-    {
+    void goToLobby(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Lobby.fxml"));
 
         Scene scene = new Scene(root);
@@ -101,8 +94,7 @@ public class AirhockeyGUI extends Application
     /**
      *
      */
-    void goToGame(Stage stage) throws IOException
-    {
+    void goToGame(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
 
         Scene scene = new Scene(root);
@@ -111,18 +103,14 @@ public class AirhockeyGUI extends Application
         stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
 
-        stage.setOnCloseRequest((WindowEvent event) ->
-        {
+        stage.setOnCloseRequest((WindowEvent event) -> {
             Lobby lobby = Lobby.getSingle();
-            
-            if (lobby.getCurrentPerson() instanceof Spectator)
-            { // TODO FIND OUT WHAT GAME CURRENTLY IS ACTIVE
+
+            if (lobby.getCurrentPerson() instanceof Spectator) { // TODO FIND OUT WHAT GAME CURRENTLY IS ACTIVE
                 lobby.stopSpectating(lobby.getSpectatedGames().get(0), lobby.getCurrentPerson());
-            } else if (lobby.getCurrentPerson() instanceof Player)
-            {
+            } else if (lobby.getCurrentPerson() instanceof Player) {
                 Player person = (Player) Lobby.getSingle().getCurrentPerson();
-                if (person != null)
-                {
+                if (person != null) {
                     Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), person);
                 }
             }
@@ -132,8 +120,7 @@ public class AirhockeyGUI extends Application
         stage.show();
     }
 
-    void showDialog(String type, String message)
-    {
+    void showDialog(String type, String message) {
         Stage myDialog = new Dialog(getStage(), type, message);
         myDialog.show();
     }
@@ -141,8 +128,7 @@ public class AirhockeyGUI extends Application
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         launch(args);
     }
 

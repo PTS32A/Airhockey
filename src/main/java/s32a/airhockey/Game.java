@@ -24,8 +24,7 @@ import s32a.timers.GameTimeTask;
 /**
  * @author Kargathia
  */
-public class Game
-{
+public class Game {
 
     private StringProperty difficultyProp, statusProp;
 
@@ -69,8 +68,7 @@ public class Game
      *
      * @param input
      */
-    public void setGameTime(String input)
-    {
+    public void setGameTime(String input) {
         this.gameTime.set(input);
     }
 
@@ -79,10 +77,8 @@ public class Game
      *
      * @param input
      */
-    private void setRoundNo(int input)
-    {
-        Platform.runLater(() ->
-        {
+    private void setRoundNo(int input) {
+        Platform.runLater(() -> {
             this.roundNo.set(input);
         });
     }
@@ -92,8 +88,7 @@ public class Game
      *
      * @return
      */
-    public StringProperty difficultyProperty()
-    {
+    public StringProperty difficultyProperty() {
         return this.difficultyProp;
     }
 
@@ -102,27 +97,20 @@ public class Game
      *
      * @return
      */
-    public StringProperty statusProperty()
-    {
-        if (this.statusProp == null)
-        {
+    public StringProperty statusProperty() {
+        if (this.statusProp == null) {
             this.statusProp = new SimpleStringProperty("");
         }
 
-        if (this.gameOver)
-        {
+        if (this.gameOver) {
             this.statusProp.set("Game Over");
-        } else if (this.myPlayers.size() < 3)
-        {
+        } else if (this.myPlayers.size() < 3) {
             this.statusProp.set("Setting Up");
-        } else if (isPaused)
-        {
+        } else if (isPaused) {
             this.statusProp.set("Paused");
-        } else if (!continueRun)
-        {
+        } else if (!continueRun) {
             this.statusProp.set("Ready");
-        } else
-        {
+        } else {
             this.statusProp.set("Playing");
         }
         return this.statusProp;
@@ -133,8 +121,7 @@ public class Game
      *
      * @return
      */
-    public StringProperty player1NameProperty()
-    {
+    public StringProperty player1NameProperty() {
         return this.playerNameProp(0);
     }
 
@@ -143,8 +130,7 @@ public class Game
      *
      * @return
      */
-    public StringProperty player2NameProperty()
-    {
+    public StringProperty player2NameProperty() {
         return this.playerNameProp(1);
     }
 
@@ -153,8 +139,7 @@ public class Game
      *
      * @return
      */
-    public StringProperty player3NameProperty()
-    {
+    public StringProperty player3NameProperty() {
         return this.playerNameProp(2);
     }
 
@@ -164,13 +149,10 @@ public class Game
      * @param index
      * @return
      */
-    private StringProperty playerNameProp(int index)
-    {
-        if (this.myPlayers.size() <= index)
-        {
+    private StringProperty playerNameProp(int index) {
+        if (this.myPlayers.size() <= index) {
             return new SimpleStringProperty("--");
-        } else
-        {
+        } else {
             return this.myPlayers.get(index).nameProperty();
         }
     }
@@ -182,8 +164,7 @@ public class Game
      *
      * @param starter The player that starts the game initially
      */
-    Game(Player starter)
-    {
+    Game(Player starter) {
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
 
@@ -227,14 +208,11 @@ public class Game
      * @return True if everything went right, and chatbox.addchatmessage
      * returned true
      */
-    public boolean addChatMessage(String message, Person from)
-    {
-        if (message == null || from == null)
-        {
+    public boolean addChatMessage(String message, Person from) {
+        if (message == null || from == null) {
             throw new IllegalArgumentException("sender or message is null");
         }
-        if (message.trim().isEmpty())
-        {
+        if (message.trim().isEmpty()) {
             throw new IllegalArgumentException("message is empty");
         }
         return myChatbox.addChatMessage(message, from);
@@ -251,14 +229,10 @@ public class Game
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
      */
-    boolean addPlayer(Player player)
-    {
-        if (player != null)
-        {
-            if (!myPlayers.contains(player))
-            {
-                if (myPlayers.size() < 3)
-                {
+    boolean addPlayer(Player player) {
+        if (player != null) {
+            if (!myPlayers.contains(player)) {
+                if (myPlayers.size() < 3) {
                     this.gameInfo.put("nextColor", getNextColor());
 
                     myPlayers.add(player);
@@ -269,8 +243,7 @@ public class Game
                     return true;
                 }
             }
-        } else
-        {
+        } else {
             throw new IllegalArgumentException();
         }
         return false;
@@ -282,20 +255,17 @@ public class Game
      * @param p
      * @param playerID
      */
-    private void setBatPosition(Player p, int playerID)
-    {
+    private void setBatPosition(Player p, int playerID) {
         float width = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         float bat = width / 100 * 8;
         float x;
         float y;
         Vector2 batPos;
 
-        if (playerID == 0)
-        {
+        if (playerID == 0) {
             //Player red
             batPos = new Vector2(0, 0 + bat / 2);
-        } else
-        {
+        } else {
             // Left corner of triangle
             double aX = -width / 2;
             double aY = 0;
@@ -306,12 +276,10 @@ public class Game
             double cX = width / 2;
             double cY = 0;
 
-            if (playerID == 1)
-            {
+            if (playerID == 1) {
                 batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + bat / 2,
                         (float) ((aY + ((bY - aY) / 100 * 50))));
-            } else
-            {
+            } else {
                 batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
                         - bat / 2, (float) ((cY + ((bY - cY) / 100 * 50))));
             }
@@ -353,21 +321,16 @@ public class Game
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
      */
-    boolean addSpectator(Spectator spectator) throws IllegalArgumentException
-    {
-        if (spectator != null)
-        {
-            for (Spectator spect : this.mySpectators)
-            {
-                if (spect.getName().equals(spectator.getName()))
-                {
+    boolean addSpectator(Spectator spectator) throws IllegalArgumentException {
+        if (spectator != null) {
+            for (Spectator spect : this.mySpectators) {
+                if (spect.getName().equals(spectator.getName())) {
                     return false;
                 }
             }
             mySpectators.add(spectator);
             return true;
-        } else
-        {
+        } else {
             throw new IllegalArgumentException("spectator is null");
         }
     }
@@ -379,17 +342,13 @@ public class Game
      * game
      * @return returns true if the spectator was successfully removed
      */
-    boolean removeSpectator(Spectator spectator)
-    {
-        if (spectator != null)
-        {
-            if (mySpectators.contains(spectator))
-            {
+    boolean removeSpectator(Spectator spectator) {
+        if (spectator != null) {
+            if (mySpectators.contains(spectator)) {
                 mySpectators.remove(spectator);
                 return true;
             }
-        } else
-        {
+        } else {
             throw new IllegalArgumentException();
         }
         return false;
@@ -402,12 +361,9 @@ public class Game
      * @return returns true if the game was started returns false if the game
      * was unable to start for any reason
      */
-    public boolean beginGame()
-    {
-        if (myPlayers.size() == 3)
-        {
-            if (roundNo.get() == 0)
-            {
+    public boolean beginGame() {
+        if (myPlayers.size() == 3) {
+            if (roundNo.get() == 0) {
                 printMessage("BEGIN GAME");
 
                 //Timer will keep going until game end
@@ -417,8 +373,7 @@ public class Game
                 puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);
 
                 if (myPlayers.get(0).getName().equals("j") || myPlayers.get(1).getName().equals("j")
-                        || myPlayers.get(2).getName().equals("j"))
-                {
+                        || myPlayers.get(2).getName().equals("j")) {
                     this.printMessages = true;
                     this.myPuck.setPrintMessages(true);
                 }
@@ -440,23 +395,18 @@ public class Game
      * false if it was unable to adjust puck speed throws
      * IllegalArgumentException when given puckspeed was outside min/max values
      */
-    public boolean adjustDifficulty(float puckSpeed)
-    {
-        if (this.roundNo.get() == 0)
-        {
+    public boolean adjustDifficulty(float puckSpeed) {
+        if (this.roundNo.get() == 0) {
             float min = 10;
             float max = 40;
 
-            if (puckSpeed >= min && puckSpeed <= max)
-            {
+            if (puckSpeed >= min && puckSpeed <= max) {
                 myPuck.setSpeed(Math.round(puckSpeed));
                 return true;
-            } else
-            {
+            } else {
                 throw new IllegalArgumentException();
             }
-        } else
-        {
+        } else {
             //Can't adjust difficulty if game has already begun
             return false;
         }
@@ -467,15 +417,12 @@ public class Game
      *
      * @return true if successfully set puckspeed
      */
-    public boolean adjustDifficulty()
-    {
-        if (myPlayers.isEmpty())
-        {
+    public boolean adjustDifficulty() {
+        if (myPlayers.isEmpty()) {
             return false;
         }
         double averageRating = 0;
-        for (Player p : myPlayers)
-        {
+        for (Player p : myPlayers) {
             averageRating += p.getRating();
         }
         averageRating = averageRating / myPlayers.size();
@@ -491,14 +438,11 @@ public class Game
      * @return returns true if the pause change was successful. return false if
      * desired pause state == Game.isPaused
      */
-    public boolean pauseGame(boolean isPaused)
-    {
-        if (this.isPaused != isPaused)
-        {
+    public boolean pauseGame(boolean isPaused) {
+        if (this.isPaused != isPaused) {
             this.isPaused = isPaused;
             return true;
-        } else
-        {
+        } else {
             //Return false because the pause state is already this way and is therefor not changed
             return false;
         }
@@ -511,8 +455,7 @@ public class Game
      *
      * @return Returns the game in an updated state
      */
-    public Game update()
-    {
+    public Game update() {
         return this;
     }
 
@@ -520,11 +463,9 @@ public class Game
      * This method cycles to a new frame (puck position, bot position)
      * ToBeImplemented
      */
-    void run()
-    {
+    void run() {
         //Continue       
-        if (!isPaused && myPuck != null)
-        {
+        if (!isPaused && myPuck != null) {
             //BEGIN PUCK MOVEMENT
             this.continueRun = true; //This allows Puck to be moved
         }
@@ -534,8 +475,7 @@ public class Game
      * Starts a new round within the running game rounds are ended automatically
      * within Game.run() whenever someone scores
      */
-    private void startRound()
-    {
+    private void startRound() {
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
         printMessage("-ROUND " + (roundNo.get() + 1)); //Added +1 because roundNo seems to be starting at 0 without it
@@ -545,18 +485,15 @@ public class Game
         this.run();
     }
 
-    void endRound()
-    {
+    void endRound() {
         //END OF PUCK MOVEMENT
         this.continueRun = false;
 
         this.myPuck.resetPuck();
 
-        if (roundNo.get() < maxRounds)
-        {
+        if (roundNo.get() < maxRounds) {
             startRound();
-        } else
-        {
+        } else {
             //End game
             printMessage("END GAME");
             printMessage("");
@@ -570,10 +507,8 @@ public class Game
      * @return the color the next player should have, cycling red, blue, green
      * returns null if game already has three players
      */
-    Colors getNextColor()
-    {
-        switch (myPlayers.size())
-        {
+    Colors getNextColor() {
+        switch (myPlayers.size()) {
             case 0:
                 return Colors.Red;
             case 1:
@@ -590,8 +525,7 @@ public class Game
      * @return gameID
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
         return (String) gameInfo.get("gameID");
     }
 
@@ -606,48 +540,38 @@ public class Game
      * @param maxRounds
      */
     public void customSetup(Vector2 position, float puckSpeed,
-            float direction, int runCount, int maxRounds)
-    {
+            float direction, int runCount, int maxRounds) {
         //Caution: puck position and direction are reset to default after the first round has ended
 
-        if (position != null)
-        {
-            if (this.myPuck.isOutsideField(position) == null)
-            {
+        if (position != null) {
+            if (this.myPuck.isOutsideField(position) == null) {
                 //Inside of field
                 this.myPuck.setPosition(position);
-            } else
-            {
+            } else {
                 //Outside of field
                 throw new IllegalArgumentException();
             }
         }
 
-        if (puckSpeed > 0 && puckSpeed < 100)
-        {
+        if (puckSpeed > 0 && puckSpeed < 100) {
             this.myPuck.setSpeed(puckSpeed);
         }
 
-        if (direction >= 0 && direction < 360)
-        {
+        if (direction >= 0 && direction < 360) {
             this.myPuck.setDirection(direction);
         }
 
-        if (runCount > 0 && runCount < 5000)
-        {
+        if (runCount > 0 && runCount < 5000) {
             this.myPuck.setRunCount(runCount);
         }
 
-        if (maxRounds > 0 && maxRounds <= 10)
-        {
+        if (maxRounds > 0 && maxRounds <= 10) {
             this.maxRounds = maxRounds;
         }
     }
 
-    private void printMessage(String message)
-    {
-        if (printMessages)
-        {
+    private void printMessage(String message) {
+        if (printMessages) {
             System.out.println(message);
         }
     }

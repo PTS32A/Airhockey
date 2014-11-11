@@ -55,8 +55,7 @@ public class Dialog extends Stage {
         gridPane.add(taMessage, 0, 0);
 
         Button btClose = new Button("Close");
-        btClose.setOnAction((ActionEvent event) ->
-        {
+        btClose.setOnAction((ActionEvent event) -> {
             close();
         });
 

@@ -16,21 +16,19 @@ import lombok.Getter;
  *
  * @author Kargathia
  */
-public class Chatbox
-{
-    private List<String> chat;   
+public class Chatbox {
+
+    private List<String> chat;
     private ObservableList<String> chatProp;
 
-    public ObservableList<String> chatProperty()
-    {
+    public ObservableList<String> chatProperty() {
         return this.chatProp;
     }
-    
+
     /**
      * The chat box element.
      */
-    public Chatbox()
-    {
+    public Chatbox() {
         this.chat = new ArrayList<>();
         this.chatProp = FXCollections.observableArrayList(this.chat);
     }
@@ -43,10 +41,9 @@ public class Chatbox
      * @return returns true if the message was sent successfully returns
      * IllegalArgumentException if message wasn't formatted correctly
      */
-    public boolean addChatMessage(String message, Person from)
-    {
+    public boolean addChatMessage(String message, Person from) {
         StringBuilder builder = new StringBuilder();
-        String time = String.valueOf(Calendar.getInstance().getTime()).substring(11, 19); 
+        String time = String.valueOf(Calendar.getInstance().getTime()).substring(11, 19);
         //Gets only the time of the day out of the calendar.
 
         builder.append("<").append(from.getName()).append(">");
@@ -55,16 +52,13 @@ public class Chatbox
         message = builder.toString();
 
         System.out.println(message);
-        if (message.startsWith("<") && message.contains(">[") 
-                && message.contains("]:") 
-                && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1) 
-                && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1))
-        {
+        if (message.startsWith("<") && message.contains(">[")
+                && message.contains("]:")
+                && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1)
+                && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1)) {
             this.chatProp.add(message);
             return true;
-        } 
-        else
-        {
+        } else {
             return false;
         }
     }

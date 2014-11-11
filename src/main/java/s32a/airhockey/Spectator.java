@@ -9,11 +9,9 @@ package s32a.airhockey;
  *
  * @author Kargathia
  */
-public class Spectator extends Person
-{
+public class Spectator extends Person {
 
-    Spectator(String name, double rating)
-    {
+    Spectator(String name, double rating) {
         super(name, rating);
     }
 }

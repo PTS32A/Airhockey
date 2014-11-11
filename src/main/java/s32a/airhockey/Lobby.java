@@ -20,8 +20,7 @@ import lombok.Getter;
  *
  * @author Kargathia
  */
-public class Lobby
-{
+public class Lobby {
 
     private static Lobby _singleton;
 
@@ -30,10 +29,8 @@ public class Lobby
      *
      * @return instance of lobby (_singleton)
      */
-    public static Lobby getSingle()
-    {
-        if (_singleton == null)
-        {
+    public static Lobby getSingle() {
+        if (_singleton == null) {
             _singleton = new Lobby();
         }
         return _singleton;
@@ -57,8 +54,7 @@ public class Lobby
      * Lobby is used as singleton Also responsible for calling
      * InternetConnection.populate() in iteration 1
      */
-    public Lobby()
-    {
+    public Lobby() {
         this.mychatbox = new Chatbox();
         this.myDatabaseControls = new DatabaseControls();
         this.currentPerson = null;
@@ -84,11 +80,9 @@ public class Lobby
      * trailing / leading white spaces
      * @throws java.sql.SQLException
      */
-    public boolean addPerson(String playerName, String password) throws IllegalArgumentException, SQLException
-    {
+    public boolean addPerson(String playerName, String password) throws IllegalArgumentException, SQLException {
         if (playerName == null || password == null
-                || !playerName.trim().equals(playerName) || !password.trim().equals(password))
-        {
+                || !playerName.trim().equals(playerName) || !password.trim().equals(password)) {
             throw new IllegalArgumentException("incorrect input");
         }
 
@@ -109,27 +103,22 @@ public class Lobby
      * @throws java.sql.SQLException, IllegalArgumentException
      */
     public boolean checkLogin(String playerName, String password)
-            throws IllegalArgumentException, SQLException
-    {
+            throws IllegalArgumentException, SQLException {
         if (playerName == null || password == null
-                || !playerName.trim().equals(playerName) || !password.trim().equals(password))
-        {
+                || !playerName.trim().equals(playerName) || !password.trim().equals(password)) {
             throw new IllegalArgumentException();
         }
 
         Person newPerson = this.myDatabaseControls.checkLogin(playerName, password);
-        if (newPerson == null)
-        {
+        if (newPerson == null) {
             return false;
         }
 
-        if (activePersons.put(playerName, newPerson) == null)
-        {
+        if (activePersons.put(playerName, newPerson) == null) {
             this.currentPerson = (Person) this.activePersons.get(playerName);
             this.playedGame = null;
             this.spectatedGames = new ArrayList<>();
-        } else
-        {
+        } else {
             return false;
         }
         return true;
@@ -142,28 +131,22 @@ public class Lobby
      * @param input
      * @return whether logout succeeded
      */
-    public boolean logOut(Person input)
-    {
-        if (input == null)
-        {
+    public boolean logOut(Person input) {
+        if (input == null) {
             throw new IllegalArgumentException();
         }
 
-        if (input instanceof Player)
-        {
+        if (input instanceof Player) {
             Player playerInput = (Player) input;
             this.endGame(playerInput.getMyGame(), playerInput);
-        } else if (input instanceof Spectator)
-        {
+        } else if (input instanceof Spectator) {
             Spectator spectInput = (Spectator) input;
-            for (Game g : activeGames)
-            {
+            for (Game g : activeGames) {
                 g.removeSpectator(spectInput);
             }
         }
         this.activePersons.remove(input.getName());
-        if (input.getName().equals(this.currentPerson.getName()))
-        {
+        if (input.getName().equals(this.currentPerson.getName())) {
             currentPerson = null;
         }
         return true;
@@ -172,13 +155,10 @@ public class Lobby
     /**
      * clears the entire database - should only be used for reset and debugging
      */
-    public void clearDatabase()
-    {
-        try
-        {
+    public void clearDatabase() {
+        try {
             myDatabaseControls.clearDatabase();
-        } catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -191,29 +171,24 @@ public class Lobby
      * @param person should be Lobby.currentPerson if called by GUI
      * @return - the freshly started game if everything went well - null
      */
-    public Game startGame(Person person)
-    {
+    public Game startGame(Person person) {
         if (person == null || (person instanceof Player)
-                || (person instanceof Spectator))
-        {
+                || (person instanceof Spectator)) {
             return null;
         }
 
         Game newGame = null;
-        try
-        {
+        try {
             person = new Player(person.getName(), person.getRating(), Colors.Red);
             newGame = new Game((Player) person);
             this.activePersons.replace(person.getName(), person);
             this.activeGames.add(newGame);
             if (this.currentPerson != null
-                    && this.currentPerson.getName().equals(person.getName()))
-            {
+                    && this.currentPerson.getName().equals(person.getName())) {
                 this.currentPerson = person;
                 this.playedGame = newGame;
             }
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             this.returnToLobby(person);
             this.endGame(newGame, null);
             return null;
@@ -229,38 +204,29 @@ public class Lobby
      * @param person should be Lobby.currentPerson if called by GUI
      * @return joined game if everything went well null otherwise
      */
-    public Game joinGame(Game game, Person person)
-    {
+    public Game joinGame(Game game, Person person) {
         if (person == null || (person instanceof Player)
-                || (person instanceof Spectator) || game == null)
-        {
+                || (person instanceof Spectator) || game == null) {
             return null;
         }
 
-        try
-        {
+        try {
             Player player;
-            if (person.isBot())
-            {
+            if (person.isBot()) {
                 player = new Bot(person.getName(), person.getRating(), game.getNextColor());
-            } else
-            {
+            } else {
                 player = new Player(person.getName(), person.getRating(),
                         game.getNextColor());
             }
-            if (game.addPlayer(player))
-            {
+            if (game.addPlayer(player)) {
                 this.activePersons.replace(person.getName(), player);
-            } else
-            {
+            } else {
                 return null;
             }
-            if (player.getName().equals(this.currentPerson.getName()))
-            {
+            if (player.getName().equals(this.currentPerson.getName())) {
                 this.playedGame = game;
             }
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             this.returnToLobby(person);
             this.playedGame = null;
             return null;
@@ -277,28 +243,22 @@ public class Lobby
      * @param person should be currentPerson if called by GUI
      * @return - Game if everything went well - Null otherwise
      */
-    public Game spectateGame(Game game, Person person)
-    {
-        if (person == null || (person instanceof Player))
-        {
+    public Game spectateGame(Game game, Person person) {
+        if (person == null || (person instanceof Player)) {
             return null;
         }
 
-        try
-        {
+        try {
             person = new Spectator(person.getName(), person.getRating());
-            if (!game.addSpectator((Spectator) person))
-            {
+            if (!game.addSpectator((Spectator) person)) {
                 return null;
             }
             this.activePersons.replace(person.getName(), person);
-            if (this.currentPerson.getName().equals(person.getName()))
-            {
+            if (this.currentPerson.getName().equals(person.getName())) {
                 this.spectatedGames.add(game);
                 this.currentPerson = this.activePersons.get(person.getName());
             }
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
         return game;
@@ -314,10 +274,8 @@ public class Lobby
      * @return - True if everything went well - False otherwise
      * @throws IllegalArgumentException
      */
-    public boolean addChatMessage(String message, Person from) throws IllegalArgumentException
-    {
-        if (message == null || from == null)
-        {
+    public boolean addChatMessage(String message, Person from) throws IllegalArgumentException {
+        if (message == null || from == null) {
             throw new IllegalArgumentException("message or poster is null");
         }
         return this.mychatbox.addChatMessage(message, from);
@@ -332,42 +290,32 @@ public class Lobby
      * player leaves the game
      * @return - True if everything went well - False otherwise
      */
-    public boolean endGame(Game game, Player hasLeft)
-    {
-        if (game == null || !this.activeGames.contains(game))
-        {
+    public boolean endGame(Game game, Player hasLeft) {
+        if (game == null || !this.activeGames.contains(game)) {
             return false;
         }
 
-        if (game.getMyPlayers().size() == 3 && game.getRoundNo().get() > 0)
-        {
-            try
-            {
+        if (game.getMyPlayers().size() == 3 && game.getRoundNo().get() > 0) {
+            try {
                 game = this.adjustScore(game, (hasLeft != null));
-                if (game == null)
-                {
+                if (game == null) {
                     return false;
                 }
-            } catch (IllegalArgumentException ex)
-            {
+            } catch (IllegalArgumentException ex) {
                 return false;
             }
         }
 
-        try
-        {
-            for (Player player : game.getMyPlayers())
-            {
-                if (this.getActivePersons().get(player.getName()) instanceof Player)
-                {
+        try {
+            for (Player player : game.getMyPlayers()) {
+                if (this.getActivePersons().get(player.getName()) instanceof Player) {
                     player.setRating(this.myDatabaseControls.getNewRating((Person) player, hasLeft));
                     this.returnToLobby(player);
                 }
             }
             this.activeGames.remove(game);
             this.spectatedGames.remove(game);
-        } catch (IllegalArgumentException | SQLException ex)
-        {
+        } catch (IllegalArgumentException | SQLException ex) {
             return false;
         }
         return true;
@@ -380,10 +328,8 @@ public class Lobby
      * @param game
      * @param spectator
      */
-    public void stopSpectating(Game game, Person spectator)
-    {
-        if (spectator == null || game == null || !(spectator instanceof Spectator))
-        {
+    public void stopSpectating(Game game, Person spectator) {
+        if (spectator == null || game == null || !(spectator instanceof Spectator)) {
             return;
         }
         game.removeSpectator((Spectator) spectator);
@@ -397,23 +343,18 @@ public class Lobby
      *
      * @param participant can be null, but it won't do anything then either
      */
-    private void returnToLobby(Person participant)
-    {
-        if (participant == null || !(participant instanceof Player || participant instanceof Spectator))
-        {
+    private void returnToLobby(Person participant) {
+        if (participant == null || !(participant instanceof Player || participant instanceof Spectator)) {
             return;
         }
-        try
-        {
+        try {
             boolean isBot = participant.isBot();
             this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.getRating()));
             this.activePersons.get(participant.getName()).setBot(isBot);
-            if (this.currentPerson.getName().equals(participant.getName()))
-            {
+            if (this.currentPerson.getName().equals(participant.getName())) {
                 this.currentPerson = (Person) this.activePersons.get(participant.getName());
             }
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
         }
     }
 
@@ -423,10 +364,8 @@ public class Lobby
      * @param input
      * @return
      */
-    private Game adjustScore(Game input, boolean earlyEnding) throws IllegalArgumentException
-    {
-        if (input.getMyPlayers().size() < 3)
-        {
+    private Game adjustScore(Game input, boolean earlyEnding) throws IllegalArgumentException {
+        if (input.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("game wasn't full");
         }
         int player1score = input.getMyPlayers().get(0).getScore().get();
@@ -439,17 +378,14 @@ public class Lobby
 
         double averageRating = (player1rating + player2rating + player3rating) / 3;
         double speedRating;
-        try
-        {
+        try {
             speedRating = Math.round(input.getMyPuck().getSpeed().get());
-            if (speedRating > averageRating)
-            {
+            if (speedRating > averageRating) {
                 player1rating = speedRating;
                 player2rating = speedRating;
                 player3rating = speedRating;
             }
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // do nothing, and just let player ratings sort it out
         }
 
@@ -458,8 +394,7 @@ public class Lobby
         player3score += (player1rating + player2rating - 2 * player3rating) / 8;
 
         // adjusts score based on whether the game ended prematurely
-        if (earlyEnding)
-        {
+        if (earlyEnding) {
             player1score = (player1score - 20) * 10 / input.getRoundNo().get() + 20;
             player2score = (player2score - 20) * 10 / input.getRoundNo().get() + 20;
             player3score = (player3score - 20) * 10 / input.getRoundNo().get() + 20;
@@ -469,12 +404,10 @@ public class Lobby
         input.getMyPlayers().get(1).setScore(player2score);
         input.getMyPlayers().get(2).setScore(player3score);
 
-        try
-        {
+        try {
             // saves game
             this.myDatabaseControls.saveGame(input);
-        } catch (SQLException ex)
-        {
+        } catch (SQLException ex) {
             throw new IllegalArgumentException("failed to save game: "
                     + ex.getMessage());
         }
@@ -502,16 +435,12 @@ public class Lobby
      * @return Game when a game was found null otherwise
      * IllegalArgumentException when gameID was null
      */
-    public Game getMyGame(String gameID)
-    {
-        if (gameID.trim() == null)
-        {
+    public Game getMyGame(String gameID) {
+        if (gameID.trim() == null) {
             throw new IllegalArgumentException();
         }
-        for (Game game : this.activeGames)
-        {
-            if (game.getGameInfo().get("gameID").equals(gameID))
-            {
+        for (Game game : this.activeGames) {
+            if (game.getGameInfo().get("gameID").equals(gameID)) {
                 return game;
             }
         }
@@ -525,8 +454,7 @@ public class Lobby
      * @return a sorted list of highest ranking players
      * @throws java.sql.SQLException
      */
-    public List<Person> getRankings() throws SQLException
-    {
+    public List<Person> getRankings() throws SQLException {
         return this.myDatabaseControls.getRankings();
     }
 
@@ -537,8 +465,7 @@ public class Lobby
      * Person.isBot to true Next up it starts multiple games, some full with
      * bots, some 2/3 full
      */
-    public void populate()
-    {
+    public void populate() {
         // adds bot 1-11
         this.activePersons.put("bot1", new Person("bot1", (double) 15));
         this.activePersons.put("bot2", new Person("bot2", (double) 15));
@@ -603,12 +530,10 @@ public class Lobby
 
         // adds two bots to the system.
         // should only be run on a fresh database
-        try
-        {
+        try {
             Lobby.getSingle().addPerson("bot10", "test");
             Lobby.getSingle().addPerson("bot11", "test");
-        } catch (IllegalArgumentException | SQLException ex)
-        {
+        } catch (IllegalArgumentException | SQLException ex) {
         }
     }
 

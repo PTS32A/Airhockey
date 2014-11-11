@@ -9,7 +9,7 @@ package s32a.airhockey;
  *
  * @author Luke
  */
-public enum Colors
-{
+public enum Colors {
+
     Red, Green, Blue;
 }

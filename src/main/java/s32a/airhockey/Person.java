@@ -16,12 +16,11 @@ import lombok.Setter;
  *
  * @author Kargathia
  */
-public class Person
-{
+public class Person {
 
     private StringProperty nameProp;
     private DoubleProperty ratingProp;
-    
+
     @Getter
     private String name;
     @Getter
@@ -32,43 +31,41 @@ public class Person
 
     /**
      * Garden variety setter - also sets ratingProperty
-     * @param input 
+     *
+     * @param input
      */
-    public void setRating(double input)
-    {
+    public void setRating(double input) {
         this.rating = input;
         this.ratingProp.set(input);
     }
-    
+
     /**
-     * Garden variety getter, not linked through lombok for naming reasons.
-     * Used by JavaFX for display.
-     * @return 
+     * Garden variety getter, not linked through lombok for naming reasons. Used
+     * by JavaFX for display.
+     *
+     * @return
      */
-    public StringProperty nameProperty()
-    {
+    public StringProperty nameProperty() {
         return this.nameProp;
     }
-    
+
     /**
-     * Garden variety getter, not linked through lombok for naming reasons.
-     * Used by JavaFX for display.
-     * @return 
+     * Garden variety getter, not linked through lombok for naming reasons. Used
+     * by JavaFX for display.
+     *
+     * @return
      */
-    public DoubleProperty ratingProperty()
-    {
+    public DoubleProperty ratingProperty() {
         return this.ratingProp;
     }
-    
+
     /**
      *
      * @param name
      * @param rating
      */
-    public Person(String name, Double rating)
-    {
-        if (name == null || name.equals("") || rating == null || rating < 0)
-        {
+    public Person(String name, Double rating) {
+        if (name == null || name.equals("") || rating == null || rating < 0) {
             throw new IllegalArgumentException();
         }
         this.name = name;

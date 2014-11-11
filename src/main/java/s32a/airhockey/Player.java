@@ -19,8 +19,7 @@ import lombok.Setter;
  *
  * @author Luke
  */
-public class Player extends Person
-{
+public class Player extends Person {
 
     @Getter
     @Setter
@@ -56,10 +55,8 @@ public class Player extends Person
      *
      * @param input
      */
-    public void setScore(int input)
-    {
-        Platform.runLater(() ->
-        {
+    public void setScore(int input) {
+        Platform.runLater(() -> {
             score.setValue(input);
         });
     }
@@ -71,8 +68,7 @@ public class Player extends Person
      * @param color player color - linked to them being player 1, 2 or 3
      * retrievable from game.getGameInfo.get("nextColor")
      */
-    public Player(String name, double rating, Colors color)
-    {
+    public Player(String name, double rating, Colors color) {
         super(name, rating);
         this.color = color;
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
@@ -93,100 +89,78 @@ public class Player extends Person
      * Eventually throws IllegalArgumentException if amount exceeds min or max
      * value
      */
-    public boolean moveBat(float amount) throws IllegalArgumentException
-    {
+    public boolean moveBat(float amount) throws IllegalArgumentException {
         double direction = 0;
         double x;
         double y;
         boolean out = false;
-                
+
         // Left corner of triangle
-        double aX = -sideLength/2;
+        double aX = -sideLength / 2;
         double aY = 0;
         // Top corner of triangle
         double bX = 0;
         double bY = sideLength * Math.sin(Math.toRadians(60));
         // Right corner of triangle
-        double cX = sideLength/2;
+        double cX = sideLength / 2;
         double cY = 0;
-        
-        if (myGame.isPaused())
-        {
+
+        if (myGame.isPaused()) {
             return false;
-        } 
-        else
-        {
+        } else {
             // Will reimplement this later.
 //            float check = this.batPos.x + amount;
 //            if (check >= sideLength / 2 || check <= -(sideLength / 2))
 //            {
 //                throw new IllegalArgumentException();
 //            }
-            if (this.getColor() == Colors.Red)
-            {
+            if (this.getColor() == Colors.Red) {
                 // Bottom goal
-                float aX1 = (float)(aX + ((cX - aX) / 100 * 30));
-                float aX2 = (float)(aX + ((cX - aX) / 100 * 70));
-                if (amount == 1)
-                {
+                float aX1 = (float) (aX + ((cX - aX) / 100 * 30));
+                float aX2 = (float) (aX + ((cX - aX) / 100 * 70));
+                if (amount == 1) {
                     direction = 0;
-                } 
-                else
-                {
+                } else {
                     direction = 180;
                 }
-                if (batPos.x + Math.cos(Math.toRadians(direction)) * 5 < aX1  
-                        || batPos.x + Math.cos(Math.toRadians(direction)) * 5 > aX2) 
-                {
+                if (batPos.x + Math.cos(Math.toRadians(direction)) * 5 < aX1
+                        || batPos.x + Math.cos(Math.toRadians(direction)) * 5 > aX2) {
                     out = true;
                 }
             }
-            if (this.getColor() == Colors.Blue)
-            {
+            if (this.getColor() == Colors.Blue) {
                 // Left goal
-                float bY1 = (float)(aY + ((bY - aY) / 100 * 30));
-                float bY2 = (float)(aY + ((bY - aY) / 100 * 70));
-                
-                if (amount == 1)
-                {
+                float bY1 = (float) (aY + ((bY - aY) / 100 * 30));
+                float bY2 = (float) (aY + ((bY - aY) / 100 * 70));
+
+                if (amount == 1) {
                     direction = 240;
-                } 
-                else
-                {
+                } else {
                     direction = 60;
                 }
-                if (batPos.y  + Math.sin(Math.toRadians(direction)) * 5 < bY1  
-                        || batPos.y  + Math.sin(Math.toRadians(direction)) * 5 > bY2) 
-                {
+                if (batPos.y + Math.sin(Math.toRadians(direction)) * 5 < bY1
+                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > bY2) {
                     out = true;
                 }
             }
-            if (this.getColor() == Colors.Green)
-            {
+            if (this.getColor() == Colors.Green) {
                 // Right goal
-                float cY1 = (float)(cY + ((bY - cY) / 100 * 30));
-                float cY2 = (float)(cY + ((bY - cY) / 100 * 70));
-                if (amount == 1)
-                {
+                float cY1 = (float) (cY + ((bY - cY) / 100 * 30));
+                float cY2 = (float) (cY + ((bY - cY) / 100 * 70));
+                if (amount == 1) {
                     direction = 300;
-                } 
-                else
-                {
+                } else {
                     direction = 120;
                 }
-                if (batPos.y + Math.sin(Math.toRadians(direction)) * 5 < cY1  
-                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > cY2 ) 
-                {
+                if (batPos.y + Math.sin(Math.toRadians(direction)) * 5 < cY1
+                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > cY2) {
                     out = true;
                 }
             }
-            if (out) 
-            {
+            if (out) {
                 x = 0;
                 y = 0;
-            }
-            else
-            {
+            } else {
                 x = Math.cos(Math.toRadians(direction)) * 5;
                 y = Math.sin(Math.toRadians(direction)) * 5;
             }
@@ -205,8 +179,7 @@ public class Player extends Person
      * @return True if everything went well False otherwise - including if no
      * PowerUp was in possession
      */
-    public boolean applyPowerUp()
-    {
+    public boolean applyPowerUp() {
         return false;
     }
 
@@ -216,8 +189,7 @@ public class Player extends Person
      *
      * @param powerUp
      */
-    public void addPowerUp(PowerUp powerUp)
-    {
+    public void addPowerUp(PowerUp powerUp) {
         //
     }
 
@@ -228,8 +200,7 @@ public class Player extends Person
      * @return True if pause status was changed False if unable to change pause
      * state, due to unexpected weirdness or if isPaused == game.isPaused
      */
-    public boolean pauseGame(boolean isPaused)
-    {
+    public boolean pauseGame(boolean isPaused) {
         return myGame.pauseGame(isPaused);
     }
 }

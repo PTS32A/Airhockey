@@ -5,21 +5,10 @@
  */
 package s32a.airhockey;
 
-import java.util.List;
-
 /**
  *
  * @author Kargathia
  */
-public class InternetConnection {
-
-    private String connection;
-
-    /**
-     *
-     */
-    public InternetConnection() {
-
-    }
+public enum GameStatus {
 
 }

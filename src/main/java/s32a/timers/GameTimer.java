@@ -15,16 +15,15 @@ import s32a.gui.GameFX;
  *
  * @author Luke
  */
-public class GameTimer extends AnimationTimer
-{
+public class GameTimer extends AnimationTimer {
+
     private final GameFX gameFX;
     private long refreshInMS;
     private long prevUpd;
     private long lastAction;
     private Game myGame;
-    
-    public GameTimer(GameFX gameFX, Game game)
-    {
+
+    public GameTimer(GameFX gameFX, Game game) {
         this.gameFX = gameFX;
         this.myGame = game;
         this.refreshInMS = 20;
@@ -33,27 +32,21 @@ public class GameTimer extends AnimationTimer
     }
 
     @Override
-    public void handle(long now) 
-    {
-        if (gameFX.isActionTaken()) 
-        {
+    public void handle(long now) {
+        if (gameFX.isActionTaken()) {
             lastAction = now;
         }
-        if (now - lastAction > 60000000000L) 
-        {
+        if (now - lastAction > 60000000000L) {
             gameFX.quitClick(null);
         }
-        if (now - prevUpd > refreshInMS * 1000000)
-        {
+        if (now - prevUpd > refreshInMS * 1000000) {
             gameFX.draw(myGame);
             prevUpd = now;
         }
-        
-        for (Player p : myGame.getMyPlayers())
-        {
-            if (p instanceof Bot)
-            {
-                Bot b = (Bot)p;
+
+        for (Player p : myGame.getMyPlayers()) {
+            if (p instanceof Bot) {
+                Bot b = (Bot) p;
                 b.moveBot();
             }
         }
