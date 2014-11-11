@@ -64,7 +64,7 @@ public class Lobby {
         this.spectatedGames = new ArrayList<>();
         this.airhockeySettings = new HashMap<>();
         airhockeySettings.put("Goal Default", new Vector2(0, 0));
-        airhockeySettings.put("Side Length", 560f);
+        airhockeySettings.put("Side Length", 500f);
         //this.populate();
     }
 
