@@ -105,7 +105,7 @@ public class Player extends Person {
         double cX = sideLength / 2;
         double cY = 0;
 
-        if (myGame.isPaused()) {
+        if (!myGame.statusProperty().get().equals(GameStatus.Playing)) {
             return false;
         } else {
             // Will reimplement this later.

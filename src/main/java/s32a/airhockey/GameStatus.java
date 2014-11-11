@@ -11,4 +11,9 @@ package s32a.airhockey;
  */
 public enum GameStatus {
 
+    GameOver,
+    Waiting,
+    Paused,
+    Ready,
+    Playing
 }

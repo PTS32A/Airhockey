@@ -31,7 +31,7 @@ public class Bot extends Player {
     }
 
     public void moveBot() {
-        if (!getMyGame().isPaused()) {
+        if (getMyGame().statusProperty().get().equals(GameStatus.Playing)) {
             if (this.getColor() == Colors.Red) {
                 if (getMyGame().getMyPuck().getPosition().x >= getBatPos().x) {
                     moveBat(-1);

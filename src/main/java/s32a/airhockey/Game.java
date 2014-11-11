@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Timer;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
@@ -26,7 +28,8 @@ import s32a.timers.GameTimeTask;
  */
 public class Game {
 
-    private StringProperty difficultyProp, statusProp;
+    private StringProperty difficultyProp;
+    private ObjectProperty<GameStatus> statusProp;
 
     @Getter
     private Chatbox myChatbox;
@@ -43,8 +46,6 @@ public class Game {
     @Getter
     private HashMap gameInfo;
     @Getter
-    private boolean isPaused;
-    @Getter
     private IntegerProperty roundNo;
 
     @Getter
@@ -52,9 +53,6 @@ public class Game {
     private boolean continueRun;
 
     private int maxRounds;
-
-    @Getter
-    private boolean gameOver;
 
     private Timer puckTimer;
 
@@ -93,26 +91,10 @@ public class Game {
     }
 
     /**
-     * Returns the current game status, formatted as StringProperty
      *
-     * @return
+     * @return game status, formatted as GameStatus enum, packed in a property
      */
-    public StringProperty statusProperty() {
-        if (this.statusProp == null) {
-            this.statusProp = new SimpleStringProperty("");
-        }
-
-        if (this.gameOver) {
-            this.statusProp.set("Game Over");
-        } else if (this.myPlayers.size() < 3) {
-            this.statusProp.set("Setting Up");
-        } else if (isPaused) {
-            this.statusProp.set("Paused");
-        } else if (!continueRun) {
-            this.statusProp.set("Ready");
-        } else {
-            this.statusProp.set("Playing");
-        }
+    public ObjectProperty<GameStatus> statusProperty() {
         return this.statusProp;
     }
 
@@ -193,9 +175,9 @@ public class Game {
         this.maxRounds = 10;
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
+        this.statusProp = new SimpleObjectProperty<>(GameStatus.Waiting);
 
         this.continueRun = false;
-        this.gameOver = false;
         this.myChatbox = new Chatbox();
     }
 
@@ -240,6 +222,11 @@ public class Game {
                     this.adjustDifficulty();
 
                     setBatPosition(player, myPlayers.size() - 1);
+
+                    if (myPlayers.size() == 3) {
+                        this.statusProp.set(GameStatus.Ready);
+                    }
+
                     return true;
                 }
             }
@@ -439,13 +426,16 @@ public class Game {
      * desired pause state == Game.isPaused
      */
     public boolean pauseGame(boolean isPaused) {
-        if (this.isPaused != isPaused) {
-            this.isPaused = isPaused;
-            return true;
+
+        if (this.statusProp.get().equals(GameStatus.Playing) && isPaused) {
+            this.statusProp.set(GameStatus.Paused);
+        } else if (this.statusProp.get().equals(GameStatus.Paused) && !isPaused) {
+            this.statusProp.set(GameStatus.Playing);
         } else {
-            //Return false because the pause state is already this way and is therefor not changed
             return false;
         }
+
+        return true;
     }
 
     /**
@@ -465,7 +455,7 @@ public class Game {
      */
     void run() {
         //Continue       
-        if (!isPaused && myPuck != null) {
+        if (this.statusProp.get().equals(GameStatus.Playing) && myPuck != null) {
             //BEGIN PUCK MOVEMENT
             this.continueRun = true; //This allows Puck to be moved
         }
@@ -475,12 +465,12 @@ public class Game {
      * Starts a new round within the running game rounds are ended automatically
      * within Game.run() whenever someone scores
      */
-    private void startRound() {
+    public void startRound() {
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
         printMessage("-ROUND " + (roundNo.get() + 1)); //Added +1 because roundNo seems to be starting at 0 without it
 
-        this.isPaused = false;
+        this.statusProp.set(GameStatus.Playing);
 
         this.run();
     }
@@ -488,16 +478,14 @@ public class Game {
     void endRound() {
         //END OF PUCK MOVEMENT
         this.continueRun = false;
-
+        this.statusProp.set(GameStatus.Waiting);
         this.myPuck.resetPuck();
 
-        if (roundNo.get() < maxRounds) {
-            startRound();
-        } else {
+        if (roundNo.get() >= maxRounds) {
             //End game
+            this.statusProp.set(GameStatus.GameOver);
             printMessage("END GAME");
             printMessage("");
-            this.gameOver = true;
         }
     }
 

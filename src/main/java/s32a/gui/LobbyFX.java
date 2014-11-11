@@ -190,7 +190,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
 
         if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null) {
             Game game = (Game) this.tvGameDisplay.getSelectionModel().getSelectedItem();
-            if (game.isGameOver() || game.getRoundNo().get() == 0) {
+            if (game.statusProperty().get().equals(GameStatus.GameOver) || game.getRoundNo().get() == 0) {
                 super.showDialog("Error", "Unable to watch inactive games");
             } else if (Lobby.getSingle().spectateGame(game,
                     Lobby.getSingle().getCurrentPerson()) != null) {

@@ -309,7 +309,7 @@ public class PuckTest
     
     private void waitForPuck()
     {       
-        while (!game.isGameOver())
+        while (!game.statusProperty().get().equals(GameStatus.GameOver))
         {
             //Wait indefinitly for Puck to finish
             System.out.print("");
