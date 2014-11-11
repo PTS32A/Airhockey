@@ -20,8 +20,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
@@ -51,6 +54,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
     Slider sldCustomDifficulty;
     @FXML
     CheckBox cbxCustomDifficulty;
+    @FXML
+    AnchorPane apGame;
+    
+    Circle bat1, bat2, bat3, puck;
+    Line bottomLine, leftLine, rightLine;
 
     private DoubleProperty width, height;
     private IntegerProperty customSpeed;
@@ -252,6 +260,11 @@ public class GameFX extends AirhockeyGUI implements Initializable
         if (!gameStart)
         {
             Lobby lobby = Lobby.getSingle();
+            
+            // LINES EXAMPLE
+            bottomLine = new Line(0, 0, 100, 100); // PLACEHOLDER
+            apGame.getChildren().add(bottomLine);
+            bottomLine.endXProperty().bind(Bindings.divide(apGame.widthProperty(), 2)); // SHOWCASE
 
             double bat = (double) width.doubleValue() / 100 * 8;
             Player p = myGame.getMyPlayers().get(0);

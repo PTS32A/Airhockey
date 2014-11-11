@@ -68,7 +68,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable
         Platform.runLater(() ->
         {
             this.highScores.setAll(input);
-        });
+        });       
     }
 
     /**
