@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 public class PlayerTest
 {
     Player player;
-    Game game;
     float sideLength;
     
     public PlayerTest()
@@ -43,8 +42,6 @@ public class PlayerTest
     public void setUp()
     {
         player = new Player("Test", (double)15, Colors.Red);
-        game = new Game(player);
-        player.setMyGame(game);
         sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
     }
     
@@ -57,7 +54,8 @@ public class PlayerTest
     (expected = IllegalArgumentException.class)
     public void testBatMoveGreaterEx()
     {
-        player.moveBat(sideLength/2);
+        player.setBatPos(Vector2.Zero);
+        player.moveBat(1);
         fail("Moved out of field to the right");
     }
     
@@ -65,7 +63,7 @@ public class PlayerTest
     (expected = IllegalArgumentException.class)
     public void testBatMoveLessEx()
     {
-        player.moveBat(-(sideLength/2));
+        player.moveBat(-1);
         fail("Moved out of field to the left");
     }
     
@@ -117,15 +115,5 @@ public class PlayerTest
         player.moveBat(-5f);
         result = player.getBatPos();
         assertEquals("Bat not moved properly",expResult, result);
-    }
-    
-    @Test
-    public void testPause()
-    {
-        System.out.println("Pause");
-        boolean expResult = true;
-        player.pauseGame(true);
-        boolean result = game.isPaused();
-        assertEquals("Game was not paused",expResult, result);
     }
 }
