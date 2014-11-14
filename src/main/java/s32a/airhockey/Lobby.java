@@ -15,17 +15,18 @@ import java.util.logging.Logger;
 import lombok.Getter;
 
 /**
- * NOTES: implemented HashMaps for active games and spectated games, key being
- * gameID implemented HashMap for active persons, key being playername
  *
  * @author Kargathia
  */
 public class Lobby {
 
+    /**
+     * The Lobby Singleton. Called by everything except some unit tests.
+     */
     private static Lobby _singleton;
 
     /**
-     * if _singleton is null, initializes it
+     * If _singleton is null, initializes it.
      *
      * @return instance of lobby (_singleton)
      */
@@ -51,8 +52,7 @@ public class Lobby {
     private Game playedGame;
 
     /**
-     * Lobby is used as singleton Also responsible for calling
-     * InternetConnection.populate() in iteration 1
+     * Lobby is used as singleton. Public for unit tests.
      */
     public Lobby() {
         this.mychatbox = new Chatbox();
@@ -80,9 +80,12 @@ public class Lobby {
      * trailing / leading white spaces
      * @throws java.sql.SQLException
      */
-    public boolean addPerson(String playerName, String password) throws IllegalArgumentException, SQLException {
-        if (playerName == null || password == null
-                || !playerName.trim().equals(playerName) || !password.trim().equals(password)) {
+    public boolean addPerson(String playerName, String password)
+            throws IllegalArgumentException, SQLException {
+        if (playerName == null
+                || password == null
+                || !playerName.trim().equals(playerName)
+                || !password.trim().equals(password)) {
             throw new IllegalArgumentException("incorrect input");
         }
 
@@ -91,8 +94,8 @@ public class Lobby {
 
     /**
      * Checks with the database class whether provided parameters correspond to
-     * a player in the database Adds person returned from database call to the
-     * lists of active persons
+     * a player in the database. Adds person returned from database call to the
+     * lists of active persons.
      *
      * @param playerName can't be null or whitespace can't contain white spaces
      * @param password can't be null or whitespace can't contain trailing /
@@ -100,7 +103,7 @@ public class Lobby {
      * @return True if DatabaseControls.checkLogin() returned a person false if
      * .checkLogin() returned null IllegalArgumentException when parameter was
      * null or empty, or contained trailing / leading white spaces
-     * @throws java.sql.SQLException, IllegalArgumentException
+     * @throws java.sql.SQLException
      */
     public boolean checkLogin(String playerName, String password)
             throws IllegalArgumentException, SQLException {
