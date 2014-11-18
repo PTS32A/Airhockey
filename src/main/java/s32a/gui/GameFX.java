@@ -203,8 +203,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(), 
                 Bindings.divide(width, 2)));
         puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
-        System.out.println(myGame.getMyPuck().getYPos());
-        System.out.println(myGame.getMyPuck().getPosition().get());
         apGame.getChildren().add(puck);
     }
 
@@ -278,9 +276,13 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             double bat = (double) width.doubleValue() / 100 * 8;
             bat1 = new Arc(cX/2, cY, bat/2, bat/2, 0, 180);
             bat1.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(0).getPosX(), Bindings.divide(width, 2)));
-            bat1.centerYProperty().bind(Bindings.add(myGame.getMyPlayers().get(0).getPosY(), this.height));
+            bat1.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(0).getPosY()));
             bat2 = new Arc(batPos2.x, batPos2.y, bat/2, bat/2, 240, 180);
+            bat2.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(1).getPosX(), Bindings.divide(width, 2)));
+            bat2.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(1).getPosY()));
             bat3 = new Arc(batPos3.x, batPos3.y, bat/2, bat/2, 120, 180);
+            bat3.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(2).getPosX(), Bindings.divide(width, 2)));
+            bat3.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(2).getPosY()));
             bat1.setFill(Color.RED);
             bat2.setFill(Color.BLUE);
             bat3.setFill(Color.LIMEGREEN);

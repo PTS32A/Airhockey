@@ -163,13 +163,14 @@ public class Player extends Person {
                 }
             }
             if (out) {
-                throw new IllegalArgumentException();
+                x = 0;
+                y = 0;
             } else {
                 x = Math.cos(Math.toRadians(direction)) * 5;
                 y = Math.sin(Math.toRadians(direction)) * 5;
             }
-            this.posX.add(x);
-            this.posY.add(y);
+            this.posX.set(posX.doubleValue() + x);
+            this.posY.set(posY.doubleValue() + y);
             this.rec.x = (int) posX.doubleValue();
             this.rec.y = (int) posY.doubleValue();
             return true;
