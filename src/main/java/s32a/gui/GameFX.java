@@ -240,7 +240,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // LINES EXAMPLE
         leftLine = new Line(aX, aY, bX, bY);
         rightLine = new Line(bX, bY, cX, cY);
-        bottomLine = new Line(cX, cY, aX, aY);
+        bottomLine = new Line(cX, cY, aX, aY);        
         bGoal = new Line(aXY1.x, aXY1.y, aXY2.x, aXY2.y);
         lGoal = new Line(bXY1.x, bXY1.y, bXY2.x, bXY2.y);
         rGoal = new Line(cXY1.x, cXY1.y, cXY2.x, cXY2.y);

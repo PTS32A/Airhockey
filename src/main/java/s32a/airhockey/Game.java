@@ -491,6 +491,10 @@ public class Game {
             printMessage("END GAME");
             printMessage("");
         }
+        else
+        {
+            startRound();
+        }
     }
 
     /**

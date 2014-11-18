@@ -5,6 +5,7 @@
  */
 package s32a.airhockey;
 
+import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,6 +58,8 @@ public class Puck extends TimerTask {
     private float goalLength, sideGoalMinY, sideGoalMaxY, bottomGoalMinX, bottomGoalMaxX;
     @Getter
     private float batWidth, puckSize;
+    @Getter
+    private Line bottomBounceLine, leftBounceLine, rightBounceLine;
 
     private Game myGame;
 
@@ -109,6 +114,10 @@ public class Puck extends TimerTask {
         this.speed = new SimpleFloatProperty(speed);
         this.hitBy = new ArrayList<>();
 
+        this.position = new SimpleObjectProperty(null);
+        this.xPos = new SimpleDoubleProperty(0);
+        this.yPos = new SimpleDoubleProperty(0);
+
         this.sideLength = (float) Lobby.getSingle()
                 .getAirhockeySettings().get("Side Length");
         this.goalLength = sideLength * 0.4f;
@@ -137,15 +146,18 @@ public class Puck extends TimerTask {
         this.bottomGoalMinX = -(this.sideLength * 0.2f);
         this.bottomGoalMaxX = this.sideLength * 0.2f;
 
+        this.bottomBounceLine = new Line(-(sideLength / 2), this.puckSize / 2,
+                sideLength / 2, this.puckSize / 2);
+        this.rightBounceLine = new Line(sideLength / 2, this.puckSize / 2,
+                0, middleLine + this.puckSize / 2);
+        this.leftBounceLine = new Line(-(sideLength / 2), this.puckSize / 2,
+                0, middleLine + this.puckSize / 2);
+
         //System.out.println("SIDEGOAL Y-RANGE: [" + sideGoalMinY + ", " + sideGoalMaxY + "]");
         //System.out.println("BOTTOMGOAL X-RANGE: [" + bottomGoalMinX + ", " + bottomGoalMaxX + "]");
         this.isMoving = true;
 
         this.myGame = myGame;
-
-        this.position = new SimpleObjectProperty(null);
-        this.xPos = new SimpleDoubleProperty(0);
-        this.yPos = new SimpleDoubleProperty(0);
 
         this.lastBouncerID = -1;
         this.beingPushed = false;
@@ -169,16 +181,15 @@ public class Puck extends TimerTask {
                 });
             }
         });
-        
+
         this.position.set(centre);
 
         //this.position = new Vector2(0, centre.y * 2);
         //this.direction = new Random().nextFloat() * 360;
-        this.direction = 90;
+        this.direction = 160;
         this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
 
-        
     }
 
     /**
@@ -259,6 +270,8 @@ public class Puck extends TimerTask {
      * a bounce
      */
     private void updatePosition(float distance) {
+        //this.position.set(new Vector2(myGame.getMyPlayers().get(2).getPosX().floatValue(),
+        //myGame.getMyPlayers().get(2).getPosY().floatValue()));
         if (isMoving) {
             float oldX = position.get().x;
             float oldY = position.get().y;
@@ -374,19 +387,17 @@ public class Puck extends TimerTask {
 
             printMessage("Left Wall-Bounce");
 
-            Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
-            Vector2 linePos2 = new Vector2(0, (float) middleLine);
-
             updateDirection(60);
+            Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), this.puckSize / 2);
+            Vector2 linePos2 = new Vector2(0, (float) middleLine + this.puckSize / 2);
             return getIntersection(position.get(), newPosition, linePos1, linePos2);
         } else if (outside == 1) {
             //Right of field
 
             printMessage("Right Wall-Bounce");
 
-            Vector2 linePos1 = new Vector2((float) (sideLength / 2), 0);
-            Vector2 linePos2 = new Vector2(0, (float) middleLine);
-
+            Vector2 linePos1 = new Vector2((float) (sideLength / 2), this.puckSize / 2);
+            Vector2 linePos2 = new Vector2(0, (float) middleLine + this.puckSize / 2);
             updateDirection(-60);
             return getIntersection(position.get(), newPosition, linePos1, linePos2);
         } else {
@@ -395,9 +406,8 @@ public class Puck extends TimerTask {
 
                 printMessage("Bottom Wall-Bounce");
 
-                Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), 0);
-                Vector2 linePos2 = new Vector2((float) (sideLength / 2), 0);
-
+                Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), this.puckSize / 2);
+                Vector2 linePos2 = new Vector2((float) (sideLength / 2), this.puckSize / 2);
                 updateDirection(180);
                 return getIntersection(position.get(), newPosition, linePos1, linePos2);
             } else if (y > middleLine) {
@@ -642,17 +652,17 @@ public class Puck extends TimerTask {
             batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
 
             if (myGame.getMyPlayers().indexOf(p) == 0) {
-                batCentre.y -= puckSize / 2;
+                //batCentre.y -= puckSize / 2;
             } else if (myGame.getMyPlayers().indexOf(p) == 1) {
                 //Blue  
 //                batCentre.x -= batWidth / 2;
-                //               batCentre.y -= batWidth;
-                batCentre.y -= puckSize / 2;
+                batCentre.y -= batWidth;
+                //batCentre.y -= puckSize / 2;
             } else if (myGame.getMyPlayers().indexOf(p) == 2) {
 //                //Green
 //                batCentre.x += batWidth / 2;
 //                batCentre.y -= batWidth;
-                batCentre.y -= puckSize / 2;
+                //batCentre.y -= puckSize / 2;
             }
 
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID) {
@@ -720,7 +730,7 @@ public class Puck extends TimerTask {
                         correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
                     }
 
-                    direction += correction;
+                    //direction += correction;
                 } else if (index == 2) {
                     //BLUE
                     updateDirection(-60);
@@ -750,7 +760,7 @@ public class Puck extends TimerTask {
                         correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
                     }
 
-                    direction += correction;
+                    //direction += correction;
                 }
 
                 correctDirection();
