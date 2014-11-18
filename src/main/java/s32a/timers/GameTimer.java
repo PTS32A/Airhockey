@@ -39,10 +39,10 @@ public class GameTimer extends AnimationTimer {
         if (now - lastAction > 60000000000L) {
             gameFX.quitClick(null);
         }
-        if (now - prevUpd > refreshInMS * 1000000) {
-            gameFX.draw(myGame);
-            prevUpd = now;
-        }
+//        if (now - prevUpd > refreshInMS * 1000000) {
+//            gameFX.draw(myGame);
+//            prevUpd = now;
+//        }
 
         for (Player p : myGame.getMyPlayers()) {
             if (p instanceof Bot) {

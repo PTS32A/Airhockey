@@ -200,6 +200,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         int x = (int) positionX + (int) width.doubleValue() / 2;
         int y = (int) height.doubleValue() - (int) (positionY);
         puck = new Circle(x, y, radius);
+        puck.centerXProperty().bind(Bindings.add(location[0], Bindings.divide(width, 2)));
+        puck.centerYProperty().bind(Bindings.subtract(height, location[1]));
         apGame.getChildren().add(puck);
     }
 
@@ -418,12 +420,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     || keyEvent.getCode() == KeyCode.LEFT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(-1);
+                    System.out.println(me.getPosX().doubleValue());
+                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;
                 }
             } else if (keyEvent.getCode() == KeyCode.D
                     || keyEvent.getCode() == KeyCode.RIGHT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(1);
+                    System.out.println(me.getPosX().doubleValue());
+                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;
                 }
             }
