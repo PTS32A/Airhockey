@@ -13,8 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -252,9 +254,7 @@ public class Game {
 
         if (playerID == 0) {
             //Player red
-            batPos = new Vector2(0, 0 + bat / 2);
-            //Half circle
-            batPos.y -= (width / 100 * 8) / 2;
+            batPos = new Vector2(0, 0);
         } else {
             // Left corner of triangle
             double aX = -width / 2;
@@ -267,15 +267,11 @@ public class Game {
             double cY = 0;
 
             if (playerID == 1) {
-                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)) + bat / 2,
+                batPos = new Vector2((float) (aX + ((bX - aX) / 100 * 50)),
                         (float) ((aY + ((bY - aY) / 100 * 50))));
-                //Half circle
-                batPos.x -= bat / 2;
             } else {
-                batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50))
-                        - bat / 2, (float) ((cY + ((bY - cY) / 100 * 50))));
-                //Half circle
-                batPos.x -= bat / 2;
+                batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
+                        (float) ((cY + ((bY - cY) / 100 * 50))));
             }
 //            //Player blue or green
 //            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));
@@ -303,7 +299,8 @@ public class Game {
 //            //x = (y - b) / a
 //            x = (y - b) / a;
         }
-        p.setBatPos(batPos);
+        p.setPosX(new SimpleDoubleProperty(batPos.x));
+        p.setPosY(new SimpleDoubleProperty(batPos.y));
     }
 
     /**

@@ -9,7 +9,11 @@ import com.badlogic.gdx.math.Vector2;
 import java.awt.Rectangle;
 import java.util.Calendar;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.GraphicsContext;
 import lombok.Getter;
@@ -22,10 +26,10 @@ import lombok.Setter;
 public class Player extends Person {
 
     @Getter
-    @Setter
-    private Vector2 batPos;
-    @Getter
     private Colors color;
+    @Getter
+    @Setter
+    private DoubleProperty posX,posY;
     /**
      * returns score as Integerproperty
      */
@@ -74,8 +78,9 @@ public class Player extends Person {
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         batWidth = (int) (sideLength / 100 * 8);
-        this.batPos = new Vector2(goalPos.x, goalPos.y);
-        rec = new Rectangle((int) batPos.x, (int) batPos.y, batWidth, batWidth);
+        this.posX = new SimpleDoubleProperty(.0);
+        this.posY = new SimpleDoubleProperty(.0);
+        rec = new Rectangle((int) posX.floatValue(), (int) posY.floatValue(), batWidth, batWidth);
         this.score = new SimpleIntegerProperty(20);
     }
 
@@ -123,8 +128,8 @@ public class Player extends Person {
                 } else {
                     direction = 180;
                 }
-                if (batPos.x + Math.cos(Math.toRadians(direction)) * 5 < aX1
-                        || batPos.x + Math.cos(Math.toRadians(direction)) * 5 > aX2) {
+                if (posX.doubleValue() + Math.cos(Math.toRadians(direction)) * 5 < aX1
+                        || posX.doubleValue() + Math.cos(Math.toRadians(direction)) * 5 > aX2) {
                     out = true;
                 }
             }
@@ -138,8 +143,8 @@ public class Player extends Person {
                 } else {
                     direction = 60;
                 }
-                if (batPos.y + Math.sin(Math.toRadians(direction)) * 5 < bY1
-                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > bY2) {
+                if (posY.doubleValue() + Math.sin(Math.toRadians(direction)) * 5 < bY1
+                        || posY.doubleValue() + Math.sin(Math.toRadians(direction)) * 5 > bY2) {
                     out = true;
                 }
             }
@@ -152,8 +157,8 @@ public class Player extends Person {
                 } else {
                     direction = 120;
                 }
-                if (batPos.y + Math.sin(Math.toRadians(direction)) * 5 < cY1
-                        || batPos.y + Math.sin(Math.toRadians(direction)) * 5 > cY2) {
+                if (posY.doubleValue() + Math.sin(Math.toRadians(direction)) * 5 < cY1
+                        || posY.doubleValue() + Math.sin(Math.toRadians(direction)) * 5 > cY2) {
                     out = true;
                 }
             }
@@ -163,10 +168,10 @@ public class Player extends Person {
                 x = Math.cos(Math.toRadians(direction)) * 5;
                 y = Math.sin(Math.toRadians(direction)) * 5;
             }
-            this.batPos.x += x;
-            this.batPos.y += y;
-            this.rec.x = (int) batPos.x;
-            this.rec.y = (int) batPos.y;
+            this.posX.add(x);
+            this.posY.add(y);
+            this.rec.x = (int) posX.doubleValue();
+            this.rec.y = (int) posY.doubleValue();
             return true;
         }
 

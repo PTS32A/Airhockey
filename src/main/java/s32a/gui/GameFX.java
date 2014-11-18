@@ -23,6 +23,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -55,7 +56,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     @FXML
     AnchorPane apGame;
 
-    Arc bat1, bat2, bat3, puck;
+    Arc bat1, bat2, bat3;
+    Circle puck;
     Line bottomLine, leftLine, rightLine, bGoal, lGoal, rGoal;
 
     private DoubleProperty width, height;
@@ -163,23 +165,23 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void draw(Game g) {
         if (!g.getStatusProp().get().equals(GameStatus.Paused)) {
-            double bat = (double) width.doubleValue() / 100 * 8;
-            this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
-            this.drawEdges();
+//            double bat = (double) width.doubleValue() / 100 * 8;
+//            this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
+            //this.drawEdges();
             //Red           
-            this.graphics.setFill(Color.RED);
-            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(0).getBatPos().x - bat / 2,
-                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat / 2, bat, bat);
-            //Blue           
-            this.graphics.setFill(Color.BLUE);
-            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat / 2 + 3,
-                    height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y - bat / 2, bat, bat);
-            this.graphics.setFill(Color.GREEN);
-            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(2).getBatPos().x - bat / 2 - 3,
-                    height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y - bat / 2, bat, bat);
+//            this.graphics.setFill(Color.RED);
+//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(0).getBatPos().x - bat / 2,
+//                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat / 2, bat, bat);
+//            //Blue           
+//            this.graphics.setFill(Color.BLUE);
+//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat / 2 + 3,
+//                    height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y - bat / 2, bat, bat);
+//            this.graphics.setFill(Color.GREEN);
+//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(2).getBatPos().x - bat / 2 - 3,
+//                    height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y - bat / 2, bat, bat);
             //Reset to black
-            this.graphics.setFill(Color.BLACK);
-            this.drawPuck(g.getMyPuck().getPuckLocation());
+            //this.graphics.setFill(Color.BLACK);
+            //this.drawPuck(g.getMyPuck().getPuckLocation());
 
         }
     }
@@ -195,9 +197,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         float puckSize = location[2];
 
         int radius = (int) (puckSize / 2);
-        int x = (int) positionX + (int) width.doubleValue() / 2 - radius;
-        int y = (int) height.doubleValue() - (int) (positionY + puckSize / 2) - radius;
-        graphics.fillOval(x, y, (int) puckSize, (int) puckSize);
+        int x = (int) positionX + (int) width.doubleValue() / 2;
+        int y = (int) height.doubleValue() - (int) (positionY);
+        puck = new Circle(x, y, radius);
+        apGame.getChildren().add(puck);
     }
 
     /**
@@ -232,7 +235,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 (float) (cY + ((bY - cY) / 100 * 70)));
 
         // LINES EXAMPLE
-        leftLine = new Line(aX, aY, bX, bY); // PLACEHOLDER
+        leftLine = new Line(aX, aY, bX, bY);
         rightLine = new Line(bX, bY, cX, cY);
         bottomLine = new Line(cX, cY, aX, aY);
         bGoal = new Line(aXY1.x, aXY1.y, aXY2.x, aXY2.y);
@@ -263,10 +266,22 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         //Draws and adds players for the first time
         if (!gameStart) {
             Lobby lobby = Lobby.getSingle();
-
+            Vector2 batPos2 = new Vector2((float) (aX + ((bX - aX) / 100 * 50)),
+                        (float) ((aY + ((bY - aY) / 100 * 50))));
+            Vector2 batPos3 = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
+                        (float) ((cY + ((bY - cY) / 100 * 50))));
             double bat = (double) width.doubleValue() / 100 * 8;
             bat1 = new Arc(cX/2, cY, bat/2, bat/2, 0, 180);
+            bat1.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(0).getPosX(), Bindings.divide(width, 2)));
+            bat1.centerYProperty().bind(Bindings.add(myGame.getMyPlayers().get(0).getPosY(), this.height));
+            bat2 = new Arc(batPos2.x, batPos2.y, bat/2, bat/2, 240, 180);
+            bat3 = new Arc(batPos3.x, batPos3.y, bat/2, bat/2, 120, 180);
+            bat1.setFill(Color.RED);
+            bat2.setFill(Color.BLUE);
+            bat3.setFill(Color.LIMEGREEN);
             apGame.getChildren().add(bat1);
+            apGame.getChildren().add(bat2);
+            apGame.getChildren().add(bat3);
 //            this.graphics.fillOval(width.doubleValue() / 2 - myGame.getMyPlayers().get(0).getBatPos().x - bat / 2,
 //                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y, bat, bat);
 //            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat / 2 + 3,

@@ -569,7 +569,8 @@ public class Puck extends TimerTask {
             return false;
         }
         
-        Vector2 batPos = myGame.getMyPlayers().get(playerID).getBatPos();
+        Vector2 batPos = new Vector2(myGame.getMyPlayers().get(playerID).getPosX().floatValue(),
+                myGame.getMyPlayers().get(playerID).getPosY().floatValue());
 
         if (playerID == 0) {
             //Player Red (bottom bat)
@@ -615,7 +616,7 @@ public class Puck extends TimerTask {
         double radius = batWidth / 2 + puckSize / 2;
 
         for (Player p : myGame.getMyPlayers()) {
-            batCentre = new Vector2(p.getBatPos().x, p.getBatPos().y);
+            batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
 
             if (myGame.getMyPlayers().indexOf(p) == 0) {
                 batCentre.y -= puckSize / 2;
