@@ -200,8 +200,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         int x = (int) positionX + (int) width.doubleValue() / 2;
         int y = (int) height.doubleValue() - (int) (positionY);
         puck = new Circle(x, y, radius);
-        puck.centerXProperty().bind(Bindings.add(location[0], Bindings.divide(width, 2)));
-        puck.centerYProperty().bind(Bindings.subtract(height, location[1]));
+        puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(), 
+                Bindings.divide(width, 2)));
+        puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
+        System.out.println(myGame.getMyPuck().getYPos());
+        System.out.println(myGame.getMyPuck().getPosition().get());
         apGame.getChildren().add(puck);
     }
 

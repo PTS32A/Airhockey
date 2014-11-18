@@ -538,7 +538,7 @@ public class Game {
         if (position != null) {
             if (this.myPuck.isOutsideField(position) == null) {
                 //Inside of field
-                this.myPuck.setPosition(position);
+                this.myPuck.getPosition().set(position);
             } else {
                 //Outside of field
                 throw new IllegalArgumentException();
