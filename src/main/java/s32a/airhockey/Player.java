@@ -30,9 +30,6 @@ public class Player extends Person {
     @Getter
     @Setter
     private DoubleProperty posX,posY;
-    /**
-     * returns score as Integerproperty
-     */
     @Getter
     private IntegerProperty score;
     @Getter
@@ -163,19 +160,16 @@ public class Player extends Person {
                 }
             }
             if (out) {
-                x = 0;
-                y = 0;
-            } else {
-                x = Math.cos(Math.toRadians(direction)) * 5;
-                y = Math.sin(Math.toRadians(direction)) * 5;
+                return false;
             }
+            x = Math.cos(Math.toRadians(direction)) * 5;
+            y = Math.sin(Math.toRadians(direction)) * 5;
             this.posX.set(posX.doubleValue() + x);
             this.posY.set(posY.doubleValue() + y);
             this.rec.x = (int) posX.doubleValue();
             this.rec.y = (int) posY.doubleValue();
             return true;
         }
-
     }
 
     /**

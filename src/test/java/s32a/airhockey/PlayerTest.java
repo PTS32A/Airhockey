@@ -8,6 +8,7 @@ package s32a.airhockey;
 
 import com.badlogic.gdx.math.Vector2;
 import java.util.Calendar;
+import javafx.beans.property.SimpleDoubleProperty;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,6 +24,7 @@ public class PlayerTest
 {
     Player player;
     float sideLength;
+    Game g;
     
     public PlayerTest()
     {
@@ -43,28 +45,23 @@ public class PlayerTest
     {
         player = new Player("Test", (double)15, Colors.Red);
         sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
+        //g = new Game(player);
     }
     
     @After
     public void tearDown()
     {
     }
-
-    @Test
-    (expected = IllegalArgumentException.class)
-    public void testBatMoveGreaterEx()
-    {
-        //player.setBatPos(Vector2.Zero);
-        player.moveBat(1);
-        fail("Moved out of field to the right");
-    }
     
     @Test
-    (expected = IllegalArgumentException.class)
-    public void testBatMoveLessEx()
+    public void testBatOutOfBounds()
     {
-        player.moveBat(-1);
-        fail("Moved out of field to the left");
+        player.setPosX(new SimpleDoubleProperty(sideLength/2));
+        boolean result = player.moveBat(1);
+        assertFalse("Bat moved past right side of goal", result);
+        player.setPosX(new SimpleDoubleProperty(-sideLength/2));
+        result = player.moveBat(-1);
+        assertFalse("Moved out of field to the left", result);
     }
     
     /**
@@ -75,8 +72,8 @@ public class PlayerTest
     {
         System.out.println("getBatPos");
         Vector2 expResult = new Vector2(0,0);
-        //Vector2 result = player.getBatPos();
-        //assertEquals("Expected result does not match given result",expResult, result);
+        Vector2 result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
+        assertEquals("Expected result does not match given result",expResult, result);
     }
 
     /**
@@ -108,12 +105,12 @@ public class PlayerTest
     {
         System.out.println("moveBat");
         Vector2 expResult = new Vector2(5,0);
-        player.moveBat(5f);
-        //Vector2 result = player.getBatPos();
-        //assertEquals("Bat not moved properly",expResult, result);
+        player.moveBat(1);
+        Vector2 result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
+        assertEquals("Bat not moved properly",expResult, result);
         expResult = new Vector2(0,0);
-        player.moveBat(-5f);
-        //result = player.getBatPos();
-        //assertEquals("Bat not moved properly",expResult, result);
+        player.moveBat(-1);
+        result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
+        assertEquals("Bat not moved properly",expResult, result);
     }
 }
