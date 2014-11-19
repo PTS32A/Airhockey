@@ -196,8 +196,8 @@ public class Puck extends TimerTask {
         this.position.set(centre);
 
         //this.position = new Vector2(0, centre.y * 2);
-        //this.direction = new Random().nextFloat() * 360;
-        this.direction = 180;
+        this.direction = new Random().nextFloat() * 360;
+        //this.direction = 180;
         this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
 
