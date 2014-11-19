@@ -84,6 +84,10 @@ public class Puck extends TimerTask {
 
     private boolean beingPushed;
     private boolean useRoundBats = true;
+    
+    private Vector2 leftCorner;
+    private Vector2 upperCorner;
+    private Vector2 rightCorner;
 
     /**
      * Threadsafe property set
@@ -123,14 +127,6 @@ public class Puck extends TimerTask {
         this.goalLength = sideLength * 0.4f;
         this.batWidth = sideLength / 100 * 8;
 
-        //Inner triangle for centre of Puck to bounce against so that 
-        // the edges of the circle of the Puck will look like bouncing of the real triangle
-        this.puckSize = (float) (this.sideLength * 0.04);
-        this.sideLength = this.sideLength - (float) (puckSize * Math.sqrt(3));
-
-        this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2)
-                - Math.pow(sideLength / 2, 2));
-
         float centreX = 0;
         float centreY = (float) (Math.tan(Math.toRadians(30))
                 * (0.5 * (double) sideLength));
@@ -139,12 +135,23 @@ public class Puck extends TimerTask {
         centreY = Math.round(centreY * 100) / 100;
 
         this.centre = new Vector2(centreX, centreY);
+        
+        //Inner triangle for centre of Puck to bounce against so that 
+        // the edges of the circle of the Puck will look like bouncing of the real triangle
+        this.puckSize = (float) (this.sideLength * 0.04);
+        this.sideLength = this.sideLength - (float) (puckSize * Math.sqrt(3));
 
-        this.sideGoalMinY = this.centre.y
-                - (float) (Math.sin(Math.toRadians(0.5 * goalLength)));
-        this.sideGoalMaxY = this.centre.y + sideGoalMinY;
-        this.bottomGoalMinX = -(this.sideLength * 0.2f);
-        this.bottomGoalMaxX = this.sideLength * 0.2f;
+        this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2)
+                - Math.pow(sideLength / 2, 2));
+
+        
+
+        this.sideGoalMinY = (float) (this.middleLine * 0.5
+                - (Math.sin(Math.toRadians(60)) * 0.5 * goalLength));
+        this.sideGoalMaxY = (float) (this.middleLine * 0.5
+                + (Math.sin(Math.toRadians(60)) * 0.5 * goalLength));
+        this.bottomGoalMinX = (float) (-goalLength * 0.5);
+        this.bottomGoalMaxX = (float) (goalLength * 0.5);
 
         this.bottomBounceLine = new Line(-(sideLength / 2), this.puckSize / 2,
                 sideLength / 2, this.puckSize / 2);
@@ -164,6 +171,10 @@ public class Puck extends TimerTask {
 
         this.defaultRunCount = -1;
 
+        this.leftCorner = new Vector2((float) (-(sideLength / 2)), this.puckSize / 2);
+        this.upperCorner = new Vector2(0, (float) (middleLine + this.puckSize / 2));
+        this.rightCorner = new Vector2((float) (sideLength / 2), this.puckSize / 2);
+        
         resetPuck();
         clearEndData();
     }
@@ -186,7 +197,7 @@ public class Puck extends TimerTask {
 
         //this.position = new Vector2(0, centre.y * 2);
         //this.direction = new Random().nextFloat() * 360;
-        this.direction = 160;
+        this.direction = 180;
         this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
 
@@ -270,8 +281,9 @@ public class Puck extends TimerTask {
      * a bounce
      */
     private void updatePosition(float distance) {
-        //this.position.set(new Vector2(myGame.getMyPlayers().get(2).getPosX().floatValue(),
-        //myGame.getMyPlayers().get(2).getPosY().floatValue()));
+        //this.position.set(new Vector2(myGame.getMyPlayers().get(0).getPosX().floatValue() + (batWidth / 2),
+        //myGame.getMyPlayers().get(0).getPosY().floatValue()));
+        //this.position.set(new Vector2(myGame.getMyPlayers().get(0).getPosX().floatValue(), this.sideGoalMaxY));
         if (isMoving) {
             float oldX = position.get().x;
             float oldY = position.get().y;
@@ -294,25 +306,18 @@ public class Puck extends TimerTask {
             if (bouncePosition == null) {
                 //Inside field
 
-                if (useRoundBats == true) {
-                    //Check whether the puck is bouncing of a bat
-                    Vector2 batBouncePosition = checkBatBounce(newPosition);
+                //Check whether the puck is bouncing of a bat
+                Vector2 batBouncePosition = checkBatBounce(newPosition);
 
-                    if (batBouncePosition == null) {
-                        //No bat bounce
-                        position.set(newPosition);
-                        //                  printMessage("Position: " + roundPosition(newPosition));
-                    } else {
-                        //Bat bounce
-                        position.set(batBouncePosition);
-
-                        //Continue the position with the remaining distance, calculated using batBouncePosition and newPosition
-                        continueUpdatePosition(batBouncePosition, newPosition);
-                    }
-                } else {
-                    //Use flat bat bounce
-                    //No bounce, new position is correct.
+                if (batBouncePosition == null) {
+                    //No bat bounce
                     position.set(newPosition);
+                } else {
+                    //Bat bounce
+                    position.set(batBouncePosition);
+
+                    //Continue the position with the remaining distance, calculated using batBouncePosition and newPosition
+                    continueUpdatePosition(batBouncePosition, newPosition);
                 }
 
             } else {
@@ -320,10 +325,7 @@ public class Puck extends TimerTask {
                 position.set(bouncePosition);
                 lastBouncerID = -1;
 
-//                printMessage("  Wanted Position: " + roundPosition(newPosition));
-//                printMessage("  Bounce Position: " + roundPosition(bouncePosition));
-                //Detect wheter a goal has been hit 
-                //(includes detection of bat blocking the puck)
+                //Detect whether a goal has been hit 
                 int goalHitPlayerID = checkGoalHit(bouncePosition);
 
                 if (goalHitPlayerID != -1) {
@@ -336,6 +338,7 @@ public class Puck extends TimerTask {
 
                     //Player whose goal is hit
                     Player whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
+                    printMessage("Goal @ player " + whoLostScore.getColor());
                     whoLostScore.setScore(whoLostScore.getScore().get() - 1);
                     this.endGoalHit = whoLostScore;
 
@@ -372,12 +375,12 @@ public class Puck extends TimerTask {
 
         if (x < 0) {
             //Check outside field left
-            if (y > (middleLine / (sideLength / 2)) * x + middleLine) {
+            if (y > (middleLine / (sideLength / 2)) * x + middleLine + puckSize / 2) {
                 outside = -1;
             }
         } else if (x > 0) {
             //Check outside field right
-            if (y > -(middleLine / (sideLength / 2)) * x + middleLine) {
+            if (y > -(middleLine / (sideLength / 2)) * x + middleLine + puckSize / 2) {
                 outside = 1;
             }
         }
@@ -388,34 +391,32 @@ public class Puck extends TimerTask {
             printMessage("Left Wall-Bounce");
 
             updateDirection(60);
-            Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), this.puckSize / 2);
-            Vector2 linePos2 = new Vector2(0, (float) middleLine + this.puckSize / 2);
-            return getIntersection(position.get(), newPosition, linePos1, linePos2);
+
+            return getIntersection(position.get(), newPosition, leftCorner, upperCorner);
         } else if (outside == 1) {
             //Right of field
 
             printMessage("Right Wall-Bounce");
 
-            Vector2 linePos1 = new Vector2((float) (sideLength / 2), this.puckSize / 2);
-            Vector2 linePos2 = new Vector2(0, (float) middleLine + this.puckSize / 2);
             updateDirection(-60);
-            return getIntersection(position.get(), newPosition, linePos1, linePos2);
+            
+            return getIntersection(position.get(), newPosition, rightCorner, upperCorner);
         } else {
-            if (y < 0) {
+            if (y < (puckSize / 2)) {
                 //Underneath field
 
                 printMessage("Bottom Wall-Bounce");
 
-                Vector2 linePos1 = new Vector2((float) (-(sideLength / 2)), this.puckSize / 2);
-                Vector2 linePos2 = new Vector2((float) (sideLength / 2), this.puckSize / 2);
                 updateDirection(180);
-                return getIntersection(position.get(), newPosition, linePos1, linePos2);
-            } else if (y > middleLine) {
+                
+                return getIntersection(position.get(), newPosition, leftCorner, rightCorner);
+            } else if (y > middleLine + puckSize / 2) {
                 //Above field
 
                 printMessage("Top Corner-Bounce");
 
                 updateDirection(180);
+                
                 return new Vector2(0, (float) middleLine);
             }
         }
@@ -554,36 +555,20 @@ public class Puck extends TimerTask {
     private int checkGoalHit(Vector2 pos) {
         int playerID = -1;
 
-        if (pos.y > sideGoalMinY && pos.y < sideGoalMaxY) {
+        if (pos.y >= sideGoalMinY && pos.y <= sideGoalMaxY) {
             if (pos.x < 0) {
-                //Green goal
+                //Blue goal
                 playerID = 1;
             } else {
-                //Blue goal
+                //Green goal
                 playerID = 2;
             }
-        } else if (pos.x > bottomGoalMinX && pos.x < bottomGoalMaxX && pos.y == 0) {
+        } else if (pos.x >= bottomGoalMinX && pos.x <= bottomGoalMaxX & pos.y < centre.y) {
             //Red goal
             playerID = 0;
         }
 
-        if (playerID == -1) {
-            //No goal hit
-            return -1;
-        } else {
-            //Goal hit of player with playerID
-            if (checkBatBlock(playerID, pos)) {
-                //Bat bounce
-                this.hitBy.add(myGame.getMyPlayers().get(playerID));
-                printMessage("Bat Bounce at player " + myGame.getMyPlayers().get(playerID).getColor());
-
-                //No goal hit because Bat blocked it
-                return -1;
-            } else {
-                printMessage("Goal @ player " + myGame.getMyPlayers().get(playerID).getColor());
-                return playerID;
-            }
-        }
+        return playerID;
     }
 
     /**
@@ -651,20 +636,6 @@ public class Puck extends TimerTask {
         for (Player p : myGame.getMyPlayers()) {
             batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
 
-            if (myGame.getMyPlayers().indexOf(p) == 0) {
-                //batCentre.y -= puckSize / 2;
-            } else if (myGame.getMyPlayers().indexOf(p) == 1) {
-                //Blue  
-//                batCentre.x -= batWidth / 2;
-                batCentre.y -= batWidth;
-                //batCentre.y -= puckSize / 2;
-            } else if (myGame.getMyPlayers().indexOf(p) == 2) {
-//                //Green
-//                batCentre.x += batWidth / 2;
-//                batCentre.y -= batWidth;
-                //batCentre.y -= puckSize / 2;
-            }
-
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID) {
                 //If the current bat has last bounced the puck and Puck is now within the circle of this Bat,
                 //Then the Puck should be pushed in the same direction instead of bounced.
@@ -723,44 +694,32 @@ public class Puck extends TimerTask {
                     float correction = 0;
 
                     float distanceFromCenter = pos.x - batCentre.x;
-
-                    if (distanceFromCenter > 0) {
-                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * 90;
-                    } else if (distanceFromCenter < 0) {
-                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
-                    }
-
-                    //direction += correction;
-                } else if (index == 2) {
-                    //BLUE
-                    updateDirection(-60);
-
-                    float correction = 0;
-
-                    float distanceFromCenter = pos.y - batCentre.y;
-
-                    if (distanceFromCenter > 0) {
-                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * 90;
-                    } else if (distanceFromCenter < 0) {
-                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
-                    }
-
+                   
+                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
+                                   
                     direction += correction;
                 } else if (index == 1) {
-                    //GREEN
+                    //BLUE
                     updateDirection(60);
 
                     float correction = 0;
 
                     float distanceFromCenter = pos.y - batCentre.y;
 
-                    if (distanceFromCenter > 0) {
-                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * 90;
-                    } else if (distanceFromCenter < 0) {
-                        correction = (Math.abs(batWidth / 2) * 90) / (batWidth / 2) * -90;
-                    }
+                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
 
-                    //direction += correction;
+                    direction -= correction;
+                } else if (index == 2) {
+                    //GREEN
+                    updateDirection(-60);
+
+                    float correction = 0;
+
+                    float distanceFromCenter = pos.y - batCentre.y;
+
+                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
+
+                    direction += correction;
                 }
 
                 correctDirection();
