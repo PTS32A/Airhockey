@@ -6,6 +6,8 @@
 package demoball;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,10 +27,12 @@ import javafx.scene.shape.Circle;
 public class DemoBallController extends DemoBallMain implements Initializable
 {
 
-    Circle demoBall;
+    Circle demoBall, demoBall2;
     Circle centerDemoBall;
     Timer timer;
     TimerTask ballTimer;
+    ArrayList<Circle> ball;
+    
 
     @FXML
     Label lblDemoBall;
@@ -36,12 +40,17 @@ public class DemoBallController extends DemoBallMain implements Initializable
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        ball = new ArrayList<>();
         // initialises a new Circle (the ball), and sets its starting coordinates to be 100,100
         // default width is 2*radius
         demoBall = new Circle(100, 100, 20);
         // adds the circle to the window it should be displayed in
         ((AnchorPane) lblDemoBall.getParent()).getChildren().add(demoBall);
-        
+        demoBall2 = new Circle(200, 100, 20);
+        // adds the circle to the window it should be displayed in
+        ((AnchorPane) lblDemoBall.getParent()).getChildren().add(demoBall2);
+        ball.add(demoBall);
+        ball.add(demoBall2);
         // Adds a new (red) ball, to demonstrate the drawing origins of the balls
         // Because X and Y coords are bound to the first ball, this ball will move along
         centerDemoBall = new Circle(100, 100, 5, Color.RED);
@@ -59,7 +68,7 @@ public class DemoBallController extends DemoBallMain implements Initializable
             if (ballTimer == null)
             {
                 // schedules a new BallTimer as timertask. BallTimer is responsible for movement of given ball.
-                ballTimer = new BallTimer(demoBall);
+                ballTimer = new BallTimer(ball);
                 timer.scheduleAtFixedRate(ballTimer, 100, 50);
                 lblDemoBall.setVisible(false);
             }
