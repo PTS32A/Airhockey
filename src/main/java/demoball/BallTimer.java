@@ -116,8 +116,8 @@ public class BallTimer extends TimerTask
         {
             xPos.set(xPos.get() + xMovement);
             yPos.set(yPos.get() + yMovement);
-            xPos2.set(xPos2.get() + xMovement2);
-            yPos2.set(yPos2.get() + yMovement2);
+            //xPos2.set(xPos2.get() + xMovement2);
+            //yPos2.set(yPos2.get() + yMovement2);
             checkCollision();
         });
     }
@@ -134,19 +134,30 @@ public class BallTimer extends TimerTask
             
             //4 is "mass" both are equal
             //8 is combination of both masses
-            double xSpeed = (xMovement * (4 - 4) + (2 * 4 * xMovement2)) / 8;
+//            double xSpeed = (xMovement * (4 - 4) + (2 * 4 * xMovement2)) / 8;
+//
+//            double xSpeed2 = (xMovement2 * (4 - 4) + (2 * 4 * xMovement)) / 8;
+//
+//            double ySpeed = (yMovement * (4 - 4) + (2 * 4 * yMovement2)) / 8;
+//
+//            double ySpeed2 = (yMovement2 * (4 - 4) + (2 * 4 * yMovement)) / 8;
+//
+//            xMovement = xSpeed;
+//            yMovement = ySpeed;
+//            xMovement2 = xSpeed2;
+//            yMovement2 = ySpeed2;
 
-            double xSpeed2 = (xMovement2 * (4 - 4) + (2 * 4 * xMovement)) / 8;
+            double degrees = Math.toDegrees(Math.atan2
+                (yPos2.get() - yPos.get(), xPos2.get() - xPos.get()));
 
-            double ySpeed = (yMovement * (4 - 4) + (2 * 4 * yMovement2)) / 8;
-
-            double ySpeed2 = (yMovement2 * (4 - 4) + (2 * 4 * yMovement)) / 8;
-
-            xMovement = xSpeed;
-            yMovement = ySpeed;
-            xMovement2 = xSpeed2;
-            yMovement2 = ySpeed2;
-
+            xMovement = Math.cos(Math.toRadians((int) (180+degrees))) * 10;
+            yMovement = Math.sin(Math.toRadians((int) (180+degrees))) * 10;
+            
+//            double degrees2 = Math.toDegrees(Math.atan2
+//                (yPos.get() - yPos2.get(), xPos.get() - xPos2.get()));
+//
+//            xMovement2 = Math.cos(Math.toRadians((int) (180+degrees2))) * 10;
+//            yMovement2 = Math.sin(Math.toRadians((int) (180+degrees2))) * 10;
         }
     }
 }
