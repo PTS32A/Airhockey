@@ -132,32 +132,13 @@ public class BallTimer extends TimerTask
         //radius is same for both for this example
         if (distance < (radius.get()) + (radius.get())) {
             
-            //4 is "mass" both are equal
-            //8 is combination of both masses
-//            double xSpeed = (xMovement * (4 - 4) + (2 * 4 * xMovement2)) / 8;
-//
-//            double xSpeed2 = (xMovement2 * (4 - 4) + (2 * 4 * xMovement)) / 8;
-//
-//            double ySpeed = (yMovement * (4 - 4) + (2 * 4 * yMovement2)) / 8;
-//
-//            double ySpeed2 = (yMovement2 * (4 - 4) + (2 * 4 * yMovement)) / 8;
-//
-//            xMovement = xSpeed;
-//            yMovement = ySpeed;
-//            xMovement2 = xSpeed2;
-//            yMovement2 = ySpeed2;
-
+            //Reverse angle of the collision point
             double degrees = Math.toDegrees(Math.atan2
                 (yPos2.get() - yPos.get(), xPos2.get() - xPos.get()));
-
+            
+            //Flip angle back to origin and add ofset
             xMovement = Math.cos(Math.toRadians((int) (180+degrees))) * 10;
             yMovement = Math.sin(Math.toRadians((int) (180+degrees))) * 10;
-            
-//            double degrees2 = Math.toDegrees(Math.atan2
-//                (yPos.get() - yPos2.get(), xPos.get() - xPos2.get()));
-//
-//            xMovement2 = Math.cos(Math.toRadians((int) (180+degrees2))) * 10;
-//            yMovement2 = Math.sin(Math.toRadians((int) (180+degrees2))) * 10;
         }
     }
 }
