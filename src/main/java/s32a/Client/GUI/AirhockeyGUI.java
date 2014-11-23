@@ -5,10 +5,6 @@
  */
 package s32a.Client.GUI;
 
-import s32a.Server.Spectator;
-import s32a.Server.Player;
-import s32a.Server.Person;
-import s32a.Server.Lobby;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,6 +15,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
+import s32a.Shared.ILobby;
+import s32a.Shared.IPerson;
+import s32a.Shared.IPlayer;
+import s32a.Shared.ISpectator;
 
 /**
  * NOTES: find out what game is currently active for the closeGame click event
@@ -29,19 +29,18 @@ public class AirhockeyGUI extends Application {
 
     @Getter
     private Stage stage;
+    protected ILobby lobby;
+    protected String me;
 
     @Override
     public void start(Stage stage) throws Exception {
-        Lobby.getSingle();
+        lobby = this.requestRemoteLobby();
 
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
 
         stage.setOnCloseRequest((WindowEvent event) -> {
-            Person person = Lobby.getSingle().getCurrentPerson();
-            if (person != null) {
-                Lobby.getSingle().logOut(person);
-            }
+            lobby.logOut(lobby.getMyPerson(me));
             Platform.exit();
             System.exit(0);
         });
@@ -53,7 +52,7 @@ public class AirhockeyGUI extends Application {
 
         // populates lobby
         Thread thread = new Thread(() -> {
-            Lobby.getSingle().populate();
+            lobby.populate();
         });
         thread.start();
         //goToLobby(stage);
@@ -106,15 +105,15 @@ public class AirhockeyGUI extends Application {
         stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
 
-        stage.setOnCloseRequest((WindowEvent event) -> {
-            Lobby lobby = Lobby.getSingle();
+        stage.setOnCloseRequest((WindowEvent event) -> { // TODO: Move this to gameFX if possible
 
-            if (lobby.getCurrentPerson() instanceof Spectator) { // TODO FIND OUT WHAT GAME CURRENTLY IS ACTIVE
+            IPerson myPerson = lobby.getMyPerson(me);
+            if (myPerson instanceof ISpectator) {
                 lobby.stopSpectating(lobby.getSpectatedGames().get(0), lobby.getCurrentPerson());
-            } else if (lobby.getCurrentPerson() instanceof Player) {
-                Player person = (Player) Lobby.getSingle().getCurrentPerson();
+            } else if (lobby.getCurrentPerson() instanceof IPlayer) {
+                IPlayer person = (IPlayer) lobby.getCurrentPerson();
                 if (person != null) {
-                    Lobby.getSingle().endGame(Lobby.getSingle().getPlayedGame(), person);
+                    lobby.endGame(lobby.getPlayedGame(), person);
                 }
             }
             stage.close();
@@ -126,6 +125,11 @@ public class AirhockeyGUI extends Application {
     void showDialog(String type, String message) {
         Stage myDialog = new Dialog(getStage(), type, message);
         myDialog.show();
+    }
+
+    private ILobby requestRemoteLobby() {
+        // TODO
+        return null;
     }
 
     /**

@@ -19,11 +19,12 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-public class Chatbox implements IChatbox {
+class Chatbox implements IChatbox {
 
     private List<String> chat;
     private ObservableList<String> chatProp;
 
+    @Override
     public ObservableList<String> chatProperty() {
         return this.chatProp;
     }
@@ -44,6 +45,7 @@ public class Chatbox implements IChatbox {
      * @return returns true if the message was sent successfully returns
      * IllegalArgumentException if message wasn't formatted correctly
      */
+    @Override
     public boolean addChatMessage(String message, String sender) {
         StringBuilder builder = new StringBuilder();
         String time = String.valueOf(Calendar.getInstance().getTime()).substring(11, 19);

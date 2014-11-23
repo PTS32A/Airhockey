@@ -17,15 +17,15 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-public class Person implements IPerson{
+class Person implements IPerson{
 
     private StringProperty nameProp;
     private DoubleProperty ratingProp;
 
     @Getter
     private String name;
-    @Getter
-    private double rating;
+//    @Getter
+//    private double rating;
     @Getter
     @Setter
     private boolean isBot = false;
@@ -35,8 +35,9 @@ public class Person implements IPerson{
      *
      * @param input
      */
+    @Override
     public void setRating(double input) {
-        this.rating = input;
+//        this.rating = input;
         this.ratingProp.set(input);
     }
 
@@ -46,6 +47,7 @@ public class Person implements IPerson{
      *
      * @return
      */
+    @Override
     public StringProperty nameProperty() {
         return this.nameProp;
     }
@@ -56,6 +58,7 @@ public class Person implements IPerson{
      *
      * @return
      */
+    @Override
     public DoubleProperty ratingProperty() {
         return this.ratingProp;
     }
@@ -70,7 +73,7 @@ public class Person implements IPerson{
             throw new IllegalArgumentException();
         }
         this.name = name;
-        this.rating = rating;
+//        this.rating = rating;
         this.nameProp = new SimpleStringProperty(name);
         this.ratingProp = new SimpleDoubleProperty(rating);
     }

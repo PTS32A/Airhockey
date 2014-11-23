@@ -33,7 +33,7 @@ import s32a.Shared.ISpectator;
 /**
  * @author Kargathia
  */
-public class Game implements IGame {
+class Game implements IGame {
 
     private StringProperty difficultyProp;
     @Getter
@@ -41,7 +41,6 @@ public class Game implements IGame {
 
     @Getter
     private IChatbox myChatbox;
-    @Getter
     private Puck myPuck;
     @Getter
     private List<ISpectator> mySpectators;
@@ -68,84 +67,6 @@ public class Game implements IGame {
     private StringProperty gameTime;
 
     private boolean printMessages = false;
-
-    /**
-     * Sets gameTime - non threadsafe
-     *
-     * @param input
-     */
-    public void setGameTime(String input) {
-        this.gameTime.set(input);
-    }
-
-    /**
-     * threadsafe set of roundNo
-     *
-     * @param input
-     */
-    private void setRoundNo(int input) {
-        Platform.runLater(() -> {
-            this.roundNo.set(input);
-        });
-    }
-
-    /**
-     * getter for difficulty as a property
-     *
-     * @return
-     */
-    public StringProperty difficultyProperty() {
-        return this.difficultyProp;
-    }
-
-    /**
-     *
-     * @return game status, formatted as GameStatus enum, packed in a property
-     */
-    public ObjectProperty<GameStatus> statusProperty() {
-        return this.statusProp;
-    }
-
-    /**
-     * loads the name of player 1 in a StringProperty
-     *
-     * @return
-     */
-    public StringProperty player1NameProperty() {
-        return this.playerNameProp(0);
-    }
-
-    /**
-     * loads the name of player 2 in a StringProperty
-     *
-     * @return
-     */
-    public StringProperty player2NameProperty() {
-        return this.playerNameProp(1);
-    }
-
-    /**
-     * loads the name of Player 3 in a StringProperty
-     *
-     * @return
-     */
-    public StringProperty player3NameProperty() {
-        return this.playerNameProp(2);
-    }
-
-    /**
-     * returns playername property at given index - used by player<X>Property
-     *
-     * @param index
-     * @return
-     */
-    private StringProperty playerNameProp(int index) {
-        if (this.myPlayers.size() <= index) {
-            return new SimpleStringProperty("--");
-        } else {
-            return this.myPlayers.get(index).nameProperty();
-        }
-    }
 
     /**
      * Constructor. Initialises sideLength, isPaused, gameID and roundNo to
@@ -198,6 +119,7 @@ public class Game implements IGame {
      * @return True if everything went right, and chatbox.addchatmessage
      * returned true
      */
+    @Override
     public boolean addChatMessage(String message, String from) {
         if (message == null || from == null) {
             throw new IllegalArgumentException("sender or message is null");
@@ -205,7 +127,7 @@ public class Game implements IGame {
         if (message.trim().isEmpty()) {
             throw new IllegalArgumentException("message is empty");
         }
-        if (from.trim().isEmpty()){
+        if (from.trim().isEmpty()) {
             throw new IllegalArgumentException("anonymous sender");
         }
         return myChatbox.addChatMessage(message, from);
@@ -222,7 +144,8 @@ public class Game implements IGame {
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
      */
-    boolean addPlayer(IPlayer player) {
+    @Override
+    public boolean addPlayer(IPlayer player) {
         if (player != null) {
             if (!myPlayers.contains(player)) {
                 if (myPlayers.size() < 3) {
@@ -320,7 +243,8 @@ public class Game implements IGame {
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
      */
-    boolean addSpectator(ISpectator spectator) throws IllegalArgumentException {
+    @Override
+    public boolean addSpectator(ISpectator spectator) throws IllegalArgumentException {
         if (spectator != null) {
             for (ISpectator spect : this.mySpectators) {
                 if (spect.getName().equals(spectator.getName())) {
@@ -341,7 +265,8 @@ public class Game implements IGame {
      * game
      * @return returns true if the spectator was successfully removed
      */
-    boolean removeSpectator(ISpectator spectator) {
+    @Override
+    public boolean removeSpectator(ISpectator spectator) {
         if (spectator != null) {
             if (mySpectators.contains(spectator)) {
                 mySpectators.remove(spectator);
@@ -394,6 +319,7 @@ public class Game implements IGame {
      * false if it was unable to adjust puck speed throws
      * IllegalArgumentException when given puckspeed was outside min/max values
      */
+    @Override
     public boolean adjustDifficulty(float puckSpeed) {
         if (this.roundNo.get() == 0) {
             float min = 10;
@@ -416,13 +342,14 @@ public class Game implements IGame {
      *
      * @return true if successfully set puckspeed
      */
+    @Override
     public boolean adjustDifficulty() {
         if (myPlayers.isEmpty()) {
             return false;
         }
         double averageRating = 0;
         for (IPlayer p : myPlayers) {
-            averageRating += p.getRating();
+            averageRating += p.ratingProperty().get();
         }
         averageRating = averageRating / myPlayers.size();
         return adjustDifficulty((float) averageRating);
@@ -437,6 +364,7 @@ public class Game implements IGame {
      * @return returns true if the pause change was successful. return false if
      * desired pause state == Game.isPaused
      */
+    @Override
     public boolean pauseGame(boolean isPaused) {
 
         if (this.statusProp.get().equals(GameStatus.Playing) && isPaused) {
@@ -452,9 +380,8 @@ public class Game implements IGame {
 
     /**
      * This method cycles to a new frame (puck position, bot position)
-     * ToBeImplemented
      */
-    void run() {
+    private void run() {
         //Continue       
         if (this.statusProp.get().equals(GameStatus.Playing) && myPuck != null) {
             //BEGIN PUCK MOVEMENT
@@ -476,6 +403,7 @@ public class Game implements IGame {
         this.run();
     }
 
+    // not featured in Interface, as it is only called by Puck
     void endRound() {
         //END OF PUCK MOVEMENT
         this.continueRun = false;
@@ -487,15 +415,14 @@ public class Game implements IGame {
             this.statusProp.set(GameStatus.GameOver);
             printMessage("END GAME");
             printMessage("");
-        }
-        else
-        {
+        } else {
             startRound();
         }
     }
 
     /**
      * gets the color the next player to join should be assigned
+     * Not featured in interface, as it is called only in server setting
      *
      * @return the color the next player should have, cycling red, blue, green
      * returns null if game already has three players
@@ -524,6 +451,7 @@ public class Game implements IGame {
 
     /**
      * Used to set properties of Puck for customization of unit tests
+     * Not implemented from interface
      *
      * @param position the start position (Vector2) of the Puck
      * @param puckSpeed the speed of the Puck
@@ -566,6 +494,95 @@ public class Game implements IGame {
     private void printMessage(String message) {
         if (printMessages) {
             System.out.println(message);
+        }
+    }
+
+    @Override
+    public IPuck getMyPuck() {
+        return this.myPuck;
+    }
+
+    /**
+     * Sets gameTime - non threadsafe
+     *
+     * @param input
+     */
+    @Override
+    public void setGameTime(String input) {
+        this.gameTime.set(input);
+    }
+
+    /**
+     * threadsafe set of roundNo
+     *
+     * @param input
+     */
+    private void setRoundNo(int input) {
+        Platform.runLater(() -> {
+            this.roundNo.set(input);
+        });
+    }
+
+    /**
+     * getter for difficulty as a property
+     *
+     * @return
+     */
+    @Override
+    public StringProperty difficultyProperty() {
+        return this.difficultyProp;
+    }
+
+    /**
+     *
+     * @return game status, formatted as GameStatus enum, packed in a property
+     */
+    @Override
+    public ObjectProperty<GameStatus> statusProperty() {
+        return this.statusProp;
+    }
+
+    /**
+     * loads the name of player 1 in a StringProperty
+     *
+     * @return
+     */
+    @Override
+    public StringProperty player1NameProperty() {
+        return this.playerNameProp(0);
+    }
+
+    /**
+     * loads the name of player 2 in a StringProperty
+     *
+     * @return
+     */
+    @Override
+    public StringProperty player2NameProperty() {
+        return this.playerNameProp(1);
+    }
+
+    /**
+     * loads the name of Player 3 in a StringProperty
+     *
+     * @return
+     */
+    @Override
+    public StringProperty player3NameProperty() {
+        return this.playerNameProp(2);
+    }
+
+    /**
+     * returns playername property at given index - used by player<X>Property
+     *
+     * @param index
+     * @return
+     */
+    private StringProperty playerNameProp(int index) {
+        if (this.myPlayers.size() <= index) {
+            return new SimpleStringProperty("--");
+        } else {
+            return this.myPlayers.get(index).nameProperty();
         }
     }
 }

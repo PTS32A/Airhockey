@@ -94,9 +94,9 @@ public class DatabaseControlsTest
         {
             this.mockDB.clearDatabase();
             this.mockDB.addPerson("testey", "testpass");
-            Person testey = this.mockDB.checkLogin("testey", "testpass");
+            Person testey = (Person)this.mockDB.checkLogin("testey", "testpass");
             assertEquals("testey name is wrong", "testey", testey.getName());
-            assertEquals("testey rating is wrong", (double)15, testey.getRating(), 0.1);
+            assertEquals("testey rating is wrong", (double)15, testey.ratingProperty().get(), 0.1);
             assertNull("added testey twice", this.mockDB.addPerson("testey", "testpass"));
             
             assertNull("able to log in with wrong username", 
@@ -116,7 +116,7 @@ public class DatabaseControlsTest
         {
             this.mockDB.clearDatabase();
             this.mockDB.addPerson("testey", "testpass");
-            Person testey = this.mockDB.checkLogin("testey", "testpass");
+            Person testey = (Person)this.mockDB.checkLogin("testey", "testpass");
             
             assertEquals("initial rating incorrect", 
                     Double.doubleToLongBits((double)15), 

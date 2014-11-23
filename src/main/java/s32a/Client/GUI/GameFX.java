@@ -5,12 +5,7 @@
  */
 package s32a.Client.GUI;
 
-import s32a.Server.Spectator;
 import s32a.Shared.enums.GameStatus;
-import s32a.Server.Player;
-import s32a.Server.Person;
-import s32a.Server.Game;
-import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -35,6 +30,11 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.Client.timers.GameTimer;
+import s32a.Shared.IGame;
+import s32a.Shared.ILobby;
+import s32a.Shared.IPerson;
+import s32a.Shared.IPlayer;
+import s32a.Shared.ISpectator;
 
 /**
  * NOTES: - SetBatPosition in DrawEdges should probably be moved to game
@@ -72,7 +72,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     @Getter
     private boolean actionTaken = true;
     private GameTimer gameTimer;
-    private Game myGame;
+    private IGame myGame;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -88,15 +88,14 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * with method drawEdges().
      */
     public void setUp() {
-        Player me = null;
-        Lobby lobby = Lobby.getSingle();
-        if (lobby.getCurrentPerson() instanceof Player) {
+        IPerson myPerson = lobby.getMyPerson(me);
+        if (myPerson instanceof IPlayer) {
             // Player
-            myGame = lobby.getPlayedGame();
-            me = (Player) lobby.getCurrentPerson();
+            IPlayer myPlayer = (IPlayer) myPerson;
+            this.myGame = myPlayer.getMyGame();
             btnStopSpec.setVisible(false);
             btnPause.setDisable(true);
-            lblName.setText(me.getName());
+            lblName.setText(myPlayer.getName());
             // bind custom difficulty indicators
             this.customSpeed = new SimpleIntegerProperty(15);
             this.customSpeed.bindBidirectional(this.sldCustomDifficulty.valueProperty());
@@ -104,7 +103,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     Bindings.concat("Use custom Speed: ", customSpeed.asString()));
 
             // bot 10 and 11 were added in lobby.populate, and are currently not busy
-            Person bot = lobby.getActivePersons().get("bot10");
+            IPerson bot = lobby.getActivePersons().get("bot10");
             lobby.joinGame(myGame, bot);
             bot = lobby.getActivePersons().get("bot11");
             lobby.joinGame(myGame, bot);
@@ -112,10 +111,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             // adds listeners governing custom difficulty
             this.addDifficultyListeners();
 
-        } else if (lobby.getCurrentPerson() instanceof Spectator) {
-            // Spectator
-            myGame = lobby.getSpectatedGames().get(Lobby.getSingle()
-                    .getSpectatedGames().size() - 1);
+        } else if (myPerson instanceof ISpectator) {
+            // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
+            ISpectator mySpectator = (ISpectator) myPerson;
+            myGame = lobby.getSpectatedGames().get(lobby.getSpectatedGames().size() - 1);
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             btnStart.setVisible(false);
             btnPause.setVisible(false);
@@ -157,45 +156,19 @@ public class GameFX extends AirhockeyGUI implements Initializable {
          * if currentPerson is spectator, graphics can start now. If he were a
          * player, they start when startGame is called.
          */
-        if (lobby.getCurrentPerson() instanceof Spectator) {
+        if (myPerson instanceof ISpectator) {
             this.startGraphics(myGame);
         }
     }
 
     /**
-     * Draw is called every 20ms for a frame rate of 50 frames per second.
-     * Redraws all bats and the puck in their correct position.
+     * Draws puck on given canvas.
      *
-     * @param g
-     */
-    public void draw(Game g) {
-        if (!g.getStatusProp().get().equals(GameStatus.Paused)) {
-//            double bat = (double) width.doubleValue() / 100 * 8;
-//            this.graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
-            //this.drawEdges();
-            //Red           
-//            this.graphics.setFill(Color.RED);
-//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(0).getBatPos().x - bat / 2,
-//                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y - bat / 2, bat, bat);
-//            //Blue           
-//            this.graphics.setFill(Color.BLUE);
-//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat / 2 + 3,
-//                    height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y - bat / 2, bat, bat);
-//            this.graphics.setFill(Color.GREEN);
-//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(2).getBatPos().x - bat / 2 - 3,
-//                    height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y - bat / 2, bat, bat);
-            //Reset to black
-            //this.graphics.setFill(Color.BLACK);
-            //this.drawPuck(g.getMyPuck().getPuckLocation());
-
-        }
-    }
-
-    /**
-     * Draws puck on given canvas
+     * Deprecated as a float array containing location is not needed anymore
      *
      * @param location
      */
+    @Deprecated
     private void drawPuck(float[] location) {
         float positionX = location[0];
         float positionY = location[1];
@@ -205,7 +178,19 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         int x = (int) positionX + (int) width.doubleValue() / 2;
         int y = (int) height.doubleValue() - (int) (positionY);
         puck = new Circle(x, y, radius);
-        puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(), 
+        puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(),
+                Bindings.divide(width, 2)));
+        puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
+        apGame.getChildren().add(puck);
+    }
+
+    /**
+     * Generates puck, and binds properties
+     */
+    private void drawPuck() {
+        puck = new Circle();
+        puck.radiusProperty().bind(null); // TODO BIND PUCK RADIUS FROM CANVAS SIZE
+        puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(),
                 Bindings.divide(width, 2)));
         puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
         apGame.getChildren().add(puck);
@@ -245,7 +230,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // LINES EXAMPLE
         leftLine = new Line(aX, aY, bX, bY);
         rightLine = new Line(bX, bY, cX, cY);
-        bottomLine = new Line(cX, cY, aX, aY);        
+        bottomLine = new Line(cX, cY, aX, aY);
         bGoal = new Line(aXY1.x, aXY1.y, aXY2.x, aXY2.y);
         lGoal = new Line(bXY1.x, bXY1.y, bXY2.x, bXY2.y);
         rGoal = new Line(cXY1.x, cXY1.y, cXY2.x, cXY2.y);
@@ -273,19 +258,18 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
         //Draws and adds players for the first time
         if (!gameStart) {
-            Lobby lobby = Lobby.getSingle();
             Vector2 batPos2 = new Vector2((float) (aX + ((bX - aX) / 100 * 50)),
-                        (float) ((aY + ((bY - aY) / 100 * 50))));
+                    (float) ((aY + ((bY - aY) / 100 * 50))));
             Vector2 batPos3 = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
-                        (float) ((cY + ((bY - cY) / 100 * 50))));
+                    (float) ((cY + ((bY - cY) / 100 * 50))));
             double bat = (double) width.doubleValue() / 100 * 8;
-            bat1 = new Arc(cX/2, cY, bat/2, bat/2, 0, 180);
+            bat1 = new Arc(cX / 2, cY, bat / 2, bat / 2, 0, 180);
             bat1.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(0).getPosX(), Bindings.divide(width, 2)));
             bat1.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(0).getPosY()));
-            bat2 = new Arc(batPos2.x, batPos2.y, bat/2, bat/2, 240, 180);
+            bat2 = new Arc(batPos2.x, batPos2.y, bat / 2, bat / 2, 240, 180);
             bat2.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(1).getPosX(), Bindings.divide(width, 2)));
             bat2.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(1).getPosY()));
-            bat3 = new Arc(batPos3.x, batPos3.y, bat/2, bat/2, 120, 180);
+            bat3 = new Arc(batPos3.x, batPos3.y, bat / 2, bat / 2, 120, 180);
             bat3.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(2).getPosX(), Bindings.divide(width, 2)));
             bat3.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(2).getPosY()));
             bat1.setFill(Color.RED);
@@ -337,7 +321,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      *
      * @param myGame
      */
-    private void startGraphics(Game myGame) {
+    private void startGraphics(IGame myGame) {
         // binds score labels to player scores
         this.lblScoreP1.textProperty().bind(myGame.getMyPlayers()
                 .get(0).getScore().asString());
@@ -379,16 +363,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void quitClick(Event evt) {
-        Lobby lobby = Lobby.getSingle();
         if (gameTimer != null) {
             gameTimer.stop();
         }
-        if (lobby.getCurrentPerson() instanceof Spectator) {
-            lobby.stopSpectating(myGame, lobby.getCurrentPerson());
+        IPerson myPerson = lobby.getMyPerson(me);
+        if (myPerson instanceof ISpectator) {
+            lobby.stopSpectating(myGame, (ISpectator) myPerson);
         } else if (myGame.getStatusProp().get().equals(GameStatus.GameOver) || myGame.getRoundNo().get() == 0) {
             lobby.endGame(myGame, null);
         } else {
-            lobby.endGame(myGame, (Player) lobby.getCurrentPerson());
+            lobby.endGame(myGame, (IPlayer) myPerson);
         }
         getThisStage().close();
     }
@@ -399,15 +383,14 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void sendMessage(Event evt) {
-        Lobby lobby = Lobby.getSingle();
-        Person currentPerson = lobby.getCurrentPerson();
-
-        if (currentPerson instanceof Player) {
+        IPerson currentPerson = lobby.getMyPerson(me);
+        if (currentPerson != null) {
             myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
-        } else if (currentPerson instanceof Spectator) {
-            myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
+            tfChatbox.setText("");
+        } else {
+            showDialog("Error", "Current Person is null.");
         }
-        tfChatbox.setText("");
+
     }
 
     /**
@@ -417,19 +400,18 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void stopSpectating(Event evt) {
-        Person person = Lobby.getSingle().getCurrentPerson();
-        Lobby.getSingle().stopSpectating(myGame, person);
+        lobby.stopSpectating(myGame, lobby.getMyPerson(me));
         getThisStage().close();
     }
 
     private void addEvents() {
         //Moving left or right
-        Player me = (Player) Lobby.getSingle().getCurrentPerson();
+        IPlayer myPlayer = (IPlayer) lobby.getMyPerson(me);
         final EventHandler<KeyEvent> keyPressed = (final KeyEvent keyEvent) -> {
             if (keyEvent.getCode() == KeyCode.A
                     || keyEvent.getCode() == KeyCode.LEFT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
-                    me.moveBat(-1);
+                    myPlayer.moveBat(-1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;
@@ -437,7 +419,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             } else if (keyEvent.getCode() == KeyCode.D
                     || keyEvent.getCode() == KeyCode.RIGHT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
-                    me.moveBat(1);
+                    myPlayer.moveBat(1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;

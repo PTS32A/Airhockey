@@ -12,7 +12,7 @@ import s32a.Shared.ISpectator;
  *
  * @author Kargathia
  */
-public class Spectator extends Person implements ISpectator {
+class Spectator extends Person implements ISpectator {
 
     Spectator(String name, double rating) {
         super(name, rating);

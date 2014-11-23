@@ -15,7 +15,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import s32a.Server.Lobby;
 
 /**
  *
@@ -48,7 +47,7 @@ public class RegisterFX extends AirhockeyGUI implements Initializable {
             if (!pwfPassword.getText().equals(pwfPasswordConfirm.getText())) {
                 super.showDialog("Error", "Passwords do not match");
             } else {
-                if (Lobby.getSingle().addPerson(tfUserName.getText(), pwfPassword.getText())) {
+                if (lobby.addPerson(tfUserName.getText(), pwfPassword.getText())) {
                     try {
                         super.showDialog("Success", "Welcome to Airhockey, " + tfUserName.getText() + "!");
                         super.goToLogin(getThisStage());

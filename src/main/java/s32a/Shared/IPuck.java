@@ -5,16 +5,10 @@
  */
 package s32a.Shared;
 
-import javafx.collections.ObservableList;
-
 /**
  *
  * @author Kargathia
  */
-public interface IChatbox {
-
-    public ObservableList<String> chatProperty();
-
-    public boolean addChatMessage(String message, String sender);
+public interface IPuck {
 
 }

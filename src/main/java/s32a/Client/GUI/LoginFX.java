@@ -15,7 +15,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import s32a.Server.Lobby;
 
 /**
  *
@@ -43,7 +42,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
             super.showDialog("Error", "One or more fields are empty.");
         } else {
             try {
-                if (Lobby.getSingle().checkLogin(tfUserName.getText(), pwfPassword.getText())) {
+                if (lobby.checkLogin(tfUserName.getText(), pwfPassword.getText())) {
                     super.goToLobby(getThisStage());
                 } else {
                     super.showDialog("Error", "Username or password is incorrect.");
@@ -53,7 +52,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
             } catch (SQLException ex) {
                 super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
             } catch (IOException ex) {
-                Lobby.getSingle().logOut(Lobby.getSingle().getCurrentPerson());
+                lobby.logOut(lobby.getMyPerson(me));
                 super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
         }

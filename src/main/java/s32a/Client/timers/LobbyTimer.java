@@ -7,7 +7,7 @@ package s32a.Client.timers;
 
 import s32a.Client.GUI.LobbyFX;
 import javafx.animation.AnimationTimer;
-import s32a.Server.Lobby;
+import s32a.Shared.ILobby;
 
 /**
  *
@@ -16,7 +16,7 @@ import s32a.Server.Lobby;
 public class LobbyTimer extends AnimationTimer {
 
     private LobbyFX lobbyFX;
-    private Lobby lobby;
+    private ILobby lobby;
 
     private long refreshRate;
     private long prevUpdate;
@@ -24,13 +24,14 @@ public class LobbyTimer extends AnimationTimer {
     /**
      * Starts a new timer
      *
-     * @param lobby the lobbyFX class
+     * @param lobbyfx the lobbyFX class
+     * @param lobby
      * @param refreshInMs The refresh rate of the timer in milliseconds
      */
-    public LobbyTimer(LobbyFX lobby, Integer refreshInMs) {
+    public LobbyTimer(LobbyFX lobbyfx, ILobby lobby, Integer refreshInMs) {
         this.refreshRate = refreshInMs.longValue() * 1000000;
-        this.lobbyFX = lobby;
-        this.lobby = Lobby.getSingle();
+        this.lobbyFX = lobbyfx;
+        this.lobby = lobby;
     }
 
     @Override

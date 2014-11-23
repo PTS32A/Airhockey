@@ -5,22 +5,17 @@
  */
 package s32a.Server;
 
-import s32a.Server.Person;
-import s32a.Server.Game;
-import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
-import java.awt.Rectangle;
 import java.util.Calendar;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 import lombok.Setter;
+import s32a.Shared.IGame;
 import s32a.Shared.IPlayer;
 import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
@@ -29,7 +24,7 @@ import s32a.Shared.enums.GameStatus;
  *
  * @author Luke
  */
-public class Player extends Person implements IPlayer {
+class Player extends Person implements IPlayer {
 
     @Getter
     private Colors color;
@@ -47,11 +42,11 @@ public class Player extends Person implements IPlayer {
     private Vector2 goalPos;
     @Getter
     private Calendar lastAction;
-    @Getter
     @Setter
-    private Game myGame;
     @Getter
-    private Rectangle rec;
+    private IGame myGame;
+//    @Getter
+//    private Rectangle rec;
     @Getter
     private float sideLength;
     @Getter
@@ -62,6 +57,7 @@ public class Player extends Person implements IPlayer {
      *
      * @param input
      */
+    @Override
     public void setScore(int input) {
         Platform.runLater(() -> {
             score.setValue(input);
@@ -83,7 +79,7 @@ public class Player extends Person implements IPlayer {
         batWidth = (int) (sideLength / 100 * 8);
         this.posX = new SimpleDoubleProperty(.0);
         this.posY = new SimpleDoubleProperty(.0);
-        rec = new Rectangle((int) posX.floatValue(), (int) posY.floatValue(), batWidth, batWidth);
+//        rec = new Rectangle((int) posX.floatValue(), (int) posY.floatValue(), batWidth, batWidth);
         this.score = new SimpleIntegerProperty(20);
     }
 
@@ -97,6 +93,7 @@ public class Player extends Person implements IPlayer {
      * Eventually throws IllegalArgumentException if amount exceeds min or max
      * value
      */
+    @Override
     public boolean moveBat(float amount) throws IllegalArgumentException {
         double direction = 0;
         double x;
@@ -172,8 +169,8 @@ public class Player extends Person implements IPlayer {
             y = Math.sin(Math.toRadians(direction)) * 5;
             this.posX.set(posX.doubleValue() + x);
             this.posY.set(posY.doubleValue() + y);
-            this.rec.x = (int) posX.doubleValue();
-            this.rec.y = (int) posY.doubleValue();
+//            this.rec.x = (int) posX.doubleValue();
+//            this.rec.y = (int) posY.doubleValue();
             return true;
         }
     }

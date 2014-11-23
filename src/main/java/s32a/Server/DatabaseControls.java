@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import s32a.Shared.IGame;
+import s32a.Shared.IPerson;
+import s32a.Shared.IPlayer;
 
 /**
  *
  * @author Kargathia
  */
-public class DatabaseControls {
+class DatabaseControls {
 
     private Connection conn;
     private Properties props;
@@ -116,7 +118,7 @@ public class DatabaseControls {
      * @return
      * @throws java.sql.SQLException
      */
-    public Person checkLogin(String playerName, String password) throws SQLException {
+    public IPerson checkLogin(String playerName, String password) throws SQLException {
         this.initConnection();
         Person output = null;
 
@@ -153,7 +155,7 @@ public class DatabaseControls {
      * @return the newly added person, if applicable
      * @throws java.sql.SQLException
      */
-    public Person addPerson(String playerName, String password) throws SQLException {
+    public IPerson addPerson(String playerName, String password) throws SQLException {
         this.initConnection();
 
         PreparedStatement prepStat = null;
@@ -187,8 +189,8 @@ public class DatabaseControls {
      * @return the X highest rated players, sorted by rating
      * @throws java.sql.SQLException
      */
-    public List<Person> getRankings() throws SQLException {
-        List<Person> output = new ArrayList<>();
+    public List<IPerson> getRankings() throws SQLException {
+        List<IPerson> output = new ArrayList<>();
         String query = "SELECT playername, rating FROM player ORDER BY rating DESC LIMIT 5";
         Statement stat = null;
 
@@ -294,7 +296,7 @@ public class DatabaseControls {
      * @return his new rating
      * @throws java.sql.SQLException
      */
-    public double getNewRating(Person player, Player hasLeft) throws SQLException {
+    public double getNewRating(IPerson player, IPlayer hasLeft) throws SQLException {
         this.initConnection();
         double output = -1;
         try (CallableStatement callStat = conn.prepareCall("{? = call getNewRating(?, ?)}")) {

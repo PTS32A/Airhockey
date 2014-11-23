@@ -7,14 +7,11 @@ package s32a.Server;
 
 import s32a.Server.Game;
 import s32a.Server.Lobby;
-import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
@@ -24,18 +21,18 @@ import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import lombok.Getter;
 import lombok.Setter;
+import s32a.Shared.IPlayer;
+import s32a.Shared.IPuck;
 import s32a.Shared.enums.GameStatus;
 
 /**
  *
  * @author Kargathia
  */
-public class Puck extends TimerTask {
+class Puck extends TimerTask implements IPuck{
 
     @Getter
     private ObjectProperty<Vector2> position;
@@ -45,7 +42,7 @@ public class Puck extends TimerTask {
     @Setter
     private float direction;
     @Getter
-    private List<Player> hitBy;
+    private List<IPlayer> hitBy;
     @Getter
     @Setter
     boolean isMoving;
@@ -71,7 +68,7 @@ public class Puck extends TimerTask {
     @Getter
     private float endDirection;
     @Getter
-    private Player endGoalHit, endBatHit;
+    private IPlayer endGoalHit, endBatHit;
     @Getter
     @Setter
     private int runCount, defaultRunCount;
@@ -333,14 +330,14 @@ public class Puck extends TimerTask {
 
                 if (goalHitPlayerID != -1) {
                     //Player who scored
-                    Player whoScored = null;
+                    IPlayer whoScored = null;
                     if (hitBy.size() > 0) {
                         whoScored = hitBy.get(hitBy.size() - 1);
                         whoScored.setScore(whoScored.getScore().get() + 1);
                     }
 
                     //Player whose goal is hit
-                    Player whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
+                    IPlayer whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
                     printMessage("Goal @ player " + whoLostScore.getColor());
                     whoLostScore.setScore(whoLostScore.getScore().get() - 1);
                     this.endGoalHit = whoLostScore;
@@ -636,7 +633,7 @@ public class Puck extends TimerTask {
         Vector2 batCentre;
         double radius = batWidth / 2 + puckSize / 2;
 
-        for (Player p : myGame.getMyPlayers()) {
+        for (IPlayer p : myGame.getMyPlayers()) {
             batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
 
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID) {

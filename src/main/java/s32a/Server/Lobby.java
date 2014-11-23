@@ -23,7 +23,7 @@ import s32a.Shared.enums.Colors;
  *
  * @author Kargathia
  */
-public class Lobby implements ILobby {
+class Lobby implements ILobby {
 
     /**
      * The Lobby Singleton. Called by everything except some unit tests.
@@ -45,15 +45,22 @@ public class Lobby implements ILobby {
     private Chatbox mychatbox;
     private DatabaseControls myDatabaseControls;
     @Getter
-    private Person currentPerson; // deprecated
-    @Getter
     private HashMap airhockeySettings;
     @Getter
     private HashMap<String, IPerson> activePersons;
     @Getter
-    private List<IGame> activeGames, spectatedGames; // spectatedgames deprecated
-    @Getter
-    private Game playedGame; // deprecated
+    private List<IGame> activeGames;
+
+
+    /**
+     * returns a person by name. Syntactic sugar for activepersons.get(string)
+     * @param playerName
+     * @return
+     */
+    @Override
+    public IPerson getMyPerson(String playerName){
+        return this.activePersons.get(playerName);
+    }
 
     /**
      * Lobby is used as singleton. Public for unit tests.
@@ -61,11 +68,7 @@ public class Lobby implements ILobby {
     public Lobby() {
         this.mychatbox = new Chatbox();
         this.myDatabaseControls = new DatabaseControls();
-        this.currentPerson = null;
         this.activePersons = new HashMap<>();
-        this.activeGames = new ArrayList<>();
-        this.playedGame = null;
-        this.spectatedGames = new ArrayList<>();
         this.airhockeySettings = new HashMap<>();
         airhockeySettings.put("Goal Default", new Vector2(0, 0));
         airhockeySettings.put("Side Length", 500f);
@@ -117,19 +120,12 @@ public class Lobby implements ILobby {
             throw new IllegalArgumentException();
         }
 
-        Person newPerson = this.myDatabaseControls.checkLogin(playerName, password);
+        IPerson newPerson = this.myDatabaseControls.checkLogin(playerName, password);
         if (newPerson == null) {
             return false;
         }
 
-        if (activePersons.put(playerName, newPerson) == null) {
-            this.currentPerson = (Person) this.activePersons.get(playerName);
-            this.playedGame = null;
-            this.spectatedGames = new ArrayList<>();
-        } else {
-            return false;
-        }
-        return true;
+        return this.activePersons.put(playerName, newPerson) != null;
     }
 
     /**
@@ -142,7 +138,7 @@ public class Lobby implements ILobby {
     @Override
     public boolean logOut(IPerson input) {
         if (input == null) {
-            throw new IllegalArgumentException();
+            return false; // update this in unit tests when I get around to
         }
 
         if (input instanceof Player) {
@@ -155,9 +151,6 @@ public class Lobby implements ILobby {
             }
         }
         this.activePersons.remove(input.getName());
-        if (input.getName().equals(this.currentPerson.getName())) {
-            currentPerson = null;
-        }
         return true;
     }
 
@@ -190,15 +183,11 @@ public class Lobby implements ILobby {
         Person person = (Person) input;
         Game newGame = null;
         try {
-            person = new Player(person.getName(), person.getRating(), Colors.Red);
+            person = new Player(person.getName(), person.ratingProperty().get(),
+                    Colors.Red);
             newGame = new Game((Player) person);
             this.activePersons.replace(person.getName(), person);
             this.activeGames.add(newGame);
-            if (this.currentPerson != null
-                    && this.currentPerson.getName().equals(person.getName())) {
-                this.currentPerson = person;
-                this.playedGame = newGame;
-            }
         } catch (Exception ex) {
             this.returnToLobby(person);
             this.endGame(newGame, null);
@@ -227,9 +216,10 @@ public class Lobby implements ILobby {
         try {
             Player player;
             if (person.isBot()) {
-                player = new Bot(person.getName(), person.getRating(), game.getNextColor());
+                player = new Bot(person.getName(), person.ratingProperty().get(),
+                        game.getNextColor());
             } else {
-                player = new Player(person.getName(), person.getRating(),
+                player = new Player(person.getName(), person.ratingProperty().get(),
                         game.getNextColor());
             }
             if (game.addPlayer(player)) {
@@ -237,12 +227,8 @@ public class Lobby implements ILobby {
             } else {
                 return null;
             }
-            if (player.getName().equals(this.currentPerson.getName())) {
-                this.playedGame = game;
-            }
         } catch (Exception ex) {
             this.returnToLobby(person);
-            this.playedGame = null;
             return null;
         }
         return game;
@@ -266,15 +252,11 @@ public class Lobby implements ILobby {
         Game game = (Game)gameInput;
         Person person = (Person) personInput;
         try {
-            person = new Spectator(person.getName(), person.getRating());
+            person = new Spectator(person.getName(), person.ratingProperty().get());
             if (!game.addSpectator((Spectator) person)) {
                 return null;
             }
             this.activePersons.replace(person.getName(), person);
-            if (this.currentPerson.getName().equals(person.getName())) {
-                this.spectatedGames.add(game);
-                this.currentPerson = (Person)this.activePersons.get(person.getName());
-            }
         } catch (Exception ex) {
             return null;
         }
@@ -325,14 +307,13 @@ public class Lobby implements ILobby {
         }
 
         try {
-            for (Player player : game.getMyPlayers()) {
+            for (IPlayer player : game.getMyPlayers()) {
                 if (this.getActivePersons().get(player.getName()) instanceof Player) {
                     player.setRating(this.myDatabaseControls.getNewRating((Person) player, hasLeft));
                     this.returnToLobby(player);
                 }
             }
             this.activeGames.remove(game);
-            this.spectatedGames.remove(game);
         } catch (IllegalArgumentException | SQLException ex) {
             return false;
         }
@@ -346,6 +327,7 @@ public class Lobby implements ILobby {
      * @param game
      * @param spectator
      */
+    @Override
     public void stopSpectating(IGame game, IPerson spectator) {
         if (spectator == null || game == null || !(spectator instanceof Spectator)) {
             return;
@@ -367,11 +349,8 @@ public class Lobby implements ILobby {
         }
         try {
             boolean isBot = participant.isBot();
-            this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.getRating()));
+            this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.ratingProperty().get()));
             this.activePersons.get(participant.getName()).setBot(isBot);
-            if (this.currentPerson.getName().equals(participant.getName())) {
-                this.currentPerson = (Person) this.activePersons.get(participant.getName());
-            }
         } catch (Exception ex) {
         }
     }
@@ -390,9 +369,9 @@ public class Lobby implements ILobby {
         int player2score = input.getMyPlayers().get(1).getScore().get();
         int player3score = input.getMyPlayers().get(2).getScore().get();
 
-        double player1rating = input.getMyPlayers().get(0).getRating();
-        double player2rating = input.getMyPlayers().get(1).getRating();
-        double player3rating = input.getMyPlayers().get(2).getRating();
+        double player1rating = input.getMyPlayers().get(0).ratingProperty().get();
+        double player2rating = input.getMyPlayers().get(1).ratingProperty().get();
+        double player3rating = input.getMyPlayers().get(2).ratingProperty().get();
 
         double averageRating = (player1rating + player2rating + player3rating) / 3;
         double speedRating;
@@ -453,6 +432,7 @@ public class Lobby implements ILobby {
      * @return Game when a game was found null otherwise
      * IllegalArgumentException when gameID was null
      */
+    @Override
     public IGame getMyGame(String gameID) {
         if (gameID.trim() == null) {
             throw new IllegalArgumentException();
@@ -472,6 +452,7 @@ public class Lobby implements ILobby {
      * @return a sorted list of highest ranking players
      * @throws java.sql.SQLException
      */
+    @Override
     public List<IPerson> getRankings() throws SQLException {
         return this.myDatabaseControls.getRankings();
     }
@@ -483,6 +464,7 @@ public class Lobby implements ILobby {
      * Person.isBot to true Next up it starts multiple games, some full with
      * bots, some 2/3 full
      */
+    @Override
     public void populate() {
         // adds bot 1-11
         this.activePersons.put("bot1", new Person("bot1", (double) 15));

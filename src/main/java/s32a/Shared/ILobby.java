@@ -15,6 +15,8 @@ import java.util.List;
  */
 public interface ILobby {
 
+    public IPerson getMyPerson(String playerName);
+
     public IChatbox getMychatbox();
 
     public HashMap getAirhockeySettings();
@@ -41,4 +43,13 @@ public interface ILobby {
             throws IllegalArgumentException;
 
     public boolean endGame(IGame game, IPlayer hasLeft);
+
+    public void stopSpectating(IGame game, IPerson spectator);
+
+    public IGame getMyGame(String gameID);
+
+    public List<IPerson> getRankings()
+            throws SQLException;
+
+    public void populate();
 }

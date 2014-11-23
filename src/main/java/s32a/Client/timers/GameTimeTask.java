@@ -7,7 +7,7 @@ package s32a.Client.timers;
 
 import java.util.TimerTask;
 import javafx.application.Platform;
-import s32a.Server.Game;
+import s32a.Shared.IGame;
 import s32a.Shared.enums.GameStatus;
 
 /**
@@ -16,11 +16,11 @@ import s32a.Shared.enums.GameStatus;
  */
 public class GameTimeTask extends TimerTask {
 
-    private Game myGame;
+    private IGame myGame;
     private int min;
     private int sec;
 
-    public GameTimeTask(Game game) {
+    public GameTimeTask(IGame game) {
         this.myGame = game;
         this.min = 0;
         this.sec = 0;

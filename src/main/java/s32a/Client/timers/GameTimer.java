@@ -7,10 +7,9 @@ package s32a.Client.timers;
 
 import javafx.animation.AnimationTimer;
 import s32a.Server.Bot;
-import s32a.Server.Game;
-import s32a.Server.Player;
 import s32a.Client.GUI.GameFX;
 import s32a.Shared.IGame;
+import s32a.Shared.IPlayer;
 
 /**
  *
@@ -24,7 +23,7 @@ public class GameTimer extends AnimationTimer {
     private long lastAction;
     private IGame myGame;
 
-    public GameTimer(GameFX gameFX, Game game) {
+    public GameTimer(GameFX gameFX, IGame game) {
         this.gameFX = gameFX;
         this.myGame = game;
         this.refreshInMS = 20;
@@ -45,7 +44,7 @@ public class GameTimer extends AnimationTimer {
 //            prevUpd = now;
 //        }
 
-        for (Player p : myGame.getMyPlayers()) {
+        for (IPlayer p : myGame.getMyPlayers()) {
             if (p instanceof Bot) {
                 Bot b = (Bot) p;
                 b.moveBot();
