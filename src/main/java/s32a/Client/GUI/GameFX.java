@@ -403,9 +403,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         Person currentPerson = lobby.getCurrentPerson();
 
         if (currentPerson instanceof Player) {
-            myGame.addChatMessage(tfChatbox.getText(), currentPerson);
+            myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
         } else if (currentPerson instanceof Spectator) {
-            myGame.addChatMessage(tfChatbox.getText(), currentPerson);
+            myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
         }
         tfChatbox.setText("");
     }
@@ -430,16 +430,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     || keyEvent.getCode() == KeyCode.LEFT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(-1);
-                    System.out.println(me.getPosX().doubleValue());
-                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
+//                    System.out.println(me.getPosX().doubleValue());
+//                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;
                 }
             } else if (keyEvent.getCode() == KeyCode.D
                     || keyEvent.getCode() == KeyCode.RIGHT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(1);
-                    System.out.println(me.getPosX().doubleValue());
-                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
+//                    System.out.println(me.getPosX().doubleValue());
+//                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;
                 }
             }

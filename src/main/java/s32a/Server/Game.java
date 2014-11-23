@@ -27,7 +27,8 @@ import lombok.Setter;
 import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
 import s32a.Client.timers.GameTimeTask;
-import s32a.Shared.IGame;
+import s32a.Shared.*;
+import s32a.Shared.ISpectator;
 
 /**
  * @author Kargathia
@@ -39,13 +40,13 @@ public class Game implements IGame {
     private ObjectProperty<GameStatus> statusProp;
 
     @Getter
-    private Chatbox myChatbox;
+    private IChatbox myChatbox;
     @Getter
     private Puck myPuck;
     @Getter
-    private List<Spectator> mySpectators;
+    private List<ISpectator> mySpectators;
     @Getter
-    private List<Player> myPlayers;
+    private List<IPlayer> myPlayers;
 
     /**
      * includes gameID, nextColor, sideLength, gameDate
@@ -153,7 +154,7 @@ public class Game implements IGame {
      *
      * @param starter The player that starts the game initially
      */
-    Game(Player starter) {
+    Game(IPlayer starter) {
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
 
@@ -197,12 +198,15 @@ public class Game implements IGame {
      * @return True if everything went right, and chatbox.addchatmessage
      * returned true
      */
-    public boolean addChatMessage(String message, Person from) {
+    public boolean addChatMessage(String message, String from) {
         if (message == null || from == null) {
             throw new IllegalArgumentException("sender or message is null");
         }
         if (message.trim().isEmpty()) {
             throw new IllegalArgumentException("message is empty");
+        }
+        if (from.trim().isEmpty()){
+            throw new IllegalArgumentException("anonymous sender");
         }
         return myChatbox.addChatMessage(message, from);
     }
@@ -218,7 +222,7 @@ public class Game implements IGame {
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
      */
-    boolean addPlayer(Player player) {
+    boolean addPlayer(IPlayer player) {
         if (player != null) {
             if (!myPlayers.contains(player)) {
                 if (myPlayers.size() < 3) {
@@ -249,7 +253,7 @@ public class Game implements IGame {
      * @param p
      * @param playerID
      */
-    private void setBatPosition(Player p, int playerID) {
+    private void setBatPosition(IPlayer p, int playerID) {
         float width = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         float bat = width / 100 * 8;
         float x;
@@ -316,9 +320,9 @@ public class Game implements IGame {
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
      */
-    boolean addSpectator(Spectator spectator) throws IllegalArgumentException {
+    boolean addSpectator(ISpectator spectator) throws IllegalArgumentException {
         if (spectator != null) {
-            for (Spectator spect : this.mySpectators) {
+            for (ISpectator spect : this.mySpectators) {
                 if (spect.getName().equals(spectator.getName())) {
                     return false;
                 }
@@ -337,7 +341,7 @@ public class Game implements IGame {
      * game
      * @return returns true if the spectator was successfully removed
      */
-    boolean removeSpectator(Spectator spectator) {
+    boolean removeSpectator(ISpectator spectator) {
         if (spectator != null) {
             if (mySpectators.contains(spectator)) {
                 mySpectators.remove(spectator);
@@ -417,7 +421,7 @@ public class Game implements IGame {
             return false;
         }
         double averageRating = 0;
-        for (Player p : myPlayers) {
+        for (IPlayer p : myPlayers) {
             averageRating += p.getRating();
         }
         averageRating = averageRating / myPlayers.size();
@@ -444,17 +448,6 @@ public class Game implements IGame {
         }
 
         return true;
-    }
-
-    /**
-     * Does not have to be called for every new frame or update Cycle -
-     * Game.run() is responsible for that. Merely returns an updated snapshot of
-     * the game, after checking whether all is as it should be
-     *
-     * @return Returns the game in an updated state
-     */
-    public Game update() {
-        return this;
     }
 
     /**

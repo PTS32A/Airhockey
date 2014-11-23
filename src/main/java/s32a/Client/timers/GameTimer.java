@@ -10,6 +10,7 @@ import s32a.Server.Bot;
 import s32a.Server.Game;
 import s32a.Server.Player;
 import s32a.Client.GUI.GameFX;
+import s32a.Shared.IGame;
 
 /**
  *
@@ -21,7 +22,7 @@ public class GameTimer extends AnimationTimer {
     private long refreshInMS;
     private long prevUpd;
     private long lastAction;
-    private Game myGame;
+    private IGame myGame;
 
     public GameTimer(GameFX gameFX, Game game) {
         this.gameFX = gameFX;

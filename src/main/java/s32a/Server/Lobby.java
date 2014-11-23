@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
+import s32a.Shared.IGame;
 import s32a.Shared.ILobby;
+import s32a.Shared.IPerson;
+import s32a.Shared.IPlayer;
 import s32a.Shared.enums.Colors;
 
 /**
@@ -40,18 +43,17 @@ public class Lobby implements ILobby {
     }
     @Getter
     private Chatbox mychatbox;
-    @Getter
     private DatabaseControls myDatabaseControls;
     @Getter
-    private Person currentPerson;
+    private Person currentPerson; // deprecated
     @Getter
     private HashMap airhockeySettings;
     @Getter
-    private HashMap<String, Person> activePersons;
+    private HashMap<String, IPerson> activePersons;
     @Getter
-    private List<Game> activeGames, spectatedGames;
+    private List<IGame> activeGames, spectatedGames; // spectatedgames deprecated
     @Getter
-    private Game playedGame;
+    private Game playedGame; // deprecated
 
     /**
      * Lobby is used as singleton. Public for unit tests.
@@ -82,6 +84,7 @@ public class Lobby implements ILobby {
      * trailing / leading white spaces
      * @throws java.sql.SQLException
      */
+    @Override
     public boolean addPerson(String playerName, String password)
             throws IllegalArgumentException, SQLException {
         if (playerName == null
@@ -136,7 +139,8 @@ public class Lobby implements ILobby {
      * @param input
      * @return whether logout succeeded
      */
-    public boolean logOut(Person input) {
+    @Override
+    public boolean logOut(IPerson input) {
         if (input == null) {
             throw new IllegalArgumentException();
         }
@@ -146,7 +150,7 @@ public class Lobby implements ILobby {
             this.endGame(playerInput.getMyGame(), playerInput);
         } else if (input instanceof Spectator) {
             Spectator spectInput = (Spectator) input;
-            for (Game g : activeGames) {
+            for (IGame g : activeGames) {
                 g.removeSpectator(spectInput);
             }
         }
@@ -173,15 +177,17 @@ public class Lobby implements ILobby {
      * converted to Player Person is used as gamestarter for Game constructor
      * parameter person can't already be a Player or Spectator
      *
-     * @param person should be Lobby.currentPerson if called by GUI
+     * @param input should be Lobby.currentPerson if called by GUI
      * @return - the freshly started game if everything went well - null
      */
-    public Game startGame(Person person) {
-        if (person == null || (person instanceof Player)
-                || (person instanceof Spectator)) {
+    @Override
+    public Game startGame(IPerson input) {
+        if (input == null || (input instanceof Player)
+                || (input instanceof Spectator)) {
             return null;
         }
 
+        Person person = (Person) input;
         Game newGame = null;
         try {
             person = new Player(person.getName(), person.getRating(), Colors.Red);
@@ -205,16 +211,19 @@ public class Lobby implements ILobby {
      * lets currentPerson join an existing game currentPerson is converted to
      * Player currentPerson can't already be a Player or Spectator
      *
-     * @param game can't be null
-     * @param person should be Lobby.currentPerson if called by GUI
+     * @param gameInput can't be null
+     * @param personInput should be Lobby.currentPerson if called by GUI
      * @return joined game if everything went well null otherwise
      */
-    public Game joinGame(Game game, Person person) {
-        if (person == null || (person instanceof Player)
-                || (person instanceof Spectator) || game == null) {
+    @Override
+    public Game joinGame(IGame gameInput, IPerson personInput) {
+        if (personInput == null || (personInput instanceof Player)
+                || (personInput instanceof Spectator) || gameInput == null) {
             return null;
         }
 
+        Game game = (Game)gameInput;
+        Person person = (Person) personInput;
         try {
             Player player;
             if (person.isBot()) {
@@ -244,15 +253,18 @@ public class Lobby implements ILobby {
      * to Spectator. currentPerson can't already be a Player. currentPerson can
      * already be a Spectator
      *
-     * @param game can't be null
-     * @param person should be currentPerson if called by GUI
+     * @param gameInput can't be null
+     * @param personInput should be currentPerson if called by GUI
      * @return - Game if everything went well - Null otherwise
      */
-    public Game spectateGame(Game game, Person person) {
-        if (person == null || (person instanceof Player)) {
+    @Override
+    public IGame spectateGame(IGame gameInput, IPerson personInput) {
+        if (personInput == null || (personInput instanceof Player)) {
             return null;
         }
 
+        Game game = (Game)gameInput;
+        Person person = (Person) personInput;
         try {
             person = new Spectator(person.getName(), person.getRating());
             if (!game.addSpectator((Spectator) person)) {
@@ -261,7 +273,7 @@ public class Lobby implements ILobby {
             this.activePersons.replace(person.getName(), person);
             if (this.currentPerson.getName().equals(person.getName())) {
                 this.spectatedGames.add(game);
-                this.currentPerson = this.activePersons.get(person.getName());
+                this.currentPerson = (Person)this.activePersons.get(person.getName());
             }
         } catch (Exception ex) {
             return null;
@@ -274,13 +286,13 @@ public class Lobby implements ILobby {
      *
      * @param message can't be null
      * @param from if method is called from GUI it should always be
-     * currentPerson alternative would be if method is called from
-     * internetconnection (irrelevant in iteration 1)
+     * currentPerson name
      * @return - True if everything went well - False otherwise
      * @throws IllegalArgumentException
      */
-    public boolean addChatMessage(String message, Person from) throws IllegalArgumentException {
-        if (message == null || from == null) {
+    @Override
+    public boolean addChatMessage(String message, String from) throws IllegalArgumentException {
+        if (message == null || from == null || from.trim().isEmpty()) {
             throw new IllegalArgumentException("message or poster is null");
         }
         return this.mychatbox.addChatMessage(message, from);
@@ -295,7 +307,8 @@ public class Lobby implements ILobby {
      * player leaves the game
      * @return - True if everything went well - False otherwise
      */
-    public boolean endGame(Game game, Player hasLeft) {
+    @Override
+    public boolean endGame(IGame game, IPlayer hasLeft) {
         if (game == null || !this.activeGames.contains(game)) {
             return false;
         }
@@ -333,7 +346,7 @@ public class Lobby implements ILobby {
      * @param game
      * @param spectator
      */
-    public void stopSpectating(Game game, Person spectator) {
+    public void stopSpectating(IGame game, IPerson spectator) {
         if (spectator == null || game == null || !(spectator instanceof Spectator)) {
             return;
         }
@@ -348,7 +361,7 @@ public class Lobby implements ILobby {
      *
      * @param participant can be null, but it won't do anything then either
      */
-    private void returnToLobby(Person participant) {
+    private void returnToLobby(IPerson participant) {
         if (participant == null || !(participant instanceof Player || participant instanceof Spectator)) {
             return;
         }
@@ -369,7 +382,7 @@ public class Lobby implements ILobby {
      * @param input
      * @return
      */
-    private Game adjustScore(Game input, boolean earlyEnding) throws IllegalArgumentException {
+    private IGame adjustScore(IGame input, boolean earlyEnding) throws IllegalArgumentException {
         if (input.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("game wasn't full");
         }
@@ -440,11 +453,11 @@ public class Lobby implements ILobby {
      * @return Game when a game was found null otherwise
      * IllegalArgumentException when gameID was null
      */
-    public Game getMyGame(String gameID) {
+    public IGame getMyGame(String gameID) {
         if (gameID.trim() == null) {
             throw new IllegalArgumentException();
         }
-        for (Game game : this.activeGames) {
+        for (IGame game : this.activeGames) {
             if (game.getGameInfo().get("gameID").equals(gameID)) {
                 return game;
             }
@@ -459,7 +472,7 @@ public class Lobby implements ILobby {
      * @return a sorted list of highest ranking players
      * @throws java.sql.SQLException
      */
-    public List<Person> getRankings() throws SQLException {
+    public List<IPerson> getRankings() throws SQLException {
         return this.myDatabaseControls.getRankings();
     }
 
@@ -485,7 +498,7 @@ public class Lobby implements ILobby {
         this.activePersons.put("bot11", new Person("bot11", (double) 15));
 
         //game 1
-        Person bot = this.activePersons.get("bot1");
+        IPerson bot = this.activePersons.get("bot1");
         bot.setBot(true);
         Game game = this.startGame(bot);
 

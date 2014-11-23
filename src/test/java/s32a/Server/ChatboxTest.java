@@ -45,7 +45,7 @@ public class ChatboxTest
     {
         Person piet = new Person("piet", (double)100);
         String mes = "Ik ben piet";
-        instance.addChatMessage(mes, piet);
+        instance.addChatMessage(mes, piet.getName());
     }
     
     @After
@@ -63,7 +63,7 @@ public class ChatboxTest
         String message = "Ik ben jan";
         boolean expResult = true;
         Person from = new Person("jan", (double)50);
-        boolean result = instance.addChatMessage(message, from);
+        boolean result = instance.addChatMessage(message, from.getName());
         assertEquals(expResult, result);
     }
 

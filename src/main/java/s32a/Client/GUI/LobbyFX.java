@@ -29,6 +29,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import s32a.Client.timers.LobbyTimer;
+import s32a.Shared.IGame;
+import s32a.Shared.IPerson;
 
 /**
  *
@@ -55,9 +57,9 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     @FXML
     ListView lvPlayerInfo;
 
-    private ObservableList<Person> highScores;
+    private ObservableList<IPerson> highScores;
     private ObservableList<String> messages;
-    private ObservableList<Game> games;
+    private ObservableList<IGame> games;
 
     private AnimationTimer lobbyTimer;
 
@@ -66,7 +68,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      *
      * @param input
      */
-    public void setHighScores(List<Person> input) {
+    public void setHighScores(List<IPerson> input) {
         Platform.runLater(() -> {
             this.highScores.setAll(input);
         });
@@ -77,7 +79,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      *
      * @param input
      */
-    public void setGames(List<Game> input) {
+    public void setGames(List<IGame> input) {
         Platform.runLater(() -> {
             this.games.setAll(input);
         });
@@ -228,7 +230,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     public void sendChatMessage(Event evt) {
         Lobby l = Lobby.getSingle();
         if (!tfChatbox.getText().equals("")) {
-            l.addChatMessage(tfChatbox.getText(), l.getCurrentPerson());
+            l.addChatMessage(tfChatbox.getText(), l.getCurrentPerson().getName());
             tfChatbox.setText("");
         }
     }

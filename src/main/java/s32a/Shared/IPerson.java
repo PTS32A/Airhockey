@@ -12,4 +12,6 @@ package s32a.Shared;
 public interface IPerson {
 
     public String getName();
+
+    public void setBot(boolean newState);
 }

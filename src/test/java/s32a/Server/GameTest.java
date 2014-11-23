@@ -65,7 +65,7 @@ public class GameTest
     (expected = IllegalArgumentException.class)
     public void testAddChatMessageNullMessage()
     {      
-        game.addChatMessage(null, starter);
+        game.addChatMessage(null, starter.getName());
         fail("ChatMessage can't be null");
     }
     
@@ -83,7 +83,7 @@ public class GameTest
     public void testAddChatMessageEmpty()
     {      
         message = "";
-        game.addChatMessage(message, starter);
+        game.addChatMessage(message, starter.getName());
         fail("ChatMessage must containt characters other than white space");
     }
     
@@ -92,7 +92,7 @@ public class GameTest
     public void testAddChatMessageWhiteSpaceMessage()
     {      
         message = "   ";
-        game.addChatMessage(message, starter);
+        game.addChatMessage(message, starter.getName());
         fail("ChatMessage must containt characters other than white space");
     }
     

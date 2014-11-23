@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 import s32a.Shared.IChatbox;
+import s32a.Shared.IPerson;
 
 /**
  *
@@ -39,16 +40,16 @@ public class Chatbox implements IChatbox {
      * Message should be preformatted "<PlayerName>[HH:MM:SS]: message"
      *
      * @param message The message that is going to be sent to the chat box
-     * @param from
+     * @param sender
      * @return returns true if the message was sent successfully returns
      * IllegalArgumentException if message wasn't formatted correctly
      */
-    public boolean addChatMessage(String message, Person from) {
+    public boolean addChatMessage(String message, String sender) {
         StringBuilder builder = new StringBuilder();
         String time = String.valueOf(Calendar.getInstance().getTime()).substring(11, 19);
         //Gets only the time of the day out of the calendar.
 
-        builder.append("<").append(from.getName()).append(">");
+        builder.append("<").append(sender).append(">");
         builder.append("[").append(time).append("]");
         builder.append(": ").append(message);
         message = builder.toString();

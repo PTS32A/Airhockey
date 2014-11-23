@@ -22,6 +22,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import s32a.Shared.IGame;
 
 /**
  *
@@ -241,7 +242,7 @@ public class DatabaseControls {
      * @throws SQLException
      * @throws IllegalArgumentException when game doesn't have three players
      */
-    public void saveGame(Game game) throws SQLException, IllegalArgumentException {
+    public void saveGame(IGame game) throws SQLException, IllegalArgumentException {
         if (game.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("Game contained less than three players");
         }
