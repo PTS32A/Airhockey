@@ -171,24 +171,4 @@ public class Player extends Person {
             return true;
         }
     }
-
-    /**
-     * Applies an owned PowerUp Could Have functionality - disregard for now
-     *
-     * @return True if everything went well False otherwise - including if no
-     * PowerUp was in possession
-     */
-    public boolean applyPowerUp() {
-        return false;
-    }
-
-    /**
-     * Adds a PowerUp, readying it to be applied Could Have functionality -
-     * disregard for now
-     *
-     * @param powerUp
-     */
-    public void addPowerUp(PowerUp powerUp) {
-        //
-    }
 }
