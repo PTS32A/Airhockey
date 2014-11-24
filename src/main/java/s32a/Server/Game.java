@@ -251,8 +251,12 @@ class Game implements IGame {
                     return false;
                 }
             }
-            mySpectators.add(spectator);
-            return true;
+            if (spectator.addGame(this)) {
+                mySpectators.add(spectator);
+                return true;
+            } else {
+                return false;
+            }
         } else {
             throw new IllegalArgumentException("spectator is null");
         }
@@ -269,11 +273,12 @@ class Game implements IGame {
     public boolean removeSpectator(ISpectator spectator) {
         if (spectator != null) {
             if (mySpectators.contains(spectator)) {
+                spectator.removeGame(this);
                 mySpectators.remove(spectator);
                 return true;
             }
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("spectator input was null");
         }
         return false;
     }
@@ -421,8 +426,8 @@ class Game implements IGame {
     }
 
     /**
-     * gets the color the next player to join should be assigned
-     * Not featured in interface, as it is called only in server setting
+     * gets the color the next player to join should be assigned Not featured in
+     * interface, as it is called only in server setting
      *
      * @return the color the next player should have, cycling red, blue, green
      * returns null if game already has three players
@@ -450,8 +455,8 @@ class Game implements IGame {
     }
 
     /**
-     * Used to set properties of Puck for customization of unit tests
-     * Not implemented from interface
+     * Used to set properties of Puck for customization of unit tests Not
+     * implemented from interface
      *
      * @param position the start position (Vector2) of the Puck
      * @param puckSpeed the speed of the Puck

@@ -5,10 +5,19 @@
  */
 package s32a.Shared;
 
+import java.util.List;
+
 /**
  *
  * @author Kargathia
  */
 public interface ISpectator extends IPerson {
 
+    public List<IGame> getMyGames();
+
+    public boolean addGame(IGame input);
+
+    public boolean removeGame(IGame input);
+
+    public IGame getNewestGame();
 }

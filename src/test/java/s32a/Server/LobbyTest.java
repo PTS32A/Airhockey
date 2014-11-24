@@ -21,6 +21,8 @@ import java.lang.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import s32a.Shared.IPerson;
+import s32a.Shared.IPlayer;
 
 /**
  *
@@ -86,8 +88,8 @@ public class LobbyTest {
         catch (SQLException ex) {
             fail("SQL exception on checkLogin: " + ex.getMessage());
         }
-        assertEquals("Person was not correctly initialised",
-                this.mockLobby.getCurrentPerson().getName(), testey.getName());
+        assertTrue("Person was not correctly initialised",
+                this.mockLobby.getMyPerson(testey.getName()) instanceof IPerson);
         try {
             assertFalse("wrong password logged in anyway",
                     this.mockLobby.checkLogin("testey", "falsepass"));
@@ -166,18 +168,19 @@ public class LobbyTest {
         }
 
         //testey
-        Game game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        Game game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"));
         assertNotNull("startGame returned null", game);
-        assertEquals("playedGame wasn't started right", game, this.mockLobby.getPlayedGame());
+        assertEquals("playedGame wasn't started right", game, 
+                ((IPlayer)this.mockLobby.getMyPerson("testey")).getMyGame());
 
-        Player testey = (Player) this.mockLobby.getCurrentPerson();
+        Player testey = (Player) this.mockLobby.getMyPerson("testey");
         assertEquals("currentPerson wasn't starting player",
-                this.mockLobby.getPlayedGame().getMyPlayers().get(0), testey);
+                testey.getMyGame().getMyPlayers().get(0), testey);
         assertEquals("color wasn't red", testey.getColor(), Colors.Red);
         assertEquals("starting score wasn't 20", testey.getScore(), 20);
         assertTrue("testey wasn't a starting player", testey.isStarter());
         assertNull("testey started a game while being a player",
-                this.mockLobby.startGame(this.mockLobby.getCurrentPerson()));
+                this.mockLobby.startGame(this.mockLobby.getMyPerson("testey")));
 
         try {
             this.mockLobby.addPerson("playey", "testpass");
@@ -200,8 +203,6 @@ public class LobbyTest {
             fail("unable to log in playey" + ex.getMessage());
         }
         Person playey = (Person) this.mockLobby.getActivePersons().get("playey");
-        assertNull("playedGame wasn't cleared",
-                this.mockLobby.joinGame(this.mockLobby.getPlayedGame(), playey));
         assertEquals("playey was unable to join game",
                 this.mockLobby.joinGame(game,
                         (Person) this.mockLobby.getActivePersons().get("playey")), game);
@@ -243,8 +244,7 @@ public class LobbyTest {
             fail("unable to add or log in testey" + ex.getMessage());
         }
         assertTrue("testey wasn't able to post a chat message",
-                this.mockLobby.addChatMessage("testmessage",
-                        this.mockLobby.getCurrentPerson().getName()));
+                this.mockLobby.addChatMessage("testmessage", "testey"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -285,12 +285,12 @@ public class LobbyTest {
             fail("unable to add or log in testey" + ex.getMessage());
         }
 
-        Game game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        Game game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"));
         assertNotNull("game wasn't started properly", game);
         assertTrue("game didn't end as it should", this.mockLobby.endGame(game, null));
         assertFalse("successfully ended a previously ended game",
                 this.mockLobby.endGame(game, null));
-        game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"));
         assertTrue("game didn't end as it should with leaver",
                 this.mockLobby.endGame(game,
                         (Player) this.mockLobby.getActivePersons().get("testey")));
@@ -308,7 +308,7 @@ public class LobbyTest {
             fail("unable to add or log in testey" + ex.getMessage());
         }
 
-        Game game = this.mockLobby.startGame(this.mockLobby.getCurrentPerson());
+        Game game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"));
 
         try {
             this.mockLobby.addPerson("testey1", "testpass");
@@ -317,7 +317,7 @@ public class LobbyTest {
         catch (IllegalArgumentException | SQLException ex) {
             fail("unable to add or log in testey1" + ex.getMessage());
         }
-        this.mockLobby.joinGame(game, this.mockLobby.getCurrentPerson());
+        this.mockLobby.joinGame(game, this.mockLobby.getMyPerson("testey"));
 
         try {
             this.mockLobby.addPerson("testey2", "testpass");
@@ -326,11 +326,11 @@ public class LobbyTest {
         catch (IllegalArgumentException | SQLException ex) {
             fail("unable to add or log in testey2" + ex.getMessage());
         }
-        this.mockLobby.joinGame(game, this.mockLobby.getCurrentPerson());
+        this.mockLobby.joinGame(game, this.mockLobby.getMyPerson("testey"));
 
         game.beginGame();
 
-        assertTrue("Logout didn't succeed", this.mockLobby.logOut(this.mockLobby.getCurrentPerson()));
+        assertTrue("Logout didn't succeed", this.mockLobby.logOut(this.mockLobby.getMyPerson("testey")));
     }
 
     @Test(expected = IllegalArgumentException.class)

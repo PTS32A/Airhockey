@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
+import s32a.Shared.IPlayer;
 
 /**
  *
@@ -63,7 +64,7 @@ public class PuckTest
         game.addPlayer(p2);
         game.addPlayer(p3);
         
-        sideLength = game.getMyPuck().getSideLength();
+        sideLength = ((Puck)game.getMyPuck()).getSideLength();
     }
     
     @After
@@ -75,7 +76,7 @@ public class PuckTest
     public void testUpdatePositionMovePuck()
     {
         System.out.println("!!!MOVE PUCK TEST!!!");
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 90; //Move to the right
         
@@ -93,7 +94,7 @@ public class PuckTest
         waitForPuck();
         
         Vector2 expResult = new Vector2(expX,expY);
-        Vector2 result = game.getMyPuck().getEndPosition();
+        Vector2 result = ((Puck)game.getMyPuck()).getEndPosition();
         
         assertTrue("Pucks position is incorrect", checkEqualPositions(expResult, result));
     }
@@ -101,7 +102,7 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceRight()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 90; //Move to the right
         
@@ -117,7 +118,7 @@ public class PuckTest
         
         //Bounce off the rightside wall >>> resulting in the direction going towards the right (90) changing to going towards the bottom (180).
         int expResult = 180;
-        int result = (int)game.getMyPuck().getEndDirection();
+        int result = (int)((Puck)game.getMyPuck()).getEndDirection();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
@@ -125,7 +126,7 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceLeft()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 270; //Move to the left
         
@@ -141,7 +142,7 @@ public class PuckTest
         
         //Bounce off the leftside wall >>> resulting in the direction going towards the left (90) changing to going towards the bottom (180).
         int expResult = 180;
-        int result = (int)game.getMyPuck().getEndDirection();
+        int result = (int)((Puck)game.getMyPuck()).getEndDirection();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
@@ -149,7 +150,7 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceUp()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 0; //Move up
         
@@ -165,7 +166,7 @@ public class PuckTest
         
         //Bounce off the top corner >>> resulting in the direction going up (0) changing to going towards the bottom (180).
         int expResult = 180;
-        int result = (int)game.getMyPuck().getEndDirection();
+        int result = (int)((Puck)game.getMyPuck()).getEndDirection();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
@@ -173,7 +174,7 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceDown()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 180; //Move down
         
@@ -189,7 +190,7 @@ public class PuckTest
         
         //Bounce off the top corner >>> resulting in the direction going down (180) changing to going up (0).
         int expResult = 0;
-        int result = (int)game.getMyPuck().getEndDirection();
+        int result = (int)((Puck)game.getMyPuck()).getEndDirection();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
@@ -197,7 +198,7 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceDiagonalTowardsBottomWall()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 160; //Move diagonally down towards the bottom wall
         
@@ -213,14 +214,14 @@ public class PuckTest
         
         //Bounce off the top corner >>> resulting in the direction going down (180) changing to going up (0).
         int expResult = 20;
-        int result = (int)game.getMyPuck().getEndDirection();
+        int result = (int)((Puck)game.getMyPuck()).getEndDirection();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
     
     public void testUpdatePositionBounceDiagonalTowardsLeftWall()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 290; //Move diagonally down towards the bottom wall
         
@@ -236,7 +237,7 @@ public class PuckTest
         
         //Bounce off the top corner >>> resulting in the direction going down (180) changing to going up (0).
         int expResult = 130;
-        int result = (int)game.getMyPuck().getEndDirection();
+        int result = (int)((Puck)game.getMyPuck()).getEndDirection();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
@@ -244,8 +245,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionGoalHit()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
-        position.x += game.getMyPuck().getBatWidth() * 0.75f;
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
+        position.x += ((Puck)game.getMyPuck()).getBatWidth() * 0.75f;
         puckSpeed = 10;
         direction = 180; //Move towards the bottom
         
@@ -259,8 +260,8 @@ public class PuckTest
 
         waitForPuck();
         
-        Player expResult = game.getMyPlayers().get(0); //Player Red
-        Player result = game.getMyPuck().getEndGoalHit();
+        IPlayer expResult = game.getMyPlayers().get(0); //Player Red
+        IPlayer result = ((Puck)game.getMyPuck()).getEndGoalHit();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }
@@ -268,7 +269,7 @@ public class PuckTest
     @Test
     public void testUpdatePositionBatHit()
     {
-        position = game.getMyPuck().getCentre(); //Set position to centre
+        position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
         puckSpeed = 10;
         direction = 90; //Move towards the right
         
@@ -282,8 +283,8 @@ public class PuckTest
 
         waitForPuck();
         
-        Player expResult = game.getMyPlayers().get(1); //Player blue
-        Player result = game.getMyPuck().getEndBatHit();
+        IPlayer expResult = game.getMyPlayers().get(1); //Player blue
+        IPlayer result = ((Puck)game.getMyPuck()).getEndBatHit();
         
         assertEquals("Pucks position is incorrect", expResult, result);
     }

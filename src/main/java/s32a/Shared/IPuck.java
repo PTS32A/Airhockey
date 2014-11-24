@@ -5,10 +5,21 @@
  */
 package s32a.Shared;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+
 /**
  *
  * @author Kargathia
  */
 public interface IPuck {
+
+    public DoubleProperty getXPos();
+
+    public DoubleProperty getYPos();
+
+    public FloatProperty getSpeed();
+
+    public float getPuckSize();
 
 }

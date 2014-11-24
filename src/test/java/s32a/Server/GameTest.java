@@ -11,6 +11,7 @@ import s32a.Shared.enums.Colors;
 import s32a.Server.Player;
 import s32a.Server.Game;
 import com.badlogic.gdx.math.Vector2;
+import javafx.beans.property.DoubleProperty;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -272,7 +273,9 @@ public class GameTest
         game.beginGame();
         game.pauseGame(true);
         
-        Vector2 expResult = game.getMyPuck().getPosition().get();
+//        Vector2 expResult = game.getMyPuck().getPosition().get();
+        DoubleProperty expResultX = game.getMyPuck().getXPos();
+        DoubleProperty expResultY = game.getMyPuck().getYPos();
         
         try
         {
@@ -283,14 +286,17 @@ public class GameTest
             System.out.print("Exception: " + ex.getMessage());
         }
         
-        Vector2 result = game.getMyPuck().getPosition().get();
+//        Vector2 result = game.getMyPuck().getPosition().get();
+        DoubleProperty resultX = game.getMyPuck().getXPos();
+        DoubleProperty resultY = game.getMyPuck().getYPos();
         
         game.pauseGame(false);
         
-        System.out.print("ExpResult: " + expResult.toString());
-        System.out.print("Result: " + result.toString());
+//        System.out.print("ExpResult: " + expResult.toString());
+//        System.out.print("Result: " + result.toString());
         
-        assertEquals("Puck position can't change during pause", expResult, result);
+        assertEquals("Puck position can't change during pause", expResultX, resultX);
+        assertEquals("Puck position can't change during pause", expResultY, resultY);
     }
     
     /**

@@ -30,11 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.Client.timers.GameTimer;
-import s32a.Shared.IGame;
-import s32a.Shared.ILobby;
-import s32a.Shared.IPerson;
-import s32a.Shared.IPlayer;
-import s32a.Shared.ISpectator;
+import s32a.Shared.*;
 
 /**
  * NOTES: - SetBatPosition in DrawEdges should probably be moved to game
@@ -114,7 +110,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         } else if (myPerson instanceof ISpectator) {
             // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
             ISpectator mySpectator = (ISpectator) myPerson;
-            myGame = lobby.getSpectatedGames().get(lobby.getSpectatedGames().size() - 1);
+            myGame = mySpectator.getNewestGame();
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             btnStart.setVisible(false);
             btnPause.setVisible(false);
@@ -149,6 +145,19 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
         });
 
+        // Terminates game
+        this.getThisStage().setOnCloseRequest((WindowEvent event) -> {
+
+            IPerson p = lobby.getMyPerson(me);
+            if (p instanceof ISpectator) {
+                lobby.stopSpectating(this.myGame, p);
+            } else if (p instanceof IPlayer) {
+                lobby.endGame(myGame, (IPlayer)p);
+            }
+            this.getThisStage().close();
+        });
+        
+
         // draws the canvas
         this.drawEdges();
 
@@ -162,34 +171,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     }
 
     /**
-     * Draws puck on given canvas.
-     *
-     * Deprecated as a float array containing location is not needed anymore
-     *
-     * @param location
-     */
-    @Deprecated
-    private void drawPuck(float[] location) {
-        float positionX = location[0];
-        float positionY = location[1];
-        float puckSize = location[2];
-
-        int radius = (int) (puckSize / 2);
-        int x = (int) positionX + (int) width.doubleValue() / 2;
-        int y = (int) height.doubleValue() - (int) (positionY);
-        puck = new Circle(x, y, radius);
-        puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(),
-                Bindings.divide(width, 2)));
-        puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
-        apGame.getChildren().add(puck);
-    }
-
-    /**
      * Generates puck, and binds properties
      */
     private void drawPuck() {
         puck = new Circle();
-        puck.radiusProperty().bind(null); // TODO BIND PUCK RADIUS FROM CANVAS SIZE
+        puck.radiusProperty().bind(Bindings.multiply(width, 0.04));
         puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(),
                 Bindings.divide(width, 2)));
         puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
@@ -243,18 +229,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         apGame.getChildren().add(lGoal);
         apGame.getChildren().add(rGoal);
         apGame.getChildren().add(bGoal);
-        //bottomLine.endXProperty().bind(Bindings.divide(apGame.widthProperty(), 2)); // SHOWCASE
-//        graphics.strokeLine(aX, aY, bX, bY);
-//        graphics.strokeLine(bX, bY, cX, cY);
-//        graphics.strokeLine(cX, cY, aX, aY);
-//        graphics.setLineWidth(2);
-//        graphics.setStroke(Paint.valueOf("RED"));
-//        graphics.strokeLine(aXY1.x, aXY1.y, aXY2.x, aXY2.y);
-//        graphics.setStroke(Paint.valueOf("BLUE"));
-//        graphics.strokeLine(bXY1.x, bXY1.y, bXY2.x, bXY2.y);
-//        graphics.setStroke(Paint.valueOf("LIME"));
-//        graphics.strokeLine(cXY1.x, cXY1.y, cXY2.x, cXY2.y);
-//        graphics.setStroke(Paint.valueOf("BLACK"));
 
         //Draws and adds players for the first time
         if (!gameStart) {
@@ -263,28 +237,28 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             Vector2 batPos3 = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
                     (float) ((cY + ((bY - cY) / 100 * 50))));
             double bat = (double) width.doubleValue() / 100 * 8;
+            // bat 1
             bat1 = new Arc(cX / 2, cY, bat / 2, bat / 2, 0, 180);
             bat1.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(0).getPosX(), Bindings.divide(width, 2)));
             bat1.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(0).getPosY()));
+            // bat 2
             bat2 = new Arc(batPos2.x, batPos2.y, bat / 2, bat / 2, 240, 180);
             bat2.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(1).getPosX(), Bindings.divide(width, 2)));
             bat2.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(1).getPosY()));
+            // bat 3
             bat3 = new Arc(batPos3.x, batPos3.y, bat / 2, bat / 2, 120, 180);
             bat3.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(2).getPosX(), Bindings.divide(width, 2)));
             bat3.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(2).getPosY()));
+            // set colors
             bat1.setFill(Color.RED);
             bat2.setFill(Color.BLUE);
             bat3.setFill(Color.LIMEGREEN);
+            // add to children
             apGame.getChildren().add(bat1);
             apGame.getChildren().add(bat2);
             apGame.getChildren().add(bat3);
-//            this.graphics.fillOval(width.doubleValue() / 2 - myGame.getMyPlayers().get(0).getBatPos().x - bat / 2,
-//                    height.doubleValue() - myGame.getMyPlayers().get(0).getBatPos().y, bat, bat);
-//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(1).getBatPos().x - bat / 2 + 3,
-//                    height.doubleValue() - myGame.getMyPlayers().get(1).getBatPos().y - bat / 2, bat, bat);
-//            this.graphics.fillOval(width.doubleValue() / 2 - -myGame.getMyPlayers().get(2).getBatPos().x - bat / 2 - 3,
-//                    height.doubleValue() - myGame.getMyPlayers().get(2).getBatPos().y - bat / 2, bat, bat);
-            this.drawPuck(myGame.getMyPuck().getPuckLocation());
+
+            this.drawPuck();
             gameStart = true;
         }
     }

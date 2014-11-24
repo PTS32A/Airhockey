@@ -17,6 +17,7 @@ import s32a.Shared.IGame;
 import s32a.Shared.ILobby;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
+import s32a.Shared.ISpectator;
 import s32a.Shared.enums.Colors;
 
 /**
@@ -51,14 +52,14 @@ class Lobby implements ILobby {
     @Getter
     private List<IGame> activeGames;
 
-
     /**
      * returns a person by name. Syntactic sugar for activepersons.get(string)
+     *
      * @param playerName
      * @return
      */
     @Override
-    public IPerson getMyPerson(String playerName){
+    public IPerson getMyPerson(String playerName) {
         return this.activePersons.get(playerName);
     }
 
@@ -160,7 +161,8 @@ class Lobby implements ILobby {
     public void clearDatabase() {
         try {
             myDatabaseControls.clearDatabase();
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex) {
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -188,7 +190,8 @@ class Lobby implements ILobby {
             newGame = new Game((Player) person);
             this.activePersons.replace(person.getName(), person);
             this.activeGames.add(newGame);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             this.returnToLobby(person);
             this.endGame(newGame, null);
             return null;
@@ -211,7 +214,7 @@ class Lobby implements ILobby {
             return null;
         }
 
-        Game game = (Game)gameInput;
+        Game game = (Game) gameInput;
         Person person = (Person) personInput;
         try {
             Player player;
@@ -227,7 +230,8 @@ class Lobby implements ILobby {
             } else {
                 return null;
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             this.returnToLobby(person);
             return null;
         }
@@ -249,7 +253,7 @@ class Lobby implements ILobby {
             return null;
         }
 
-        Game game = (Game)gameInput;
+        Game game = (Game) gameInput;
         Person person = (Person) personInput;
         try {
             person = new Spectator(person.getName(), person.ratingProperty().get());
@@ -257,7 +261,8 @@ class Lobby implements ILobby {
                 return null;
             }
             this.activePersons.replace(person.getName(), person);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             return null;
         }
         return game;
@@ -301,7 +306,8 @@ class Lobby implements ILobby {
                 if (game == null) {
                     return false;
                 }
-            } catch (IllegalArgumentException ex) {
+            }
+            catch (IllegalArgumentException ex) {
                 return false;
             }
         }
@@ -314,7 +320,8 @@ class Lobby implements ILobby {
                 }
             }
             this.activeGames.remove(game);
-        } catch (IllegalArgumentException | SQLException ex) {
+        }
+        catch (IllegalArgumentException | SQLException ex) {
             return false;
         }
         return true;
@@ -349,9 +356,13 @@ class Lobby implements ILobby {
         }
         try {
             boolean isBot = participant.isBot();
-            this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.ratingProperty().get()));
-            this.activePersons.get(participant.getName()).setBot(isBot);
-        } catch (Exception ex) {
+            if (participant instanceof Spectator && ((Spectator) participant).getMyGames().size() > 1) {
+            } else {
+                this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.ratingProperty().get()));
+                this.activePersons.get(participant.getName()).setBot(isBot);
+            }
+        }
+        catch (Exception ex) {
         }
     }
 
@@ -382,7 +393,8 @@ class Lobby implements ILobby {
                 player2rating = speedRating;
                 player3rating = speedRating;
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             // do nothing, and just let player ratings sort it out
         }
 
@@ -404,7 +416,8 @@ class Lobby implements ILobby {
         try {
             // saves game
             this.myDatabaseControls.saveGame(input);
-        } catch (SQLException ex) {
+        }
+        catch (SQLException ex) {
             throw new IllegalArgumentException("failed to save game: "
                     + ex.getMessage());
         }
@@ -533,7 +546,8 @@ class Lobby implements ILobby {
         try {
             Lobby.getSingle().addPerson("bot10", "test");
             Lobby.getSingle().addPerson("bot11", "test");
-        } catch (IllegalArgumentException | SQLException ex) {
+        }
+        catch (IllegalArgumentException | SQLException ex) {
         }
     }
 

@@ -5,7 +5,12 @@
  */
 package s32a.Server;
 
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import s32a.Server.Person;
+import s32a.Shared.IGame;
 import s32a.Shared.ISpectator;
 
 /**
@@ -14,7 +19,55 @@ import s32a.Shared.ISpectator;
  */
 class Spectator extends Person implements ISpectator {
 
+    @Getter
+    private List<IGame> myGames;
+
     Spectator(String name, double rating) {
         super(name, rating);
+        myGames = new ArrayList<>();
+    }
+
+    /**
+     * if spectator is not already watching input, it will add it to his list.
+     *
+     * @param input
+     * @return
+     */
+    @Override
+    public boolean addGame(IGame input) {
+        if (input == null) {
+            return false;
+        }
+        for (IGame game : myGames) {
+            if (game.getGameInfo().get("gameID").equals(input.getGameInfo().get("gameID"))) {
+                return false;
+            }
+        }
+        return myGames.add(input);
+    }
+
+    /**
+     * Denotes spectator is no longer watching given IGame.
+     *
+     * @param input
+     * @return
+     */
+    @Override
+    public boolean removeGame(IGame input) {
+        if (input == null) {
+            return false;
+        }
+        return myGames.remove(input);
+    }
+
+    /**
+     * @return game most recently added to the list - used to set up GameFX
+     */
+    @Override
+    public IGame getNewestGame() {
+        if (myGames == null || myGames.size() < 1) {
+            return null;
+        }
+        return myGames.get(myGames.size() - 1);
     }
 }

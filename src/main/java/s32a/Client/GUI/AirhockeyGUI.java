@@ -105,20 +105,6 @@ public class AirhockeyGUI extends Application {
         stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
 
-        stage.setOnCloseRequest((WindowEvent event) -> { // TODO: Move this to gameFX if possible
-
-            IPerson myPerson = lobby.getMyPerson(me);
-            if (myPerson instanceof ISpectator) {
-                lobby.stopSpectating(lobby.getSpectatedGames().get(0), lobby.getCurrentPerson());
-            } else if (lobby.getCurrentPerson() instanceof IPlayer) {
-                IPlayer person = (IPlayer) lobby.getCurrentPerson();
-                if (person != null) {
-                    lobby.endGame(lobby.getPlayedGame(), person);
-                }
-            }
-            stage.close();
-        });
-
         stage.show();
     }
 
