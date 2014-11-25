@@ -71,9 +71,9 @@ class Lobby implements ILobby {
         this.myDatabaseControls = new DatabaseControls();
         this.activePersons = new HashMap<>();
         this.airhockeySettings = new HashMap<>();
+        this.activeGames = new ArrayList<>();
         airhockeySettings.put("Goal Default", new Vector2(0, 0));
         airhockeySettings.put("Side Length", 500f);
-        //this.populate();
     }
 
     /**
@@ -114,6 +114,7 @@ class Lobby implements ILobby {
      * null or empty, or contained trailing / leading white spaces
      * @throws java.sql.SQLException
      */
+    @Override
     public boolean checkLogin(String playerName, String password)
             throws IllegalArgumentException, SQLException {
         if (playerName == null || password == null

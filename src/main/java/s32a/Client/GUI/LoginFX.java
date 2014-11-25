@@ -55,6 +55,9 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
                 lobby.logOut(lobby.getMyPerson(me));
                 super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
+             catch (Exception ex) {
+                 System.out.println(ex.toString());
+            }
         }
     }
 

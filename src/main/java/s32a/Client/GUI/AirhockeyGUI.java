@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
+import s32a.Server.AirhockeyServer;
 import s32a.Shared.ILobby;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
@@ -29,13 +30,14 @@ public class AirhockeyGUI extends Application {
 
     @Getter
     private Stage stage;
-    protected ILobby lobby;
-    protected String me;
+    protected static ILobby lobby;
+    protected static String me;
 
     @Override
     public void start(Stage stage) throws Exception {
         lobby = this.requestRemoteLobby();
-
+        me = "test";
+        
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
 
@@ -123,7 +125,7 @@ public class AirhockeyGUI extends Application {
 
     private ILobby requestRemoteLobby() {
         // TODO
-        return null;
+        return AirhockeyServer.getInstance();
     }
 
     /**

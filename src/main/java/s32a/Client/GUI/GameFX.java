@@ -380,7 +380,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         tfChatbox.setText("");
         double bX = width.get() / 2;
         double bY = height.get() - bX * Math.sin(Math.toRadians(30));
-        this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
+        Circle test = new Circle(bX, bY, 2, Color.RED);
+        apGame.getChildren().add(test);
+        //this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
     }
 
     /**

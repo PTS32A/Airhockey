@@ -5,12 +5,22 @@
  */
 package s32a.Server;
 
+import s32a.Shared.ILobby;
+
 /**
  *
  * @author Kargathia
  */
 public class AirhockeyServer {
 
+    private static Lobby _instance;
+    
+    public static ILobby getInstance(){
+        if(_instance == null){
+            _instance = new Lobby();
+        }
+        return _instance;
+    }
     /**
      * @param args the command line arguments
      */
