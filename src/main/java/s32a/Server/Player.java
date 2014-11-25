@@ -24,7 +24,7 @@ import s32a.Shared.enums.GameStatus;
  *
  * @author Luke
  */
-class Player extends Person implements IPlayer {
+public class Player extends Person implements IPlayer {
 
     @Getter
     private Colors color;
@@ -80,7 +80,7 @@ class Player extends Person implements IPlayer {
         this.color = color;
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
         sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
-        batWidth = (int) (sideLength / 100 * 8);
+        batWidth = (int) (sideLength * 0.08);
         this.posX = new SimpleDoubleProperty(.0);
         this.posY = new SimpleDoubleProperty(.0);
 //        rec = new Rectangle((int) posX.floatValue(), (int) posY.floatValue(), batWidth, batWidth);

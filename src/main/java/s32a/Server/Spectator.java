@@ -17,7 +17,7 @@ import s32a.Shared.ISpectator;
  *
  * @author Kargathia
  */
-class Spectator extends Person implements ISpectator {
+public class Spectator extends Person implements ISpectator {
 
     @Getter
     private List<IGame> myGames;

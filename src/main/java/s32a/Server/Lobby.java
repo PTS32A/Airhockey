@@ -24,7 +24,7 @@ import s32a.Shared.enums.Colors;
  *
  * @author Kargathia
  */
-class Lobby implements ILobby {
+public class Lobby implements ILobby {
 
     /**
      * The Lobby Singleton. Called by everything except some unit tests.
@@ -127,7 +127,7 @@ class Lobby implements ILobby {
             return false;
         }
 
-        return this.activePersons.put(playerName, newPerson) != null;
+        return this.activePersons.put(playerName, newPerson) == null;
     }
 
     /**

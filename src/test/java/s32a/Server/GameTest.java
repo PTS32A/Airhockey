@@ -273,7 +273,6 @@ public class GameTest
         game.beginGame();
         game.pauseGame(true);
         
-        Vector2 expResult = game.getMyPuck().getPosition().get();
 //        Vector2 expResult = game.getMyPuck().getPosition().get();
         DoubleProperty expResultX = game.getMyPuck().getXPos();
         DoubleProperty expResultY = game.getMyPuck().getYPos();
@@ -287,7 +286,6 @@ public class GameTest
             System.out.print("Exception: " + ex.getMessage());
         }
         
-        Vector2 result = game.getMyPuck().getPosition().get();
 //        Vector2 result = game.getMyPuck().getPosition().get();
         DoubleProperty resultX = game.getMyPuck().getXPos();
         DoubleProperty resultY = game.getMyPuck().getYPos();

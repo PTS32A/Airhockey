@@ -17,7 +17,7 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-class Person implements IPerson{
+public class Person implements IPerson{
 
     private StringProperty nameProp;
     private DoubleProperty ratingProp;

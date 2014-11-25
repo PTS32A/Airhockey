@@ -19,7 +19,7 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-class Chatbox implements IChatbox {
+public class Chatbox implements IChatbox {
 
     private List<String> chat;
     private ObservableList<String> chatProp;

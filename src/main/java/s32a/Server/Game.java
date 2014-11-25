@@ -33,7 +33,7 @@ import s32a.Shared.ISpectator;
 /**
  * @author Kargathia
  */
-class Game implements IGame {
+public class Game implements IGame {
 
     private StringProperty difficultyProp;
     @Getter

@@ -157,6 +157,10 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     public void newGame(Event evt) {
         try {
             IPerson p = lobby.getMyPerson(me);
+            if(p == null){
+                super.showDialog("Error", "You are not logged in");
+                return;
+            }
             if (p instanceof IPerson) {
                 if (lobby.startGame(p) != null) {
                     openNewGameWindow(evt);
@@ -275,5 +279,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 }
             }
         });
+
+
     }
 }

@@ -43,6 +43,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
         } else {
             try {
                 if (lobby.checkLogin(tfUserName.getText(), pwfPassword.getText())) {
+                    AirhockeyGUI.me = tfUserName.getText();
                     super.goToLobby(getThisStage());
                 } else {
                     super.showDialog("Error", "Username or password is incorrect.");

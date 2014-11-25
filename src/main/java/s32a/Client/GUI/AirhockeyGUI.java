@@ -36,8 +36,7 @@ public class AirhockeyGUI extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         lobby = this.requestRemoteLobby();
-        me = "test";
-        
+
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
 
@@ -46,8 +45,8 @@ public class AirhockeyGUI extends Application {
             @Override
             public void handle(WindowEvent event) {
                 lobby.logOut(lobby.getMyPerson(me));
-            Platform.exit();
-            System.exit(0);
+                Platform.exit();
+                System.exit(0);
             }
         });
 
@@ -107,14 +106,22 @@ public class AirhockeyGUI extends Application {
      *
      */
     void goToGame(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
 
+        // gets the controller class while initializing
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Game.fxml"));
+        Parent root = (Parent) loader.load();
+        GameFX controller = (GameFX) loader.getController();
+        // adds close event to controller through method
+        controller.addCloseEvent(stage);
+
+        //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
 //        stage.setResizable(false);
         stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
 
+        // Terminates game
         stage.show();
     }
 

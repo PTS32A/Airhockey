@@ -71,6 +71,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     @Getter
     private boolean actionTaken = true;
     private GameTimer gameTimer;
+    @Getter
     private IGame myGame;
 
     @Override
@@ -152,21 +153,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
         });
 
-        // Terminates game
-        this.getThisStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle(WindowEvent event) {
-                IPerson p = lobby.getMyPerson(me);
-            if (p instanceof ISpectator) {
-                lobby.stopSpectating(myGame, p);
-            } else if (p instanceof IPlayer) {
-                lobby.endGame(myGame, (IPlayer) p);
-            }
-            getThisStage().close();
-            }
-        });
-
         // draws the canvas
         this.drawEdges();
 
@@ -184,7 +170,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     private void drawPuck() {
         puck = new Circle();
-        puck.radiusProperty().bind(Bindings.multiply(width, 0.04));
+        puck.radiusProperty().bind(Bindings.multiply(width, 0.02));
         puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(),
                 Bindings.divide(width, 2)));
         puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
@@ -428,13 +414,31 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             @Override
             public void handle(final KeyEvent event) {
                 if (myGame.getStatusProp().get().equals(GameStatus.Paused)) {
-                actionTaken = false;
-            }
+                    actionTaken = false;
+                }
             }
         };
 
         getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
+    }
+
+    public void addCloseEvent(Stage stage) {
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                System.out.println("closerequest handled");
+                IPerson p = lobby.getMyPerson(me);
+                if (p instanceof ISpectator) {
+                    lobby.stopSpectating(myGame, p);
+                } else if (p instanceof IPlayer) {
+                    lobby.endGame(myGame, (IPlayer) p);
+                }
+                stage.close();
+            }
+        });
     }
 
     /**
@@ -448,8 +452,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (cbxCustomDifficulty.isSelected()) {
-                        cbxCustomDifficulty.setSelected(false);
-                    }
+                    cbxCustomDifficulty.setSelected(false);
+                }
             }
         });
 
@@ -459,10 +463,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (cbxCustomDifficulty.isSelected()) {
-                        myGame.adjustDifficulty((float) customSpeed.get());
-                    } else {
-                        myGame.adjustDifficulty();
-                    }
+                    myGame.adjustDifficulty((float) customSpeed.get());
+                } else {
+                    myGame.adjustDifficulty();
+                }
             }
         });
     }
