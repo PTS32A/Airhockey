@@ -30,7 +30,7 @@ class Player extends Person implements IPlayer {
     private Colors color;
     @Getter
     @Setter
-    private DoubleProperty posX,posY;
+    private DoubleProperty posX, posY;
     @Getter
     private IntegerProperty score;
     @Getter
@@ -59,8 +59,12 @@ class Player extends Person implements IPlayer {
      */
     @Override
     public void setScore(int input) {
-        Platform.runLater(() -> {
-            score.setValue(input);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                score.setValue(input);
+            }
         });
     }
 

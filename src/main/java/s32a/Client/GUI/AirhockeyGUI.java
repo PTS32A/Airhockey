@@ -39,10 +39,14 @@ public class AirhockeyGUI extends Application {
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
 
-        stage.setOnCloseRequest((WindowEvent event) -> {
-            lobby.logOut(lobby.getMyPerson(me));
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                lobby.logOut(lobby.getMyPerson(me));
             Platform.exit();
             System.exit(0);
+            }
         });
 
         Scene scene = new Scene(root);
@@ -51,10 +55,14 @@ public class AirhockeyGUI extends Application {
         stage.show();
 
         // populates lobby
-        Thread thread = new Thread(() -> {
-            lobby.populate();
+        Thread t = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                lobby.populate();
+            }
         });
-        thread.start();
+        t.start();
         //goToLobby(stage);
     }
 
@@ -124,5 +132,4 @@ public class AirhockeyGUI extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

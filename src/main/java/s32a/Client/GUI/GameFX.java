@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -139,24 +140,30 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
 
         // adds chatbox accept event
-        this.tfChatbox.setOnKeyPressed((KeyEvent ke) -> {
-            if (ke.getCode() == KeyCode.ENTER) {
-                sendMessage(null);
+        this.tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode() == KeyCode.ENTER) {
+                    sendMessage(null);
+                }
             }
         });
 
         // Terminates game
-        this.getThisStage().setOnCloseRequest((WindowEvent event) -> {
+        this.getThisStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
 
-            IPerson p = lobby.getMyPerson(me);
+            @Override
+            public void handle(WindowEvent event) {
+                IPerson p = lobby.getMyPerson(me);
             if (p instanceof ISpectator) {
-                lobby.stopSpectating(this.myGame, p);
+                lobby.stopSpectating(myGame, p);
             } else if (p instanceof IPlayer) {
-                lobby.endGame(myGame, (IPlayer)p);
+                lobby.endGame(myGame, (IPlayer) p);
             }
-            this.getThisStage().close();
+            getThisStage().close();
+            }
         });
-        
 
         // draws the canvas
         this.drawEdges();
@@ -270,8 +277,12 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void startClick(Event evt) {
-        getThisStage().setOnCloseRequest((WindowEvent event) -> {
-            this.quitClick(null);
+        getThisStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                quitClick(null);
+            }
         });
         if (myGame != null && myGame.getMyPlayers().size() == 3) {
             if (myGame.beginGame()) {
@@ -381,29 +392,38 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private void addEvents() {
         //Moving left or right
         IPlayer myPlayer = (IPlayer) lobby.getMyPerson(me);
-        final EventHandler<KeyEvent> keyPressed = (final KeyEvent keyEvent) -> {
-            if (keyEvent.getCode() == KeyCode.A
-                    || keyEvent.getCode() == KeyCode.LEFT) {
-                if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
-                    myPlayer.moveBat(-1);
+        final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(final KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.A
+                        || keyEvent.getCode() == KeyCode.LEFT) {
+                    if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
+                        myPlayer.moveBat(-1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
-                    actionTaken = true;
-                }
-            } else if (keyEvent.getCode() == KeyCode.D
-                    || keyEvent.getCode() == KeyCode.RIGHT) {
-                if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
-                    myPlayer.moveBat(1);
+                        actionTaken = true;
+                    }
+                } else if (keyEvent.getCode() == KeyCode.D
+                        || keyEvent.getCode() == KeyCode.RIGHT) {
+                    if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
+                        myPlayer.moveBat(1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
-                    actionTaken = true;
+                        actionTaken = true;
+                    }
                 }
             }
         };
+
         //Stop moving
-        final EventHandler<KeyEvent> keyReleased = (final KeyEvent keyEvent) -> {
-            if (myGame.getStatusProp().get().equals(GameStatus.Paused)) {
+        final EventHandler<KeyEvent> keyReleased = new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(final KeyEvent event) {
+                if (myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                 actionTaken = false;
+            }
             }
         };
 
@@ -417,22 +437,28 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     private void addDifficultyListeners() {
         // Whenever custom difficulty value is changed, checkbox is unchecked
-        this.sldCustomDifficulty.valueProperty().addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    if (this.cbxCustomDifficulty.isSelected()) {
-                        this.cbxCustomDifficulty.setSelected(false);
+        this.sldCustomDifficulty.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if (cbxCustomDifficulty.isSelected()) {
+                        cbxCustomDifficulty.setSelected(false);
                     }
-                });
+            }
+        });
 
         // Whenever custom difficulty checkbox is checked, value is saved
-        this.cbxCustomDifficulty.selectedProperty().addListener(
-                (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-                    if (cbxCustomDifficulty.isSelected()) {
+        this.cbxCustomDifficulty.selectedProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if (cbxCustomDifficulty.isSelected()) {
                         myGame.adjustDifficulty((float) customSpeed.get());
                     } else {
                         myGame.adjustDifficulty();
                     }
-                });
+            }
+        });
     }
 
     private Stage getThisStage() {

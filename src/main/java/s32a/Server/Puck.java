@@ -32,7 +32,7 @@ import s32a.Shared.enums.GameStatus;
  *
  * @author Kargathia
  */
-class Puck extends TimerTask implements IPuck{
+class Puck extends TimerTask implements IPuck {
 
     @Getter
     private ObjectProperty<Vector2> position;
@@ -84,7 +84,7 @@ class Puck extends TimerTask implements IPuck{
 
     private boolean beingPushed;
     private boolean useRoundBats = true;
-    
+
     private Vector2 leftCorner;
     private Vector2 upperCorner;
     private Vector2 rightCorner;
@@ -95,8 +95,12 @@ class Puck extends TimerTask implements IPuck{
      * @param input
      */
     void setSpeed(float input) {
-        Platform.runLater(() -> {
-            this.speed.set(input);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                speed.set(input);
+            }
         });
     }
 
@@ -135,7 +139,7 @@ class Puck extends TimerTask implements IPuck{
         centreY = Math.round(centreY * 100) / 100;
 
         this.centre = new Vector2(centreX, centreY);
-        
+
         //Inner triangle for centre of Puck to bounce against so that 
         // the edges of the circle of the Puck will look like bouncing of the real triangle
         this.puckSize = (float) (this.sideLength * 0.04);
@@ -143,8 +147,6 @@ class Puck extends TimerTask implements IPuck{
 
         this.middleLine = (float) Math.sqrt(Math.pow(sideLength, 2)
                 - Math.pow(sideLength / 2, 2));
-
-        
 
         this.sideGoalMinY = (float) (this.middleLine * 0.5
                 - (Math.sin(Math.toRadians(60)) * 0.5 * goalLength));
@@ -174,7 +176,7 @@ class Puck extends TimerTask implements IPuck{
         this.leftCorner = new Vector2((float) (-(sideLength / 2)), this.puckSize / 2);
         this.upperCorner = new Vector2(0, (float) (middleLine + this.puckSize / 2));
         this.rightCorner = new Vector2((float) (sideLength / 2), this.puckSize / 2);
-        
+
         resetPuck();
         clearEndData();
     }
@@ -186,9 +188,13 @@ class Puck extends TimerTask implements IPuck{
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                Platform.runLater(() -> {
-                    xPos.set(((Vector2) newValue).x);
-                    yPos.set(((Vector2) newValue).y);
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        xPos.set(((Vector2) newValue).x);
+                        yPos.set(((Vector2) newValue).y);
+                    }
                 });
             }
         });
@@ -399,7 +405,7 @@ class Puck extends TimerTask implements IPuck{
             printMessage("Right Wall-Bounce");
 
             updateDirection(-60);
-            
+
             return getIntersection(position.get(), newPosition, rightCorner, upperCorner);
         } else {
             if (y < (puckSize / 2)) {
@@ -408,7 +414,7 @@ class Puck extends TimerTask implements IPuck{
                 printMessage("Bottom Wall-Bounce");
 
                 updateDirection(180);
-                
+
                 return getIntersection(position.get(), newPosition, leftCorner, rightCorner);
             } else if (y > middleLine + puckSize / 2) {
                 //Above field
@@ -416,7 +422,7 @@ class Puck extends TimerTask implements IPuck{
                 printMessage("Top Corner-Bounce");
 
                 updateDirection(180);
-                
+
                 return new Vector2(0, (float) middleLine);
             }
         }
@@ -694,9 +700,9 @@ class Puck extends TimerTask implements IPuck{
                     float correction = 0;
 
                     float distanceFromCenter = pos.x - batCentre.x;
-                   
+
                     correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
-                                   
+
                     direction += correction;
                 } else if (index == 1) {
                     //BLUE

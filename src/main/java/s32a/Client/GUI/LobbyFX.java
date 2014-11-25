@@ -17,6 +17,7 @@ import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -66,8 +67,12 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      * @param input
      */
     public void setHighScores(List<IPerson> input) {
-        Platform.runLater(() -> {
-            this.highScores.setAll(input);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                highScores.setAll(input);
+            }
         });
     }
 
@@ -77,16 +82,24 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      * @param input
      */
     public void setGames(List<IGame> input) {
-        Platform.runLater(() -> {
-            this.games.setAll(input);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                games.setAll(input);
+            }
         });
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        tfChatbox.setOnKeyPressed((KeyEvent ke) -> {
-            if (ke.getCode() == KeyCode.ENTER) {
-                sendChatMessage(null);
+        tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode() == KeyCode.ENTER) {
+                    sendChatMessage(null);
+                }
             }
         });
 
@@ -116,7 +129,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             this.tvHighscores.setItems(highScores);
 
             this.updatePlayerInfo();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             super.showDialog("Error", "Unable to initialise Lobby: " + ex.getMessage());
         }
 
@@ -152,7 +166,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             } else {
                 super.showDialog("Error", "You are currently spectating or playing a game");
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             super.showDialog("Error", "Unable to open new game: " + ex.getMessage());
         }
     }
@@ -176,7 +191,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                     }
                 }
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             super.showDialog("Error", "Unable to join game: " + ex.getMessage());
         }
     }
@@ -217,7 +233,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             lobby.logOut(lobby.getMyPerson(me));
             super.goToLogin(getThisStage());
             this.lobbyTimer.stop();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             super.showDialog("Error", "Unable to log out: " + ex.getMessage());
         }
     }
@@ -245,12 +262,17 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      */
     public void openNewGameWindow(Event evt) {
         final AirhockeyGUI base = this;
-        javafx.application.Platform.runLater(() -> {
-            try {
-                Stage stage1 = new Stage();
-                base.goToGame(stage1);
-            } catch (IOException ex) {
-                base.showDialog("Error", "Could not open game: " + ex.getMessage());
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    Stage stage1 = new Stage();
+                    base.goToGame(stage1);
+                }
+                catch (IOException ex) {
+                    base.showDialog("Error", "Could not open game: " + ex.getMessage());
+                }
             }
         });
     }
