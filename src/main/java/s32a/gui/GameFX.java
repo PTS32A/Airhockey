@@ -15,6 +15,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point3D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -25,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
@@ -403,6 +405,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             myGame.addChatMessage(tfChatbox.getText(), currentPerson);
         }
         tfChatbox.setText("");
+        double bX = width.get() / 2;
+        double bY = height.get() - bX * Math.sin(Math.toRadians(30));
+        this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
     }
 
     /**
@@ -425,16 +430,12 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     || keyEvent.getCode() == KeyCode.LEFT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(-1);
-                    System.out.println(me.getPosX().doubleValue());
-                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;
                 }
             } else if (keyEvent.getCode() == KeyCode.D
                     || keyEvent.getCode() == KeyCode.RIGHT) {
                 if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
                     me.moveBat(1);
-                    System.out.println(me.getPosX().doubleValue());
-                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                     actionTaken = true;
                 }
             }

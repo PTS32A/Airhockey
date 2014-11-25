@@ -268,7 +268,7 @@ public class GameTest
         game.beginGame();
         game.pauseGame(true);
         
-        Vector2 expResult = game.getMyPuck().getPosition();
+        Vector2 expResult = game.getMyPuck().getPosition().get();
         
         try
         {
@@ -279,7 +279,7 @@ public class GameTest
             System.out.print("Exception: " + ex.getMessage());
         }
         
-        Vector2 result = game.getMyPuck().getPosition();
+        Vector2 result = game.getMyPuck().getPosition().get();
         
         game.pauseGame(false);
         

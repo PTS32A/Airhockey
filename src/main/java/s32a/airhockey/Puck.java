@@ -272,6 +272,34 @@ public class Puck extends TimerTask {
         }
     }
 
+      //Luke Collision test later
+//    private Vector2 testBatBounce(Vector2 pos){
+//        Vector2 batCentre;
+//        Random r = new Random();
+//        for (Player p : myGame.getMyPlayers()) {
+//            batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
+//            //Pythagoras
+//            double deltaX = Math.abs(pos.x - batCentre.x);
+//            double deltaY = Math.abs(pos.y - batCentre.y);
+//            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+//
+//            //radius is same for both for this example
+//            if (distance < ((batWidth / 2) + (puckSize / 2))) {
+//
+//                //Reverse angle of the collision point
+//                double degrees = Math.toDegrees(Math.atan2
+//                    (batCentre.y - pos.y, batCentre.x - pos.x));
+//
+//                //Flip angle back to origin and add ofset
+//                direction += (float) (180 + degrees + (r.nextFloat() * 10));
+////                xMovement = Math.cos(Math.toRadians((int) (180+degrees))) * 10;
+////                yMovement = Math.sin(Math.toRadians((int) (180+degrees))) * 10;
+//                //correctDirection();
+//                return this.getIntersectionWithCircle(position.get(), pos, batCentre, distance);
+//            }
+//        }
+//        return null;
+//    }
     /**
      * updates the pucks position based on its speed, direction, and current
      * position does nothing if puck isn't moving
@@ -766,7 +794,7 @@ public class Puck extends TimerTask {
          * y = a*x + b & (x - Xcentre)^2 + (y-Ycentre)^2 == radius^2
          *
          * (x - Xcentre)^2 + (a*x + b - Ycentre)^2 == radius^2 (a^2 + 1)*x^2 +
-         * 2*(a*b - a*Ycentre - Xcentre)*x + (Ycentre^2 − radius^2 + Xcentre^2 −
+         * 2*(a*b - a*Ycentre - Xcentre)*x + (Ycentre^2 - radius^2 + Xcentre^2 -
          * 2*b*Ycentre + b^2) = 0 This compares to: A*x^2 + B*X + C = 0 Which
          * gives: x = (-B + SQRT(B^2 - 4*AC)) / (2*A) OR x = (-B - SQRT(B^2 -
          * 4*AC)) / (2*A)
