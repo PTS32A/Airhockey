@@ -109,7 +109,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         ObservableList<Property> playerInfo;
 
         try {
-            this.lvChatbox.setItems(lobby.getMychatbox().chatProperty());
+            this.lvChatbox.setItems(lobby.getChatProperty());
             this.tvHighscores.setItems(highScores);
             this.tvGameDisplay.setItems(games);
 
@@ -145,7 +145,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         IPerson p = lobby.getMyPerson(me);
         if (p != null) {
             lvPlayerInfo.setItems(FXCollections.observableArrayList("Name: "
-                    + p.nameProperty().get(), "Rating: " + Double.toString(p.ratingProperty().get())));
+                    + me, "Rating: " + Double.toString(lobby.getPlayerRatingProperty().get())));
         }
     }
 
@@ -162,8 +162,9 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 return;
             }
             if (p instanceof IPerson) {
-                if (lobby.startGame(p) != null) {
-                    openNewGameWindow(evt);
+                IGame game = (IGame) lobby.startGame(p); 
+                if (game != null) {
+                    openNewGameWindow(game);
                 } else {
                     super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
                 }
@@ -189,7 +190,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                     if (lobby.joinGame(
                             (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem(),
                             p) != null) {
-                        openNewGameWindow(evt);
+                        IGame game = (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem();
+                        openNewGameWindow(game);
                     } else {
                         super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
                     }
@@ -216,13 +218,13 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
 
         if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null) {
             IGame game = (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem();
-            if (game.statusProperty().get().equals(GameStatus.GameOver) || game.getRoundNo().get() == 0) {
-                super.showDialog("Error", "Unable to watch inactive games");
-            } else if (lobby.spectateGame(game,
-                    lobby.getMyPerson(me)) != null) {
-                openNewGameWindow(evt);
-            } else {
-                super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
+            
+            try{
+                lobby.spectateGame(game, lobby.getMyPerson(me));
+                openNewGameWindow(game);
+            }
+            catch(IllegalArgumentException ex){
+                super.showDialog("Error", ex.getMessage());
             }
         }
     }
@@ -264,7 +266,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      *
      * @param evt
      */
-    public void openNewGameWindow(Event evt) {
+    public void openNewGameWindow(IGame game) {
         final AirhockeyGUI base = this;
         Platform.runLater(new Runnable() {
 
@@ -272,7 +274,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             public void run() {
                 try {
                     Stage stage1 = new Stage();
-                    base.goToGame(stage1);
+                    base.goToGame(stage1, game);
                 }
                 catch (IOException ex) {
                     base.showDialog("Error", "Could not open game: " + ex.getMessage());

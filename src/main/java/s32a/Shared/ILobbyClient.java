@@ -17,8 +17,10 @@ public interface ILobbyClient {
     
     public void setActiveGames(List<IGame> activeGames);
     
-    public void setOActiveGames(ObservableList<IGame> oActiveGames);
-    
     public void setMyLobby(ILobby myLobby);
+    
+    public void setChat(List<String> chat);
+    
+    public void setRating(Double rating);
     
 }

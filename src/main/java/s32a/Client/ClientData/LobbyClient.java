@@ -7,13 +7,15 @@ package s32a.Client.ClientData;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
-import javafx.collections.ObservableList;
-import lombok.Getter;
-import s32a.Shared.IGame;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import lombok.Getter;
 import s32a.Shared.IGame;
 import s32a.Shared.ILobby;
 import s32a.Shared.ILobbyClient;
@@ -26,15 +28,25 @@ import s32a.Shared.IPlayer;
  */
 public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, ILobby {
 
-    List<IGame> activeGames;
+    private List<IGame> activeGames;
     @Getter
     ObservableList<IGame> oActiveGames;
-    
+    @Getter
+    ObservableList<String> chatProperty;
+    private List<String> chat;
+    @Getter
+    private DoubleProperty playerRatingProperty;
     
     private ILobby myLobby;
+    
 
     public LobbyClient(ILobby myLobby) throws RemoteException {
         this.myLobby = myLobby;
+        this.activeGames = new ArrayList<>();
+        this.oActiveGames = FXCollections.observableList(activeGames);
+        this.chat = new ArrayList<>();
+        this.chatProperty = FXCollections.observableList(chat);
+        this.playerRatingProperty = new SimpleDoubleProperty(0);
     }
 
     @Override
@@ -119,17 +131,25 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public void setActiveGames(List<IGame> activeGames) {
-        this.activeGames = activeGames;
+        this.oActiveGames.clear();
+        this.oActiveGames.addAll(activeGames);
     }
 
-    @Override
-    public void setOActiveGames(ObservableList<IGame> oActiveGames) {
-        this.oActiveGames = oActiveGames;
-    }
 
     @Override
     public void setMyLobby(ILobby myLobby) {
         this.myLobby = myLobby;
+    }
+
+    @Override
+    public void setChat(List<String> chat) {
+        this.chatProperty.clear();
+        this.chatProperty.addAll(chat);
+    }
+
+    @Override
+    public void setRating(Double rating) {
+        this.playerRatingProperty.set(rating);
     }
 
 }
