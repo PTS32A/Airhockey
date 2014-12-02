@@ -7,9 +7,13 @@ package s32a.Shared;
 
 import java.util.HashMap;
 import java.util.List;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableNumberValue;
+import javafx.collections.ObservableList;
 import s32a.Shared.enums.GameStatus;
 
 /**
@@ -31,4 +35,25 @@ public interface IGame {
     public boolean pauseGame(boolean isPaused);
 
     public void startRound();
+
+    public List<IPlayer> getMyPlayers();
+
+    public IntegerProperty getRoundNo();
+    
+    public IntegerProperty setRoundNo();
+
+    public ObservableList<String> getChatProperty();
+    
+    public void setChatProperty(ObservableList<String> messages);
+    
+    public StringProperty getGameTime();
+
+    public FloatProperty getPuckSpeed();
+
+    public DoubleProperty getPuckXPos();
+
+    public DoubleProperty getPuckYPos();
+
+    public GameStatus getStatusProp();
+    
 }

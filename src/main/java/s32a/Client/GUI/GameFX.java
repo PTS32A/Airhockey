@@ -139,10 +139,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         this.lblRound.textProperty().bind(myGame.getRoundNo().asString());
 
         // Chatbox
-        this.lvChatbox.setItems(myGame.getMyChatbox().chatProperty());
+        this.lvChatbox.setItems(myGame.getChatProperty());
 
         // Difficulty 
-        this.lblDifficulty.textProperty().bind(myGame.getMyPuck().getSpeed().asString());
+        this.lblDifficulty.textProperty().bind(myGame.getPuckSpeed().asString());
 
         // binds width / height for redrawing to canvas size
         this.width.bind(this.apGame.prefWidthProperty());
@@ -181,9 +181,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private void drawPuck() {
         puck = new Circle();
         puck.radiusProperty().bind(Bindings.multiply(width, 0.02));
-        puck.centerXProperty().bind(Bindings.add(myGame.getMyPuck().getXPos(),
+        puck.centerXProperty().bind(Bindings.add(myGame.getPuckXPos(),
                 Bindings.divide(width, 2)));
-        puck.centerYProperty().bind(Bindings.subtract(height, myGame.getMyPuck().getYPos()));
+        puck.centerYProperty().bind(Bindings.subtract(height, myGame.getPuckYPos()));
         apGame.getChildren().add(puck);
     }
 
@@ -336,7 +336,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void pauseClick(Event evt) {
-        myGame.pauseGame(!myGame.getStatusProp().get().equals(GameStatus.Paused));
+        myGame.pauseGame(!myGame.getStatusProp().equals(GameStatus.Paused));
         actionTaken = true;
     }
 
@@ -352,7 +352,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         IPerson myPerson = lobby.getMyPerson(me);
         if (myPerson instanceof ISpectator) {
             lobby.stopSpectating(myGame, (ISpectator) myPerson);
-        } else if (myGame.getStatusProp().get().equals(GameStatus.GameOver) || myGame.getRoundNo().get() == 0) {
+        } else if (myGame.getStatusProp().equals(GameStatus.GameOver) || myGame.getRoundNo().get() == 0) {
             lobby.endGame(myGame, null);
         } else {
             lobby.endGame(myGame, (IPlayer) myPerson);
@@ -395,7 +395,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             public void handle(final KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.A
                         || keyEvent.getCode() == KeyCode.LEFT) {
-                    if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
+                    if (!myGame.getStatusProp().equals(GameStatus.Paused)) {
                         myPlayer.moveBat(-1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
@@ -403,7 +403,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     }
                 } else if (keyEvent.getCode() == KeyCode.D
                         || keyEvent.getCode() == KeyCode.RIGHT) {
-                    if (!myGame.getStatusProp().get().equals(GameStatus.Paused)) {
+                    if (!myGame.getStatusProp().equals(GameStatus.Paused)) {
                         myPlayer.moveBat(1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
@@ -418,7 +418,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             @Override
             public void handle(final KeyEvent event) {
-                if (myGame.getStatusProp().get().equals(GameStatus.Paused)) {
+                if (myGame.getStatusProp().equals(GameStatus.Paused)) {
                     actionTaken = false;
                 }
             }

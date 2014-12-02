@@ -7,8 +7,14 @@ package s32a.Client.ClientData;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import s32a.Shared.IGame;
-import s32a.Shared.IGameClient;
+import java.util.List;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
+import s32a.Shared.*;
+import s32a.Shared.enums.GameStatus;
 
 /**
  *
@@ -17,6 +23,7 @@ import s32a.Shared.IGameClient;
 public class GameClient extends UnicastRemoteObject implements IGameClient, IGame{
 
     private IGame myGame;
+    
 
     public GameClient() throws RemoteException{
 
@@ -57,4 +64,53 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         myGame.startRound();
     }
 
+    @Override
+    public List<IPlayer> getMyPlayers() {
+        return this.myGame.getMyPlayers();
+    }
+
+    @Override
+    public IntegerProperty getRoundNo() {
+        return myGame.getRoundNo();
+    }
+    
+    @Override
+    public ObservableList<String> getChatProperty(){
+        return myGame.getChatProperty();
+    }
+
+    @Override
+    public void setChatProperty(ObservableList<String> messages) {
+        myGame.setChatProperty(messages);
+    }
+
+    @Override
+    public IntegerProperty setRoundNo() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public StringProperty getGameTime() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public FloatProperty getPuckSpeed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DoubleProperty getPuckXPos() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DoubleProperty getPuckYPos() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public GameStatus getStatusProp() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
