@@ -276,16 +276,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void startClick(Event evt) {
-        getThisStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle(WindowEvent event) {
-                quitClick(null);
-            }
-        });
         if (myGame != null && myGame.getMyPlayers().size() == 3) {
             if (myGame.beginGame()) {
-                addEvents();
                 btnStart.setDisable(true);
                 btnPause.setDisable(false);
                 this.sldCustomDifficulty.setDisable(true);
@@ -385,7 +377,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         getThisStage().close();
     }
 
-    private void addEvents() {
+    public void addEvents() {
         //Moving left or right
         IPlayer myPlayer = (IPlayer) lobby.getMyPerson(me);
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {

@@ -115,6 +115,7 @@ public class AirhockeyGUI extends Application {
         GameFX controller = (GameFX) loader.getController();
         // adds close event to controller through method
         controller.addCloseEvent(stage);
+        controller.addEvents();
         controller.setGame(myGame);
 
         //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
