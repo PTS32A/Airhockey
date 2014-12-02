@@ -7,6 +7,10 @@ package s32a.Client.ClientData;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
+import javafx.collections.ObservableList;
+import lombok.Getter;
+import s32a.Shared.IGame;
 import s32a.Shared.ILobbyClient;
 
 /**
@@ -15,8 +19,13 @@ import s32a.Shared.ILobbyClient;
  */
 public class LobbyClient extends UnicastRemoteObject implements ILobbyClient {
 
+    List<IGame> activeGames;
+    @Getter
+    ObservableList<IGame> oActiveGames;
+
     public LobbyClient() throws RemoteException {
 
     }
+
 
 }
