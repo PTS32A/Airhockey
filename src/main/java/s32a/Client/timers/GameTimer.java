@@ -6,6 +6,7 @@
 package s32a.Client.timers;
 
 import javafx.animation.AnimationTimer;
+import s32a.Client.ClientData.GameClient;
 import s32a.Server.Bot;
 import s32a.Client.GUI.GameFX;
 import s32a.Shared.IGame;
@@ -21,9 +22,9 @@ public class GameTimer extends AnimationTimer {
     private long refreshInMS;
     private long prevUpd;
     private long lastAction;
-    private IGame myGame;
+    private GameClient myGame;
 
-    public GameTimer(GameFX gameFX, IGame game) {
+    public GameTimer(GameFX gameFX, GameClient game) {
         this.gameFX = gameFX;
         this.myGame = game;
         this.refreshInMS = 20;

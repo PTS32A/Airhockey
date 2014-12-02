@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package s32a.Client.timers;
+package s32a.Server.Timers;
 
 import java.util.TimerTask;
 import javafx.application.Platform;
-import s32a.Shared.IGame;
+import s32a.Server.Game;
 import s32a.Shared.enums.GameStatus;
 
 /**
@@ -16,11 +16,11 @@ import s32a.Shared.enums.GameStatus;
  */
 public class GameTimeTask extends TimerTask {
 
-    private IGame myGame;
+    private Game myGame;
     private int min;
     private int sec;
 
-    public GameTimeTask(IGame game) {
+    public GameTimeTask(Game game) {
         this.myGame = game;
         this.min = 0;
         this.sec = 0;

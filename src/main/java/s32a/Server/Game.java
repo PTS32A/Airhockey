@@ -26,7 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
-import s32a.Client.timers.GameTimeTask;
+import s32a.Server.Timers.GameTimeTask;
 import s32a.Shared.*;
 import s32a.Shared.ISpectator;
 
