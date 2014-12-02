@@ -15,6 +15,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 import s32a.Shared.*;
@@ -24,7 +25,7 @@ import s32a.Shared.enums.GameStatus;
  *
  * @author Kargathia
  */
-public class GameClient extends UnicastRemoteObject implements IGameClient, IGame{
+public class GameClient extends UnicastRemoteObject implements IGameClient, IGame {
 
     private IGame myGame;
     @Getter
@@ -34,7 +35,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private List<String> chat;
     private ObservableList<String> oChat;
     @Getter
-    private IntegerProperty roundNoProperty;
+    private IntegerProperty roundNoProperty, player1Score, player2Score, 
+            player3Score;
+    @Getter
     private StringProperty gameTime;
     @Getter
     private FloatProperty puckSpeedProperty;
@@ -42,12 +45,27 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private ObjectProperty<GameStatus> gameStatusProperty;
     @Getter
     private DoubleProperty puckXProperty, puckYProperty;
-    
+    @Getter
+    private DoubleProperty player1XProperty, player1YProperty, player2XProperty,
+            player2YProperty, player3XProperty, player3YProperty;
 
-    public GameClient() throws RemoteException{
-        this.myGame = null;
+    public GameClient(IGame myGame) throws RemoteException {
+        this.myGame = myGame;
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
+        this.chat = new ArrayList<>();
+        this.oChat = FXCollections.observableArrayList(chat);
+        this.roundNoProperty.set(0);
+        this.puckSpeedProperty.set(0);
+        this.puckXProperty.set(0);
+        this.puckYProperty.set(0);
+        this.player1XProperty.set(0);
+        this.player1YProperty.set(0);
+        this.player2XProperty.set(0);
+        this.player2YProperty.set(0);
+        this.player3XProperty.set(0);
+        this.player3YProperty.set(0);
+        this.gameStatusProperty.set(GameStatus.Waiting);
     }
 
     @Override
@@ -84,8 +102,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     public void startRound() {
         myGame.startRound();
     }
-    
-    public ObservableList<String> getChat(){
+
+    public ObservableList<String> getChat() {
         return oChat;
     }
 
@@ -107,5 +125,60 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Override
     public void setSpectators(List<ISpectator> spectators) {
         mySpectators = spectators;
+    }
+
+    @Override
+    public void setPuckX(double x) {
+        this.puckXProperty.set(x);
+    }
+
+    @Override
+    public void setPuckY(double y) {
+        this.puckYProperty.set(y);
+    }
+
+    @Override
+    public void setPlayer1X(double x) {
+        this.player1XProperty.set(x);
+    }
+
+    @Override
+    public void setPlayer1Y(double y) {
+        this.player1XProperty.set(y);
+    }
+
+    @Override
+    public void setPlayer2X(double x) {
+        this.player2XProperty.set(x);
+    }
+
+    @Override
+    public void setPlayer2Y(double y) {
+        this.player2XProperty.set(y);
+    }
+
+    @Override
+    public void setPlayer3X(double x) {
+        this.player3XProperty.set(x);
+    }
+
+    @Override
+    public void setPlayer3Y(double y) {
+       this.player3XProperty.set(y);
+    }
+
+    @Override
+    public void setPlayer1Score(int score) {
+        this.player1Score.set(score);
+    }
+
+    @Override
+    public void setPlayer2Score(int score) {
+        this.player2Score.set(score);
+    }
+
+    @Override
+    public void setPlayer3Score(int score) {
+        this.player3Score.set(score);
     }
 }

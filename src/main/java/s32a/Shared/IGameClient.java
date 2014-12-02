@@ -23,4 +23,25 @@ public interface IGameClient {
     
     public void setChat(List<String> chat);
     
+    public void setPuckX(double x);
+    
+    public void setPuckY(double y);
+    
+    public void setPlayer1X(double x);
+    
+    public void setPlayer1Y(double y);
+    
+    public void setPlayer2X(double x);
+    
+    public void setPlayer2Y(double y);
+    
+    public void setPlayer3X(double x);
+    
+    public void setPlayer3Y(double y);
+    
+    public void setPlayer1Score(int score);
+    
+    public void setPlayer2Score(int score);
+    
+    public void setPlayer3Score(int score);
 }

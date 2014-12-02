@@ -8,7 +8,10 @@ package s32a.Client.GUI;
 import s32a.Shared.enums.GameStatus;
 import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -94,7 +97,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         if (myPerson instanceof IPlayer) {
             // Player
             IPlayer myPlayer = (IPlayer) myPerson;
-            this.myGame = myPlayer.getMyGame();
             btnStopSpec.setVisible(false);
             btnPause.setDisable(true);
             lblName.setText(myPlayer.getName());
@@ -125,7 +127,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         } else if (myPerson instanceof ISpectator) {
             // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
             ISpectator mySpectator = (ISpectator) myPerson;
-            myGame = mySpectator.getNewestGame();
             lblName.setText(myGame.getMyPlayers().get(0).getName());
             btnStart.setVisible(false);
             btnPause.setVisible(false);
@@ -137,13 +138,13 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         this.lblTime.textProperty().bind(myGame.getGameTime());
 
         // round number
-        this.lblRound.textProperty().bind(myGame.getRoundNo().asString());
+        this.lblRound.textProperty().bind(myGame.getRoundNoProperty().asString());
 
         // Chatbox
-        this.lvChatbox.setItems(myGame.getChatProperty());
+        this.lvChatbox.setItems(myGame.getChat());
 
         // Difficulty 
-        this.lblDifficulty.textProperty().bind(myGame.getPuckSpeed().asString());
+        this.lblDifficulty.textProperty().bind(myGame.getPuckSpeedProperty().asString());
 
         // binds width / height for redrawing to canvas size
         this.width.bind(this.apGame.prefWidthProperty());
@@ -182,9 +183,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private void drawPuck() {
         puck = new Circle();
         puck.radiusProperty().bind(Bindings.multiply(width, 0.02));
-        puck.centerXProperty().bind(Bindings.add(myGame.getPuckXPos(),
+        puck.centerXProperty().bind(Bindings.add(myGame.getPuckXProperty(),
                 Bindings.divide(width, 2)));
-        puck.centerYProperty().bind(Bindings.subtract(height, myGame.getPuckYPos()));
+        puck.centerYProperty().bind(Bindings.subtract(height, myGame.getPuckYProperty()));
         apGame.getChildren().add(puck);
     }
 
@@ -245,16 +246,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             double bat = (double) width.doubleValue() / 100 * 8;
             // bat 1
             bat1 = new Arc(cX / 2, cY, bat / 2, bat / 2, 0, 180);
-            bat1.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(0).getPosX(), Bindings.divide(width, 2)));
-            bat1.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(0).getPosY()));
+            bat1.centerXProperty().bind(Bindings.add(myGame.getPlayer1XProperty(), Bindings.divide(width, 2)));
+            bat1.centerYProperty().bind(Bindings.subtract(this.height, myGame.getPlayer1YProperty()));
             // bat 2
             bat2 = new Arc(batPos2.x, batPos2.y, bat / 2, bat / 2, 240, 180);
-            bat2.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(1).getPosX(), Bindings.divide(width, 2)));
-            bat2.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(1).getPosY()));
+            bat2.centerXProperty().bind(Bindings.add(myGame.getPlayer2XProperty(), Bindings.divide(width, 2)));
+            bat2.centerYProperty().bind(Bindings.subtract(this.height, myGame.getPlayer2YProperty()));
             // bat 3
             bat3 = new Arc(batPos3.x, batPos3.y, bat / 2, bat / 2, 120, 180);
-            bat3.centerXProperty().bind(Bindings.add(myGame.getMyPlayers().get(2).getPosX(), Bindings.divide(width, 2)));
-            bat3.centerYProperty().bind(Bindings.subtract(this.height, myGame.getMyPlayers().get(2).getPosY()));
+            bat3.centerXProperty().bind(Bindings.add(myGame.getPlayer3XProperty(), Bindings.divide(width, 2)));
+            bat3.centerYProperty().bind(Bindings.subtract(this.height, myGame.getPlayer3YProperty()));
             // set colors
             bat1.setFill(Color.RED);
             bat2.setFill(Color.BLUE);
@@ -307,12 +308,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     private void startGraphics(GameClient myGame) {
         // binds score labels to player scores
-        this.lblScoreP1.textProperty().bind(myGame.getMyPlayers()
-                .get(0).getScore().asString());
-        this.lblScoreP2.textProperty().bind(myGame.getMyPlayers()
-                .get(1).getScore().asString());
-        this.lblScoreP3.textProperty().bind(myGame.getMyPlayers()
-                .get(2).getScore().asString());
+        this.lblScoreP1.textProperty().bind(myGame.getPlayer1Score().asString());
+        this.lblScoreP2.textProperty().bind(myGame.getPlayer2Score().asString());
+        this.lblScoreP3.textProperty().bind(myGame.getPlayer3Score().asString());
 
         gameTimer = new GameTimer(this, myGame);
         gameTimer.start();
@@ -337,7 +335,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void pauseClick(Event evt) {
-        myGame.pauseGame(!myGame.getStatusProp().equals(GameStatus.Paused));
+        myGame.pauseGame(!myGame.getGameStatusProperty().get().equals(GameStatus.Paused));
         actionTaken = true;
     }
 
@@ -353,7 +351,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         IPerson myPerson = lobby.getMyPerson(me);
         if (myPerson instanceof ISpectator) {
             lobby.stopSpectating(myGame, (ISpectator) myPerson);
-        } else if (myGame.getStatusProp().equals(GameStatus.GameOver) || myGame.getRoundNo().get() == 0) {
+        } else if (myGame.getGameStatusProperty().get().equals(GameStatus.GameOver) || myGame.getRoundNoProperty().get() == 0) {
             lobby.endGame(myGame, null);
         } else {
             lobby.endGame(myGame, (IPlayer) myPerson);
@@ -396,7 +394,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             public void handle(final KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.A
                         || keyEvent.getCode() == KeyCode.LEFT) {
-                    if (!myGame.getStatusProp().equals(GameStatus.Paused)) {
+                    if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                         myPlayer.moveBat(-1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
@@ -404,7 +402,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     }
                 } else if (keyEvent.getCode() == KeyCode.D
                         || keyEvent.getCode() == KeyCode.RIGHT) {
-                    if (!myGame.getStatusProp().equals(GameStatus.Paused)) {
+                    if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                         myPlayer.moveBat(1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
@@ -419,7 +417,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             @Override
             public void handle(final KeyEvent event) {
-                if (myGame.getStatusProp().equals(GameStatus.Paused)) {
+                if (myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                     actionTaken = false;
                 }
             }
@@ -479,6 +477,15 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     private Stage getThisStage() {
         return (Stage) lblName.getScene().getWindow();
+    }
+
+    void setGame(IGame myGame) {
+        try {
+            this.myGame = new GameClient(myGame);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
