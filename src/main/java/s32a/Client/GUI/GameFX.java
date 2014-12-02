@@ -34,6 +34,7 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.Client.timers.GameTimer;
 import s32a.Shared.*;
+import s32a.Shared.enums.Colors;
 
 /**
  * NOTES: - SetBatPosition in DrawEdges should probably be moved to game
@@ -96,6 +97,15 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             btnStopSpec.setVisible(false);
             btnPause.setDisable(true);
             lblName.setText(myPlayer.getName());
+            double bX = width.get() / 2;
+            double bY = height.get() - bX * Math.tan(Math.toRadians(30));
+            if (myPlayer.getColor() == Colors.Blue) {
+                this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
+            }
+            else if (myPlayer.getColor() == Colors.Green) {
+                this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
+            }
+            
             // bind custom difficulty indicators
             this.customSpeed = new SimpleIntegerProperty(15);
             this.customSpeed.bindBidirectional(this.sldCustomDifficulty.valueProperty());
@@ -364,11 +374,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             showDialog("Error", "Current Person is null.");
         }
         tfChatbox.setText("");
-        double bX = width.get() / 2;
-        double bY = height.get() - bX * Math.sin(Math.toRadians(30));
-        Circle test = new Circle(bX, bY, 2, Color.RED);
-        apGame.getChildren().add(test);
-        //this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
     }
 
     /**
