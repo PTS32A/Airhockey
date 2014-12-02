@@ -30,6 +30,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     List<IGame> activeGames;
     @Getter
     ObservableList<IGame> oActiveGames;
+    
+    
+    private ILobby myLobby;
 
     public LobbyClient() throws RemoteException {
 
@@ -37,87 +40,87 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public IPerson getMyPerson(String playerName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.getMyPerson(playerName);
     }
 
     @Override
     public IChatbox getMychatbox() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.getMychatbox();
     }
 
     @Override
     public HashMap getAirhockeySettings() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.getAirhockeySettings();
     }
 
     @Override
     public HashMap<String, IPerson> getActivePersons() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.getActivePersons();
     }
 
     @Override
     public List<IGame> getActiveGames() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.getActiveGames();
     }
 
     @Override
     public boolean addPerson(String playerName, String passWord) throws IllegalArgumentException, SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.addPerson(playerName, passWord);
     }
 
     @Override
     public boolean checkLogin(String playerName, String password) throws IllegalArgumentException, SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.checkLogin(playerName, password);
     }
 
     @Override
     public boolean logOut(IPerson input) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.logOut(input);
     }
 
     @Override
     public IGame startGame(IPerson person) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.startGame(person);
     }
 
     @Override
     public IGame joinGame(IGame game, IPerson person) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.joinGame(game, person);
     }
 
     @Override
     public IGame spectateGame(IGame gameInput, IPerson personInput) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.spectateGame(gameInput, personInput);
     }
 
     @Override
     public boolean addChatMessage(String message, String from) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.addChatMessage(message, from);
     }
 
     @Override
     public boolean endGame(IGame game, IPlayer hasLeft) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.endGame(game, hasLeft);
     }
 
     @Override
     public void stopSpectating(IGame game, IPerson spectator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        myLobby.stopSpectating(game, spectator);
     }
 
     @Override
     public IGame getMyGame(String gameID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.getMyGame(gameID);
     }
 
     @Override
     public List<IPerson> getRankings() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return myLobby.getRankings();
     }
 
     @Override
     public void populate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        myLobby.populate();
     }
 
 }
