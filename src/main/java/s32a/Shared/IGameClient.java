@@ -19,7 +19,7 @@ public interface IGameClient {
     
     public void setSpectators(List<ISpectator> spectators);
     
-    public void setRoundNo(Integer roundNo);
+    public void setRoundNo(int roundNo);
     
     public void setChat(List<String> chat);
     

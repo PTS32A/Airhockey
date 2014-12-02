@@ -7,13 +7,16 @@ package s32a.Client.ClientData;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 import s32a.Shared.*;
 import s32a.Shared.enums.GameStatus;
 
@@ -24,14 +27,27 @@ import s32a.Shared.enums.GameStatus;
 public class GameClient extends UnicastRemoteObject implements IGameClient, IGame{
 
     private IGame myGame;
+    @Getter
     private List<IPlayer> myPlayers;
+    @Getter
+    private List<ISpectator> mySpectators;
     private List<String> chat;
     private ObservableList<String> oChat;
-    private IntegerProperty roundNo;
+    @Getter
+    private IntegerProperty roundNoProperty;
+    private StringProperty gameTime;
+    @Getter
+    private FloatProperty puckSpeedProperty;
+    @Getter
+    private ObjectProperty<GameStatus> gameStatusProperty;
+    @Getter
+    private DoubleProperty puckXProperty, puckYProperty;
     
 
     public GameClient() throws RemoteException{
-
+        this.myGame = null;
+        this.myPlayers = new ArrayList<>();
+        this.mySpectators = new ArrayList<>();
     }
 
     @Override
@@ -68,69 +84,28 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     public void startRound() {
         myGame.startRound();
     }
-
-   
-    public List<IPlayer> getMyPlayers() {
-        return this.myGame.getMyPlayers();
+    
+    public ObservableList<String> getChat(){
+        return oChat;
     }
 
-    
-    public IntegerProperty getRoundNo() {
-        return myGame.getRoundNo();
-    }
-    
-    
-    public ObservableList<String> getChatProperty(){
-        return myGame.getChatProperty();
-    }
-
-    
-    public IntegerProperty setRoundNo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-    public StringProperty getGameTime() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-    public FloatProperty getPuckSpeed() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-    public DoubleProperty getPuckXPos() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-    public DoubleProperty getPuckYPos() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-    public ObjectProperty<GameStatus> getStatusProp() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public void setRoundNo(int round) {
+        roundNoProperty.set(round);
     }
 
     @Override
     public void setPlayer(List<IPlayer> players) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setSpectators(List<ISpectator> spectators) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setRoundNo(Integer roundNo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        myPlayers = players;
     }
 
     @Override
     public void setChat(List<String> chat) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.chat = chat;
+    }
+
+    @Override
+    public void setSpectators(List<ISpectator> spectators) {
+        mySpectators = spectators;
     }
 }

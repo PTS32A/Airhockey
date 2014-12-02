@@ -32,6 +32,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
+import s32a.Client.ClientData.GameClient;
 import s32a.Client.timers.GameTimer;
 import s32a.Shared.*;
 import s32a.Shared.enums.Colors;
@@ -73,7 +74,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private boolean actionTaken = true;
     private GameTimer gameTimer;
     @Getter
-    private IGame myGame;
+    private GameClient myGame;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -304,7 +305,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      *
      * @param myGame
      */
-    private void startGraphics(IGame myGame) {
+    private void startGraphics(GameClient myGame) {
         // binds score labels to player scores
         this.lblScoreP1.textProperty().bind(myGame.getMyPlayers()
                 .get(0).getScore().asString());
