@@ -35,7 +35,6 @@ public class Person implements IPerson{
      *
      * @param input
      */
-    @Override
     public void setRating(double input) {
 //        this.rating = input;
         this.ratingProp.set(input);
@@ -47,7 +46,6 @@ public class Person implements IPerson{
      *
      * @return
      */
-    @Override
     public StringProperty nameProperty() {
         return this.nameProp;
     }
@@ -58,7 +56,6 @@ public class Person implements IPerson{
      *
      * @return
      */
-    @Override
     public DoubleProperty ratingProperty() {
         return this.ratingProp;
     }

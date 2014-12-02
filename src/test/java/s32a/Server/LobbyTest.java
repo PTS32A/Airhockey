@@ -171,11 +171,11 @@ public class LobbyTest {
         Game game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"));
         assertNotNull("startGame returned null", game);
         assertEquals("playedGame wasn't started right", game, 
-                ((IPlayer)this.mockLobby.getMyPerson("testey")).getMyGame());
+                ((Player)this.mockLobby.getMyPerson("testey")).getMyGame());
 
         Player testey = (Player) this.mockLobby.getMyPerson("testey");
         assertEquals("currentPerson wasn't starting player",
-                testey.getMyGame().getMyPlayers().get(0), testey);
+                ((Game)testey.getMyGame()).getMyPlayers().get(0), testey);
         assertEquals("color wasn't red", testey.getColor(), Colors.Red);
         assertEquals("starting score wasn't 20", testey.getScore(), 20);
         assertTrue("testey wasn't a starting player", testey.isStarter());
@@ -218,10 +218,7 @@ public class LobbyTest {
             // spectey
             this.mockLobby.checkLogin("spectey", "testpass");
         }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (SQLException ex) {
+        catch (IllegalArgumentException | SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         Person spectey = (Person) this.mockLobby.getActivePersons().get("spectey");

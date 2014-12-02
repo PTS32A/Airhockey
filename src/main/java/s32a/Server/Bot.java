@@ -34,19 +34,19 @@ public class Bot extends Player {
     }
 
     public void moveBot() {
-        if (getMyGame().statusProperty().get().equals(GameStatus.Playing)) {
+        if (((Game)getMyGame()).statusProperty().get().equals(GameStatus.Playing)) {
             if (this.getColor() == Colors.Red) {
-                if (getMyGame().getMyPuck().getXPos().get() >= getPosX().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getXPos().get() >= getPosX().doubleValue()) {
                     moveBat(-1);
                 }
-                if (getMyGame().getMyPuck().getXPos().get() <= getPosX().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getXPos().get() <= getPosX().doubleValue()) {
                     moveBat(1);
                 }
             } else {
-                if (getMyGame().getMyPuck().getYPos().get() >= getPosY().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getYPos().get() >= getPosY().doubleValue()) {
                     moveBat(-1);
                 }
-                if (getMyGame().getMyPuck().getYPos().get() <= getPosY().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getYPos().get() <= getPosY().doubleValue()) {
                     moveBat(1);
                 }
             }

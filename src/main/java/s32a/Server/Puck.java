@@ -25,14 +25,13 @@ import javafx.scene.shape.Line;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Shared.IPlayer;
-import s32a.Shared.IPuck;
 import s32a.Shared.enums.GameStatus;
 
 /**
  *
  * @author Kargathia
  */
-class Puck extends TimerTask implements IPuck {
+class Puck extends TimerTask {
 
     @Getter
     private ObjectProperty<Vector2> position;
@@ -364,14 +363,14 @@ class Puck extends TimerTask implements IPuck {
 
                 if (goalHitPlayerID != -1) {
                     //Player who scored
-                    IPlayer whoScored = null;
+                    Player whoScored = null;
                     if (hitBy.size() > 0) {
-                        whoScored = hitBy.get(hitBy.size() - 1);
+                        whoScored = (Player)hitBy.get(hitBy.size() - 1);
                         whoScored.setScore(whoScored.getScore().get() + 1);
                     }
 
                     //Player whose goal is hit
-                    IPlayer whoLostScore = myGame.getMyPlayers().get(goalHitPlayerID);
+                    Player whoLostScore = (Player)myGame.getMyPlayers().get(goalHitPlayerID);
                     printMessage("Goal @ player " + whoLostScore.getColor());
                     whoLostScore.setScore(whoLostScore.getScore().get() - 1);
                     this.endGoalHit = whoLostScore;
@@ -621,8 +620,8 @@ class Puck extends TimerTask implements IPuck {
             return false;
         }
 
-        Vector2 batPos = new Vector2(myGame.getMyPlayers().get(playerID).getPosX().floatValue(),
-                myGame.getMyPlayers().get(playerID).getPosY().floatValue());
+        Vector2 batPos = new Vector2(((Player)myGame.getMyPlayers().get(playerID)).getPosX().floatValue(),
+                ((Player)myGame.getMyPlayers().get(playerID)).getPosY().floatValue());
 
         if (playerID == 0) {
             //Player Red (bottom bat)
@@ -667,7 +666,8 @@ class Puck extends TimerTask implements IPuck {
         Vector2 batCentre;
         double radius = batWidth / 2 + puckSize / 2;
 
-        for (IPlayer p : myGame.getMyPlayers()) {
+        for (IPlayer Ip : myGame.getMyPlayers()) {
+            Player p = (Player)Ip;
             batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
 
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID) {

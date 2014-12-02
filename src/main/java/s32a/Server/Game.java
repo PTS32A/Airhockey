@@ -40,7 +40,7 @@ public class Game implements IGame {
     private ObjectProperty<GameStatus> statusProp;
 
     @Getter
-    private IChatbox myChatbox;
+    private Chatbox myChatbox;
     private Puck myPuck;
     @Getter
     private List<ISpectator> mySpectators;
@@ -82,8 +82,8 @@ public class Game implements IGame {
         this.myPlayers.add(starter);
         setBatPosition(starter, 0);
 
-        starter.setMyGame(this);
-        starter.setStarter(true);
+        ((Player)starter).setMyGame(this);
+        ((Player)starter).setStarter(true);
 
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName()
@@ -138,15 +138,15 @@ public class Game implements IGame {
      * bot, then implement it as bot (iteration 1) sets nextColor in gameID to
      * the next available color
      *
-     * @param player The player that's going to be added to the active game
+     * @param playerInput The player that's going to be added to the active game
      * player color can be retrieved from gameID.get("nextColor")
      * @return returns true when the player was successfully added returns false
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
      */
-    @Override
-    public boolean addPlayer(IPlayer player) {
-        if (player != null) {
+    public boolean addPlayer(IPlayer playerInput) {
+        if (playerInput != null) {
+            Player player = (Player)playerInput;
             if (!myPlayers.contains(player)) {
                 if (myPlayers.size() < 3) {
                     this.gameInfo.put("nextColor", getNextColor());
@@ -176,7 +176,12 @@ public class Game implements IGame {
      * @param p
      * @param playerID
      */
-    private void setBatPosition(IPlayer p, int playerID) {
+    private void setBatPosition(IPlayer pInput, int playerID) {
+        if(pInput == null){
+            return;
+        }
+        Player p = (Player)pInput;
+
         float width = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         float bat = width / 100 * 8;
         float x;
@@ -243,7 +248,6 @@ public class Game implements IGame {
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
      */
-    @Override
     public boolean addSpectator(ISpectator spectator) throws IllegalArgumentException {
         if (spectator != null) {
             for (ISpectator spect : this.mySpectators) {
@@ -251,7 +255,7 @@ public class Game implements IGame {
                     return false;
                 }
             }
-            if (spectator.addGame(this)) {
+            if (((Spectator)spectator).addGame(this)) {
                 mySpectators.add(spectator);
                 return true;
             } else {
@@ -269,11 +273,10 @@ public class Game implements IGame {
      * game
      * @return returns true if the spectator was successfully removed
      */
-    @Override
     public boolean removeSpectator(ISpectator spectator) {
         if (spectator != null) {
             if (mySpectators.contains(spectator)) {
-                spectator.removeGame(this);
+                ((Spectator)spectator).removeGame(this);
                 mySpectators.remove(spectator);
                 return true;
             }
@@ -354,7 +357,7 @@ public class Game implements IGame {
         }
         double averageRating = 0;
         for (IPlayer p : myPlayers) {
-            averageRating += p.ratingProperty().get();
+            averageRating += ((Player)p).ratingProperty().get();
         }
         averageRating = averageRating / myPlayers.size();
         return adjustDifficulty((float) averageRating);
@@ -502,8 +505,7 @@ public class Game implements IGame {
         }
     }
 
-    @Override
-    public IPuck getMyPuck() {
+    public Puck getMyPuck() {
         return this.myPuck;
     }
 
@@ -512,7 +514,6 @@ public class Game implements IGame {
      *
      * @param input
      */
-    @Override
     public void setGameTime(String input) {
         this.gameTime.set(input);
     }
@@ -537,7 +538,6 @@ public class Game implements IGame {
      *
      * @return
      */
-    @Override
     public StringProperty difficultyProperty() {
         return this.difficultyProp;
     }
@@ -546,7 +546,6 @@ public class Game implements IGame {
      *
      * @return game status, formatted as GameStatus enum, packed in a property
      */
-    @Override
     public ObjectProperty<GameStatus> statusProperty() {
         return this.statusProp;
     }
@@ -556,7 +555,6 @@ public class Game implements IGame {
      *
      * @return
      */
-    @Override
     public StringProperty player1NameProperty() {
         return this.playerNameProp(0);
     }
@@ -566,7 +564,6 @@ public class Game implements IGame {
      *
      * @return
      */
-    @Override
     public StringProperty player2NameProperty() {
         return this.playerNameProp(1);
     }
@@ -576,7 +573,6 @@ public class Game implements IGame {
      *
      * @return
      */
-    @Override
     public StringProperty player3NameProperty() {
         return this.playerNameProp(2);
     }
@@ -591,7 +587,7 @@ public class Game implements IGame {
         if (this.myPlayers.size() <= index) {
             return new SimpleStringProperty("--");
         } else {
-            return this.myPlayers.get(index).nameProperty();
+            return ((Player)this.myPlayers.get(index)).nameProperty();
         }
     }
 }

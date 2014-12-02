@@ -149,7 +149,7 @@ public class Lobby implements ILobby {
         } else if (input instanceof Spectator) {
             Spectator spectInput = (Spectator) input;
             for (IGame g : activeGames) {
-                g.removeSpectator(spectInput);
+                ((Game)g).removeSpectator(spectInput);
             }
         }
         this.activePersons.remove(input.getName());
@@ -296,14 +296,15 @@ public class Lobby implements ILobby {
      * @return - True if everything went well - False otherwise
      */
     @Override
-    public boolean endGame(IGame game, IPlayer hasLeft) {
-        if (game == null || !this.activeGames.contains(game)) {
+    public boolean endGame(IGame gameInput, IPlayer hasLeft) {
+        if (gameInput == null || !this.activeGames.contains(gameInput)) {
             return false;
         }
+        Game game = (Game)gameInput;
 
         if (game.getMyPlayers().size() == 3 && game.getRoundNo().get() > 0) {
             try {
-                game = this.adjustScore(game, (hasLeft != null));
+                game = (Game)this.adjustScore(game, (hasLeft != null));
                 if (game == null) {
                     return false;
                 }
@@ -314,7 +315,8 @@ public class Lobby implements ILobby {
         }
 
         try {
-            for (IPlayer player : game.getMyPlayers()) {
+            for (IPlayer Iplayer : game.getMyPlayers()) {
+                Player player = (Player)Iplayer;
                 if (this.getActivePersons().get(player.getName()) instanceof Player) {
                     player.setRating(this.myDatabaseControls.getNewRating((Person) player, hasLeft));
                     this.returnToLobby(player);
@@ -332,14 +334,16 @@ public class Lobby implements ILobby {
      * returns given person to lobby, and removes him from the spectators of
      * given game.
      *
-     * @param game
+     * @param gameInput
      * @param spectator
      */
     @Override
-    public void stopSpectating(IGame game, IPerson spectator) {
-        if (spectator == null || game == null || !(spectator instanceof Spectator)) {
+    public void stopSpectating(IGame gameInput, IPerson spectator) {
+        if (spectator == null || gameInput == null || !(spectator instanceof Spectator)) {
             return;
         }
+        Game game = (Game)gameInput;
+
         game.removeSpectator((Spectator) spectator);
         this.returnToLobby(spectator);
     }
@@ -351,16 +355,19 @@ public class Lobby implements ILobby {
      *
      * @param participant can be null, but it won't do anything then either
      */
-    private void returnToLobby(IPerson participant) {
-        if (participant == null || !(participant instanceof Player || participant instanceof Spectator)) {
+    private void returnToLobby(IPerson participantInput) {
+        if (participantInput == null
+                || !(participantInput instanceof Player
+                || participantInput instanceof Spectator)) {
             return;
         }
+        Person participant = (Person)participantInput;
         try {
             boolean isBot = participant.isBot();
             if (participant instanceof Spectator && ((Spectator) participant).getMyGames().size() > 1) {
             } else {
                 this.activePersons.replace(participant.getName(), new Person(participant.getName(), participant.ratingProperty().get()));
-                this.activePersons.get(participant.getName()).setBot(isBot);
+                ((Person)this.activePersons.get(participant.getName())).setBot(isBot);
             }
         }
         catch (Exception ex) {
@@ -370,25 +377,30 @@ public class Lobby implements ILobby {
     /**
      * Adjusts end of game scores according to the URS
      *
-     * @param input
+     * @param game
      * @return
      */
-    private IGame adjustScore(IGame input, boolean earlyEnding) throws IllegalArgumentException {
-        if (input.getMyPlayers().size() < 3) {
+    private IGame adjustScore(IGame gameInput, boolean earlyEnding) throws IllegalArgumentException {
+        if(gameInput == null){
+            throw new IllegalArgumentException("input was null");
+        }
+        Game game = (Game)gameInput;
+
+        if (game.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("game wasn't full");
         }
-        int player1score = input.getMyPlayers().get(0).getScore().get();
-        int player2score = input.getMyPlayers().get(1).getScore().get();
-        int player3score = input.getMyPlayers().get(2).getScore().get();
+        int player1score = ((Player)game.getMyPlayers().get(0)).getScore().get();
+        int player2score = ((Player)game.getMyPlayers().get(1)).getScore().get();
+        int player3score = ((Player)game.getMyPlayers().get(2)).getScore().get();
 
-        double player1rating = input.getMyPlayers().get(0).ratingProperty().get();
-        double player2rating = input.getMyPlayers().get(1).ratingProperty().get();
-        double player3rating = input.getMyPlayers().get(2).ratingProperty().get();
+        double player1rating = ((Player)game.getMyPlayers().get(0)).ratingProperty().get();
+        double player2rating = ((Player)game.getMyPlayers().get(1)).ratingProperty().get();
+        double player3rating = ((Player)game.getMyPlayers().get(2)).ratingProperty().get();
 
         double averageRating = (player1rating + player2rating + player3rating) / 3;
         double speedRating;
         try {
-            speedRating = Math.round(input.getMyPuck().getSpeed().get());
+            speedRating = Math.round(game.getMyPuck().getSpeed().get());
             if (speedRating > averageRating) {
                 player1rating = speedRating;
                 player2rating = speedRating;
@@ -405,25 +417,25 @@ public class Lobby implements ILobby {
 
         // adjusts score based on whether the game ended prematurely
         if (earlyEnding) {
-            player1score = (player1score - 20) * 10 / input.getRoundNo().get() + 20;
-            player2score = (player2score - 20) * 10 / input.getRoundNo().get() + 20;
-            player3score = (player3score - 20) * 10 / input.getRoundNo().get() + 20;
+            player1score = (player1score - 20) * 10 / game.getRoundNo().get() + 20;
+            player2score = (player2score - 20) * 10 / game.getRoundNo().get() + 20;
+            player3score = (player3score - 20) * 10 / game.getRoundNo().get() + 20;
         }
 
-        input.getMyPlayers().get(0).setScore(player1score);
-        input.getMyPlayers().get(1).setScore(player2score);
-        input.getMyPlayers().get(2).setScore(player3score);
+        ((Player)game.getMyPlayers().get(0)).setScore(player1score);
+        ((Player)game.getMyPlayers().get(1)).setScore(player2score);
+        ((Player)game.getMyPlayers().get(2)).setScore(player3score);
 
         try {
             // saves game
-            this.myDatabaseControls.saveGame(input);
+            this.myDatabaseControls.saveGame(game);
         }
         catch (SQLException ex) {
             throw new IllegalArgumentException("failed to save game: "
                     + ex.getMessage());
         }
 
-        return input;
+        return game;
     }
 
     /**
@@ -452,7 +464,7 @@ public class Lobby implements ILobby {
             throw new IllegalArgumentException();
         }
         for (IGame game : this.activeGames) {
-            if (game.getGameInfo().get("gameID").equals(gameID)) {
+            if (((Game)game).getGameInfo().get("gameID").equals(gameID)) {
                 return game;
             }
         }
@@ -494,52 +506,52 @@ public class Lobby implements ILobby {
         this.activePersons.put("bot11", new Person("bot11", (double) 15));
 
         //game 1
-        IPerson bot = this.activePersons.get("bot1");
+        Person bot = (Person)this.activePersons.get("bot1");
         bot.setBot(true);
         Game game = this.startGame(bot);
 
-        bot = this.activePersons.get("bot2");
+        bot = (Person)this.activePersons.get("bot2");
         bot.setBot(true);
         this.joinGame(game, bot);
 
-        bot = this.activePersons.get("bot3");
+        bot = (Person)this.activePersons.get("bot3");
         bot.setBot(true);
         this.joinGame(game, bot);
         game.beginGame();
 
         //game 2
-        bot = this.activePersons.get("bot4");
+        bot = (Person)this.activePersons.get("bot4");
         bot.setBot(true);
         game = this.startGame(bot);
 
-        bot = this.activePersons.get("bot5");
+        bot = (Person)this.activePersons.get("bot5");
         bot.setBot(true);
         this.joinGame(game, bot);
 
-        bot = this.activePersons.get("bot6");
+        bot = (Person)this.activePersons.get("bot6");
         bot.setBot(true);
         this.joinGame(game, bot);
         game.beginGame();
 
         // game 3
-        bot = this.activePersons.get("bot7");
+        bot = (Person)this.activePersons.get("bot7");
         bot.setBot(true);
         game = this.startGame(bot);
 
-        bot = this.activePersons.get("bot8");
+        bot = (Person)this.activePersons.get("bot8");
         bot.setBot(true);
         this.joinGame(game, bot);
 
-        bot = this.activePersons.get("bot9");
+        bot = (Person)this.activePersons.get("bot9");
         bot.setBot(true);
         this.joinGame(game, bot);
         game.pauseGame(true);
 
         // loose change
-        bot = this.activePersons.get("bot10");
+        bot = (Person)this.activePersons.get("bot10");
         bot.setBot(true);
 
-        bot = this.activePersons.get("bot11");
+        bot = (Person)this.activePersons.get("bot11");
         bot.setBot(true);
 
         // adds two bots to the system.

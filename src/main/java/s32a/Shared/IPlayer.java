@@ -19,36 +19,6 @@ public interface IPlayer extends IPerson {
 
     public Colors getColor();
 
-    public DoubleProperty getPosX();
-
-    public void setPosX(DoubleProperty input);
-
-    public DoubleProperty getPosY();
-
-    public void setPosY(DoubleProperty input);
-
-    public IntegerProperty getScore();
-
-    public boolean isStarter();
-
-    public void setStarter(boolean input);
-
-    public int getRotation();
-
-    public Vector2 getGoalPos();
-
-    public Calendar getLastAction();
-
-    public void setMyGame(IGame game);
-
-    public IGame getMyGame();
-
-    public float getSideLength();
-
-    public int getBatWidth();
-
-    public void setScore(int input);
-
     public boolean moveBat(float amount)
             throws IllegalArgumentException;
 }

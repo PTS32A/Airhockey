@@ -244,14 +244,18 @@ class DatabaseControls {
      * @throws SQLException
      * @throws IllegalArgumentException when game doesn't have three players
      */
-    public void saveGame(IGame game) throws SQLException, IllegalArgumentException {
+    public void saveGame(IGame gameInput) throws SQLException, IllegalArgumentException {
+        if(gameInput == null){
+            throw new IllegalArgumentException("input was null");
+        }
+        Game game = (Game)gameInput;
         if (game.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("Game contained less than three players");
         }
 
-        if (game.getMyPlayers().get(0).getScore().get() < 0
-                || game.getMyPlayers().get(1).getScore().get() < 0
-                || game.getMyPlayers().get(2).getScore().get() < 0) {
+        if (((Player)game.getMyPlayers().get(0)).getScore().get() < 0
+                || ((Player)game.getMyPlayers().get(1)).getScore().get() < 0
+                || ((Player)game.getMyPlayers().get(2)).getScore().get() < 0) {
             throw new IllegalArgumentException("One or more players had negative scores");
         }
 
@@ -270,9 +274,9 @@ class DatabaseControls {
             java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
             prepStat.setTimestamp(2, sqlDate);
 
-            prepStat.setInt(3, game.getMyPlayers().get(0).getScore().get());
-            prepStat.setInt(4, game.getMyPlayers().get(1).getScore().get());
-            prepStat.setInt(5, game.getMyPlayers().get(2).getScore().get());
+            prepStat.setInt(3, ((Player)game.getMyPlayers().get(0)).getScore().get());
+            prepStat.setInt(4, ((Player)game.getMyPlayers().get(1)).getScore().get());
+            prepStat.setInt(5, ((Player)game.getMyPlayers().get(2)).getScore().get());
 
             prepStat.setString(6, game.getMyPlayers().get(0).getName());
             prepStat.setString(7, game.getMyPlayers().get(1).getName());

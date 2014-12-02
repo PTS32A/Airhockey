@@ -57,7 +57,6 @@ public class Player extends Person implements IPlayer {
      *
      * @param input
      */
-    @Override
     public void setScore(int input) {
         Platform.runLater(new Runnable() {
 
@@ -114,7 +113,7 @@ public class Player extends Person implements IPlayer {
         double cX = sideLength / 2;
         double cY = 0;
 
-        if (!myGame.statusProperty().get().equals(GameStatus.Playing)) {
+        if (!((Game)myGame).statusProperty().get().equals(GameStatus.Playing)) {
             return false;
         } else {
             // Will reimplement this later.

@@ -13,11 +13,4 @@ import java.util.List;
  */
 public interface ISpectator extends IPerson {
 
-    public List<IGame> getMyGames();
-
-    public boolean addGame(IGame input);
-
-    public boolean removeGame(IGame input);
-
-    public IGame getNewestGame();
 }

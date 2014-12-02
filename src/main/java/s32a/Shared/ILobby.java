@@ -17,8 +17,6 @@ public interface ILobby {
 
     public IPerson getMyPerson(String playerName);
 
-    public IChatbox getMychatbox();
-
     public HashMap getAirhockeySettings();
 
     public HashMap<String, IPerson> getActivePersons();

@@ -14,7 +14,6 @@ import s32a.Shared.IGame;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-import s32a.Shared.IChatbox;
 import s32a.Shared.IGame;
 import s32a.Shared.ILobby;
 import s32a.Shared.ILobbyClient;
@@ -37,11 +36,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public IPerson getMyPerson(String playerName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public IChatbox getMychatbox() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

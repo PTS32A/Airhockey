@@ -33,13 +33,13 @@ public class Spectator extends Person implements ISpectator {
      * @param input
      * @return
      */
-    @Override
-    public boolean addGame(IGame input) {
-        if (input == null) {
+    public boolean addGame(IGame inputGame) {
+        if (inputGame == null) {
             return false;
         }
+        Game input = (Game)inputGame;
         for (IGame game : myGames) {
-            if (game.getGameInfo().get("gameID").equals(input.getGameInfo().get("gameID"))) {
+            if (((Game)game).getGameInfo().get("gameID").equals(input.getGameInfo().get("gameID"))) {
                 return false;
             }
         }
@@ -52,7 +52,6 @@ public class Spectator extends Person implements ISpectator {
      * @param input
      * @return
      */
-    @Override
     public boolean removeGame(IGame input) {
         if (input == null) {
             return false;
@@ -63,7 +62,6 @@ public class Spectator extends Person implements ISpectator {
     /**
      * @return game most recently added to the list - used to set up GameFX
      */
-    @Override
     public IGame getNewestGame() {
         if (myGames == null || myGames.size() < 1) {
             return null;
