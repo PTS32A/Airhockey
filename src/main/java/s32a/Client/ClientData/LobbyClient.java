@@ -33,8 +33,8 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     
     private ILobby myLobby;
 
-    public LobbyClient() throws RemoteException {
-
+    public LobbyClient(ILobby myLobby) throws RemoteException {
+        this.myLobby = myLobby;
     }
 
     @Override
