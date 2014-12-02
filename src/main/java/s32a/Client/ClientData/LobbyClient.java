@@ -123,4 +123,19 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         myLobby.populate();
     }
 
+    @Override
+    public void setActiveGames(List<IGame> activeGames) {
+        this.activeGames = activeGames;
+    }
+
+    @Override
+    public void setOActiveGames(ObservableList<IGame> oActiveGames) {
+        this.oActiveGames = oActiveGames;
+    }
+
+    @Override
+    public void setMyLobby(ILobby myLobby) {
+        this.myLobby = myLobby;
+    }
+
 }
