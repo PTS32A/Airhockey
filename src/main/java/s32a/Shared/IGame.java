@@ -35,25 +35,5 @@ public interface IGame {
     public boolean pauseGame(boolean isPaused);
 
     public void startRound();
-
-    public List<IPlayer> getMyPlayers();
-
-    public IntegerProperty getRoundNo();
-    
-    public IntegerProperty setRoundNo();
-
-    public ObservableList<String> getChatProperty();
-    
-    public void setChatProperty(ObservableList<String> messages);
-    
-    public StringProperty getGameTime();
-
-    public FloatProperty getPuckSpeed();
-
-    public DoubleProperty getPuckXPos();
-
-    public DoubleProperty getPuckYPos();
-
-    public GameStatus getStatusProp();
     
 }
