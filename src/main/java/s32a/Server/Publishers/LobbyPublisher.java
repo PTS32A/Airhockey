@@ -16,16 +16,22 @@ import s32a.Shared.ILobby;
  */
 public class LobbyPublisher {
 
-    public void setActiveGames(){
+    public LobbyPublisher(){
 
     }
 
-    public void setOActiveGames(){
+    private void setActiveGames(){
 
     }
 
-    public void setMyLobby(){
+    private void setOActiveGames(){
+
+    }
+
+    private void setMyLobby(){
         
     }
+
+    
 
 }
