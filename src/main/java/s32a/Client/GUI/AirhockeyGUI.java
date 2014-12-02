@@ -17,6 +17,7 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.Client.ClientData.LobbyClient;
 import s32a.Server.AirhockeyServer;
+import s32a.Shared.IGame;
 import s32a.Shared.ILobby;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
@@ -106,7 +107,7 @@ public class AirhockeyGUI extends Application {
     /**
      *
      */
-    void goToGame(Stage stage) throws IOException {
+    void goToGame(Stage stage, IGame myGame) throws IOException {
 
         // gets the controller class while initializing
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Game.fxml"));
@@ -114,6 +115,7 @@ public class AirhockeyGUI extends Application {
         GameFX controller = (GameFX) loader.getController();
         // adds close event to controller through method
         controller.addCloseEvent(stage);
+        controller.setGame(myGame);
 
         //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
         Scene scene = new Scene(root);

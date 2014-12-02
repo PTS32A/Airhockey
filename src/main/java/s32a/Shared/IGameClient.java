@@ -6,8 +6,6 @@
 package s32a.Shared;
 
 import java.util.List;
-import javafx.beans.property.IntegerProperty;
-import javafx.collections.ObservableList;
 
 /**
  *
