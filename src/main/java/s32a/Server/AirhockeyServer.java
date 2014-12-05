@@ -5,6 +5,10 @@
  */
 package s32a.Server;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import s32a.Shared.ILobby;
 
 /**
@@ -13,19 +17,36 @@ import s32a.Shared.ILobby;
  */
 public class AirhockeyServer {
 
-    private static Lobby _instance;
-    
-    public static ILobby getInstance(){
-        if(_instance == null){
-            _instance = new Lobby();
+    private Lobby lobby;
+    private static final int portNumber = 1099;
+    private static final String bindingName = "AirhockeyServer";
+
+    public AirhockeyServer(){
+
+        try {
+            lobby = Lobby.getSingle();
+            System.out.println("Server: Lobby created");
+        } catch (RemoteException ex) {
+            System.out.println("Server: RemoteException: " + ex.getMessage());
+            lobby = null;
         }
-        return _instance;
+
+        // Bind using Naming
+        if (lobby != null) {
+            try {
+                LocateRegistry.createRegistry(portNumber);
+                Naming.rebind(bindingName, lobby);
+            } catch (MalformedURLException ex) {
+                System.out.println("Server: MalformedURLException: " + ex.getMessage());
+            } catch (RemoteException ex) {
+                System.out.println("Server: RemoteException: " + ex.getMessage());
+            }
+            System.out.println("Server: Lobby bound to " + bindingName);
+        } else {
+            System.out.println("Server: Lobby not bound");
+        }
     }
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-    }
+
+
 
 }

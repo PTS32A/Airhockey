@@ -5,6 +5,8 @@
  */
 package s32a.Shared;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -13,14 +15,18 @@ import lombok.Getter;
  *
  * @author Kargathia
  */
-public interface ILobbyClient {
+public interface ILobbyClient extends Remote{
     
-    public void setActiveGames(List<IGame> activeGames);
+    public void setActiveGames(List<IGame> activeGames)
+            throws RemoteException;
     
-    public void setMyLobby(ILobby myLobby);
+    public void setMyLobby(ILobby myLobby)
+            throws RemoteException;
     
-    public void setChat(List<String> chat);
+    public void setChat(List<String> chat)
+            throws RemoteException;
     
-    public void setRating(Double rating);
+    public void setRating(Double rating)
+            throws RemoteException;
     
 }

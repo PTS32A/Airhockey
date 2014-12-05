@@ -5,6 +5,9 @@
  */
 package s32a.Shared;
 
+import java.io.Serializable;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
@@ -20,20 +23,27 @@ import s32a.Shared.enums.GameStatus;
  *
  * @author Kargathia
  */
-public interface IGame {
+public interface IGame extends Remote, Serializable {
 
-    public void setContinueRun(boolean input);
+    public void setContinueRun(boolean input)
+            throws RemoteException;
 
-    public boolean addChatMessage(String message, String from);
+    public boolean addChatMessage(String message, String from)
+            throws RemoteException;
 
-    public boolean beginGame();
+    public boolean beginGame()
+            throws RemoteException;
 
-    public boolean adjustDifficulty(float puckSpeed);
+    public boolean adjustDifficulty(float puckSpeed)
+            throws RemoteException;
 
-    public boolean adjustDifficulty();
+    public boolean adjustDifficulty()
+            throws RemoteException;
 
-    public boolean pauseGame(boolean isPaused);
+    public boolean pauseGame(boolean isPaused)
+            throws RemoteException;
 
-    public void startRound();
+    public void startRound()
+            throws RemoteException;
     
 }

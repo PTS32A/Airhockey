@@ -19,16 +19,10 @@ import s32a.Shared.IPlayer;
 public class GameTimer extends AnimationTimer {
 
     private final GameFX gameFX;
-    private long refreshInMS;
-    private long prevUpd;
     private long lastAction;
-    private GameClient myGame;
 
-    public GameTimer(GameFX gameFX, GameClient game) {
+    public GameTimer(GameFX gameFX) {
         this.gameFX = gameFX;
-        this.myGame = game;
-        this.refreshInMS = 20;
-        this.prevUpd = 0;
         this.lastAction = 0;
     }
 
@@ -45,11 +39,12 @@ public class GameTimer extends AnimationTimer {
 //            prevUpd = now;
 //        }
 
-        for (IPlayer p : myGame.getMyPlayers()) {
-            if (p instanceof Bot) {
-                Bot b = (Bot) p;
-                b.moveBot();
-            }
-        }
+        // bot movement should be done server side
+//        for (IPlayer p : myGame.getMyPlayers()) {
+//            if (p instanceof Bot) {
+//                Bot b = (Bot) p;
+//                b.moveBot();
+//            }
+//        }
     }
 }

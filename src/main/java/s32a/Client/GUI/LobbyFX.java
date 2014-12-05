@@ -8,9 +8,12 @@ package s32a.Client.GUI;
 import s32a.Shared.enums.GameStatus;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -142,7 +145,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      * updates relevant screens in display
      */
     public void updatePlayerInfo() {
-        IPerson p = lobby.getMyPerson(me);
+        IPerson p = super.getMe();
         if (p != null) {
             lvPlayerInfo.setItems(FXCollections.observableArrayList("Name: "
                     + me, "Rating: " + Double.toString(lobby.getPlayerRatingProperty().get())));
@@ -156,7 +159,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      */
     public void newGame(Event evt) {
         try {
-            IPerson p = lobby.getMyPerson(me);
+            IPerson p = super.getMe();
             if(p == null){
                 super.showDialog("Error", "You are not logged in");
                 return;
@@ -184,7 +187,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      */
     public void joinGame(Event evt) {
         try {
-            IPerson p = lobby.getMyPerson(me);
+            IPerson p = super.getMe();
             if (p instanceof IPerson) {
                 if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null) {
                     if (lobby.joinGame(
@@ -209,7 +212,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void spectateGame(Event evt) {
-        IPerson p = lobby.getMyPerson(me);
+        IPerson p = super.getMe();
         if (p instanceof IPlayer) {
             super.showDialog("Error",
                     "You are playing a game and can't spectate at the same time");
@@ -220,11 +223,15 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             IGame game = (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem();
             
             try{
-                lobby.spectateGame(game, lobby.getMyPerson(me));
+                lobby.spectateGame(game, super.getMe());
                 openNewGameWindow(game);
             }
             catch(IllegalArgumentException ex){
                 super.showDialog("Error", ex.getMessage());
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException on trying to spectate game: " + ex.getMessage());
+                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -236,7 +243,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      */
     public void logOut(Event evt) {
         try {
-            lobby.logOut(lobby.getMyPerson(me));
+            lobby.logOut(super.getMe());
             super.goToLogin(getThisStage());
             this.lobbyTimer.stop();
         }
@@ -252,8 +259,19 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      */
     public void sendChatMessage(Event evt) {
         if (!tfChatbox.getText().equals("")) {
-            lobby.addChatMessage(tfChatbox.getText(), me);
-            tfChatbox.setText("");
+            try {
+                lobby.addChatMessage(tfChatbox.getText(), me);
+                tfChatbox.setText("");
+            }
+            catch (IllegalArgumentException ex) {
+                System.out.println("IllegalArgumentException on sendChatMessage: " + ex.getMessage());
+                super.showDialog("Error", "Unable to send message: " + ex.getMessage());
+                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException on sendChatMessage: " + ex.getMessage());
+                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

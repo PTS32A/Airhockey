@@ -6,6 +6,8 @@
 package s32a.Server;
 
 import com.badlogic.gdx.math.Vector2;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +27,7 @@ import s32a.Shared.enums.GameStatus;
  *
  * @author Kargathia
  */
-public class Lobby implements ILobby {
+public class Lobby extends UnicastRemoteObject implements ILobby {
 
     /**
      * The Lobby Singleton. Called by everything except some unit tests.
@@ -36,8 +38,9 @@ public class Lobby implements ILobby {
      * If _singleton is null, initializes it.
      *
      * @return instance of lobby (_singleton)
+     * @throws java.rmi.RemoteException
      */
-    public static Lobby getSingle() {
+    public static Lobby getSingle() throws RemoteException {
         if (_singleton == null) {
             _singleton = new Lobby();
         }
@@ -66,8 +69,9 @@ public class Lobby implements ILobby {
 
     /**
      * Lobby is used as singleton. Public for unit tests.
+     * @throws java.rmi.RemoteException
      */
-    public Lobby() {
+    public Lobby() throws RemoteException {
         this.mychatbox = new Chatbox();
         this.myDatabaseControls = new DatabaseControls();
         this.activePersons = new HashMap<>();
@@ -88,10 +92,11 @@ public class Lobby implements ILobby {
      * IllegalArgumentException when parameter(s) is/are null or contain
      * trailing / leading white spaces
      * @throws java.sql.SQLException
+     * @throws java.rmi.RemoteException
      */
     @Override
     public boolean addPerson(String playerName, String password)
-            throws IllegalArgumentException, SQLException {
+            throws IllegalArgumentException, SQLException, RemoteException {
         if (playerName == null
                 || password == null
                 || !playerName.trim().equals(playerName)
@@ -114,10 +119,11 @@ public class Lobby implements ILobby {
      * .checkLogin() returned null IllegalArgumentException when parameter was
      * null or empty, or contained trailing / leading white spaces
      * @throws java.sql.SQLException
+     * @throws java.rmi.RemoteException
      */
     @Override
     public boolean checkLogin(String playerName, String password)
-            throws IllegalArgumentException, SQLException {
+            throws IllegalArgumentException, SQLException, RemoteException {
         if (playerName == null || password == null
                 || !playerName.trim().equals(playerName) || !password.trim().equals(password)) {
             throw new IllegalArgumentException();
@@ -137,9 +143,10 @@ public class Lobby implements ILobby {
      *
      * @param input
      * @return whether logout succeeded
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean logOut(IPerson input) {
+    public boolean logOut(IPerson input) throws RemoteException{
         if (input == null) {
             return false; // update this in unit tests when I get around to
         }
@@ -159,8 +166,9 @@ public class Lobby implements ILobby {
 
     /**
      * clears the entire database - should only be used for reset and debugging
+     * @throws java.rmi.RemoteException
      */
-    public void clearDatabase() {
+    public void clearDatabase() throws RemoteException {
         try {
             myDatabaseControls.clearDatabase();
         }
@@ -176,9 +184,10 @@ public class Lobby implements ILobby {
      *
      * @param input should be Lobby.currentPerson if called by GUI
      * @return - the freshly started game if everything went well - null
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public Game startGame(IPerson input) {
+    public Game startGame(IPerson input) throws RemoteException {
         if (input == null || (input instanceof Player)
                 || (input instanceof Spectator)) {
             return null;
@@ -208,9 +217,10 @@ public class Lobby implements ILobby {
      * @param gameInput can't be null
      * @param personInput should be Lobby.currentPerson if called by GUI
      * @return joined game if everything went well null otherwise
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public Game joinGame(IGame gameInput, IPerson personInput) {
+    public Game joinGame(IGame gameInput, IPerson personInput) throws RemoteException {
         if (personInput == null || (personInput instanceof Player)
                 || (personInput instanceof Spectator) || gameInput == null) {
             return null;
@@ -248,9 +258,11 @@ public class Lobby implements ILobby {
      * @param gameInput can't be null
      * @param personInput should be currentPerson if called by GUI
      * @return - Game if everything went well - Null otherwise
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public IGame spectateGame(IGame gameInput, IPerson personInput) throws IllegalArgumentException {
+    public IGame spectateGame(IGame gameInput, IPerson personInput) 
+            throws IllegalArgumentException, RemoteException {
         if (personInput == null) {
             throw new IllegalArgumentException("Input is null");
         }
@@ -290,9 +302,11 @@ public class Lobby implements ILobby {
      * currentPerson name
      * @return - True if everything went well - False otherwise
      * @throws IllegalArgumentException
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean addChatMessage(String message, String from) throws IllegalArgumentException {
+    public boolean addChatMessage(String message, String from) 
+            throws IllegalArgumentException, RemoteException {
         if (message == null || from == null || from.trim().isEmpty()) {
             throw new IllegalArgumentException("message or poster is null");
         }
@@ -307,9 +321,10 @@ public class Lobby implements ILobby {
      * @param hasLeft can be null, if game ended normally is not null when a
      * player leaves the game
      * @return - True if everything went well - False otherwise
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean endGame(IGame gameInput, IPlayer hasLeft) {
+    public boolean endGame(IGame gameInput, IPlayer hasLeft) throws RemoteException {
         if (gameInput == null || !this.activeGames.contains(gameInput)) {
             return false;
         }
@@ -349,9 +364,10 @@ public class Lobby implements ILobby {
      *
      * @param gameInput
      * @param spectator
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public void stopSpectating(IGame gameInput, IPerson spectator) {
+    public void stopSpectating(IGame gameInput, IPerson spectator) throws RemoteException {
         if (spectator == null || gameInput == null || !(spectator instanceof Spectator)) {
             return;
         }
@@ -368,7 +384,7 @@ public class Lobby implements ILobby {
      *
      * @param participant can be null, but it won't do anything then either
      */
-    private void returnToLobby(IPerson participantInput) {
+    private void returnToLobby(IPerson participantInput) throws RemoteException {
         if (participantInput == null
                 || !(participantInput instanceof Player
                 || participantInput instanceof Spectator)) {
@@ -393,7 +409,8 @@ public class Lobby implements ILobby {
      * @param game
      * @return
      */
-    private IGame adjustScore(IGame gameInput, boolean earlyEnding) throws IllegalArgumentException {
+    private IGame adjustScore(IGame gameInput, boolean earlyEnding) 
+            throws IllegalArgumentException, RemoteException {
         if (gameInput == null) {
             throw new IllegalArgumentException("input was null");
         }
@@ -470,9 +487,10 @@ public class Lobby implements ILobby {
      * @param gameID can't be null
      * @return Game when a game was found null otherwise
      * IllegalArgumentException when gameID was null
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public IGame getMyGame(String gameID) {
+    public IGame getMyGame(String gameID) throws RemoteException {
         if (gameID.trim() == null) {
             throw new IllegalArgumentException();
         }
@@ -490,9 +508,10 @@ public class Lobby implements ILobby {
      *
      * @return a sorted list of highest ranking players
      * @throws java.sql.SQLException
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public List<IPerson> getRankings() throws SQLException {
+    public List<IPerson> getRankings() throws SQLException, RemoteException {
         return this.myDatabaseControls.getRankings();
     }
 
@@ -502,9 +521,10 @@ public class Lobby implements ILobby {
      * already have been added to the database Is also responsible for setting
      * Person.isBot to true Next up it starts multiple games, some full with
      * bots, some 2/3 full
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public void populate() {
+    public void populate() throws RemoteException {
         // adds bot 1-11
         this.activePersons.put("bot1", new Person("bot1", (double) 15));
         this.activePersons.put("bot2", new Person("bot2", (double) 15));

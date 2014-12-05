@@ -5,6 +5,9 @@
  */
 package s32a.Shared;
 
+import java.io.Serializable;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 
@@ -12,7 +15,8 @@ import javafx.beans.property.StringProperty;
  *
  * @author Kargathia
  */
-public interface IPerson {
+public interface IPerson extends Remote, Serializable {
 
-    public String getName();
+    public String getName()
+            throws RemoteException;
 }

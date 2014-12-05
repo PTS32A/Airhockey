@@ -92,46 +92,58 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * with method drawEdges().
      */
     public void setUp() {
-        IPerson myPerson = lobby.getMyPerson(me);
+        IPerson myPerson = super.getMe();
         if (myPerson instanceof IPlayer) {
-            // Player
-            IPlayer myPlayer = (IPlayer) myPerson;
-            btnStopSpec.setVisible(false);
-            btnPause.setDisable(true);
-            lblName.setText(myPlayer.getName());
-            double bX = width.get() / 2;
-            double bY = height.get() - bX * Math.tan(Math.toRadians(30));
-            if (myPlayer.getColor() == Colors.Blue) {
-                this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
-            }
-            else if (myPlayer.getColor() == Colors.Green) {
-                this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
-            }
-            
-            // bind custom difficulty indicators
-            this.customSpeed = new SimpleIntegerProperty(15);
-            this.customSpeed.bindBidirectional(this.sldCustomDifficulty.valueProperty());
-            this.cbxCustomDifficulty.textProperty().bind(
-                    Bindings.concat("Use custom Speed: ", customSpeed.asString()));
 
-            // bot 10 and 11 were added in lobby.populate, and are currently not busy
-            IPerson bot = lobby.getActivePersons().get("bot10");
-            lobby.joinGame(myGame, bot);
-            bot = lobby.getActivePersons().get("bot11");
-            lobby.joinGame(myGame, bot);
+            try {
+                // Player
+                IPlayer myPlayer = (IPlayer) myPerson;
+                btnStopSpec.setVisible(false);
+                btnPause.setDisable(true);
+                lblName.setText(myPlayer.getName());
+                double bX = width.get() / 2;
+                double bY = height.get() - bX * Math.tan(Math.toRadians(30));
+                if (myPlayer.getColor() == Colors.Blue) {
+                    this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
+                } else if (myPlayer.getColor() == Colors.Green) {
+                    this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
+                }
 
-            // adds listeners governing custom difficulty
-            this.addDifficultyListeners();
+                // bind custom difficulty indicators
+                this.customSpeed = new SimpleIntegerProperty(15);
+                this.customSpeed.bindBidirectional(this.sldCustomDifficulty.valueProperty());
+                this.cbxCustomDifficulty.textProperty().bind(
+                        Bindings.concat("Use custom Speed: ", customSpeed.asString()));
+
+                // bot 10 and 11 were added in lobby.populate, and are currently not busy
+                IPerson bot = lobby.getActivePersons().get("bot10");
+                lobby.joinGame(myGame, bot);
+                bot = lobby.getActivePersons().get("bot11");
+                lobby.joinGame(myGame, bot);
+
+                // adds listeners governing custom difficulty
+                this.addDifficultyListeners();
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException on setting player info in setUp: " + ex.getMessage());
+                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         } else if (myPerson instanceof ISpectator) {
-            // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
-            ISpectator mySpectator = (ISpectator) myPerson;
-            lblName.setText(myGame.getMyPlayers().get(0).getName());
-            btnStart.setVisible(false);
-            btnPause.setVisible(false);
-            btnQuit.setVisible(false);
-            this.sldCustomDifficulty.setVisible(false);
-            this.cbxCustomDifficulty.setVisible(false);
+            try {
+                // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
+                ISpectator mySpectator = (ISpectator) myPerson;
+                lblName.setText(myGame.getMyPlayers().get(0).getName());
+                btnStart.setVisible(false);
+                btnPause.setVisible(false);
+                btnQuit.setVisible(false);
+                this.sldCustomDifficulty.setVisible(false);
+                this.cbxCustomDifficulty.setVisible(false);
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException on setting spectator info in setUp: " + ex.getMessage());
+                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         // binds upDateTime property
         this.lblTime.textProperty().bind(myGame.getGameTime());
@@ -277,14 +289,21 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void startClick(Event evt) {
         if (myGame != null && myGame.getMyPlayers().size() == 3) {
-            if (myGame.beginGame()) {
-                btnStart.setDisable(true);
-                btnPause.setDisable(false);
-                this.sldCustomDifficulty.setDisable(true);
-                this.cbxCustomDifficulty.setDisable(true);
-                this.startGraphics(myGame);
-            } else {
-                super.showDialog("Error", "Failed to begin game");
+
+            try {
+                if (myGame.beginGame()) {
+                    btnStart.setDisable(true);
+                    btnPause.setDisable(false);
+                    this.sldCustomDifficulty.setDisable(true);
+                    this.cbxCustomDifficulty.setDisable(true);
+                    this.startGraphics(myGame);
+                } else {
+                    super.showDialog("Error", "Failed to begin game");
+                }
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException on beginGame: " + ex.getMessage());
+                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else {
@@ -302,9 +321,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         this.lblScoreP1.textProperty().bind(myGame.getPlayer1Score().asString());
         this.lblScoreP2.textProperty().bind(myGame.getPlayer2Score().asString());
         this.lblScoreP3.textProperty().bind(myGame.getPlayer3Score().asString());
-
-        gameTimer = new GameTimer(this, myGame);
-        gameTimer.start();
     }
 
     /**
@@ -313,10 +329,18 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void customDifficultySelect(Event evt) {
-        if (cbxCustomDifficulty.isSelected()) {
-            myGame.adjustDifficulty((float) Math.round(sldCustomDifficulty.getValue()));
-        } else {
-            myGame.adjustDifficulty();
+        try {
+            if (cbxCustomDifficulty.isSelected()) {
+
+                myGame.adjustDifficulty((float) Math.round(sldCustomDifficulty.getValue()));
+
+            } else {
+                myGame.adjustDifficulty();
+            }
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteException in setting difficulty: " + ex.getMessage());
+            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -326,8 +350,14 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void pauseClick(Event evt) {
-        myGame.pauseGame(!myGame.getGameStatusProperty().get().equals(GameStatus.Paused));
-        actionTaken = true;
+        try {
+            myGame.pauseGame(!myGame.getGameStatusProperty().get().equals(GameStatus.Paused));
+            actionTaken = true;
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteException on pausing / unpausing the game: " + ex.getMessage());
+            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -336,18 +366,24 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void quitClick(Event evt) {
-        if (gameTimer != null) {
-            gameTimer.stop();
+        try {
+            if (gameTimer != null) {
+                gameTimer.stop();
+            }
+            IPerson myPerson = super.getMe();
+            if (myPerson instanceof ISpectator) {
+                lobby.stopSpectating(myGame, (ISpectator) myPerson);
+            } else if (myGame.getGameStatusProperty().get().equals(GameStatus.GameOver) || myGame.getRoundNoProperty().get() == 0) {
+                lobby.endGame(myGame, null);
+            } else {
+                lobby.endGame(myGame, (IPlayer) myPerson);
+            }
+            getThisStage().close();
         }
-        IPerson myPerson = lobby.getMyPerson(me);
-        if (myPerson instanceof ISpectator) {
-            lobby.stopSpectating(myGame, (ISpectator) myPerson);
-        } else if (myGame.getGameStatusProperty().get().equals(GameStatus.GameOver) || myGame.getRoundNoProperty().get() == 0) {
-            lobby.endGame(myGame, null);
-        } else {
-            lobby.endGame(myGame, (IPlayer) myPerson);
+        catch (RemoteException ex) {
+            System.out.println("RemoteException on quitClick: " + ex.getMessage());
+            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
-        getThisStage().close();
     }
 
     /**
@@ -356,10 +392,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void sendMessage(Event evt) {
-        IPerson currentPerson = lobby.getMyPerson(me);
+        IPerson currentPerson = super.getMe();
+
         if (currentPerson != null) {
-            myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
-            tfChatbox.setText("");
+            try {
+                myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
+                tfChatbox.setText("");
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException in addChatMessage: " + ex.getMessage());
+            }
         } else {
             showDialog("Error", "Current Person is null.");
         }
@@ -373,34 +415,56 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void stopSpectating(Event evt) {
-        lobby.stopSpectating(myGame, lobby.getMyPerson(me));
-        getThisStage().close();
+        try {
+            lobby.stopSpectating(myGame, super.getMe());
+            getThisStage().close();
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteException on stopSpectating: " + ex.getMessage());
+            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void addEvents() {
+    /**
+     * Adds Eventhandlers to the screen for moving the bat
+     *
+     * @param myPlayer
+     */
+    public void addEvents(IPlayer myPlayer) {
+        // timer for afk timeout - probably should be moved serverside
+        gameTimer = new GameTimer(this);
+        gameTimer.start();
+
         //Moving left or right
-        IPlayer myPlayer = (IPlayer) lobby.getMyPerson(me);
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {
             @Override
             public void handle(final KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.A
-                        || keyEvent.getCode() == KeyCode.LEFT) {
-                    if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
-                        myPlayer.moveBat(-1);
+                try {
+                    if (keyEvent.getCode() == KeyCode.A
+                            || keyEvent.getCode() == KeyCode.LEFT) {
+                        if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
+
+                            myPlayer.moveBat(-1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
-                        actionTaken = true;
-                    }
-                } else if (keyEvent.getCode() == KeyCode.D
-                        || keyEvent.getCode() == KeyCode.RIGHT) {
-                    if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
-                        myPlayer.moveBat(1);
+                            actionTaken = true;
+                        }
+                    } else if (keyEvent.getCode() == KeyCode.D
+                            || keyEvent.getCode() == KeyCode.RIGHT) {
+                        if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
+                            myPlayer.moveBat(1);
 //                    System.out.println(me.getPosX().doubleValue());
 //                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
-                        actionTaken = true;
+                            actionTaken = true;
+                        }
                     }
                 }
+                catch (RemoteException ex) {
+                    System.out.println("RemoteException in moveBat: " + ex.getMessage());
+                }
+
             }
+
         };
 
         //Stop moving
@@ -418,20 +482,30 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
     }
 
+    /**
+     * Adds eventhandlers for closing the screen and logging out
+     *
+     * @param stage
+     */
     public void addCloseEvent(Stage stage) {
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
             @Override
             public void handle(WindowEvent event) {
-                System.out.println("closerequest handled");
-                IPerson p = lobby.getMyPerson(me);
-                if (p instanceof ISpectator) {
-                    lobby.stopSpectating(myGame, p);
-                } else if (p instanceof IPlayer) {
-                    lobby.endGame(myGame, (IPlayer) p);
+                try {
+                    System.out.println("closerequest handled");
+                    IPerson p = getMe();
+                    if (p instanceof ISpectator) {
+                        lobby.stopSpectating(myGame, p);
+                    } else if (p instanceof IPlayer) {
+                        lobby.endGame(myGame, (IPlayer) p);
+                    }
+                    stage.close();
                 }
-                stage.close();
+                catch (RemoteException ex) {
+                    System.out.println("RemoteException in close event: " + ex.getMessage());
+                }
             }
         });
     }
@@ -457,10 +531,18 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (cbxCustomDifficulty.isSelected()) {
-                    myGame.adjustDifficulty((float) customSpeed.get());
-                } else {
-                    myGame.adjustDifficulty();
+                try {
+                    if (cbxCustomDifficulty.isSelected()) {
+
+                        myGame.adjustDifficulty((float) customSpeed.get());
+
+                    } else {
+                        myGame.adjustDifficulty();
+                    }
+                }
+                catch (RemoteException ex) {
+                    System.out.println("RemoteException on adjustDifficulty changeEventHandler: " + ex.getMessage());
+                    Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });

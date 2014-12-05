@@ -11,6 +11,7 @@ import s32a.Server.Game;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -38,7 +39,7 @@ class DatabaseControls {
     /**
      * creates new instance of DatabaseControls
      */
-    public DatabaseControls() {
+    public DatabaseControls() throws RemoteException {
         this.conn = null;
         this.props = null;
         try {
@@ -55,7 +56,7 @@ class DatabaseControls {
      *
      * @throws IOException if something went wrong
      */
-    public void configure() throws IOException {
+    public void configure() throws IOException, RemoteException {
         this.props = new Properties();
         try (FileInputStream in = new FileInputStream("database.properties")) {
             props.load(in);
@@ -84,7 +85,7 @@ class DatabaseControls {
      *
      * @throws SQLException
      */
-    private void initConnection() throws SQLException {
+    private void initConnection() throws SQLException, RemoteException {
         if (props.get("url") == null || props.get("username") == null
                 || props.get("password") == null) {
             throw new SQLException("props values not correctly configured");
@@ -118,7 +119,7 @@ class DatabaseControls {
      * @return
      * @throws java.sql.SQLException
      */
-    public IPerson checkLogin(String playerName, String password) throws SQLException {
+    public IPerson checkLogin(String playerName, String password) throws SQLException, RemoteException {
         this.initConnection();
         Person output = null;
 
@@ -155,7 +156,7 @@ class DatabaseControls {
      * @return the newly added person, if applicable
      * @throws java.sql.SQLException
      */
-    public IPerson addPerson(String playerName, String password) throws SQLException {
+    public IPerson addPerson(String playerName, String password) throws SQLException, RemoteException {
         this.initConnection();
 
         PreparedStatement prepStat = null;
@@ -189,7 +190,7 @@ class DatabaseControls {
      * @return the X highest rated players, sorted by rating
      * @throws java.sql.SQLException
      */
-    public List<IPerson> getRankings() throws SQLException {
+    public List<IPerson> getRankings() throws SQLException, RemoteException {
         List<IPerson> output = new ArrayList<>();
         String query = "SELECT playername, rating FROM player ORDER BY rating DESC LIMIT 5";
         Statement stat = null;
@@ -218,7 +219,7 @@ class DatabaseControls {
      *
      * @throws java.sql.SQLException
      */
-    public void clearDatabase() throws SQLException {
+    public void clearDatabase() throws SQLException, RemoteException {
         String query = "DELETE FROM game";
         Statement stat = null;
 
@@ -244,7 +245,7 @@ class DatabaseControls {
      * @throws SQLException
      * @throws IllegalArgumentException when game doesn't have three players
      */
-    public void saveGame(IGame gameInput) throws SQLException, IllegalArgumentException {
+    public void saveGame(IGame gameInput) throws SQLException, IllegalArgumentException, RemoteException {
         if(gameInput == null){
             throw new IllegalArgumentException("input was null");
         }
@@ -300,7 +301,7 @@ class DatabaseControls {
      * @return his new rating
      * @throws java.sql.SQLException
      */
-    public double getNewRating(IPerson player, IPlayer hasLeft) throws SQLException {
+    public double getNewRating(IPerson player, IPlayer hasLeft) throws SQLException, RemoteException {
         this.initConnection();
         double output = -1;
         try (CallableStatement callStat = conn.prepareCall("{? = call getNewRating(?, ?)}")) {

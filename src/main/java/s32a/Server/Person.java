@@ -5,6 +5,7 @@
  */
 package s32a.Server;
 
+import java.io.Serializable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,10 +18,10 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-public class Person implements IPerson{
+public class Person implements IPerson, Serializable{
 
-    private StringProperty nameProp;
-    private DoubleProperty ratingProp;
+    private transient StringProperty nameProp;
+    private transient DoubleProperty ratingProp;
 
     @Getter
     private String name;

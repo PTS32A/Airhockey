@@ -6,6 +6,7 @@
 package s32a.Server;
 
 import com.badlogic.gdx.math.Vector2;
+import java.rmi.RemoteException;
 import java.util.Calendar;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -30,9 +31,9 @@ public class Player extends Person implements IPlayer {
     private Colors color;
     @Getter
     @Setter
-    private DoubleProperty posX, posY;
+    private transient DoubleProperty posX, posY;
     @Getter
-    private IntegerProperty score;
+    private transient IntegerProperty score;
     @Getter
     @Setter
     private boolean isStarter;
@@ -56,8 +57,9 @@ public class Player extends Person implements IPlayer {
      * sets both int and property values
      *
      * @param input
+     * @throws java.rmi.RemoteException
      */
-    public void setScore(int input) {
+    public void setScore(int input) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -73,8 +75,9 @@ public class Player extends Person implements IPlayer {
      * @param rating provided by Person
      * @param color player color - linked to them being player 1, 2 or 3
      * retrievable from game.getGameInfo.get("nextColor")
+     * @throws java.rmi.RemoteException
      */
-    public Player(String name, double rating, Colors color) {
+    public Player(String name, double rating, Colors color) throws RemoteException {
         super(name, rating);
         this.color = color;
         this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
@@ -95,9 +98,10 @@ public class Player extends Person implements IPlayer {
      * @return True if all went well False otherwise, including paused game
      * Eventually throws IllegalArgumentException if amount exceeds min or max
      * value
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean moveBat(float amount) throws IllegalArgumentException {
+    public boolean moveBat(float amount) throws IllegalArgumentException, RemoteException {
         double direction = 0;
         double x;
         double y;

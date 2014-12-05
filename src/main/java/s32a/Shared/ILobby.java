@@ -5,6 +5,8 @@
  */
 package s32a.Shared;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -13,41 +15,52 @@ import java.util.List;
  *
  * @author Kargathia
  */
-public interface ILobby {
+public interface ILobby extends Remote {
 
-    public IPerson getMyPerson(String playerName);
+    public IPerson getMyPerson(String playerName)
+            throws RemoteException;
 
-    public HashMap getAirhockeySettings();
+    public HashMap getAirhockeySettings()
+            throws RemoteException;
 
-    public HashMap<String, IPerson> getActivePersons();
+    public HashMap<String, IPerson> getActivePersons()
+            throws RemoteException;
 
-    public List<IGame> getActiveGames();
+    public List<IGame> getActiveGames()
+            throws RemoteException;
 
     public boolean addPerson(String playerName, String passWord)
-            throws IllegalArgumentException, SQLException;
+            throws IllegalArgumentException, SQLException, RemoteException;
 
     public boolean checkLogin(String playerName, String password)
-            throws IllegalArgumentException, SQLException;
+            throws IllegalArgumentException, SQLException, RemoteException;
 
-    public boolean logOut(IPerson input);
+    public boolean logOut(IPerson input)
+            throws RemoteException;
 
-    public IGame startGame(IPerson person);
+    public IGame startGame(IPerson person)
+            throws RemoteException;
 
-    public IGame joinGame(IGame game, IPerson person);
+    public IGame joinGame(IGame game, IPerson person)
+            throws RemoteException;
 
-    public IGame spectateGame(IGame gameInput, IPerson personInput);
+    public IGame spectateGame(IGame gameInput, IPerson personInput)
+            throws RemoteException;
 
     public boolean addChatMessage(String message, String from)
-            throws IllegalArgumentException;
+            throws IllegalArgumentException, RemoteException;
 
-    public boolean endGame(IGame game, IPlayer hasLeft);
+    public boolean endGame(IGame game, IPlayer hasLeft)
+            throws RemoteException;
 
-    public void stopSpectating(IGame game, IPerson spectator);
+    public void stopSpectating(IGame game, IPerson spectator)
+            throws RemoteException;
 
-    public IGame getMyGame(String gameID);
+    public IGame getMyGame(String gameID) throws RemoteException;
 
     public List<IPerson> getRankings()
-            throws SQLException;
+            throws SQLException, RemoteException;
 
-    public void populate();
+    public void populate()
+            throws RemoteException;
 }

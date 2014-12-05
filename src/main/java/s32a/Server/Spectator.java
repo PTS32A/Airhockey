@@ -30,7 +30,7 @@ public class Spectator extends Person implements ISpectator {
     /**
      * if spectator is not already watching input, it will add it to his list.
      *
-     * @param input
+     * @param inputGame
      * @return
      */
     public boolean addGame(IGame inputGame) {

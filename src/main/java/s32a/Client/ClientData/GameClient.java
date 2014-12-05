@@ -9,6 +9,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
@@ -34,7 +36,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private List<String> chat;
     private ObservableList<String> oChat;
     @Getter
-    private IntegerProperty roundNoProperty, player1Score, player2Score, 
+    private IntegerProperty roundNoProperty, player1Score, player2Score,
             player3Score;
     @Getter
     private StringProperty gameTime;
@@ -68,38 +70,38 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     @Override
-    public void setContinueRun(boolean input) {
+    public void setContinueRun(boolean input) throws RemoteException {
         myGame.setContinueRun(input);
     }
 
     @Override
-    public boolean addChatMessage(String message, String from) {
+    public boolean addChatMessage(String message, String from) throws RemoteException {
         return myGame.addChatMessage(message, from);
     }
 
     @Override
-    public boolean beginGame() {
+    public boolean beginGame() throws RemoteException {
         return myGame.beginGame();
     }
 
     @Override
-    public boolean adjustDifficulty(float puckSpeed) {
+    public boolean adjustDifficulty(float puckSpeed) throws RemoteException {
         return myGame.adjustDifficulty(puckSpeed);
     }
 
     @Override
-    public boolean adjustDifficulty() {
+    public boolean adjustDifficulty() throws RemoteException {
         return myGame.adjustDifficulty();
     }
 
     @Override
-    public boolean pauseGame(boolean isPaused) {
+    public boolean pauseGame(boolean isPaused) throws RemoteException {
         return myGame.pauseGame(isPaused);
     }
 
     @Override
-    public void startRound() {
-        myGame.startRound();
+    public void startRound() throws RemoteException {
+        this.myGame.startRound();
     }
 
     public ObservableList<String> getChat() {
@@ -107,77 +109,77 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     @Override
-    public void setRoundNo(int round) {
-        roundNoProperty.set(round);
+    public void setRoundNo(int round) throws RemoteException {
+        this.roundNoProperty.set(round);
     }
 
     @Override
-    public void setPlayer(List<IPlayer> players) {
-        myPlayers = players;
+    public void setPlayer(List<IPlayer> players) throws RemoteException {
+        this.myPlayers = players;
     }
 
     @Override
-    public void setChat(List<String> chat) {
+    public void setChat(List<String> chat) throws RemoteException {
         this.chat = chat;
     }
 
     @Override
-    public void setSpectators(List<ISpectator> spectators) {
+    public void setSpectators(List<ISpectator> spectators) throws RemoteException {
         mySpectators = spectators;
     }
 
     @Override
-    public void setPuckX(double x) {
+    public void setPuckX(double x) throws RemoteException {
         this.puckXProperty.set(x);
     }
 
     @Override
-    public void setPuckY(double y) {
+    public void setPuckY(double y) throws RemoteException {
         this.puckYProperty.set(y);
     }
 
     @Override
-    public void setPlayer1X(double x) {
+    public void setPlayer1X(double x) throws RemoteException {
         this.player1XProperty.set(x);
     }
 
     @Override
-    public void setPlayer1Y(double y) {
+    public void setPlayer1Y(double y) throws RemoteException {
         this.player1XProperty.set(y);
     }
 
     @Override
-    public void setPlayer2X(double x) {
+    public void setPlayer2X(double x) throws RemoteException {
         this.player2XProperty.set(x);
     }
 
     @Override
-    public void setPlayer2Y(double y) {
+    public void setPlayer2Y(double y) throws RemoteException {
         this.player2XProperty.set(y);
     }
 
     @Override
-    public void setPlayer3X(double x) {
+    public void setPlayer3X(double x) throws RemoteException {
         this.player3XProperty.set(x);
     }
 
     @Override
-    public void setPlayer3Y(double y) {
-       this.player3XProperty.set(y);
+    public void setPlayer3Y(double y) throws RemoteException {
+        this.player3XProperty.set(y);
     }
 
     @Override
-    public void setPlayer1Score(int score) {
+    public void setPlayer1Score(int score) throws RemoteException {
         this.player1Score.set(score);
     }
 
     @Override
-    public void setPlayer2Score(int score) {
+    public void setPlayer2Score(int score) throws RemoteException {
         this.player2Score.set(score);
     }
 
     @Override
-    public void setPlayer3Score(int score) {
+    public void setPlayer3Score(int score) throws RemoteException {
         this.player3Score.set(score);
     }
 }

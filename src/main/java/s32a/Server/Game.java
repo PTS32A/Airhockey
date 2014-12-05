@@ -7,6 +7,8 @@ package s32a.Server;
 
 import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
+import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import static java.util.Calendar.getInstance;
@@ -33,14 +35,14 @@ import s32a.Shared.ISpectator;
 /**
  * @author Kargathia
  */
-public class Game implements IGame {
+public class Game implements IGame, Serializable {
 
-    private StringProperty difficultyProp;
+    private transient StringProperty difficultyProp;
     @Getter
-    private ObjectProperty<GameStatus> statusProp;
+    private transient ObjectProperty<GameStatus> statusProp;
 
     @Getter
-    private Chatbox myChatbox;
+    private transient Chatbox myChatbox;
     private Puck myPuck;
     @Getter
     private List<ISpectator> mySpectators;
@@ -53,7 +55,7 @@ public class Game implements IGame {
     @Getter
     private HashMap gameInfo;
     @Getter
-    private IntegerProperty roundNo;
+    private transient IntegerProperty roundNo;
 
     @Getter
     @Setter
@@ -61,10 +63,10 @@ public class Game implements IGame {
 
     private int maxRounds;
 
-    private Timer puckTimer;
+    private transient Timer puckTimer;
 
     @Getter
-    private StringProperty gameTime;
+    private transient StringProperty gameTime;
 
     private boolean printMessages = false;
 
@@ -75,7 +77,7 @@ public class Game implements IGame {
      *
      * @param starter The player that starts the game initially
      */
-    Game(IPlayer starter) {
+    Game(IPlayer starter) throws RemoteException {
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
 
@@ -118,9 +120,10 @@ public class Game implements IGame {
      * @param from The player that is sending the message
      * @return True if everything went right, and chatbox.addchatmessage
      * returned true
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean addChatMessage(String message, String from) {
+    public boolean addChatMessage(String message, String from) throws RemoteException {
         if (message == null || from == null) {
             throw new IllegalArgumentException("sender or message is null");
         }
@@ -143,8 +146,9 @@ public class Game implements IGame {
      * @return returns true when the player was successfully added returns false
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
+     * @throws java.rmi.RemoteException
      */
-    public boolean addPlayer(IPlayer playerInput) {
+    public boolean addPlayer(IPlayer playerInput) throws RemoteException {
         if (playerInput != null) {
             Player player = (Player)playerInput;
             if (!myPlayers.contains(player)) {
@@ -176,7 +180,7 @@ public class Game implements IGame {
      * @param p
      * @param playerID
      */
-    private void setBatPosition(IPlayer pInput, int playerID) {
+    private void setBatPosition(IPlayer pInput, int playerID) throws RemoteException {
         if(pInput == null){
             return;
         }
@@ -247,8 +251,9 @@ public class Game implements IGame {
      * @return returns true when the spectator was successfully added. false
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
+     * @throws java.rmi.RemoteException
      */
-    public boolean addSpectator(ISpectator spectator) throws IllegalArgumentException {
+    public boolean addSpectator(ISpectator spectator) throws IllegalArgumentException, RemoteException {
         if (spectator != null) {
             for (ISpectator spect : this.mySpectators) {
                 if (spect.getName().equals(spectator.getName())) {
@@ -272,8 +277,9 @@ public class Game implements IGame {
      * @param spectator The spectator that needs to be removed from the active
      * game
      * @return returns true if the spectator was successfully removed
+     * @throws java.rmi.RemoteException
      */
-    public boolean removeSpectator(ISpectator spectator) {
+    public boolean removeSpectator(ISpectator spectator) throws RemoteException {
         if (spectator != null) {
             if (mySpectators.contains(spectator)) {
                 ((Spectator)spectator).removeGame(this);
@@ -292,8 +298,10 @@ public class Game implements IGame {
      *
      * @return returns true if the game was started returns false if the game
      * was unable to start for any reason
+     * @throws java.rmi.RemoteException
      */
-    public boolean beginGame() {
+    @Override
+    public boolean beginGame() throws RemoteException {
         if (myPlayers.size() == 3) {
             if (roundNo.get() == 0) {
                 printMessage("BEGIN GAME");
@@ -326,9 +334,10 @@ public class Game implements IGame {
      * @return returns true if the speed has been successfully adjusted. returns
      * false if it was unable to adjust puck speed throws
      * IllegalArgumentException when given puckspeed was outside min/max values
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean adjustDifficulty(float puckSpeed) {
+    public boolean adjustDifficulty(float puckSpeed) throws RemoteException {
         if (this.roundNo.get() == 0) {
             float min = 10;
             float max = 40;
@@ -349,9 +358,10 @@ public class Game implements IGame {
      * lets the game decide what the difficulty should be for his players
      *
      * @return true if successfully set puckspeed
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean adjustDifficulty() {
+    public boolean adjustDifficulty() throws RemoteException {
         if (myPlayers.isEmpty()) {
             return false;
         }
@@ -371,9 +381,10 @@ public class Game implements IGame {
      * un-pausing
      * @return returns true if the pause change was successful. return false if
      * desired pause state == Game.isPaused
+     * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean pauseGame(boolean isPaused) {
+    public boolean pauseGame(boolean isPaused) throws RemoteException {
 
         if (this.statusProp.get().equals(GameStatus.Playing) && isPaused) {
             this.statusProp.set(GameStatus.Paused);
@@ -400,8 +411,10 @@ public class Game implements IGame {
     /**
      * Starts a new round within the running game rounds are ended automatically
      * within Game.run() whenever someone scores
+     * @throws java.rmi.RemoteException
      */
-    public void startRound() {
+    @Override
+    public void startRound() throws RemoteException {
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
         printMessage("-ROUND " + (roundNo.get() + 1)); //Added +1 because roundNo seems to be starting at 0 without it
@@ -412,7 +425,7 @@ public class Game implements IGame {
     }
 
     // not featured in Interface, as it is only called by Puck
-    void endRound() {
+    void endRound() throws RemoteException {
         //END OF PUCK MOVEMENT
         this.continueRun = false;
         this.statusProp.set(GameStatus.Waiting);
@@ -505,6 +518,9 @@ public class Game implements IGame {
         }
     }
 
+    /**
+     * @return Puck
+     */
     public Puck getMyPuck() {
         return this.myPuck;
     }

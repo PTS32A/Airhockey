@@ -7,8 +7,11 @@ package s32a.Client.GUI;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -48,16 +51,22 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
                 } else {
                     super.showDialog("Error", "Username or password is incorrect.");
                 }
-            } catch (IllegalArgumentException ex) {
-                super.showDialog("Error", "Unable to login: " + ex.getMessage());
-            } catch (SQLException ex) {
-                super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
-            } catch (IOException ex) {
-                lobby.logOut(lobby.getMyPerson(me));
-                super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
-             catch (Exception ex) {
-                 System.out.println(ex.toString());
+            catch (IllegalArgumentException ex) {
+                super.showDialog("Error", "Unable to login: " + ex.getMessage());
+            }
+            catch (SQLException ex) {
+                super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+            }
+            catch (IOException ex) {
+                try {
+                    lobby.logOut(super.getMe());
+                }
+                catch (RemoteException ex1) {
+                    System.out.println("RemoteException on trying to logout after IOException: " + ex1.getMessage());
+                    Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+                super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
         }
     }
@@ -70,7 +79,8 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
     public void register(Event evt) {
         try {
             super.goToRegister(getThisStage());
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             super.showDialog("Error", "Unable to go to Register: " + ex.getMessage());
         }
     }

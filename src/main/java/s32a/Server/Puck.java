@@ -8,10 +8,13 @@ package s32a.Server;
 import s32a.Server.Game;
 import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
@@ -111,6 +114,15 @@ class Puck extends TimerTask {
      * @param myGame
      */
     public Puck(float speed, Game myGame) {
+        Lobby lobby = null;
+        try {
+            lobby = Lobby.getSingle();
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteExceptoin in getSingle: " + ex.getMessage());
+            Logger.getLogger(Puck.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         if (speed <= 0) {
             throw new IllegalArgumentException("Speed can't be negative");
         }
@@ -125,8 +137,7 @@ class Puck extends TimerTask {
         this.xPos = new SimpleDoubleProperty(0);
         this.yPos = new SimpleDoubleProperty(0);
 
-        this.sideLength = (float) Lobby.getSingle()
-                .getAirhockeySettings().get("Side Length");
+        this.sideLength = (float) lobby.getAirhockeySettings().get("Side Length");
         this.goalLength = sideLength * 0.4f;
         this.batWidth = sideLength / 100 * 8;
 
@@ -269,7 +280,13 @@ class Puck extends TimerTask {
             //runCount is used (used for unittesting only)
             //Round will end when a goal has been scored OR when runCount reaches 0
             if (this.runCount == 0) {
-                myGame.endRound();
+                try {
+                    myGame.endRound();
+                }
+                catch (RemoteException ex) {
+                    System.out.println("remoteException in myGame.endRound(): " + ex.getMessage());
+                    Logger.getLogger(Puck.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
                 updatePosition(speed.get() / 10);
                 this.runCount--;
@@ -277,7 +294,7 @@ class Puck extends TimerTask {
         }
     }
 
-      //Luke Collision test later
+    //Luke Collision test later
 //    private Vector2 testBatBounce(Vector2 pos){
 //        Vector2 batCentre;
 //        Random r = new Random();
@@ -354,32 +371,37 @@ class Puck extends TimerTask {
                 }
 
             } else {
-                //Outside field or in collission with wall
-                position.set(bouncePosition);
-                lastBouncerID = -1;
+                try {
+                    //Outside field or in collission with wall
+                    position.set(bouncePosition);
+                    lastBouncerID = -1;
 
-                //Detect whether a goal has been hit 
-                int goalHitPlayerID = checkGoalHit(bouncePosition);
+                    //Detect whether a goal has been hit
+                    int goalHitPlayerID = checkGoalHit(bouncePosition);
 
-                if (goalHitPlayerID != -1) {
-                    //Player who scored
-                    Player whoScored = null;
-                    if (hitBy.size() > 0) {
-                        whoScored = (Player)hitBy.get(hitBy.size() - 1);
-                        whoScored.setScore(whoScored.getScore().get() + 1);
+                    if (goalHitPlayerID != -1) {
+                        //Player who scored
+                        Player whoScored = null;
+                        if (hitBy.size() > 0) {
+                            whoScored = (Player) hitBy.get(hitBy.size() - 1);
+                            whoScored.setScore(whoScored.getScore().get() + 1);
+                        }
+
+                        //Player whose goal is hit
+                        Player whoLostScore = (Player) myGame.getMyPlayers().get(goalHitPlayerID);
+                        printMessage("Goal @ player " + whoLostScore.getColor());
+                        whoLostScore.setScore(whoLostScore.getScore().get() - 1);
+                        this.endGoalHit = whoLostScore;
+
+                        //End round
+                        myGame.endRound();
+                    } else {
+                        //Continue the position with the remaining distance, calculated using bouncePosition and newPosition
+                        continueUpdatePosition(bouncePosition, newPosition);
                     }
-
-                    //Player whose goal is hit
-                    Player whoLostScore = (Player)myGame.getMyPlayers().get(goalHitPlayerID);
-                    printMessage("Goal @ player " + whoLostScore.getColor());
-                    whoLostScore.setScore(whoLostScore.getScore().get() - 1);
-                    this.endGoalHit = whoLostScore;
-
-                    //End round
-                    myGame.endRound();
-                } else {
-                    //Continue the position with the remaining distance, calculated using bouncePosition and newPosition
-                    continueUpdatePosition(bouncePosition, newPosition);
+                }
+                catch (RemoteException ex) {
+                    System.out.println("RemoteException in Puck.updatePosition: " + ex.getMessage());
                 }
             }
         }
@@ -620,8 +642,8 @@ class Puck extends TimerTask {
             return false;
         }
 
-        Vector2 batPos = new Vector2(((Player)myGame.getMyPlayers().get(playerID)).getPosX().floatValue(),
-                ((Player)myGame.getMyPlayers().get(playerID)).getPosY().floatValue());
+        Vector2 batPos = new Vector2(((Player) myGame.getMyPlayers().get(playerID)).getPosX().floatValue(),
+                ((Player) myGame.getMyPlayers().get(playerID)).getPosY().floatValue());
 
         if (playerID == 0) {
             //Player Red (bottom bat)
@@ -667,7 +689,7 @@ class Puck extends TimerTask {
         double radius = batWidth / 2 + puckSize / 2;
 
         for (IPlayer Ip : myGame.getMyPlayers()) {
-            Player p = (Player)Ip;
+            Player p = (Player) Ip;
             batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
 
             if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID) {
@@ -896,6 +918,10 @@ class Puck extends TimerTask {
             System.out.println("Null pointer thrown in Puck.getColorName(): "
                     + ex.getMessage());
             output = "Unknown";
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteException in getColorName: " + ex.getMessage());
+            Logger.getLogger(Puck.class.getName()).log(Level.SEVERE, null, ex);
         }
         return output;
     }

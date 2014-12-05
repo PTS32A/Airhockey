@@ -50,105 +50,107 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public IPerson getMyPerson(String playerName) {
+    public IPerson getMyPerson(String playerName) throws RemoteException {
         return myLobby.getMyPerson(playerName);
     }
 
     @Override
-    public HashMap getAirhockeySettings() {
+    public HashMap getAirhockeySettings() throws RemoteException {
         return myLobby.getAirhockeySettings();
     }
 
     @Override
-    public HashMap<String, IPerson> getActivePersons() {
+    public HashMap<String, IPerson> getActivePersons() throws RemoteException {
         return myLobby.getActivePersons();
     }
 
     @Override
-    public List<IGame> getActiveGames() {
+    public List<IGame> getActiveGames() throws RemoteException {
         return myLobby.getActiveGames();
     }
 
     @Override
-    public boolean addPerson(String playerName, String passWord) throws IllegalArgumentException, SQLException {
+    public boolean addPerson(String playerName, String passWord) 
+            throws IllegalArgumentException, SQLException, RemoteException {
         return myLobby.addPerson(playerName, passWord);
     }
 
     @Override
-    public boolean checkLogin(String playerName, String password) throws IllegalArgumentException, SQLException {
+    public boolean checkLogin(String playerName, String password) 
+            throws IllegalArgumentException, SQLException, RemoteException {
         return myLobby.checkLogin(playerName, password);
     }
 
     @Override
-    public boolean logOut(IPerson input) {
+    public boolean logOut(IPerson input) throws RemoteException {
         return myLobby.logOut(input);
     }
 
     @Override
-    public IGame startGame(IPerson person) {
+    public IGame startGame(IPerson person) throws RemoteException {
         return myLobby.startGame(person);
     }
 
     @Override
-    public IGame joinGame(IGame game, IPerson person) {
+    public IGame joinGame(IGame game, IPerson person) throws RemoteException {
         return myLobby.joinGame(game, person);
     }
 
     @Override
-    public IGame spectateGame(IGame gameInput, IPerson personInput) {
+    public IGame spectateGame(IGame gameInput, IPerson personInput) throws RemoteException {
         return myLobby.spectateGame(gameInput, personInput);
     }
 
     @Override
-    public boolean addChatMessage(String message, String from) throws IllegalArgumentException {
+    public boolean addChatMessage(String message, String from) throws IllegalArgumentException, RemoteException {
         return myLobby.addChatMessage(message, from);
     }
 
     @Override
-    public boolean endGame(IGame game, IPlayer hasLeft) {
+    public boolean endGame(IGame game, IPlayer hasLeft) throws RemoteException {
         return myLobby.endGame(game, hasLeft);
     }
 
     @Override
-    public void stopSpectating(IGame game, IPerson spectator) {
+    public void stopSpectating(IGame game, IPerson spectator) throws RemoteException {
         myLobby.stopSpectating(game, spectator);
     }
 
     @Override
-    public IGame getMyGame(String gameID) {
+    public IGame getMyGame(String gameID) throws RemoteException {
         return myLobby.getMyGame(gameID);
     }
 
     @Override
-    public List<IPerson> getRankings() throws SQLException {
+    public List<IPerson> getRankings() throws SQLException, RemoteException {
         return myLobby.getRankings();
     }
 
     @Override
-    public void populate() {
+    public void populate() throws RemoteException {
         myLobby.populate();
     }
 
     @Override
-    public void setActiveGames(List<IGame> activeGames) {
+    public void setActiveGames(List<IGame> activeGames) throws RemoteException {
         this.oActiveGames.clear();
         this.oActiveGames.addAll(activeGames);
     }
 
 
     @Override
-    public void setMyLobby(ILobby myLobby) {
+    public void setMyLobby(ILobby myLobby) throws RemoteException {
         this.myLobby = myLobby;
     }
 
     @Override
-    public void setChat(List<String> chat) {
+    public void setChat(List<String> chat) throws RemoteException {
         this.chatProperty.clear();
         this.chatProperty.addAll(chat);
     }
 
     @Override
-    public void setRating(Double rating) {
+    public void setRating(Double rating) throws RemoteException {
         this.playerRatingProperty.set(rating);
     }
 
