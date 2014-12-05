@@ -21,9 +21,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
+import s32a.Client.ClientData.GameClient;
 import s32a.Client.ClientData.LobbyClient;
 import s32a.Server.AirhockeyServer;
 import s32a.Shared.IGame;
+import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
@@ -129,7 +131,7 @@ public class AirhockeyGUI extends Application {
     /**
      *
      */
-    void goToGame(Stage stage, IGame myGame) throws IOException {
+    void goToGame(Stage stage, GameClient client) throws IOException {
 
         // gets the controller class while initializing
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Game.fxml"));
@@ -140,7 +142,7 @@ public class AirhockeyGUI extends Application {
         if (lobby.getMyPerson(me) instanceof IPlayer) {
             controller.addEvents((IPlayer) lobby.getMyPerson(me));
         }
-        controller.setGame(myGame);
+        controller.setMyGame(client);
 
         //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
         Scene scene = new Scene(root);
@@ -235,6 +237,7 @@ public class AirhockeyGUI extends Application {
     public static void main(String[] args) {
         if (args[1].equals("server")) {
             // launch application as server
+            // TODO: make some snazzy GUI for displaying server stats
             AirhockeyServer server = new AirhockeyServer();
         } else {
             // launch as client

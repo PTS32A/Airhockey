@@ -26,6 +26,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import lombok.Getter;
 import lombok.Setter;
+import s32a.Server.Publishers.GamePublisher;
 import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
 import s32a.Server.Timers.GameTimeTask;
@@ -48,6 +49,7 @@ public class Game implements IGame, Serializable {
     private List<ISpectator> mySpectators;
     @Getter
     private List<IPlayer> myPlayers;
+    private GamePublisher publisher;
 
     /**
      * includes gameID, nextColor, sideLength, gameDate
@@ -77,15 +79,17 @@ public class Game implements IGame, Serializable {
      *
      * @param starter The player that starts the game initially
      */
-    Game(IPlayer starter) throws RemoteException {
+    Game(IPlayer starter, IGameClient starterClient) throws RemoteException {
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
+        this.publisher = new GamePublisher(this);
 
         this.myPlayers.add(starter);
+        this.publisher.addObserver(starter.getName(), starterClient);
         setBatPosition(starter, 0);
 
-        ((Player)starter).setMyGame(this);
-        ((Player)starter).setStarter(true);
+        ((Player) starter).setMyGame(this);
+        ((Player) starter).setStarter(true);
 
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName()
@@ -143,19 +147,21 @@ public class Game implements IGame, Serializable {
      *
      * @param playerInput The player that's going to be added to the active game
      * player color can be retrieved from gameID.get("nextColor")
+     * @param client
      * @return returns true when the player was successfully added returns false
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
      * @throws java.rmi.RemoteException
      */
-    public boolean addPlayer(IPlayer playerInput) throws RemoteException {
-        if (playerInput != null) {
-            Player player = (Player)playerInput;
+    public boolean addPlayer(IPlayer playerInput, IGameClient client) throws RemoteException {
+        if (playerInput != null && client != null) {
+            Player player = (Player) playerInput;
             if (!myPlayers.contains(player)) {
                 if (myPlayers.size() < 3) {
                     this.gameInfo.put("nextColor", getNextColor());
 
                     myPlayers.add(player);
+                    publisher.addObserver(player.getName(), client);
                     player.setMyGame(this);
                     this.adjustDifficulty();
 
@@ -181,10 +187,10 @@ public class Game implements IGame, Serializable {
      * @param playerID
      */
     private void setBatPosition(IPlayer pInput, int playerID) throws RemoteException {
-        if(pInput == null){
+        if (pInput == null) {
             return;
         }
-        Player p = (Player)pInput;
+        Player p = (Player) pInput;
 
         float width = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
         float bat = width / 100 * 8;
@@ -248,20 +254,22 @@ public class Game implements IGame, Serializable {
      *
      * @param spectator The spectator that's going to be added to the active
      * game
+     * @param client
      * @return returns true when the spectator was successfully added. false
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
      * @throws java.rmi.RemoteException
      */
-    public boolean addSpectator(ISpectator spectator) throws IllegalArgumentException, RemoteException {
-        if (spectator != null) {
+    public boolean addSpectator(ISpectator spectator, IGameClient client) throws IllegalArgumentException, RemoteException {
+        if (spectator != null && client != null) {
             for (ISpectator spect : this.mySpectators) {
                 if (spect.getName().equals(spectator.getName())) {
                     return false;
                 }
             }
-            if (((Spectator)spectator).addGame(this)) {
+            if (((Spectator) spectator).addGame(this)) {
                 mySpectators.add(spectator);
+                publisher.addObserver(spectator.getName(), client);
                 return true;
             } else {
                 return false;
@@ -272,7 +280,8 @@ public class Game implements IGame, Serializable {
     }
 
     /**
-     * removes given spectator from the list
+     * removes given spectator from the list. Gameclient is not needed, as it
+     * can be removed on playername.
      *
      * @param spectator The spectator that needs to be removed from the active
      * game
@@ -282,8 +291,9 @@ public class Game implements IGame, Serializable {
     public boolean removeSpectator(ISpectator spectator) throws RemoteException {
         if (spectator != null) {
             if (mySpectators.contains(spectator)) {
-                ((Spectator)spectator).removeGame(this);
+                ((Spectator) spectator).removeGame(this);
                 mySpectators.remove(spectator);
+                publisher.removeObserver(spectator.getName());
                 return true;
             }
         } else {
@@ -367,7 +377,7 @@ public class Game implements IGame, Serializable {
         }
         double averageRating = 0;
         for (IPlayer p : myPlayers) {
-            averageRating += ((Player)p).ratingProperty().get();
+            averageRating += ((Player) p).ratingProperty().get();
         }
         averageRating = averageRating / myPlayers.size();
         return adjustDifficulty((float) averageRating);
@@ -411,6 +421,7 @@ public class Game implements IGame, Serializable {
     /**
      * Starts a new round within the running game rounds are ended automatically
      * within Game.run() whenever someone scores
+     *
      * @throws java.rmi.RemoteException
      */
     @Override
@@ -603,7 +614,7 @@ public class Game implements IGame, Serializable {
         if (this.myPlayers.size() <= index) {
             return new SimpleStringProperty("--");
         } else {
-            return ((Player)this.myPlayers.get(index)).nameProperty();
+            return ((Player) this.myPlayers.get(index)).nameProperty();
         }
     }
 }

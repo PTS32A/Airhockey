@@ -15,8 +15,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
+import s32a.Server.Publishers.LobbyPublisher;
 import s32a.Shared.IGame;
+import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
+import s32a.Shared.ILobbyClient;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
 import s32a.Shared.ISpectator;
@@ -55,6 +58,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     private HashMap<String, IPerson> activePersons;
     @Getter
     private List<IGame> activeGames;
+    private LobbyPublisher publisher;
 
     /**
      * returns a person by name. Syntactic sugar for activepersons.get(string)
@@ -77,8 +81,9 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         this.activePersons = new HashMap<>();
         this.airhockeySettings = new HashMap<>();
         this.activeGames = new ArrayList<>();
-        airhockeySettings.put("Goal Default", new Vector2(0, 0));
-        airhockeySettings.put("Side Length", 500f);
+        this.airhockeySettings.put("Goal Default", new Vector2(0, 0));
+        this.airhockeySettings.put("Side Length", 500f);
+        this.publisher = new LobbyPublisher();
     }
 
     /**
@@ -115,6 +120,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param playerName can't be null or whitespace can't contain white spaces
      * @param password can't be null or whitespace can't contain trailing /
      * leading white spaces
+     * @param client
      * @return True if DatabaseControls.checkLogin() returned a person false if
      * .checkLogin() returned null IllegalArgumentException when parameter was
      * null or empty, or contained trailing / leading white spaces
@@ -122,11 +128,14 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean checkLogin(String playerName, String password)
+    public boolean checkLogin(String playerName, String password, ILobbyClient client)
             throws IllegalArgumentException, SQLException, RemoteException {
         if (playerName == null || password == null
                 || !playerName.trim().equals(playerName) || !password.trim().equals(password)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("input formatted wrong or null");
+        }
+        if(client == null){
+            throw new IllegalArgumentException("LobbyClient is null");
         }
 
         IPerson newPerson = this.myDatabaseControls.checkLogin(playerName, password);
@@ -183,13 +192,17 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * parameter person can't already be a Player or Spectator
      *
      * @param input should be Lobby.currentPerson if called by GUI
+     * @param client
      * @return - the freshly started game if everything went well - null
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game startGame(IPerson input) throws RemoteException {
+    public Game startGame(IPerson input, IGameClient client) throws RemoteException {
         if (input == null || (input instanceof Player)
                 || (input instanceof Spectator)) {
+            return null;
+        }
+        if(client == null){
             return null;
         }
 
@@ -198,7 +211,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         try {
             person = new Player(person.getName(), person.ratingProperty().get(),
                     Colors.Red);
-            newGame = new Game((Player) person);
+            newGame = new Game((Player) person, client);
             this.activePersons.replace(person.getName(), person);
             this.activeGames.add(newGame);
         }
@@ -216,13 +229,17 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      *
      * @param gameInput can't be null
      * @param personInput should be Lobby.currentPerson if called by GUI
+     * @param client
      * @return joined game if everything went well null otherwise
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game joinGame(IGame gameInput, IPerson personInput) throws RemoteException {
+    public Game joinGame(IGame gameInput, IPerson personInput, IGameClient client) throws RemoteException {
         if (personInput == null || (personInput instanceof Player)
                 || (personInput instanceof Spectator) || gameInput == null) {
+            return null;
+        }
+        if(client == null){
             return null;
         }
 
@@ -237,7 +254,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 player = new Player(person.getName(), person.ratingProperty().get(),
                         game.getNextColor());
             }
-            if (game.addPlayer(player)) {
+            if (game.addPlayer(player, client)) {
                 this.activePersons.replace(person.getName(), player);
             } else {
                 return null;
@@ -257,11 +274,12 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      *
      * @param gameInput can't be null
      * @param personInput should be currentPerson if called by GUI
+     * @param client
      * @return - Game if everything went well - Null otherwise
      * @throws java.rmi.RemoteException
      */
     @Override
-    public IGame spectateGame(IGame gameInput, IPerson personInput) 
+    public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
             throws IllegalArgumentException, RemoteException {
         if (personInput == null) {
             throw new IllegalArgumentException("Input is null");
@@ -279,17 +297,20 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         if (game.getRoundNo().get() < 1) {
             throw new IllegalArgumentException("Unable to spectate a game still waiting to start");
         }
+        if(client == null){
+            throw new IllegalArgumentException("Game client was null");
+        }
 
         Person person = (Person) personInput;
         try {
             person = new Spectator(person.getName(), person.ratingProperty().get());
-            if (!game.addSpectator((Spectator) person)) {
+            if (!game.addSpectator((Spectator) person, client)) {
                 return null;
             }
             this.activePersons.replace(person.getName(), person);
         }
-        catch (Exception ex) {
-            return null;
+        catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("IllegalArgumentException thrown in spectateGame: " + ex.getMessage());
         }
         return game;
     }
@@ -538,46 +559,49 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         this.activePersons.put("bot10", new Person("bot10", (double) 15));
         this.activePersons.put("bot11", new Person("bot11", (double) 15));
 
+        // the same gameclient is used for all bots, as they do not operate an actual client
+        s32a.Client.ClientData.GameClient botClient = new s32a.Client.ClientData.GameClient();
+
         //game 1
         Person bot = (Person) this.activePersons.get("bot1");
         bot.setBot(true);
-        Game game = this.startGame(bot);
+        Game game = this.startGame(bot, botClient);
 
         bot = (Person) this.activePersons.get("bot2");
         bot.setBot(true);
-        this.joinGame(game, bot);
+        this.joinGame(game, bot, botClient);
 
         bot = (Person) this.activePersons.get("bot3");
         bot.setBot(true);
-        this.joinGame(game, bot);
+        this.joinGame(game, bot, botClient);
         game.beginGame();
 
         //game 2
         bot = (Person) this.activePersons.get("bot4");
         bot.setBot(true);
-        game = this.startGame(bot);
+        game = this.startGame(bot, botClient);
 
         bot = (Person) this.activePersons.get("bot5");
         bot.setBot(true);
-        this.joinGame(game, bot);
+        this.joinGame(game, bot, botClient);
 
         bot = (Person) this.activePersons.get("bot6");
         bot.setBot(true);
-        this.joinGame(game, bot);
+        this.joinGame(game, bot, botClient);
         game.beginGame();
 
         // game 3
         bot = (Person) this.activePersons.get("bot7");
         bot.setBot(true);
-        game = this.startGame(bot);
+        game = this.startGame(bot, botClient);
 
         bot = (Person) this.activePersons.get("bot8");
         bot.setBot(true);
-        this.joinGame(game, bot);
+        this.joinGame(game, bot, botClient);
 
         bot = (Person) this.activePersons.get("bot9");
         bot.setBot(true);
-        this.joinGame(game, bot);
+        this.joinGame(game, bot, botClient);
         game.pauseGame(true);
 
         // loose change

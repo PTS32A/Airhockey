@@ -50,8 +50,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private DoubleProperty player1XProperty, player1YProperty, player2XProperty,
             player2YProperty, player3XProperty, player3YProperty;
 
-    public GameClient(IGame myGame) throws RemoteException {
-        this.myGame = myGame;
+    public GameClient() throws RemoteException {
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
         this.chat = new ArrayList<>();
@@ -67,6 +66,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.player3XProperty.set(0);
         this.player3YProperty.set(0);
         this.gameStatusProperty.set(GameStatus.Waiting);
+    }
+
+    @Override
+    public void setGame(IGame game){
+        this.myGame = game;
     }
 
     @Override

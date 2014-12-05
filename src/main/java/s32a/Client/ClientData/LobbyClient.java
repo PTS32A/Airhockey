@@ -17,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 import s32a.Shared.IGame;
+import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
 import s32a.Shared.ILobbyClient;
 import s32a.Shared.IPerson;
@@ -76,9 +77,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public boolean checkLogin(String playerName, String password) 
+    public boolean checkLogin(String playerName, String password, ILobbyClient client)
             throws IllegalArgumentException, SQLException, RemoteException {
-        return myLobby.checkLogin(playerName, password);
+        return myLobby.checkLogin(playerName, password, client);
     }
 
     @Override
@@ -87,18 +88,19 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public IGame startGame(IPerson person) throws RemoteException {
-        return myLobby.startGame(person);
+    public IGame startGame(IPerson person, IGameClient client) throws RemoteException {
+        return myLobby.startGame(person, client);
     }
 
     @Override
-    public IGame joinGame(IGame game, IPerson person) throws RemoteException {
-        return myLobby.joinGame(game, person);
+    public IGame joinGame(IGame game, IPerson person, IGameClient client) throws RemoteException {
+        return myLobby.joinGame(game, person, client);
     }
 
     @Override
-    public IGame spectateGame(IGame gameInput, IPerson personInput) throws RemoteException {
-        return myLobby.spectateGame(gameInput, personInput);
+    public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
+            throws RemoteException {
+        return myLobby.spectateGame(gameInput, personInput, client);
     }
 
     @Override

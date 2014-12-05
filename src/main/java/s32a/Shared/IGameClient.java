@@ -14,6 +14,9 @@ import java.util.List;
  * @author Kargathia
  */
 public interface IGameClient extends Remote{
+
+    public void setGame(IGame game)
+            throws RemoteException;
     
     public void setPlayer(List<IPlayer> players)
             throws RemoteException;

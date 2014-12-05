@@ -32,19 +32,19 @@ public interface ILobby extends Remote {
     public boolean addPerson(String playerName, String passWord)
             throws IllegalArgumentException, SQLException, RemoteException;
 
-    public boolean checkLogin(String playerName, String password)
+    public boolean checkLogin(String playerName, String password, ILobbyClient client)
             throws IllegalArgumentException, SQLException, RemoteException;
 
     public boolean logOut(IPerson input)
             throws RemoteException;
 
-    public IGame startGame(IPerson person)
+    public IGame startGame(IPerson person, IGameClient client)
             throws RemoteException;
 
-    public IGame joinGame(IGame game, IPerson person)
+    public IGame joinGame(IGame game, IPerson person, IGameClient client)
             throws RemoteException;
 
-    public IGame spectateGame(IGame gameInput, IPerson personInput)
+    public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
             throws RemoteException;
 
     public boolean addChatMessage(String message, String from)

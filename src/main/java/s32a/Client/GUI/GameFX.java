@@ -34,6 +34,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
+import lombok.Setter;
 import s32a.Client.ClientData.GameClient;
 import s32a.Client.timers.GameTimer;
 import s32a.Shared.*;
@@ -75,6 +76,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     @Getter
     private boolean actionTaken = true;
     private GameTimer gameTimer;
+    @Setter
     @Getter
     private GameClient myGame;
 
@@ -116,10 +118,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         Bindings.concat("Use custom Speed: ", customSpeed.asString()));
 
                 // bot 10 and 11 were added in lobby.populate, and are currently not busy
-                IPerson bot = lobby.getActivePersons().get("bot10");
-                lobby.joinGame(myGame, bot);
-                bot = lobby.getActivePersons().get("bot11");
-                lobby.joinGame(myGame, bot);
+//                IPerson bot = lobby.getActivePersons().get("bot10");
+//                lobby.joinGame(myGame, bot);
+//                bot = lobby.getActivePersons().get("bot11");
+//                lobby.joinGame(myGame, bot);
 
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
@@ -550,15 +552,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     private Stage getThisStage() {
         return (Stage) lblName.getScene().getWindow();
-    }
-
-    void setGame(IGame myGame) {
-        try {
-            this.myGame = new GameClient(myGame);
-        }
-        catch (RemoteException ex) {
-            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
 }
