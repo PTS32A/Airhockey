@@ -73,6 +73,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
 
     /**
      * Lobby is used as singleton. Public for unit tests.
+     *
      * @throws java.rmi.RemoteException
      */
     public Lobby() throws RemoteException {
@@ -134,7 +135,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 || !playerName.trim().equals(playerName) || !password.trim().equals(password)) {
             throw new IllegalArgumentException("input formatted wrong or null");
         }
-        if(client == null){
+        if (client == null) {
             throw new IllegalArgumentException("LobbyClient is null");
         }
 
@@ -143,7 +144,14 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             return false;
         }
 
-        return this.activePersons.put(playerName, newPerson) == null;
+        if (this.activePersons.put(playerName, newPerson) == null &&
+                this.publisher.addObserver(playerName, client)) {
+            return true;
+        } else {
+            this.activePersons.remove(playerName);
+            this.publisher.removeObserver(playerName);
+            return false;
+        }
     }
 
     /**
@@ -155,7 +163,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean logOut(IPerson input) throws RemoteException{
+    public boolean logOut(IPerson input) throws RemoteException {
         if (input == null) {
             return false; // update this in unit tests when I get around to
         }
@@ -170,11 +178,13 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             }
         }
         this.activePersons.remove(input.getName());
+        this.publisher.removeObserver(input.getName());
         return true;
     }
 
     /**
      * clears the entire database - should only be used for reset and debugging
+     *
      * @throws java.rmi.RemoteException
      */
     public void clearDatabase() throws RemoteException {
@@ -197,12 +207,13 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game startGame(IPerson input, IGameClient client) throws RemoteException {
+    public Game startGame(IPerson input, IGameClient client) 
+            throws RemoteException, IllegalArgumentException {
         if (input == null || (input instanceof Player)
                 || (input instanceof Spectator)) {
             return null;
         }
-        if(client == null){
+        if (client == null) {
             return null;
         }
 
@@ -218,7 +229,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         catch (Exception ex) {
             this.returnToLobby(person);
             this.endGame(newGame, null);
-            return null;
+            throw new IllegalArgumentException("Exception caught: " + ex.getMessage());
         }
         return newGame;
     }
@@ -234,12 +245,13 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game joinGame(IGame gameInput, IPerson personInput, IGameClient client) throws RemoteException {
+    public Game joinGame(IGame gameInput, IPerson personInput, IGameClient client) 
+            throws RemoteException, IllegalArgumentException {
         if (personInput == null || (personInput instanceof Player)
                 || (personInput instanceof Spectator) || gameInput == null) {
             return null;
         }
-        if(client == null){
+        if (client == null) {
             return null;
         }
 
@@ -261,8 +273,14 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             }
         }
         catch (Exception ex) {
+            for(IPlayer player : game.getMyPlayers()){
+                if(player.getName().equals(personInput.getName())){
+                    this.endGame(game, player);
+                    break;
+                }
+            }
             this.returnToLobby(person);
-            return null;
+            throw new IllegalArgumentException("Exception caught: " + ex.getMessage());
         }
         return game;
     }
@@ -297,7 +315,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         if (game.getRoundNo().get() < 1) {
             throw new IllegalArgumentException("Unable to spectate a game still waiting to start");
         }
-        if(client == null){
+        if (client == null) {
             throw new IllegalArgumentException("Game client was null");
         }
 
@@ -326,7 +344,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean addChatMessage(String message, String from) 
+    public boolean addChatMessage(String message, String from)
             throws IllegalArgumentException, RemoteException {
         if (message == null || from == null || from.trim().isEmpty()) {
             throw new IllegalArgumentException("message or poster is null");
@@ -430,7 +448,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param game
      * @return
      */
-    private IGame adjustScore(IGame gameInput, boolean earlyEnding) 
+    private IGame adjustScore(IGame gameInput, boolean earlyEnding)
             throws IllegalArgumentException, RemoteException {
         if (gameInput == null) {
             throw new IllegalArgumentException("input was null");
@@ -542,6 +560,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * already have been added to the database Is also responsible for setting
      * Person.isBot to true Next up it starts multiple games, some full with
      * bots, some 2/3 full
+     *
      * @throws java.rmi.RemoteException
      */
     @Override

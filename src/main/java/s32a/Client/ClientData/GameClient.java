@@ -15,6 +15,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,7 +40,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private IntegerProperty roundNoProperty, player1Score, player2Score,
             player3Score;
     @Getter
-    private StringProperty gameTime;
+    private StringProperty gameTime, difficulty;
     @Getter
     private FloatProperty puckSpeedProperty;
     @Getter
@@ -55,6 +56,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.mySpectators = new ArrayList<>();
         this.chat = new ArrayList<>();
         this.oChat = FXCollections.observableArrayList(chat);
+        // TODO: replace sets with "new Simple<TYPE>Property(<initial value>)"
         this.roundNoProperty.set(0);
         this.puckSpeedProperty.set(0);
         this.puckXProperty.set(0);
@@ -66,6 +68,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.player3XProperty.set(0);
         this.player3YProperty.set(0);
         this.gameStatusProperty.set(GameStatus.Waiting);
+        this.difficulty = new SimpleStringProperty("");
     }
 
     @Override
@@ -133,46 +136,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     @Override
-    public void setPuckX(double x) throws RemoteException {
-        this.puckXProperty.set(x);
-    }
-
-    @Override
-    public void setPuckY(double y) throws RemoteException {
-        this.puckYProperty.set(y);
-    }
-
-    @Override
-    public void setPlayer1X(double x) throws RemoteException {
-        this.player1XProperty.set(x);
-    }
-
-    @Override
-    public void setPlayer1Y(double y) throws RemoteException {
-        this.player1XProperty.set(y);
-    }
-
-    @Override
-    public void setPlayer2X(double x) throws RemoteException {
-        this.player2XProperty.set(x);
-    }
-
-    @Override
-    public void setPlayer2Y(double y) throws RemoteException {
-        this.player2XProperty.set(y);
-    }
-
-    @Override
-    public void setPlayer3X(double x) throws RemoteException {
-        this.player3XProperty.set(x);
-    }
-
-    @Override
-    public void setPlayer3Y(double y) throws RemoteException {
-        this.player3XProperty.set(y);
-    }
-
-    @Override
     public void setPlayer1Score(int score) throws RemoteException {
         this.player1Score.set(score);
     }
@@ -185,5 +148,34 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Override
     public void setPlayer3Score(int score) throws RemoteException {
         this.player3Score.set(score);
+    }
+
+    @Override
+    public void setPuck(double x, double y) throws RemoteException {
+        this.puckXProperty.set(x);
+        this.puckYProperty.set(y);
+    }
+
+    @Override
+    public void setPlayer1Bat(double x, double y) throws RemoteException {
+        this.player1XProperty.set(x);
+        this.player1YProperty.set(y);
+    }
+
+    @Override
+    public void setPlayer2Bat(double x, double y) throws RemoteException {
+        this.player2XProperty.set(x);
+        this.player2YProperty.set(y);
+    }
+
+    @Override
+    public void setPlayer3Bat(double x, double y) throws RemoteException {
+        this.player3XProperty.set(x);
+        this.player3YProperty.set(y);
+    }
+
+    @Override
+    public void setDifficulty(String difficulty) throws RemoteException {
+        this.difficulty.set(difficulty);
     }
 }

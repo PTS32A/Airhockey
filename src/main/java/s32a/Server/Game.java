@@ -160,8 +160,8 @@ public class Game implements IGame, Serializable {
                 if (myPlayers.size() < 3) {
                     this.gameInfo.put("nextColor", getNextColor());
 
-                    myPlayers.add(player);
-                    publisher.addObserver(player.getName(), client);
+                    this.myPlayers.add(player);
+                    this.publisher.addObserver(player.getName(), client);
                     player.setMyGame(this);
                     this.adjustDifficulty();
 
@@ -268,8 +268,8 @@ public class Game implements IGame, Serializable {
                 }
             }
             if (((Spectator) spectator).addGame(this)) {
-                mySpectators.add(spectator);
-                publisher.addObserver(spectator.getName(), client);
+                this.mySpectators.add(spectator);
+                this.publisher.addObserver(spectator.getName(), client);
                 return true;
             } else {
                 return false;

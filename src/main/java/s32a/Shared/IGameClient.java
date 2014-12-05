@@ -30,28 +30,16 @@ public interface IGameClient extends Remote{
     public void setChat(List<String> chat)
             throws RemoteException;
     
-    public void setPuckX(double x)
+    public void setPuck(double x, double y)
             throws RemoteException;
     
-    public void setPuckY(double y)
+    public void setPlayer1Bat(double x, double y)
             throws RemoteException;
     
-    public void setPlayer1X(double x)
+    public void setPlayer2Bat(double x, double y)
             throws RemoteException;
     
-    public void setPlayer1Y(double y)
-            throws RemoteException;
-    
-    public void setPlayer2X(double x)
-            throws RemoteException;
-    
-    public void setPlayer2Y(double y)
-            throws RemoteException;
-    
-    public void setPlayer3X(double x)
-            throws RemoteException;
-    
-    public void setPlayer3Y(double y)
+    public void setPlayer3Bat(double x, double y)
             throws RemoteException;
     
     public void setPlayer1Score(int score)
@@ -61,5 +49,8 @@ public interface IGameClient extends Remote{
             throws RemoteException;
     
     public void setPlayer3Score(int score)
+            throws RemoteException;
+
+    public void setDifficulty(String difficulty)
             throws RemoteException;
 }
