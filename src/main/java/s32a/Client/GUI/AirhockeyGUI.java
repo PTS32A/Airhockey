@@ -14,10 +14,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
@@ -38,6 +41,9 @@ import s32a.Shared.ISpectator;
  */
 public class AirhockeyGUI extends Application {
 
+    @FXML
+    TextField tfIP, tfPort;
+    
     @Getter
     private Stage stage;
     protected static LobbyClient lobby;
@@ -166,10 +172,29 @@ public class AirhockeyGUI extends Application {
      * bindingName is hardcoded on both client and server side
      */
     private void getServerInfo(Stage stage){
-        ipAddress = "result stuff";
-        portNumber = "port number result";
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Server.fxml"));
+
+                    Scene scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.show();
+                }
+                catch (IOException ex) {
+                    showDialog("Error", "Could not open game: " + ex.getMessage());
+                }
+            }
+        });
     }
 
+    public void confirmClick (Event evt) {
+        ipAddress = tfIP.getText();
+        portNumber = tfPort.getText();
+    }
+    
     /**
      * Makes the initial RMI connection by retrieving the ILobby bound in the
      * register at given IP-address
