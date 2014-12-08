@@ -14,13 +14,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
@@ -40,10 +47,7 @@ import s32a.Shared.ISpectator;
  * @author Kargathia
  */
 public class AirhockeyGUI extends Application {
-
-    @FXML
-    TextField tfIP, tfPort;
-    
+  
     @Getter
     private Stage stage;
     protected static LobbyClient lobby;
@@ -177,22 +181,44 @@ public class AirhockeyGUI extends Application {
             @Override
             public void run() {
                 try {
-                    Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Server.fxml"));
-
-                    Scene scene = new Scene(root);
+                    Stage stage = new Stage();
+                    GridPane gp = new GridPane();
+                    gp.setAlignment(Pos.CENTER);
+                    gp.setHgap(10);
+                    gp.setVgap(10);
+                    gp.setPadding(new Insets(25, 25, 25, 25));
+                    Label ip = new Label("Ip Address:");
+                    gp.add(ip, 0, 1);
+                    TextField tfIp = new TextField();
+                    gp.add(tfIp, 1, 1);
+                    Label port = new Label("Port:");
+                    gp.add(port, 0, 2);
+                    TextField tfPort = new TextField();
+                    tfPort.setText("1099");
+                    gp.add(tfPort, 1, 2);
+                    Button confirm = new Button("Confirm");
+                    gp.add(confirm, 1, 3);
+                    confirm.setOnAction(new EventHandler<ActionEvent>() {
+ 
+                        @Override
+                        public void handle(ActionEvent e) {
+                            ipAddress = tfIp.getText();
+                            portNumber = tfPort.getText();
+                            stage.close();
+                        }
+                    });
+                    Group root = new Group();
+                    Scene scene = new Scene(root, 300, 150);
+                    root.getChildren().add(gp);
                     stage.setScene(scene);
+                    stage.setTitle("Server Information");
                     stage.show();
                 }
-                catch (IOException ex) {
+                catch (Exception ex) {
                     showDialog("Error", "Could not open game: " + ex.getMessage());
                 }
             }
         });
-    }
-
-    public void confirmClick (Event evt) {
-        ipAddress = tfIP.getText();
-        portNumber = tfPort.getText();
     }
     
     /**
