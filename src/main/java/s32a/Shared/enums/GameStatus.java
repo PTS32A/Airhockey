@@ -12,6 +12,7 @@ package s32a.Shared.enums;
 public enum GameStatus {
 
     GameOver,
+    Preparing,
     Waiting,
     Paused,
     Ready,

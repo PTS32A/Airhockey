@@ -116,7 +116,7 @@ public class Game implements IGame, Serializable {
         this.maxRounds = 10;
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
-        this.statusProp = new SimpleObjectProperty<>(GameStatus.Waiting);
+        this.statusProp = new SimpleObjectProperty<>(GameStatus.Preparing);
 
         this.continueRun = false;
         this.myChatbox = new Chatbox();
@@ -464,8 +464,7 @@ public class Game implements IGame, Serializable {
     // not featured in Interface, as it is only called by Puck
     void endRound() throws RemoteException {
         //END OF PUCK MOVEMENT
-        this.continueRun = false;
-        this.statusProp.set(GameStatus.Waiting);
+        this.continueRun = false;       
         this.myPuck.resetPuck();
 
         if (roundNo.get() >= maxRounds) {
@@ -474,7 +473,8 @@ public class Game implements IGame, Serializable {
             printMessage("END GAME");
             printMessage("");
         } else {
-            startRound();
+            //Client is in charge of starting new round
+            this.statusProp.set(GameStatus.Waiting);
         }
     }
 
