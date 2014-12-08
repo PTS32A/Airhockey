@@ -45,8 +45,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Getter
     private StringProperty gameTime, difficulty;
     @Getter
-    private FloatProperty puckSpeedProperty;
-    @Getter
     private ObjectProperty<GameStatus> gameStatusProperty;
     @Getter
     private DoubleProperty puckXProperty, puckYProperty;
@@ -60,7 +58,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.chat = new ArrayList<>();
         this.oChat = FXCollections.observableArrayList(chat);
         this.roundNoProperty = new SimpleIntegerProperty();
-        this.puckSpeedProperty = new SimpleFloatProperty();
         this.puckXProperty = new SimpleDoubleProperty();
         this.puckYProperty = new SimpleDoubleProperty();
         this.player1XProperty = new SimpleDoubleProperty();
@@ -292,5 +289,15 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Override
     public void setDifficulty(String difficulty) throws RemoteException {
         this.difficulty.set(difficulty);
+    }
+
+    /**
+     * Incoming from server. sets game status
+     * @param status
+     * @throws RemoteException 
+     */
+    @Override
+    public void setStatus(GameStatus status) throws RemoteException {
+        this.gameStatusProperty.set(status);
     }
 }

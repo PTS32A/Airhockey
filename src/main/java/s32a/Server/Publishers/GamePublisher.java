@@ -16,16 +16,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import s32a.Server.Game;
+import s32a.Server.Player;
 import s32a.Shared.IGameClient;
 import s32a.Shared.IPlayer;
 import s32a.Shared.ISpectator;
+import s32a.Shared.enums.GameStatus;
 
 /**
  * NOTES: operations are currently not threadsafe. Some sort of monitor solution
@@ -45,12 +51,13 @@ public class GamePublisher {
      */
     private Game myGame;
 
+    private ObjectProperty<Player> player1Prop, player2Prop, player3Prop;
+    private ObservableList<ISpectator> spectators;
     private DoubleProperty puckX, puckY;
-    private DoubleProperty player1X, player1Y;
-    private DoubleProperty player2X, player2Y;
-    private DoubleProperty player3X, player3Y;
     private IntegerProperty player1Score, player2Score, player3Score, roundNo;
     private ObservableList<String> chatbox = null;
+    private ObjectProperty<GameStatus> statusProp;
+    private StringProperty difficultyProp;
 
     /**
      * Creates a new publisher associated with given game. Observers need to be
@@ -61,24 +68,22 @@ public class GamePublisher {
     public GamePublisher(Game myGame) {
         this.observers = new HashMap<>();
         this.myGame = myGame;
+        this.spectators = null;
+        this.statusProp = new SimpleObjectProperty<>(null);
 
         this.puckX = new SimpleDoubleProperty(-1);
         this.puckY = new SimpleDoubleProperty(-1);
 
-        this.player1X = new SimpleDoubleProperty(-1);
-        this.player1Y = new SimpleDoubleProperty(-1);
-
-        this.player2X = new SimpleDoubleProperty(-1);
-        this.player2Y = new SimpleDoubleProperty(-1);
-
-        this.player3X = new SimpleDoubleProperty(-1);
-        this.player3Y = new SimpleDoubleProperty(-1);
+        this.player1Prop = new SimpleObjectProperty<>(null);
+        this.player2Prop = new SimpleObjectProperty<>(null);
+        this.player3Prop = new SimpleObjectProperty<>(null);
 
         this.player1Score = new SimpleIntegerProperty(-1);
         this.player2Score = new SimpleIntegerProperty(-1);
         this.player3Score = new SimpleIntegerProperty(-1);
 
         this.roundNo = new SimpleIntegerProperty(-1);
+        this.difficultyProp = new SimpleStringProperty("");
     }
 
     /**
@@ -88,12 +93,18 @@ public class GamePublisher {
      * @param name
      * @param client
      * @return
+     * @throws java.rmi.RemoteException
      */
-    public boolean addObserver(String name, IGameClient client) {
+    public boolean addObserver(String name, IGameClient client) throws RemoteException {
         if (this.observers.containsKey(name)) {
             return false;
         }
-        return (this.observers.put(name, client) == null);
+        if (this.observers.put(name, client) == null){
+            client.setGame(myGame);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -102,17 +113,37 @@ public class GamePublisher {
      * the entire game.
      *
      * @param name
+     * @throws java.rmi.RemoteException
      */
-    public void removeObserver(String name) {
+    public void removeObserver(String name) throws RemoteException {
         this.observers.remove(name);
     }
 
-    public void setPlayers(List<IPlayer> players) {
-        // TODO
-    }
+    /**
+     * Binds the list of spectators to the publisher. only needs to be done
+     * once.
+     *
+     * @param spectators
+     */
+    public void bindSpectators(ObservableList<ISpectator> spectators) {
+        this.spectators = spectators;
 
-    public void setSpectators(List<ISpectator> spectators) {
-        // TODO
+        this.spectators.addListener(new ListChangeListener() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setSpectators(new ArrayList(spectators));
+                    }
+                    catch (RemoteException ex) {
+                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -121,7 +152,7 @@ public class GamePublisher {
      *
      * @param roundNo
      */
-    public void setRoundNo(IntegerProperty roundNo) {
+    public void bindRoundNo(IntegerProperty roundNo) {
         this.roundNo.bind(roundNo);
         this.roundNo.addListener(new ChangeListener() {
 
@@ -134,6 +165,30 @@ public class GamePublisher {
                     }
                     catch (RemoteException ex) {
                         System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Binds difficulty provided as string - Double version not required
+     * @param difficulty
+     */
+    public void bindDifficulty(StringProperty difficulty){
+        this.difficultyProp.bind(difficulty);
+        this.difficultyProp.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setDifficulty(difficultyProp.get());
+                    }
+                    catch (RemoteException ex) {
+                        System.out.println("RemoteException setting Difficulty for " + key + ": " + ex.getMessage());
                         Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -163,7 +218,6 @@ public class GamePublisher {
                         Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-
             }
         });
     }
@@ -199,18 +253,63 @@ public class GamePublisher {
         this.puckY.addListener(listener);
     }
 
+
+
+    /**
+     * Binds statusproperty
+     * @param input
+     */
+    public void bindStatus(ObjectProperty<GameStatus> input){
+        this.statusProp.bind(input);
+
+        this.statusProp.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                for (String key : observers.keySet()) {
+                    try {
+                        observers.get(key).setStatus(statusProp.get());
+                    }
+                    catch (RemoteException ex) {
+                        System.out.println("remoteException on setting status");
+                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Attempts to bind the next player. returns false if there are three
+     * players present already.
+     *
+     * @param input
+     * @return
+     */
+    public boolean bindNextPlayer(Player input) {
+        if (this.player1Prop.get() == null) {
+            this.bindPlayer1(input);
+        } else if (this.player2Prop.get() == null) {
+            this.bindPlayer2(input);
+        } else if (this.player3Prop.get() == null) {
+            this.bindPlayer3(input);
+        } else {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Binds properties belonging to player 1. Adds ChangeListeners responsible
      * for pushing updates.
      *
-     * @param x
-     * @param y
+     * @param input
      * @param score
      */
-    public void bindPlayer1(DoubleProperty x, DoubleProperty y, IntegerProperty score) {
-        this.player1X.bind(x);
-        this.player1Y.bind(y);
-        this.player1Score.bind(score);
+    private void bindPlayer1(Player input) {
+
+        this.player1Prop.set(input);
+        this.player1Score.bind(input.getScore());
 
         ChangeListener posListener = new ChangeListener() {
 
@@ -218,7 +317,7 @@ public class GamePublisher {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 for (String key : observers.keySet()) {
                     try {
-                        observers.get(key).setPlayer1Bat(player1X.get(), player1Y.get());
+                        observers.get(key).setPlayer1Bat(player1Prop.get().getPosX().get(), player1Prop.get().getPosX().get());
                     }
                     catch (RemoteException ex) {
                         System.out.println("remoteException on setting player 1 bat location");
@@ -227,8 +326,8 @@ public class GamePublisher {
                 }
             }
         };
-        this.player1X.addListener(posListener);
-        this.player1Y.addListener(posListener);
+        this.player1Prop.get().getPosX().addListener(posListener);
+        this.player1Prop.get().getPosY().addListener(posListener);
 
         this.player1Score.addListener(new ChangeListener() {
 
@@ -251,14 +350,13 @@ public class GamePublisher {
      * Binds properties belonging to player 2. Adds ChangeListeners responsible
      * for pushing updates.
      *
-     * @param x
-     * @param y
+     * @param input
      * @param score
      */
-    public void bindPlayer2(DoubleProperty x, DoubleProperty y, IntegerProperty score) {
-        this.player2X.bind(x);
-        this.player2Y.bind(y);
-        this.player2Score.bind(score);
+    private void bindPlayer2(Player input) {
+
+        this.player2Prop.set(input);
+        this.player2Score.bind(input.getScore());
 
         ChangeListener posListener = new ChangeListener() {
 
@@ -266,7 +364,7 @@ public class GamePublisher {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 for (String key : observers.keySet()) {
                     try {
-                        observers.get(key).setPlayer2Bat(player2X.get(), player2Y.get());
+                        observers.get(key).setPlayer2Bat(player2Prop.get().getPosX().get(), player2Prop.get().getPosY().get());
                     }
                     catch (RemoteException ex) {
                         System.out.println("remoteException on setting player 2 bat location");
@@ -275,8 +373,8 @@ public class GamePublisher {
                 }
             }
         };
-        this.player2X.addListener(posListener);
-        this.player2Y.addListener(posListener);
+        this.player2Prop.get().getPosX().addListener(posListener);
+        this.player2Prop.get().getPosY().addListener(posListener);
 
         this.player2Score.addListener(new ChangeListener() {
 
@@ -299,14 +397,13 @@ public class GamePublisher {
      * Binds properties belonging to player 3. Adds ChangeListeners responsible
      * for pushing updates.
      *
-     * @param x
-     * @param y
+     * @param input
      * @param score
      */
-    public void bindPlayer3(DoubleProperty x, DoubleProperty y, IntegerProperty score) {
-        this.player3X.bind(x);
-        this.player3Y.bind(y);
-        this.player3Score.bind(score);
+    private void bindPlayer3(Player input) {
+
+        this.player3Prop.set(input);
+        this.player3Score.bind(input.getScore());
 
         ChangeListener posListener = new ChangeListener() {
 
@@ -314,7 +411,7 @@ public class GamePublisher {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 for (String key : observers.keySet()) {
                     try {
-                        observers.get(key).setPlayer3Bat(player3X.get(), player3Y.get());
+                        observers.get(key).setPlayer3Bat(player3Prop.get().getPosX().get(), player3Prop.get().getPosY().get());
                     }
                     catch (RemoteException ex) {
                         System.out.println("remoteException on setting player 3 bat location");
@@ -323,8 +420,8 @@ public class GamePublisher {
                 }
             }
         };
-        this.player3X.addListener(posListener);
-        this.player3Y.addListener(posListener);
+        this.player3Prop.get().getPosX().addListener(posListener);
+        this.player3Prop.get().getPosY().addListener(posListener);
 
         this.player3Score.addListener(new ChangeListener() {
 
@@ -342,5 +439,4 @@ public class GamePublisher {
             }
         });
     }
-
 }

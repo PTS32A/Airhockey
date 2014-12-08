@@ -8,6 +8,7 @@ package s32a.Shared;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import s32a.Shared.enums.GameStatus;
 
 /**
  *
@@ -52,5 +53,8 @@ public interface IGameClient extends Remote{
             throws RemoteException;
 
     public void setDifficulty(String difficulty)
+            throws RemoteException;
+
+    public void setStatus(GameStatus status)
             throws RemoteException;
 }

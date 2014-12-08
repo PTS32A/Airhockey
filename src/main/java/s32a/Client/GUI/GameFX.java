@@ -157,7 +157,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         this.lvChatbox.setItems(myGame.getChat());
 
         // Difficulty 
-        this.lblDifficulty.textProperty().bind(myGame.getPuckSpeedProperty().asString());
+        this.lblDifficulty.textProperty().bind(myGame.getDifficulty());
 
         // binds width / height for redrawing to canvas size
         this.width.bind(this.apGame.prefWidthProperty());

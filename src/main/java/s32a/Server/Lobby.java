@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 import s32a.Server.Publishers.LobbyPublisher;
 import s32a.Shared.IGame;
@@ -57,7 +59,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     @Getter
     private HashMap<String, IPerson> activePersons;
     @Getter
-    private List<IGame> activeGames;
+    private ObservableList<IGame> activeGames;
+    private List<IGame> backingActiveGames;
     private LobbyPublisher publisher;
 
     /**
@@ -81,9 +84,19 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         this.myDatabaseControls = new DatabaseControls();
         this.activePersons = new HashMap<>();
         this.airhockeySettings = new HashMap<>();
-        this.activeGames = new ArrayList<>();
+        this.backingActiveGames = new ArrayList<>();
+        this.activeGames = FXCollections.observableArrayList(backingActiveGames);
         this.airhockeySettings.put("Goal Default", new Vector2(0, 0));
         this.airhockeySettings.put("Side Length", 500f);
+    }
+
+    /**
+     * Starts the associated lobbyPublisher. Can't be done in constructor, as it
+     * references lobby instance.
+     *
+     * @throws RemoteException
+     */
+    public void startPublisher() throws RemoteException {
         this.publisher = new LobbyPublisher();
     }
 
@@ -144,8 +157,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             return false;
         }
 
-        if (this.activePersons.put(playerName, newPerson) == null &&
-                this.publisher.addObserver(playerName, client)) {
+        if (this.activePersons.put(playerName, newPerson) == null
+                && this.publisher.addObserver(playerName, client)) {
             return true;
         } else {
             this.activePersons.remove(playerName);
@@ -207,7 +220,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game startGame(IPerson input, IGameClient client) 
+    public Game startGame(IPerson input, IGameClient client)
             throws RemoteException, IllegalArgumentException {
         if (input == null || (input instanceof Player)
                 || (input instanceof Spectator)) {
@@ -222,7 +235,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         try {
             person = new Player(person.getName(), person.ratingProperty().get(),
                     Colors.Red);
-            newGame = new Game((Player) person, client);
+            newGame = new Game((Player) person);
+            newGame.startPublisher((Player) person, client);
             this.activePersons.replace(person.getName(), person);
             this.activeGames.add(newGame);
         }
@@ -245,7 +259,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game joinGame(IGame gameInput, IPerson personInput, IGameClient client) 
+    public Game joinGame(IGame gameInput, IPerson personInput, IGameClient client)
             throws RemoteException, IllegalArgumentException {
         if (personInput == null || (personInput instanceof Player)
                 || (personInput instanceof Spectator) || gameInput == null) {
@@ -273,8 +287,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             }
         }
         catch (Exception ex) {
-            for(IPlayer player : game.getMyPlayers()){
-                if(player.getName().equals(personInput.getName())){
+            for (IPlayer player : game.getMyPlayers()) {
+                if (player.getName().equals(personInput.getName())) {
                     this.endGame(game, player);
                     break;
                 }

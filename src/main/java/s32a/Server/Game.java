@@ -24,6 +24,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Server.Publishers.GamePublisher;
@@ -45,10 +47,13 @@ public class Game implements IGame, Serializable {
     @Getter
     private transient Chatbox myChatbox;
     private Puck myPuck;
-    @Getter
-    private List<ISpectator> mySpectators;
-    @Getter
-    private List<IPlayer> myPlayers;
+
+    private List<ISpectator> backingSpectators;
+    private transient ObservableList<ISpectator> mySpectators;
+
+    private List<IPlayer> backingPlayers;
+    private transient ObservableList<IPlayer> myPlayers;
+
     private GamePublisher publisher;
 
     /**
@@ -79,13 +84,14 @@ public class Game implements IGame, Serializable {
      *
      * @param starter The player that starts the game initially
      */
-    Game(IPlayer starter, IGameClient starterClient) throws RemoteException {
-        this.myPlayers = new ArrayList<>();
-        this.mySpectators = new ArrayList<>();
-        this.publisher = new GamePublisher(this);
+    Game(IPlayer starter) throws RemoteException {
+        this.backingPlayers = new ArrayList<>();
+        this.myPlayers = FXCollections.observableArrayList(this.backingPlayers);
+        this.backingSpectators = new ArrayList<>();
+        this.mySpectators = FXCollections.observableArrayList(this.backingSpectators);
 
         this.myPlayers.add(starter);
-        this.publisher.addObserver(starter.getName(), starterClient);
+
         setBatPosition(starter, 0);
 
         ((Player) starter).setMyGame(this);
@@ -114,6 +120,25 @@ public class Game implements IGame, Serializable {
 
         this.continueRun = false;
         this.myChatbox = new Chatbox();
+    }
+
+    /**
+     * Starts publisher associated with game. Done outside constructor to avoid
+     * issues with trying to use not-yet-initialised fields.
+     *
+     * @param starter
+     * @param starterClient
+     * @throws RemoteException
+     */
+    public void startPublisher(Player starter, IGameClient starterClient) throws RemoteException {
+        this.publisher = new GamePublisher(this);
+        this.publisher.bindPuck(this.myPuck.getXPos(), this.myPuck.getYPos());
+        this.publisher.setChat(this.myChatbox.chatProperty());
+        this.publisher.bindSpectators(mySpectators);
+        this.publisher.bindNextPlayer(starter);
+        this.publisher.addObserver(starter.getName(), starterClient);
+        this.publisher.bindRoundNo(roundNo);
+        this.publisher.bindStatus(statusProp);
     }
 
     /**
@@ -162,6 +187,7 @@ public class Game implements IGame, Serializable {
 
                     this.myPlayers.add(player);
                     this.publisher.addObserver(player.getName(), client);
+                    this.publisher.bindNextPlayer(player);
                     player.setMyGame(this);
                     this.adjustDifficulty();
 
@@ -616,5 +642,13 @@ public class Game implements IGame, Serializable {
         } else {
             return ((Player) this.myPlayers.get(index)).nameProperty();
         }
+    }
+
+    public List<IPlayer> getMyPlayers() {
+        return new ArrayList<>(myPlayers);
+    }
+
+    public List<ISpectator> getMySpectators() {
+        return new ArrayList<>(mySpectators);
     }
 }
