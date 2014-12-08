@@ -288,7 +288,6 @@ public class AirhockeyGUI extends Application {
     public static void main(String[] args) {
         if (args[1].equals("server")) {
             // launch application as server
-            // TODO: make some snazzy GUI for displaying server stats
             AirhockeyServer server = new AirhockeyServer();
         } else {
             // launch as client
