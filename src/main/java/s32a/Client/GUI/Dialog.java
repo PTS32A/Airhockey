@@ -32,7 +32,6 @@ public class Dialog extends Stage {
     public Dialog(Stage owner, String header, String message) {
         super();
         initOwner(owner);
-        initModality(Modality.APPLICATION_MODAL);
         setTitle(header);
 
         AnchorPane root = new AnchorPane();
@@ -53,8 +52,8 @@ public class Dialog extends Stage {
         taMessage.setWrapText(true);
         setRowSpan(taMessage, 4);
         gridPane.add(taMessage, 0, 0);
-
         Button btClose = new Button("Close");
+        btClose.setDefaultButton(true);
         btClose.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override

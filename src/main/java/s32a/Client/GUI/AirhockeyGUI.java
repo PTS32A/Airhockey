@@ -47,22 +47,53 @@ import s32a.Shared.ISpectator;
  * @author Kargathia
  */
 public class AirhockeyGUI extends Application {
-  
+
     @Getter
     private Stage stage;
-    protected static LobbyClient lobby;
+    protected static LobbyClient lobby = null;
     protected static String me;
     protected static String ipAddress = null, bindingName = "AirhockeyServer", portNumber = null;
 
     @Override
     public void start(Stage stage) throws Exception {
+        this.stage = stage;
         // sets the static strings with server info
         this.getServerInfo(stage);
 
-        lobby = new LobbyClient(this.requestRemoteLobby(ipAddress, bindingName, portNumber));
+        //goToLobby(stage);
+    }
 
-        this.stage = stage;
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
+    /**
+     * Starts client GUI after IP address and port number were provided
+     */
+    private void startClient() {
+
+        try {
+            lobby = new LobbyClient(this.requestRemoteLobby(ipAddress, bindingName, portNumber));
+            if(lobby != null ){
+                showDialog("Success", "connected to lobby");
+            }
+            else {
+                showDialog("Error", "lobby is null");
+                System.exit(0);
+            }
+        }
+        catch (RemoteException ex) {
+            String error = "RemoteException in trying to open new LobbyClient";
+            System.out.println(error);
+            showDialog("Error", error);
+            Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(0);
+        }
+
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
+        }
+        catch (IOException ex) {
+            System.out.println("failed to load Login.fxml");
+            Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
@@ -86,21 +117,20 @@ public class AirhockeyGUI extends Application {
         stage.show();
 
         // populates lobby
-        Thread t = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    lobby.populate();
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException on populate: " + ex.getMessage());
-                    Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        t.start();
-        //goToLobby(stage);
+//        Thread t = new Thread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                try {
+//                    lobby.populate();
+//                }
+//                catch (RemoteException ex) {
+//                    System.out.println("RemoteException on populate: " + ex.getMessage());
+//                    Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//        });
+//        t.start();
     }
 
     /**
@@ -172,10 +202,10 @@ public class AirhockeyGUI extends Application {
 
     /**
      * Opens new window requesting server info - ipAddress and port number
-     * portNumber can be pre-filled with 1099, but the textbox should still be there
-     * bindingName is hardcoded on both client and server side
+     * portNumber can be pre-filled with 1099, but the textbox should still be
+     * there bindingName is hardcoded on both client and server side
      */
-    private void getServerInfo(Stage stage){
+    private void getServerInfo(Stage stage) {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -199,12 +229,17 @@ public class AirhockeyGUI extends Application {
                     Button confirm = new Button("Confirm");
                     gp.add(confirm, 1, 3);
                     confirm.setOnAction(new EventHandler<ActionEvent>() {
- 
+
                         @Override
                         public void handle(ActionEvent e) {
+                            if (tfIp.getText().trim().isEmpty() || tfPort.getText().trim().isEmpty()) {
+                                showDialog("Error", "IP or port number field is empty");
+                                return;
+                            }
                             ipAddress = tfIp.getText();
                             portNumber = tfPort.getText();
                             stage.close();
+                            startClient();
                         }
                     });
                     Group root = new Group();
@@ -219,8 +254,12 @@ public class AirhockeyGUI extends Application {
                 }
             }
         });
+        while (stage.isShowing()) {
+
+        }
+
     }
-    
+
     /**
      * Makes the initial RMI connection by retrieving the ILobby bound in the
      * register at given IP-address
