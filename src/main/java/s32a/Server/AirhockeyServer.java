@@ -41,6 +41,7 @@ public class AirhockeyServer{
     private Stage stage;
     private static final int portNumber = 1099;
     private static final String bindingName = "AirhockeyServer";
+    private String ipAddress;
 
     public AirhockeyServer() {
 
@@ -71,7 +72,7 @@ public class AirhockeyServer{
             System.out.println("Server: Lobby not bound");
         }
 
-        String ipAddress = "";
+        ipAddress = "";
 
         try {
             ipAddress = InetAddress.getLocalHost().toString();
@@ -91,8 +92,8 @@ public class AirhockeyServer{
             gp.setPadding(new Insets(25, 25, 25, 25));
             Label ip = new Label("Ip Address:");
             gp.add(ip, 0, 0);
-//            Label ipIn = new Label(ipAddress);
-//            gp.add(ipIn, 1, 0);
+            Label ipIn = new Label(this.ipAddress);
+            gp.add(ipIn, 1, 0);
             Label port = new Label("Port:");
             gp.add(port, 0, 2);
             Label portIn = new Label(String.valueOf(portNumber));

@@ -12,6 +12,7 @@ import s32a.Server.Player;
 import s32a.Server.Person;
 import s32a.Server.Game;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class DatabaseControlsTest
     }
     
     @Before
-    public void setUp()
+    public void setUp() throws RemoteException
     {
         this.mockDB = new DatabaseControls();
         try
@@ -88,7 +89,7 @@ public class DatabaseControlsTest
      * Test of addPerson method, of class DatabaseControls.
      */
     @Test
-    public void testAddPersonCheckLogin()
+    public void testAddPersonCheckLogin() throws RemoteException
     {
         try
         {
@@ -110,7 +111,7 @@ public class DatabaseControlsTest
     }
     
     @Test
-    public void testSaveGameCheckRating()
+    public void testSaveGameCheckRating() throws RemoteException
     {
         try
         {
@@ -309,7 +310,7 @@ public class DatabaseControlsTest
     
     @Test
     (expected = IllegalArgumentException.class)
-    public void saveGameNegativeScoreTest()
+    public void saveGameNegativeScoreTest() throws RemoteException
     {
         try
         {
