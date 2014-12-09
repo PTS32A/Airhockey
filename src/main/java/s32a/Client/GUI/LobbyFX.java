@@ -177,8 +177,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 super.showDialog("Error", "You are currently spectating or playing a game");
             }
         }
-        catch (Exception ex) {
-            super.showDialog("Error", "Unable to open new game: " + ex.getMessage());
+        catch (RemoteException ex) {
+            super.showDialog("Error", "Unable to open new game due to RemoteException: " + ex.getMessage());
         }
     }
 

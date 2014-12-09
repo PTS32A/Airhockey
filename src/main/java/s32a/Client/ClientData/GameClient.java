@@ -18,6 +18,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -69,7 +70,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.player1Score = new SimpleIntegerProperty(20);
         this.player2Score = new SimpleIntegerProperty(20);
         this.player3Score = new SimpleIntegerProperty(20);
-        this.gameStatusProperty.set(GameStatus.Waiting);
+        this.gameStatusProperty = new SimpleObjectProperty(GameStatus.Waiting);
         this.difficulty = new SimpleStringProperty("");
     }
     

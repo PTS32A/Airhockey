@@ -39,13 +39,13 @@ public interface ILobby extends Remote {
             throws RemoteException;
 
     public IGame startGame(IPerson person, IGameClient client)
-            throws RemoteException;
+            throws RemoteException, IllegalArgumentException;
 
     public IGame joinGame(IGame game, IPerson person, IGameClient client)
-            throws RemoteException;
+            throws RemoteException, IllegalArgumentException;
 
     public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
-            throws RemoteException;
+            throws RemoteException, IllegalArgumentException;
 
     public boolean addChatMessage(String message, String from)
             throws IllegalArgumentException, RemoteException;
