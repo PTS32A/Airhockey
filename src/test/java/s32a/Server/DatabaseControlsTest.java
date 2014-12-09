@@ -343,7 +343,10 @@ public class DatabaseControlsTest
             fail(ex.getMessage());
         } catch (IllegalArgumentException ex)
         {
-            
+            System.out.println("IllegalArgumentException on saveGameNegativeScoreTest(): " + ex.getMessage()); 
+        } catch (IllegalStateException ex)
+        {
+            System.out.println("IllegalStateException on saveGameNegativeScoreTest(): " + ex.getMessage());
         }
     }
 
