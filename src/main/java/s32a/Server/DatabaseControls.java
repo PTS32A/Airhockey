@@ -160,7 +160,7 @@ class DatabaseControls {
         this.initConnection();
 
         PreparedStatement prepStat = null;
-        String query = "SELECT playername FROM player WHERE playername = ?";
+        String query = "SELECT playername FROM dbi293443.player WHERE playername = ?";
         try {
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);
@@ -169,7 +169,7 @@ class DatabaseControls {
                 return null;
             }
 
-            query = "INSERT INTO player (playername, playerpassword, rating) VALUES (?, ?, ?)";
+            query = "INSERT INTO dbi293443.player (playername, playerpassword, rating) VALUES (?, ?, ?)";
 
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);

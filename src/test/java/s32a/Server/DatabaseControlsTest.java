@@ -6,11 +6,6 @@
 
 package s32a.Server;
 
-import s32a.Server.DatabaseControls;
-import s32a.Shared.enums.Colors;
-import s32a.Server.Player;
-import s32a.Server.Person;
-import s32a.Server.Game;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -20,10 +15,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import s32a.Client.ClientData.GameClient;
+import s32a.Server.DatabaseControls;
+import s32a.Server.Game;
+import s32a.Server.Person;
+import s32a.Server.Player;
+import s32a.Shared.enums.Colors;
 
 /**
  *
@@ -125,6 +126,8 @@ public class DatabaseControlsTest
             
             Game mockGame;
             
+            GameClient client = new GameClient();
+            
             Player test1 = new Player("test1", (double)15, Colors.Red);
             Player test2 = new Player("test2", (double)15, Colors.Blue);
             Player test3 = new Player("test3", (double)15, Colors.Green);
@@ -135,8 +138,8 @@ public class DatabaseControlsTest
             
             //sets score game 1
             mockGame = new Game(test1);
-            mockGame.addPlayer(test2);
-            mockGame.addPlayer(test3);
+            mockGame.addPlayer(test2, client);
+            mockGame.addPlayer(test3, client);
             test1.setScore(20);
             test2.setScore(30);
             test3.setScore(25);
@@ -156,8 +159,8 @@ public class DatabaseControlsTest
             
             //sets score game 2
             mockGame = new Game(test3);
-            mockGame.addPlayer(test1);
-            mockGame.addPlayer(test2);
+            mockGame.addPlayer(test1, client);
+            mockGame.addPlayer(test2, client);
             test1.setScore(20);
             test2.setScore(30);
             test3.setScore(25);
@@ -177,8 +180,8 @@ public class DatabaseControlsTest
             
             //sets score game 3
             mockGame = new Game(test2);
-            mockGame.addPlayer(test3);
-            mockGame.addPlayer(test1);
+            mockGame.addPlayer(test3, client);
+            mockGame.addPlayer(test1, client);
             test1.setScore(20);
             test2.setScore(30);
             test3.setScore(25);
@@ -198,8 +201,8 @@ public class DatabaseControlsTest
             
             //sets score game 4
             mockGame = new Game(test1);
-            mockGame.addPlayer(test2);
-            mockGame.addPlayer(test3);
+            mockGame.addPlayer(test2, client);
+            mockGame.addPlayer(test3, client);
             test1.setScore(20);
             test2.setScore(30);
             test3.setScore(25);
@@ -219,8 +222,8 @@ public class DatabaseControlsTest
             
             //sets score game 5
             mockGame = new Game(test3);
-            mockGame.addPlayer(test1);
-            mockGame.addPlayer(test2);
+            mockGame.addPlayer(test1, client);
+            mockGame.addPlayer(test2, client);
             test1.setScore(20);
             test2.setScore(30);
             test3.setScore(25);
@@ -240,8 +243,8 @@ public class DatabaseControlsTest
             
             //sets score game 6
             mockGame = new Game(test1);
-            mockGame.addPlayer(test2);
-            mockGame.addPlayer(test3);
+            mockGame.addPlayer(test2, client);
+            mockGame.addPlayer(test3, client);
             test1.setScore(10); // goes down
             test2.setScore(40); // goes up
             test3.setScore(25); // stays even
@@ -261,8 +264,8 @@ public class DatabaseControlsTest
             
             //sets score game 7
             mockGame = new Game(test1);
-            mockGame.addPlayer(test2);
-            mockGame.addPlayer(test3);
+            mockGame.addPlayer(test2, client);
+            mockGame.addPlayer(test3, client);
             test1.setScore(0); // goes down
             test2.setScore(50); // goes up
             test3.setScore(25); // stays even
@@ -282,8 +285,8 @@ public class DatabaseControlsTest
             
             //sets score game 8
             mockGame = new Game(test1);
-            mockGame.addPlayer(test2);
-            mockGame.addPlayer(test3);
+            mockGame.addPlayer(test2, client);
+            mockGame.addPlayer(test3, client);
             test1.setScore(50); // goes up
             test2.setScore(0); // goes down
             test3.setScore(25); // stays even
@@ -320,14 +323,16 @@ public class DatabaseControlsTest
             Player test2 = new Player("test2", (double)15, Colors.Blue);
             Player test3 = new Player("test3", (double)15, Colors.Green);
             
+            GameClient client = new GameClient();
+            
             this.mockDB.addPerson("test1", "test");
             this.mockDB.addPerson("test2", "test");
             this.mockDB.addPerson("test3", "test");
             
             //sets negative score
             mockGame = new Game(test1);
-            mockGame.addPlayer(test2);
-            mockGame.addPlayer(test3);
+            mockGame.addPlayer(test2, client);
+            mockGame.addPlayer(test3, client);
             test1.setScore(-20);
             test2.setScore(30);
             test3.setScore(25);
@@ -336,6 +341,9 @@ public class DatabaseControlsTest
         } catch (SQLException ex)
         {
             fail(ex.getMessage());
+        } catch (IllegalArgumentException ex)
+        {
+            
         }
     }
 
