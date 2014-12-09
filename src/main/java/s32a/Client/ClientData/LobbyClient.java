@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -39,11 +41,15 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private DoubleProperty playerRatingProperty;
     
     private ILobby myLobby;
+    private List<IPerson> activePersons;
+    private ObjectProperty<HashMap<String, Object>> settingsProperty;
     
 
     public LobbyClient(ILobby myLobby) throws RemoteException {
         this.myLobby = myLobby;
         this.activeGames = new ArrayList<>();
+        this.activePersons = new ArrayList<>();
+        this.settingsProperty = new SimpleObjectProperty(new HashMap<>());
         this.oActiveGames = FXCollections.observableList(activeGames);
         this.chat = new ArrayList<>();
         this.chatProperty = FXCollections.observableList(chat);
@@ -57,7 +63,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public HashMap getAirhockeySettings() throws RemoteException {
-        return myLobby.getAirhockeySettings();
+        return this.settingsProperty.get();
     }
 
     @Override
@@ -67,7 +73,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public List<IGame> getActiveGames() throws RemoteException {
-        return myLobby.getActiveGames();
+        return this.activeGames;
     }
 
     @Override
@@ -154,6 +160,11 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     @Override
     public void setRating(Double rating) throws RemoteException {
         this.playerRatingProperty.set(rating);
+    }
+
+    @Override
+    public void setSettings(HashMap<String, Object> settings) throws RemoteException {
+        this.settingsProperty.set(settings);
     }
 
 }

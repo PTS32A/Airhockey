@@ -12,6 +12,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import s32a.Server.Lobby;
@@ -28,6 +31,7 @@ public class LobbyPublisher {
     private HashMap<String, ILobbyClient> observers;
     private Lobby lobby;
     private ObservableList<IGame> games;
+    private ObjectProperty<HashMap<String, Object>> settings;
 
     public LobbyPublisher() throws RemoteException {
         this.observers = new HashMap<>();
@@ -43,6 +47,29 @@ public class LobbyPublisher {
 
     public void removeObserver(String name) {
         observers.remove(name);
+    }
+    
+    private void bindSettings(ObjectProperty<HashMap<String, Object>> input){
+        this.settings = input;
+
+        this.settings.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setSettings((HashMap<String, Object>) newValue);
+                    }
+                    catch (RemoteException ex) {
+                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            
+        });
     }
 
     private void bindActiveGames(ObservableList<IGame> input) {

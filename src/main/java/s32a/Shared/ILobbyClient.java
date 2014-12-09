@@ -7,6 +7,7 @@ package s32a.Shared;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -27,6 +28,9 @@ public interface ILobbyClient extends Remote{
             throws RemoteException;
     
     public void setRating(Double rating)
+            throws RemoteException;
+    
+    public void setSettings(HashMap<String, Object> settings) 
             throws RemoteException;
     
 }

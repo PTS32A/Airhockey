@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -54,8 +56,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     @Getter
     private Chatbox mychatbox;
     private DatabaseControls myDatabaseControls;
-    @Getter
-    private HashMap airhockeySettings;
+    private ObjectProperty<HashMap<String, Object>> airhockeySettings;
     @Getter
     private HashMap<String, IPerson> activePersons;
     @Getter
@@ -73,6 +74,13 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public IPerson getMyPerson(String playerName) {
         return this.activePersons.get(playerName);
     }
+    
+    /**
+     * @return airhockeysettings boxed hashmap
+     */
+    public HashMap<String, Object> getAirhockeySettings(){
+        return this.airhockeySettings.get();
+    }
 
     /**
      * Lobby is used as singleton. Public for unit tests.
@@ -83,11 +91,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         this.mychatbox = new Chatbox();
         this.myDatabaseControls = new DatabaseControls();
         this.activePersons = new HashMap<>();
-        this.airhockeySettings = new HashMap<>();
+        this.airhockeySettings = new SimpleObjectProperty<>(new HashMap<>());
         this.backingActiveGames = new ArrayList<>();
         this.activeGames = FXCollections.observableArrayList(backingActiveGames);
-        this.airhockeySettings.put("Goal Default", new Vector2(0, 0));
-        this.airhockeySettings.put("Side Length", 500f);
+        this.airhockeySettings.get().put("Goal Default", new Vector2(0, 0));
+        this.airhockeySettings.get().put("Side Length", 500f);
     }
 
     /**
