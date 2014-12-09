@@ -286,7 +286,7 @@ public class AirhockeyGUI extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args[1].equals("server")) {
+        if (args.length > 0 && args[0].equals("server")) {
             // launch application as server
             AirhockeyServer server = new AirhockeyServer();
         } else {
