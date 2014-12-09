@@ -41,14 +41,14 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private DoubleProperty playerRatingProperty;
     
     private ILobby myLobby;
-    private List<IPerson> activePersons;
+    private ObjectProperty<HashMap<String, IPerson>> activePersons;
     private ObjectProperty<HashMap<String, Object>> settingsProperty;
     
 
     public LobbyClient(ILobby myLobby) throws RemoteException {
         this.myLobby = myLobby;
         this.activeGames = new ArrayList<>();
-        this.activePersons = new ArrayList<>();
+        this.activePersons = new SimpleObjectProperty(new HashMap<>());
         this.settingsProperty = new SimpleObjectProperty(new HashMap<>());
         this.oActiveGames = FXCollections.observableList(activeGames);
         this.chat = new ArrayList<>();
@@ -165,6 +165,11 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     @Override
     public void setSettings(HashMap<String, Object> settings) throws RemoteException {
         this.settingsProperty.set(settings);
+    }
+
+    @Override
+    public void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
+        this.activePersons.set(persons);
     }
 
 }

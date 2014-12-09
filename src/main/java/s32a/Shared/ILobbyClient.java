@@ -33,4 +33,6 @@ public interface ILobbyClient extends Remote{
     public void setSettings(HashMap<String, Object> settings) 
             throws RemoteException;
     
+    public void setPersons(HashMap<String, IPerson> settings) 
+            throws RemoteException;
 }
