@@ -11,7 +11,10 @@ import s32a.Server.Player;
 import s32a.Server.Game;
 import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
+import java.rmi.RemoteException;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleDoubleProperty;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -47,9 +50,15 @@ public class PlayerTest
     @Before
     public void setUp()
     {
-        player = new Player("Test", (double)15, Colors.Red);
-        sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
-        //g = new Game(player);
+        try {
+            player = new Player("Test", (double)15, Colors.Red);
+            sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
+            //g = new Game(player);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException in PlayerTest: " + ex.getMessage());
+        }
     }
     
     @After
@@ -60,12 +69,21 @@ public class PlayerTest
     @Test
     public void testBatOutOfBounds()
     {
-        player.setPosX(new SimpleDoubleProperty(sideLength/2));
-        boolean result = player.moveBat(1);
-        assertFalse("Bat moved past right side of goal", result);
-        player.setPosX(new SimpleDoubleProperty(-sideLength/2));
-        result = player.moveBat(-1);
-        assertFalse("Moved out of field to the left", result);
+        try {
+            player.setPosX(new SimpleDoubleProperty(sideLength/2));
+            boolean result = player.moveBat(1);
+            assertFalse("Bat moved past right side of goal", result);
+            player.setPosX(new SimpleDoubleProperty(-sideLength/2));
+            result = player.moveBat(-1);
+            assertFalse("Moved out of field to the left", result);
+        }
+        catch (IllegalArgumentException ex) {
+            Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException in PlayerTest: " + ex.getMessage());
+        }
     }
     
     /**
@@ -107,14 +125,23 @@ public class PlayerTest
     @Test
     public void testMoveBat()
     {
-        System.out.println("moveBat");
-        Vector2 expResult = new Vector2(5,0);
-        player.moveBat(1);
-        Vector2 result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
-        assertEquals("Bat not moved properly",expResult, result);
-        expResult = new Vector2(0,0);
-        player.moveBat(-1);
-        result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
-        assertEquals("Bat not moved properly",expResult, result);
+        try {
+            System.out.println("moveBat");
+            Vector2 expResult = new Vector2(5,0);
+            player.moveBat(1);
+            Vector2 result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
+            assertEquals("Bat not moved properly",expResult, result);
+            expResult = new Vector2(0,0);
+            player.moveBat(-1);
+            result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
+            assertEquals("Bat not moved properly",expResult, result);
+        }
+        catch (IllegalArgumentException ex) {
+            Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException in PlayerTest: " + ex.getMessage());
+        }
     }
 }

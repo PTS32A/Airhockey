@@ -160,7 +160,7 @@ class DatabaseControls {
         this.initConnection();
 
         PreparedStatement prepStat = null;
-        String query = "SELECT playername FROM dbi293443.player WHERE playername = ?";
+        String query = "SELECT playername FROM player WHERE playername = ?";
         try {
             prepStat = this.conn.prepareStatement(query);
             prepStat.setString(1, playerName);

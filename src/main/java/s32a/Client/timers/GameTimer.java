@@ -5,6 +5,9 @@
  */
 package s32a.Client.timers;
 
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import s32a.Client.ClientData.GameClient;
 import s32a.Server.Bot;
@@ -45,8 +48,14 @@ public class GameTimer extends AnimationTimer {
                 timer--;
             }
             else{
-                gameFX.nextRound();
-                timer = 3;
+                try {
+                    gameFX.nextRound();
+                    timer = 3;
+                }
+                catch (RemoteException ex) {
+                    Logger.getLogger(GameTimer.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("RemoteException in GameTimer; " + ex.getMessage());
+                }
             }
             prevUpd = now;
         }
