@@ -9,6 +9,7 @@ import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import static java.util.Calendar.getInstance;
@@ -38,7 +39,7 @@ import s32a.Shared.ISpectator;
 /**
  * @author Kargathia
  */
-public class Game implements IGame, Serializable {
+public class Game extends UnicastRemoteObject implements IGame {
 
     private transient StringProperty difficultyProp;
     @Getter

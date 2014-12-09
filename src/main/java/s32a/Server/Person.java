@@ -5,6 +5,8 @@
  */
 package s32a.Server;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -25,8 +27,8 @@ public class Person implements IPerson, Serializable{
 
     @Getter
     private String name;
-//    @Getter
-//    private double rating;
+    @Getter
+    private double rating;
     @Getter
     @Setter
     private boolean isBot = false;
@@ -37,7 +39,7 @@ public class Person implements IPerson, Serializable{
      * @param input
      */
     public void setRating(double input) {
-//        this.rating = input;
+        this.rating = input;
         this.ratingProp.set(input);
     }
 
@@ -71,8 +73,14 @@ public class Person implements IPerson, Serializable{
             throw new IllegalArgumentException();
         }
         this.name = name;
-//        this.rating = rating;
+        this.rating = rating;
         this.nameProp = new SimpleStringProperty(name);
         this.ratingProp = new SimpleDoubleProperty(rating);
+    }
+
+    private void readObject(ObjectInputStream is) throws IOException, ClassNotFoundException {
+        is.defaultReadObject();
+        this.nameProp = new SimpleStringProperty(this.name);
+        this.ratingProp = new SimpleDoubleProperty(this.rating);
     }
 }
