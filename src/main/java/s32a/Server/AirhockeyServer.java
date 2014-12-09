@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -79,49 +80,54 @@ public class AirhockeyServer{
             Logger.getLogger(AirhockeyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.stage = new Stage();
-        GridPane gp = new GridPane();
-        gp.setAlignment(Pos.CENTER);
-        gp.setHgap(10);
-        gp.setVgap(10);
-        gp.setPadding(new Insets(25, 25, 25, 25));
-        Label ip = new Label("Ip Address:");
-        gp.add(ip, 0, 0);
-        Label ipIn = new Label(ipAddress);
-        gp.add(ipIn, 1, 0);
-        Label port = new Label("Port:");
-        gp.add(port, 0, 2);
-        Label portIn = new Label(String.valueOf(portNumber));
-        gp.add(portIn, 1, 2);
-        Label games = new Label("Active Games:");
-        gp.add(games, 0, 3);
-        Label gamesIn = new Label("0");
-        gp.add(gamesIn, 1, 3);
-        Label person = new Label("Active Users:");
-        gp.add(person, 0, 4);
-        Label personIn = new Label("0");
-        gp.add(personIn, 1, 4);
+        new JFXPanel();
+        Platform.runLater(() ->
+        {
+            this.stage = new Stage();
+            GridPane gp = new GridPane();
+            gp.setAlignment(Pos.CENTER);
+            gp.setHgap(10);
+            gp.setVgap(10);
+            gp.setPadding(new Insets(25, 25, 25, 25));
+            Label ip = new Label("Ip Address:");
+            gp.add(ip, 0, 0);
+//            Label ipIn = new Label(ipAddress);
+//            gp.add(ipIn, 1, 0);
+            Label port = new Label("Port:");
+            gp.add(port, 0, 2);
+            Label portIn = new Label(String.valueOf(portNumber));
+            gp.add(portIn, 1, 2);
+            Label games = new Label("Active Games:");
+            gp.add(games, 0, 3);
+            Label gamesIn = new Label("0");
+            gp.add(gamesIn, 1, 3);
+            Label person = new Label("Active Users:");
+            gp.add(person, 0, 4);
+            Label personIn = new Label("0");
+            gp.add(personIn, 1, 4);
 
-        // Binding 
-        //gamesIn.textProperty().bind(lobby.getActiveGames().size());
-        //personIn.textProperty().bind(lobby.getActivePersons().size());
-//        btn.setOnAction(new EventHandler<ActionEvent>() {
-//
-//            @Override
-//            public void handle(ActionEvent e) {
-//                 
-//            }
-//        });
-        Group root = new Group();
-        Scene scene = new Scene(root, 300, 300);
-        root.getChildren().add(gp);
-        this.stage.setScene(scene);
-        this.stage.setTitle("Server Information");
-        this.stage.show();
+            // Binding 
+            //gamesIn.textProperty().bind(lobby.getActiveGames().size());
+            //personIn.textProperty().bind(lobby.getActivePersons().size());
+    //        btn.setOnAction(new EventHandler<ActionEvent>() {
+    //
+    //            @Override
+    //            public void handle(ActionEvent e) {
+    //                 
+    //            }
+    //        });
+            Group root = new Group();
+            Scene scene = new Scene(root, 300, 300);
+            root.getChildren().add(gp);
+            this.stage.setScene(scene);
+            this.stage.setTitle("Server Information");
+            this.stage.show();
 
-        this.stage.setOnCloseRequest((WindowEvent event) -> {
-            Platform.exit();
-            System.exit(0);
+            this.stage.setOnCloseRequest((WindowEvent event) -> {
+                Platform.exit();
+                System.exit(0);
+            });
+        
         });
     }
 
