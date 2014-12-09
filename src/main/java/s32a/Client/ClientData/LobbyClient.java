@@ -37,6 +37,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     @Getter
     ObservableList<String> chatProperty;
     private List<String> chat;
+    private ObjectProperty<List<IPerson>> rankings;
     @Getter
     private DoubleProperty playerRatingProperty;
     
@@ -48,6 +49,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     public LobbyClient(ILobby myLobby) throws RemoteException {
         this.myLobby = myLobby;
         this.activeGames = new ArrayList<>();
+        this.rankings = new SimpleObjectProperty(new ArrayList<>());
         this.activePersons = new SimpleObjectProperty(new HashMap<>());
         this.settingsProperty = new SimpleObjectProperty(new HashMap<>());
         this.oActiveGames = FXCollections.observableList(activeGames);
@@ -68,7 +70,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public HashMap<String, IPerson> getActivePersons() throws RemoteException {
-        return myLobby.getActivePersons();
+        return this.activePersons.get();
     }
 
     @Override
@@ -131,7 +133,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public List<IPerson> getRankings() throws SQLException, RemoteException {
-        return myLobby.getRankings();
+        return this.rankings.get();
     }
 
     @Override
@@ -170,6 +172,11 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     @Override
     public void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
         this.activePersons.set(persons);
+    }
+
+    @Override
+    public void setRankings(List<IPerson> persons) throws RemoteException {
+        this.rankings.set(persons);
     }
 
 }

@@ -30,6 +30,7 @@ public class LobbyPublisher {
     private HashMap<String, ILobbyClient> observers;
     private Lobby lobby;
     private ObservableList<IGame> games;
+    private ObservableList<IPerson> rankings;
     private ObjectProperty<HashMap<String, Object>> settings;
     private ObjectProperty<HashMap<String, IPerson>> persons;
 
@@ -106,6 +107,27 @@ public class LobbyPublisher {
                     String key = it.next();
                     try {
                         observers.get(key).setActiveGames(new ArrayList<>(games));
+                    }
+                    catch (RemoteException ex) {
+                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+    }
+    
+    private void bindRankings(ObservableList<IPerson> input) {
+        this.rankings = input;
+
+        this.rankings.addListener(new ListChangeListener() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setRankings(new ArrayList<>(rankings));
                     }
                     catch (RemoteException ex) {
                         System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());

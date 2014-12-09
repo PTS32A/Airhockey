@@ -61,6 +61,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     private HashMap<String, IPerson> activePersons;
     @Getter
     private ObservableList<IGame> activeGames;
+    private ObservableList<IPerson> rankings; // todo
     private List<IGame> backingActiveGames;
     private LobbyPublisher publisher;
 
@@ -412,6 +413,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 }
             }
             this.activeGames.remove(game);
+            this.rankings = FXCollections.observableArrayList(this.myDatabaseControls.getRankings());
         }
         catch (IllegalArgumentException | SQLException ex) {
             return false;

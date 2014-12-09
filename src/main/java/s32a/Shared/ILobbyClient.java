@@ -27,6 +27,9 @@ public interface ILobbyClient extends Remote{
     public void setChat(List<String> chat)
             throws RemoteException;
     
+    public void setRankings(List<IPerson> persons)
+            throws RemoteException;
+    
     public void setRating(Double rating)
             throws RemoteException;
     
