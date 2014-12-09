@@ -29,7 +29,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import s32a.Client.ClientData.GameClient;
-import s32a.Client.timers.LobbyTimer;
 import s32a.Shared.IGame;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
@@ -59,41 +58,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     @FXML
     ListView lvPlayerInfo;
 
-    private ObservableList<IPerson> highScores;
-    private ObservableList<String> messages;
-    private ObservableList<IGame> games;
-
     private AnimationTimer lobbyTimer;
-
-    /**
-     * chucks a given list of persons into the observableList
-     *
-     * @param input
-     */
-    public void setHighScores(List<IPerson> input) {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                highScores.setAll(input);
-            }
-        });
-    }
-
-    /**
-     * chucks a given list of games into the observablelist
-     *
-     * @param input
-     */
-    public void setGames(List<IGame> input) {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                games.setAll(input);
-            }
-        });
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -106,16 +71,13 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 }
             }
         });
-
-        highScores = FXCollections.observableArrayList(new ArrayList<IPerson>());
-        messages = FXCollections.observableArrayList(new ArrayList<String>());
-        games = FXCollections.observableArrayList(new ArrayList<IGame>());
+        
         ObservableList<Property> playerInfo;
 
         try {
             this.lvChatbox.setItems(lobby.getChatProperty());
-            this.tvHighscores.setItems(highScores);
-            this.tvGameDisplay.setItems(games);
+            this.tvHighscores.setItems(lobby.getRankings());
+            this.tvGameDisplay.setItems(lobby.getOActiveGames());
 
             // sets valuefactories high scores
             this.tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -128,18 +90,11 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             this.tcGDPlayer2.setCellValueFactory(new PropertyValueFactory<>("player2Name"));
             this.tcGDPlayer3.setCellValueFactory(new PropertyValueFactory<>("player3Name"));
 
-            // binds lists for game and high score display
-            this.tvGameDisplay.setItems(games);
-            this.tvHighscores.setItems(highScores);
-
             this.updatePlayerInfo();
         }
         catch (Exception ex) {
             super.showDialog("Error", "Unable to initialise Lobby: " + ex.getMessage());
         }
-
-        this.lobbyTimer = new LobbyTimer(this, lobby, 5000);
-        this.lobbyTimer.start();
     }
 
     /**

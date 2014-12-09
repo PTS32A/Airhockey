@@ -33,6 +33,7 @@ public class LobbyPublisher {
     private ObservableList<IPerson> rankings;
     private ObjectProperty<HashMap<String, Object>> settings;
     private ObjectProperty<HashMap<String, IPerson>> persons;
+    private ObservableList<String> chat;
 
     public LobbyPublisher() throws RemoteException {
         this.observers = new HashMap<>();
@@ -43,98 +44,144 @@ public class LobbyPublisher {
         if (observers.containsKey(name)) {
             return false;
         }
-        return (observers.put(name, input) == null);
+        if (observers.put(name, input) == null){
+            this.pushActiveGames();
+            this.pushPersons(this.persons.get());
+            this.pushRankings();
+            this.pushSettings(this.settings.get());
+            return true;
+        }
+        return false;
     }
 
     public void removeObserver(String name) {
         observers.remove(name);
     }
-    
-    private void bindSettings(ObjectProperty<HashMap<String, Object>> input){
-        this.settings = input;
 
+    public void bindChat(ObservableList<String> chat){
+        this.chat = chat;
+        this.pushChat();
+        this.chat.addListener(new ListChangeListener() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                pushChat();
+            }
+        });
+    }
+
+    private void pushChat(){
+        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            try {
+                observers.get(key).setChat(new ArrayList<>(chat));
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
+                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void bindSettings(ObjectProperty<HashMap<String, Object>> input) {
+        this.settings = input;
+        this.pushSettings(input.get());
         this.settings.addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                    String key = it.next();
-                    try {
-                        observers.get(key).setSettings((HashMap<String, Object>) newValue);
-                    }
-                    catch (RemoteException ex) {
-                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
-                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                pushSettings(newValue);
             }
 
-            
         });
     }
-    
-    private void bindPersons(ObjectProperty<HashMap<String, IPerson>> input){
-        this.persons = input;
 
+    private void pushSettings(Object newValue) {
+        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            try {
+                observers.get(key).setSettings((HashMap<String, Object>) newValue);
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException setting settings for " + key + ": " + ex.getMessage());
+                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void bindPersons(ObjectProperty<HashMap<String, IPerson>> input) {
+        this.persons = input;
+        this.pushPersons(input.get());
         this.persons.addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                    String key = it.next();
-                    try {
-                        observers.get(key).setPersons((HashMap<String, IPerson>) newValue);
-                    }
-                    catch (RemoteException ex) {
-                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
-                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                pushPersons(newValue);
             }
 
-            
         });
     }
 
-    private void bindActiveGames(ObservableList<IGame> input) {
-        this.games = input;
+    private void pushPersons(Object newValue) {
+        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            try {
+                observers.get(key).setPersons((HashMap<String, IPerson>) newValue);
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
+    public void bindActiveGames(ObservableList<IGame> input) {
+        this.games = input;
+        this.pushActiveGames();
         this.games.addListener(new ListChangeListener() {
 
             @Override
             public void onChanged(ListChangeListener.Change c) {
-                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                    String key = it.next();
-                    try {
-                        observers.get(key).setActiveGames(new ArrayList<>(games));
-                    }
-                    catch (RemoteException ex) {
-                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
-                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                pushActiveGames();
             }
         });
     }
-    
-    private void bindRankings(ObservableList<IPerson> input) {
-        this.rankings = input;
 
+    private void pushActiveGames() {
+        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            try {
+                observers.get(key).setActiveGames(new ArrayList<>(games));
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void bindRankings(ObservableList<IPerson> input) {
+        this.rankings = input;
+        this.pushRankings();
         this.rankings.addListener(new ListChangeListener() {
 
             @Override
             public void onChanged(ListChangeListener.Change c) {
-                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                    String key = it.next();
-                    try {
-                        observers.get(key).setRankings(new ArrayList<>(rankings));
-                    }
-                    catch (RemoteException ex) {
-                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
-                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                pushRankings();
             }
         });
+    }
+
+    private void pushRankings() {
+        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            try {
+                observers.get(key).setRankings(new ArrayList<>(rankings));
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }
