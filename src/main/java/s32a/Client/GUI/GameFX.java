@@ -49,7 +49,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
     Label lblName, lblDifficulty, lblScoreP1,
-            lblScoreP2, lblScoreP3, lblRound, lblTime;
+            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount;
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
     @FXML
@@ -553,5 +553,19 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private Stage getThisStage() {
         return (Stage) lblName.getScene().getWindow();
     }
-
+    
+    public void setCountdown(String count)
+    {
+        lblCount.setText(count);
+    }
+    
+    public void nextRound() throws RemoteException
+    {
+        myGame.setContinueRun(true);
+    }
+    
+    public GameStatus getStatus()
+    {
+        return myGame.getGameStatusProperty().get();
+    }
 }

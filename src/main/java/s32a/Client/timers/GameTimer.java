@@ -11,6 +11,7 @@ import s32a.Server.Bot;
 import s32a.Client.GUI.GameFX;
 import s32a.Shared.IGame;
 import s32a.Shared.IPlayer;
+import s32a.Shared.enums.GameStatus;
 
 /**
  *
@@ -20,10 +21,14 @@ public class GameTimer extends AnimationTimer {
 
     private final GameFX gameFX;
     private long lastAction;
+    private long prevUpd;
+    private int timer;
 
     public GameTimer(GameFX gameFX) {
         this.gameFX = gameFX;
         this.lastAction = 0;
+        this.prevUpd = 0;
+        this.timer = 3;
     }
 
     @Override
@@ -34,10 +39,18 @@ public class GameTimer extends AnimationTimer {
         if (now - lastAction > 60000000000L) {
             gameFX.quitClick(null);
         }
-//        if (now - prevUpd > refreshInMS * 1000000) {
-//            gameFX.draw(myGame);
-//            prevUpd = now;
-//        }
+        if (gameFX.getStatus().equals(GameStatus.Preparing) && now - prevUpd > 1000000000) {
+            if (timer != 0) {
+                gameFX.setCountdown(String.valueOf(timer));
+                timer--;
+            }
+            else{
+                gameFX.nextRound();
+                timer = 3;
+            }
+            prevUpd = now;
+        }
+        
 
         // bot movement should be done server side
 //        for (IPlayer p : myGame.getMyPlayers()) {
