@@ -39,6 +39,12 @@ public class Person implements IPerson, Serializable{
      * @param input
      */
     public void setRating(double input) {
+        
+        if (input < 0)
+        {
+            throw new IllegalArgumentException();
+        }
+        
         this.rating = input;
         this.ratingProp.set(input);
     }
