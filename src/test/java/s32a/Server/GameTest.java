@@ -47,14 +47,14 @@ public class GameTest {
     public void setUp() {
         try {
             //Player starter
-            starter = new Player("testPlayer", (double) 0, Colors.Red);
+            starter = new Player("testPlayer", (double) 20, Colors.Red);
             game = new Game(starter);
             spec = new Spectator("testSpectator", (double) 0);
             //game.addSpectator(spec);
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on setUp: " + ex.getMessage());
         }
     }
 
@@ -73,7 +73,7 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAddChatMessageNullMessage: " + ex.getMessage());
         }
     }
 
