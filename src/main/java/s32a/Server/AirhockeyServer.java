@@ -123,7 +123,6 @@ public class AirhockeyServer {
                 gamesIn.textProperty().bind(Bindings.size((lobby.getActiveGames())).asString());
 
                 activePersonsProp = new SimpleObjectProperty<>(null);              
-
                 activePersonsProp.addListener(new ChangeListener() {
 
                     @Override
@@ -169,20 +168,20 @@ public class AirhockeyServer {
             System.out.println("Server: UnknownHostException: " + ex.getMessage());
         }
 
-        try {
-            System.out.println("Server: Full list of network interfaces:");
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                System.out.println("    " + intf.getName() + " " + intf.getDisplayName());
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    System.out.println("        " + enumIpAddr.nextElement().toString());
-                }
-            }
-        }
-        catch (SocketException ex) {
-            System.out.println("Server: Cannot retrieve network interface list");
-            System.out.println("Server: UnknownHostException: " + ex.getMessage());
-        }
+//        try {
+//            System.out.println("Server: Full list of network interfaces:");
+//            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+//                NetworkInterface intf = en.nextElement();
+//                System.out.println("    " + intf.getName() + " " + intf.getDisplayName());
+//                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+//                    System.out.println("        " + enumIpAddr.nextElement().toString());
+//                }
+//            }
+//        }
+//        catch (SocketException ex) {
+//            System.out.println("Server: Cannot retrieve network interface list");
+//            System.out.println("Server: UnknownHostException: " + ex.getMessage());
+//        }
     }
 
     /**
