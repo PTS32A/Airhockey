@@ -399,7 +399,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         if (currentPerson != null) {
             try {
                 myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
-                tfChatbox.setText("");
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException in addChatMessage: " + ex.getMessage());

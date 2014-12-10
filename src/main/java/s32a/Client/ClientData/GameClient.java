@@ -187,7 +187,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setChat(List<String> chat) throws RemoteException {
-        this.chat = chat;
+        this.oChat.setAll(chat);
     }
 
     /**

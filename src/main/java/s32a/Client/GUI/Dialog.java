@@ -63,7 +63,7 @@ public class Dialog extends Stage {
                 close();
             }
         });
-        getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+        taMessage.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
             @Override
             public void handle(KeyEvent ke) {

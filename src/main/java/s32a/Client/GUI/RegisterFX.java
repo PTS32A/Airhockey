@@ -52,8 +52,8 @@ public class RegisterFX extends AirhockeyGUI implements Initializable {
                 try {
                     if (lobby.addPerson(tfUserName.getText(), pwfPassword.getText())) {
                         try {
-                            super.showDialog("Success", "Welcome to Airhockey, " + tfUserName.getText() + "!");
                             super.goToLogin(getThisStage());
+                            super.showDialog("Success", "Welcome to Airhockey, " + tfUserName.getText() + "!");
                         } catch (IOException ex) {
                             super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
                         }
