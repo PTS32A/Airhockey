@@ -220,6 +220,7 @@ public class AirhockeyGUI extends Application {
                     Label ip = new Label("Ip Address:");
                     gp.add(ip, 0, 1);
                     TextField tfIp = new TextField();
+                    tfIp.setText("localhost");
                     gp.add(tfIp, 1, 1);
                     Label port = new Label("Port:");
                     gp.add(port, 0, 2);

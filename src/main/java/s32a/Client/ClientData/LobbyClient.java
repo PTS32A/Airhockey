@@ -152,8 +152,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public void setChat(List<String> chat) throws RemoteException {
-        this.chatProperty.clear();
-        this.chatProperty.addAll(chat);
+        this.chatProperty.setAll(chat);
     }
 
     @Override
