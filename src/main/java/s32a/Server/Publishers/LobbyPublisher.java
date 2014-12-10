@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
@@ -27,7 +28,7 @@ import s32a.Shared.IPerson;
  */
 public class LobbyPublisher {
 
-    private HashMap<String, ILobbyClient> observers;
+    private ConcurrentHashMap<String, ILobbyClient> observers;
     private Lobby lobby;
     private ObservableList<IGame> games;
     private ObservableList<IPerson> rankings;
@@ -36,10 +37,16 @@ public class LobbyPublisher {
     private ObservableList<String> chat;
 
     public LobbyPublisher() throws RemoteException {
-        this.observers = new HashMap<>();
+        this.observers = new ConcurrentHashMap<>();
         this.lobby = Lobby.getSingle();
     }
 
+    /**
+     * Adds an ILobbyClient as observer to the server.
+     * @param name The name corresponding with the ILobbyClient
+     * @param input The ILobbyClient to be added
+     * @return Returns a boolean indicating success of the addition
+     */
     public boolean addObserver(String name, ILobbyClient input) {
         if (observers.containsKey(name)) {
             return false;
@@ -54,10 +61,18 @@ public class LobbyPublisher {
         return false;
     }
 
+    /**
+     * Removes an observer
+     * @param name The name corresponding with the observer
+     */
     public void removeObserver(String name) {
         observers.remove(name);
     }
 
+    /**
+     * Binds the list of the chat messages of the server to the client
+     * @param chat An observable list of chat messages to be bound
+     */
     public void bindChat(ObservableList<String> chat){
         this.chat = chat;
         this.pushChat();
@@ -70,6 +85,9 @@ public class LobbyPublisher {
         });
     }
 
+    /**
+     * Pushes an update in the ChatBox to the observers
+     */
     private void pushChat(){
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
@@ -83,6 +101,10 @@ public class LobbyPublisher {
         }
     }
 
+    /**
+     * Binds the server's settings to the observers' settings
+     * @param input The settings to be bound
+     */
     public void bindSettings(ObjectProperty<HashMap<String, Object>> input) {
         this.settings = input;
         this.pushSettings(input.get());
@@ -96,6 +118,10 @@ public class LobbyPublisher {
         });
     }
 
+    /**
+     * Pushes the updated settings to the observers
+     * @param newValue An updated setting
+     */
     private void pushSettings(Object newValue) {
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
@@ -109,6 +135,10 @@ public class LobbyPublisher {
         }
     }
 
+    /**
+     * Binds the Persons to the observers' Persons
+     * @param input A HashMap containing Persons to bound
+     */
     public void bindPersons(ObjectProperty<HashMap<String, IPerson>> input) {
         this.persons = input;
         this.pushPersons(input.get());
@@ -122,6 +152,10 @@ public class LobbyPublisher {
         });
     }
 
+    /**
+     * Pushes an update in a Person to the observers
+     * @param newValue An object containing the update to be pushed
+     */
     private void pushPersons(Object newValue) {
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
@@ -129,12 +163,16 @@ public class LobbyPublisher {
                 observers.get(key).setPersons((HashMap<String, IPerson>) newValue);
             }
             catch (RemoteException ex) {
-                System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                System.out.println("RemoteException setting Persons for " + key + ": " + ex.getMessage());
                 Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
+    /**
+     * Binds the active Games to the observers' active Games
+     * @param input An observable list of Games to be bound
+     */
     public void bindActiveGames(ObservableList<IGame> input) {
         this.games = input;
         this.pushActiveGames();
@@ -147,6 +185,9 @@ public class LobbyPublisher {
         });
     }
 
+    /**
+     * Pushes updates within the active Games
+     */
     private void pushActiveGames() {
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
@@ -154,12 +195,16 @@ public class LobbyPublisher {
                 observers.get(key).setActiveGames(new ArrayList<>(games));
             }
             catch (RemoteException ex) {
-                System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());
                 Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
+    /**
+     * Binds the rankings of the Persons to the observers' rankings
+     * @param input An observable list of Persons, containing the rankings
+     */
     public void bindRankings(ObservableList<IPerson> input) {
         this.rankings = input;
         this.pushRankings();
@@ -172,6 +217,9 @@ public class LobbyPublisher {
         });
     }
 
+    /**
+     * Pushed the rankings to the observers
+     */
     private void pushRankings() {
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
@@ -179,7 +227,7 @@ public class LobbyPublisher {
                 observers.get(key).setRankings(new ArrayList<>(rankings));
             }
             catch (RemoteException ex) {
-                System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                System.out.println("RemoteException setting rankings for " + key + ": " + ex.getMessage());
                 Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
