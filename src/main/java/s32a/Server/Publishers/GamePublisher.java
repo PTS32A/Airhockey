@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -198,10 +199,10 @@ public class GamePublisher {
      * Binds difficulty provided as string - Double version not required. Only
      * needs to be done once.
      *
-     * @param difficulty
+     * @param difficultyAsFloatProp
      */
-    public void bindDifficulty(StringProperty difficulty) {
-        this.difficultyProp.bind(difficulty);
+    public void bindDifficulty(FloatProperty difficultyAsFloatProp) {
+        this.difficultyProp.bind(difficultyAsFloatProp.asString());
         this.pushDifficulty();
         this.difficultyProp.addListener(new ChangeListener() {
 
@@ -448,6 +449,9 @@ public class GamePublisher {
      * Pushes player 2 puck position (x and y) to all observers.
      */
     private void pushPlayer2Position() {
+        if(player2Prop.get() == null){
+            return;
+        }
         for (String key : observers.keySet()) {
             try {
                 observers.get(key).setPlayer2Bat(player2Prop.get().getPosX().get(), player2Prop.get().getPosY().get());
@@ -463,6 +467,9 @@ public class GamePublisher {
      * Pushes player 2 score to all observers.
      */
     private void pushPlayer2Score() {
+        if(player2Prop.get() == null){
+            return;
+        }
         for (String key : observers.keySet()) {
             try {
                 observers.get(key).setPlayer2Score(player2Score.get());
@@ -511,6 +518,9 @@ public class GamePublisher {
      * Pushes position of player 3 puck (x + y) to all observers.
      */
     private void pushPlayer3Position() {
+        if(player3Prop.get() == null){
+            return;
+        }
         for (String key : observers.keySet()) {
             try {
                 observers.get(key).setPlayer3Bat(player3Prop.get().getPosX().get(), player3Prop.get().getPosY().get());
@@ -526,6 +536,9 @@ public class GamePublisher {
      * Pushes player 3 score to all observers.
      */
     private void pushPlayer3Score() {
+        if(player3Prop.get() == null){
+            return;
+        }
         for (String key : observers.keySet()) {
             try {
                 observers.get(key).setPlayer3Score(player3Score.get());

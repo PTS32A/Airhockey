@@ -45,7 +45,7 @@ public class AirhockeyServer{
         try {
             lobby = Lobby.getSingle();
             lobby.startPublisher();
-//            lobby.populate();
+            lobby.populate();
             System.out.println("Server: Lobby created");
         }
         catch (RemoteException ex) {

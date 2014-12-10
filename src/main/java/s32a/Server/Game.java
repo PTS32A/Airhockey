@@ -41,7 +41,6 @@ import s32a.Shared.ISpectator;
  */
 public class Game extends UnicastRemoteObject implements IGame {
 
-    private transient StringProperty difficultyProp;
     @Getter
     private transient ObjectProperty<GameStatus> statusProp;
 
@@ -109,11 +108,9 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.gameInfo.put("nextColor", this.getNextColor());
 
         this.roundNo = new SimpleIntegerProperty(0);
-        float defaultSpeed = 15;
+        float defaultSpeed = 15f;
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
-        this.difficultyProp = new SimpleStringProperty("speed");
-        this.difficultyProp.bind(myPuck.getSpeed().asString());
         this.maxRounds = 10;
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
@@ -139,7 +136,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.publisher.bindNextPlayer(starter);      
         this.publisher.bindRoundNo(this.roundNo);
         this.publisher.bindStatus(this.statusProp);
-        this.publisher.bindDifficulty(this.difficultyProp);
+        this.publisher.bindDifficulty(this.myPuck.getSpeed());
 
         this.publisher.addObserver(starter.getName(), starterClient);
     }
@@ -581,15 +578,6 @@ public class Game extends UnicastRemoteObject implements IGame {
      */
     private void setRoundNo(int input) {
         roundNo.set(input);
-    }
-
-    /**
-     * getter for difficulty as a property
-     *
-     * @return
-     */
-    public StringProperty difficultyProperty() {
-        return this.difficultyProp;
     }
 
     /**
