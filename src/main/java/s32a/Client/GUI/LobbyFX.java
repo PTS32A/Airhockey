@@ -195,6 +195,11 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         }
     }
 
+    public void showControls(Event evt) {
+        super.showDialog("Controls", "Use the left and right arrow keys or"
+                + " the A and D keys to move your bat.");
+    }
+    
     /**
      * logs out current user, ends his active game
      *
