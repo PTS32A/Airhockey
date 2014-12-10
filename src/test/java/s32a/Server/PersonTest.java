@@ -5,6 +5,9 @@
  */
 package s32a.Server;
 
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import s32a.Server.Person;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -38,7 +41,13 @@ public class PersonTest
     @Before
     public void setUp()
     {
-        person = new Person("Test", (double)15);
+        try {
+            person = new Person("Test", (double)15);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PersonTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on initializing new Person: " + ex.getMessage());
+        }
     }
     
     @After
@@ -50,28 +59,52 @@ public class PersonTest
     (expected = IllegalArgumentException.class)
     public void testNameEmptyEx()
     {
-        person = new Person("", (double)15);
+        try {
+            person = new Person("", (double)15);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PersonTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on initializing new Person: " + ex.getMessage());
+        }
     }
     
     @Test
     (expected = IllegalArgumentException.class)
     public void testNameNullEx()
     {
-        person = new Person(null, (double)15);
+        try {
+            person = new Person(null, (double)15);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PersonTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on initializing new Person: " + ex.getMessage());
+        }
     }
     
     @Test
     (expected = IllegalArgumentException.class)
     public void testRatingNegativeEx()
     {
-        person = new Person("Test", (double)-1);
+        try {
+            person = new Person("Test", (double)-1);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PersonTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on initializing new Person: " + ex.getMessage());
+        }
     }
     
     @Test
     (expected = IllegalArgumentException.class)
     public void testRatingNullEx()
     {
-        person = new Person("Test", null);
+        try {
+            person = new Person("Test", null);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(PersonTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on initializing new Person: " + ex.getMessage());
+        }
     }
     
     @Test

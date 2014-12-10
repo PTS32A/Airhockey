@@ -57,6 +57,7 @@ public class DatabaseControlsTest {
         catch (IOException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("IOException on configure: " + ex.getMessage());
+            fail("Database was not able to configure.");
         }
     }
 
@@ -79,10 +80,12 @@ public class DatabaseControlsTest {
         catch (SQLException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQLException on testAddPerson: " + ex.getMessage());
+            fail("SQLException on testAddPerson: " + ex.getMessage());
         }
         catch (RemoteException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddPerson: " + ex.getMessage());
+            fail("RemoteException on testAddPerson: " + ex.getMessage());
         }
     }
     
@@ -101,10 +104,12 @@ public class DatabaseControlsTest {
         catch (SQLException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQLException on testAddDoublePerson: " + ex.getMessage());
+            fail("SQLException on testAddDoublePerson: " + ex.getMessage());
         }
         catch (RemoteException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddDoublePerson: " + ex.getMessage());
+            fail("RemoteException on testAddDoublePerson: " + ex.getMessage());
         }
     }
 
@@ -130,10 +135,12 @@ public class DatabaseControlsTest {
         catch (SQLException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQLException on testCheckLogin: " + ex.getMessage());
+            fail("SQLException on testCheckLogin: " + ex.getMessage());
         }
         catch (RemoteException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testCheckLogin: " + ex.getMessage());
+            fail("RemoteException on testCheckLogin: " + ex.getMessage());
         }
     }
 
@@ -335,10 +342,12 @@ public class DatabaseControlsTest {
         catch (RemoteException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testSaveGame: " + ex.getMessage());
+            fail("RemoteException on testSaveGame: " + ex.getMessage());
         }
         catch (SQLException ex) {
             Logger.getLogger(DatabaseControlsTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQLException on testSaveGame: " + ex.getMessage());
+            fail("SQLException on testSaveGame: " + ex.getMessage());
         }
         
     }
@@ -378,6 +387,7 @@ public class DatabaseControlsTest {
         }
         catch (IllegalStateException ex) {
             System.out.println("IllegalStateException on saveGameNegativeScoreTest(): " + ex.getMessage());
+            fail("IllegalStateException on saveGameNegativeScoreTest(): " + ex.getMessage());
         }
     }
 

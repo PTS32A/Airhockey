@@ -6,10 +6,13 @@
 
 package s32a.Server;
 
+import java.rmi.RemoteException;
 import s32a.Server.Chatbox;
 import s32a.Server.Person;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -43,9 +46,15 @@ public class ChatboxTest
     @Before
     public void setUp()
     {
-        Person piet = new Person("piet", (double)100);
-        String mes = "Ik ben piet";
-        instance.addChatMessage(mes, piet.getName());
+        try {
+            Person piet = new Person("piet", (double)100);
+            String mes = "Ik ben piet";
+            instance.addChatMessage(mes, piet.getName());
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(ChatboxTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on setUp: " + ex.getMessage());
+        }
     }
     
     @After
@@ -59,12 +68,18 @@ public class ChatboxTest
     @Test
     public void testAddChatMessage()
     {
-        System.out.println("addChatMessage");
-        String message = "Ik ben jan";
-        boolean expResult = true;
-        Person from = new Person("jan", (double)50);
-        boolean result = instance.addChatMessage(message, from.getName());
-        assertEquals(expResult, result);
+        try {
+            System.out.println("addChatMessage");
+            String message = "Ik ben jan";
+            boolean expResult = true;
+            Person from = new Person("jan", (double)50);
+            boolean result = instance.addChatMessage(message, from.getName());
+            assertEquals(expResult, result);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(ChatboxTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testAddChatMessage: " + ex.getMessage());
+        }
     }
 
     /**
