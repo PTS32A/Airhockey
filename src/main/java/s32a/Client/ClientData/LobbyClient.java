@@ -143,8 +143,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public void setActiveGames(List<IGame> activeGames) throws RemoteException {
-        this.oActiveGames.clear();
-        this.oActiveGames.addAll(activeGames);
+        this.oActiveGames.setAll(activeGames);
     }
 
 

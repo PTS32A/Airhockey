@@ -34,7 +34,7 @@
     <Label font="$x1" text="Score P3:" textFill="LIME" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="108.0" />
     <Label id="lblScore" fx:id="lblScoreP3" font="$x1" prefHeight="35.0" prefWidth="69.0" text="---" textFill="LIME" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="107.0" />
     <Label font="$x1" prefWidth="152.0" text="Round:" textAlignment="CENTER" AnchorPane.leftAnchor="474.0" AnchorPane.rightAnchor="474.0" AnchorPane.topAnchor="19.0" />
-    <Label fx:id="lblRound" font="$x1" layoutX="555.0" layoutY="17.0" prefHeight="35.0" prefWidth="69.0" />
+    <Label fx:id="lblRound" font="$x1" layoutX="556.0" layoutY="19.0" prefHeight="35.0" prefWidth="69.0" />
     <Button fx:id="btnStopSpec" mnemonicParsing="false" onAction="#stopSpectating" text="Stop Spectating" AnchorPane.bottomAnchor="23.0" AnchorPane.rightAnchor="14.0" />
     <Button mnemonicParsing="false" onAction="#sendMessage" text="Send" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="274.0" />
     <ListView fx:id="lvChatbox" prefHeight="217.0" prefWidth="245.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="21.0" />

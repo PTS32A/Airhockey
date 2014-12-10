@@ -564,7 +564,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     
     public void nextRound() throws RemoteException
     {
-        myGame.setContinueRun(true);
+        myGame.setStatus(GameStatus.Playing);
     }
     
     public GameStatus getStatus()
