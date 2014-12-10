@@ -60,7 +60,7 @@ public class Player extends Person implements IPlayer {
      * @throws java.rmi.RemoteException
      */
     public void setScore(int input) throws RemoteException {
-        score.setValue(input);
+            score.setValue(input);
     }
 
     /**
@@ -111,7 +111,7 @@ public class Player extends Person implements IPlayer {
         double cX = sideLength / 2;
         double cY = 0;
 
-        if (!((Game) myGame).statusProperty().get().equals(GameStatus.Playing)) {
+        if (!((Game)myGame).statusProperty().get().equals(GameStatus.Playing)) {
             return false;
         } else {
             // Will reimplement this later.

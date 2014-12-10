@@ -259,11 +259,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         Person person = (Person) input;
         Game newGame = null;
         try {
-            person = new Player(person.getName(), person.ratingProperty().get(),
+            Player player = new Player(person.getName(), person.ratingProperty().get(),
                     Colors.Red);
-            newGame = new Game((Player) person);
-            newGame.startPublisher((Player) person, client);
-            this.activePersons.get().replace(person.getName(), person);
+            newGame = new Game(player);
+            newGame.startPublisher(player, client);
+            this.activePersons.get().replace(person.getName(), player);
             this.activeGames.add(newGame);
         }
         catch (Exception ex) {

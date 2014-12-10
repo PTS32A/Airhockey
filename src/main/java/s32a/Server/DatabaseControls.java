@@ -253,7 +253,7 @@ class DatabaseControls {
         if (game.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("Game contained less than three players");
         }
-
+        
         if (((Player)game.getMyPlayers().get(0)).getScore().get() < 0
                 || ((Player)game.getMyPlayers().get(1)).getScore().get() < 0
                 || ((Player)game.getMyPlayers().get(2)).getScore().get() < 0) {

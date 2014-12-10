@@ -122,7 +122,8 @@ class Puck extends TimerTask {
             throw new IllegalArgumentException("myGame parameter was null");
         }
 
-        this.speed = new SimpleFloatProperty(speed);
+        this.speed = new SimpleFloatProperty(0f);
+        this.speed.set(speed);
         this.hitBy = new ArrayList<>();
 
         this.position = new SimpleObjectProperty(new Vector2(0f, 0f));

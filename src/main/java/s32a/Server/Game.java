@@ -109,7 +109,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.gameInfo.put("nextColor", this.getNextColor());
 
         this.roundNo = new SimpleIntegerProperty(0);
-        float defaultSpeed = 15;
+        float defaultSpeed = 15f;
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
         this.difficultyProp = new SimpleStringProperty("speed");
@@ -139,8 +139,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.publisher.bindNextPlayer(starter);      
         this.publisher.bindRoundNo(this.roundNo);
         this.publisher.bindStatus(this.statusProp);
-        this.publisher.bindDifficulty(this.difficultyProp);
-
+        this.publisher.bindDifficulty(this.myPuck.getSpeed());
         this.publisher.addObserver(starter.getName(), starterClient);
     }
 
@@ -467,7 +466,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     // not featured in Interface, as it is only called by Puck
     void endRound() throws RemoteException {
         //END OF PUCK MOVEMENT
-        this.continueRun = false;
+        this.continueRun = false;       
         this.myPuck.resetPuck();
 
         if (roundNo.get() >= maxRounds) {
@@ -575,8 +574,8 @@ public class Game extends UnicastRemoteObject implements IGame {
     }
 
     /**
-     * Sets property value with input.
-     * 
+     * threadsafe set of roundNo
+     *
      * @param input
      */
     private void setRoundNo(int input) {
