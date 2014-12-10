@@ -8,6 +8,8 @@ package s32a.Server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,7 +22,7 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-public class Person implements IPerson, Serializable{
+public class Person extends UnicastRemoteObject implements IPerson{
 
     private transient StringProperty nameProp;
     private transient DoubleProperty ratingProp;
@@ -73,8 +75,9 @@ public class Person implements IPerson, Serializable{
      *
      * @param name
      * @param rating
+     * @throws java.rmi.RemoteException
      */
-    public Person(String name, Double rating) {
+    public Person(String name, Double rating) throws RemoteException {
         if (name == null || name.equals("") || rating == null || rating < 0) {
             throw new IllegalArgumentException();
         }

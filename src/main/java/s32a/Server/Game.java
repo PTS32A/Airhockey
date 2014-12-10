@@ -136,7 +136,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.publisher.bindPuckPosition(this.myPuck.getPosition());
         this.publisher.bindChat(this.myChatbox.chatProperty());
         this.publisher.bindSpectators(this.mySpectators);
-        this.publisher.bindNextPlayer(starter);      
+        this.publisher.bindNextPlayer(starter);
         this.publisher.bindRoundNo(this.roundNo);
         this.publisher.bindStatus(this.statusProp);
         this.publisher.bindDifficulty(this.myPuck.getSpeed());
@@ -408,11 +408,12 @@ public class Game extends UnicastRemoteObject implements IGame {
             averageRating += ((Player) p).ratingProperty().get();
         }
         averageRating = averageRating / myPlayers.size();
-        
-        if(averageRating < 10)
+
+        if (averageRating < 10) {
             averageRating = 10;
-        else if (averageRating > 40)
+        } else if (averageRating > 40) {
             averageRating = 40;
+        }
         return adjustDifficulty((float) averageRating);
     }
 
@@ -471,7 +472,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     // not featured in Interface, as it is only called by Puck
     void endRound() throws RemoteException {
         //END OF PUCK MOVEMENT
-        this.continueRun = false;       
+        this.continueRun = false;
         this.myPuck.resetPuck();
 
         if (roundNo.get() >= maxRounds) {
@@ -651,5 +652,42 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     public List<ISpectator> getMySpectators() {
         return new ArrayList<>(mySpectators);
+    }
+
+    @Override
+    public String getDifficulty() throws RemoteException {
+        return this.difficultyProp.get();
+    }
+
+    @Override
+    public String getPlayer1Name() throws RemoteException {
+        if (this.myPlayers.size() > 0) {
+            return this.myPlayers.get(0).getName();
+        } else {
+            return "-";
+        }
+    }
+
+    @Override
+    public String getPlayer2Name() throws RemoteException {
+        if (this.myPlayers.size() > 1) {
+            return this.myPlayers.get(1).getName();
+        } else {
+            return "-";
+        }
+    }
+
+    @Override
+    public String getPlayer3Name() throws RemoteException {
+        if (this.myPlayers.size() > 2) {
+            return this.myPlayers.get(2).getName();
+        } else {
+            return "-";
+        }
+    }
+
+    @Override
+    public String getStatus() throws RemoteException {
+        return this.statusProp.get().toString();
     }
 }

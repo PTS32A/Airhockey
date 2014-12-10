@@ -8,16 +8,6 @@ package s32a.Shared;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.List;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableNumberValue;
-import javafx.collections.ObservableList;
-import s32a.Shared.enums.GameStatus;
 
 /**
  *
@@ -84,5 +74,15 @@ public interface IGame extends Remote, Serializable {
      */
     public void startRound()
             throws RemoteException;
+
+    public String getDifficulty() throws RemoteException;
+
+    public String getPlayer1Name() throws RemoteException;
+
+    public String getPlayer2Name() throws RemoteException;
+
+    public String getPlayer3Name() throws RemoteException;
+
+    public String getStatus() throws RemoteException;
     
 }

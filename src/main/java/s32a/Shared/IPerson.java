@@ -24,4 +24,12 @@ public interface IPerson extends Remote, Serializable {
      */
     public String getName()
             throws RemoteException;
+
+    /**
+     *
+     * @return the person's rating
+     * @throws RemoteException
+     */
+    public double getRating()
+            throws RemoteException;
 }

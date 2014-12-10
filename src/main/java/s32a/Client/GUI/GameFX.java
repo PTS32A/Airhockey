@@ -176,7 +176,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         this.lvChatbox.setItems(myGame.getChat());
 
         // Difficulty 
-        this.lblDifficulty.textProperty().bind(myGame.getDifficulty());
+        this.lblDifficulty.textProperty().bind(myGame.getDifficultyProperty());
 
         /**
          * if currentPerson is spectator, graphics can start now. If he were a

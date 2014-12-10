@@ -40,7 +40,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private IntegerProperty roundNoProperty, player1Score, player2Score,
             player3Score;
     @Getter
-    private StringProperty gameTime, difficulty;
+    private StringProperty gameTime, difficultyProperty;
     @Getter
     private ObjectProperty<GameStatus> gameStatusProperty;
     @Getter
@@ -67,23 +67,25 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.player2Score = new SimpleIntegerProperty(20);
         this.player3Score = new SimpleIntegerProperty(20);
         this.gameStatusProperty = new SimpleObjectProperty(GameStatus.Waiting);
-        this.difficulty = new SimpleStringProperty("");
+        this.difficultyProperty = new SimpleStringProperty("");
         this.gameTime = new SimpleStringProperty("");
     }
-    
+
     /**
      * Sets game for client. Incoming from Server
-     * @param game 
+     *
+     * @param game
      */
     @Override
-    public void setGame(IGame game){
+    public void setGame(IGame game) {
         this.myGame = game;
     }
 
     /**
      * Incoming from server to start or stop puck movement.
+     *
      * @param input true or false for round change
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setContinueRun(boolean input) throws RemoteException {
@@ -92,10 +94,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Outgoing to server, sending message in chatbox
+     *
      * @param message
      * @param from
      * @return if message was sent without issue.
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public boolean addChatMessage(String message, String from) throws RemoteException {
@@ -104,8 +107,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Outgoing to server. Starts games
+     *
      * @return if game was able to start.
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public boolean beginGame() throws RemoteException {
@@ -114,9 +118,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Outgoing to server. Sets custom puck speed.
+     *
      * @param puckSpeed
-     * @return 
-     * @throws RemoteException 
+     * @return
+     * @throws RemoteException
      */
     @Override
     public boolean adjustDifficulty(float puckSpeed) throws RemoteException {
@@ -125,19 +130,21 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Outgoing to server. Sets speed depending on player ratings.
+     *
      * @return
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public boolean adjustDifficulty() throws RemoteException {
         return myGame.adjustDifficulty();
     }
-    
+
     /**
      * Outgoing to server. Pauses or unpauses game.
+     *
      * @param isPaused
      * @return
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public boolean pauseGame(boolean isPaused) throws RemoteException {
@@ -146,7 +153,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Outgoing to server. Starts next round.
-     * @throws RemoteException 
+     *
+     * @throws RemoteException
      */
     @Override
     public void startRound() throws RemoteException {
@@ -155,16 +163,18 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Local method. Returns chat Messages
-     * @return 
+     *
+     * @return
      */
     public ObservableList<String> getChat() {
         return oChat;
     }
-    
+
     /**
      * Incoming from server. Sets round number.
+     *
      * @param round
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setRoundNo(int round) throws RemoteException {
@@ -173,8 +183,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets the list of players for this game.
+     *
      * @param players
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPlayer(List<IPlayer> players) throws RemoteException {
@@ -183,8 +194,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets new chat messages.
+     *
      * @param chat
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setChat(List<String> chat) throws RemoteException {
@@ -193,8 +205,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets the spectators viewing this game.
+     *
      * @param spectators
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setSpectators(List<ISpectator> spectators) throws RemoteException {
@@ -203,8 +216,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets player 1's score.
+     *
      * @param score
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPlayer1Score(int score) throws RemoteException {
@@ -213,8 +227,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets player 2's score.
+     *
      * @param score
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPlayer2Score(int score) throws RemoteException {
@@ -223,8 +238,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets player 3's score.
+     *
      * @param score
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPlayer3Score(int score) throws RemoteException {
@@ -233,9 +249,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets puck's position.
+     *
      * @param x
      * @param y
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPuck(double x, double y) throws RemoteException {
@@ -245,9 +262,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets player1's position.
+     *
      * @param x
      * @param y
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPlayer1Bat(double x, double y) throws RemoteException {
@@ -257,9 +275,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets player2's position.
+     *
      * @param x
      * @param y
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPlayer2Bat(double x, double y) throws RemoteException {
@@ -269,9 +288,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets player3's position.
+     *
      * @param x
      * @param y
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setPlayer3Bat(double x, double y) throws RemoteException {
@@ -281,21 +301,49 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server. Sets difficulty/ PuckSpeed.
+     *
      * @param difficulty
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setDifficulty(String difficulty) throws RemoteException {
-        this.difficulty.set(difficulty);
+        this.difficultyProperty.set(difficulty);
     }
 
     /**
      * Incoming from server. sets game status
+     *
      * @param status
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     @Override
     public void setStatus(GameStatus status) throws RemoteException {
         this.gameStatusProperty.set(status);
+    }
+
+    // ----------------------------------- Methods querying game info, used for game display in lobby -------------------
+    @Override
+    public String getDifficulty() throws RemoteException {
+        return this.myGame.getDifficulty();
+    }
+
+    @Override
+    public String getPlayer1Name() throws RemoteException {
+        return this.myGame.getPlayer1Name();
+    }
+
+    @Override
+    public String getPlayer2Name() throws RemoteException {
+        return this.myGame.getPlayer2Name();
+    }
+
+    @Override
+    public String getPlayer3Name() throws RemoteException {
+        return this.myGame.getPlayer3Name();
+    }
+
+    @Override
+    public String getStatus() throws RemoteException {
+        return this.myGame.getStatus();
     }
 }

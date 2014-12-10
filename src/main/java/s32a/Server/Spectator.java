@@ -5,6 +5,7 @@
  */
 package s32a.Server;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class Spectator extends Person implements ISpectator {
     @Getter
     private List<IGame> myGames;
 
-    Spectator(String name, double rating) {
+    Spectator(String name, double rating) throws RemoteException {
         super(name, rating);
         myGames = new ArrayList<>();
     }
