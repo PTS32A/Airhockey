@@ -42,13 +42,19 @@ public class GameTimer extends AnimationTimer {
         if (now - lastAction > 60000000000L) {
             gameFX.quitClick(null);
         }
-        if (gameFX.getStatus().equals(GameStatus.Preparing) && now - prevUpd > 1000000000) {
+        if (gameFX.getStatus().equals(GameStatus.Waiting) && now - prevUpd > 1000000000) {
             if (timer != 0) {
                 gameFX.setCountdown(String.valueOf(timer));
                 timer--;
             }
             else{
                 gameFX.setCountdown("");
+                try {
+                    gameFX.nextRound();
+                }
+                catch (RemoteException ex) {
+                    Logger.getLogger(GameTimer.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 timer = 3;
             }
             prevUpd = now;

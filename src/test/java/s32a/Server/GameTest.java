@@ -60,6 +60,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on setUp: " + ex.getMessage());
+            fail("RemoteException on setUp: " + ex.getMessage());
         }
     }
 
@@ -80,6 +81,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddChatMessageNullMessage: " + ex.getMessage());
+            fail("RemoteException on testAddChatMessageNullMessage: " + ex.getMessage());
         }
     }
 
@@ -97,6 +99,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddChatMessageNullPlayer: " + ex.getMessage());
+            fail("RemoteException on testAddChatMessageNullPlayer: " + ex.getMessage());
         }
     }
 
@@ -114,6 +117,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddChatMessageEmpty: " + ex.getMessage());
+            fail("RemoteException on testAddChatMessageEmpty: " + ex.getMessage());
         }
     }
 
@@ -131,6 +135,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddChatMessageWhiteSpaceMessage: " + ex.getMessage());
+            fail("RemoteException on testAddChatMessageWhiteSpaceMessage: " + ex.getMessage());
         }
     }
 
@@ -147,6 +152,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddPlayerNullPlayer: " + ex.getMessage());
+            fail("RemoteException on testAddPlayerNullPlayer: " + ex.getMessage());
         }
     }
     
@@ -163,6 +169,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddPlayerNullClient: " + ex.getMessage());
+            fail("RemoteException on testAddPlayerNullClient: " + ex.getMessage());
         }
     }
 
@@ -180,6 +187,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddPlayerAlreadyAParticipant: " + ex.getMessage());
+            fail("RemoteException on testAddPlayerAlreadyAParticipant: " + ex.getMessage());
         }
     }
 
@@ -204,6 +212,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddPlayerGameFull: " + ex.getMessage());
+            fail("RemoteException on testAddPlayerGameFull: " + ex.getMessage());
         }
     }
 
@@ -220,6 +229,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddSpectatorNullSpectator: " + ex.getMessage());
+            fail("RemoteException on testAddSpectatorNullSpectator: " + ex.getMessage());
         }
     }
     
@@ -236,6 +246,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddSpectatorNullClient: " + ex.getMessage());
+            fail("RemoteException on testAddSpectatorNullClient: " + ex.getMessage());
         }
     }
 
@@ -254,6 +265,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAddSpectatorAllreadyAParticipant: " + ex.getMessage());
+            fail("RemoteException on testAddSpectatorAllreadyAParticipant: " + ex.getMessage());
         }
     }
 
@@ -270,6 +282,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testRemoveSpectatorNullSpectator: " + ex.getMessage());
+            fail("RemoteException on testRemoveSpectatorNullSpectator: " + ex.getMessage());
         }
     }
 
@@ -290,6 +303,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testRemoveSpectatorNotAParticipant: " + ex.getMessage());
+            fail("RemoteException on testRemoveSpectatorNotAParticipant: " + ex.getMessage());
         }
     }
 
@@ -308,6 +322,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testBeginGameNotEnoughPlayers: " + ex.getMessage());
+            fail("RemoteException on testBeginGameNotEnoughPlayers: " + ex.getMessage());
         }
     }
 
@@ -333,6 +348,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testBeginGameAlreadyBegun: " + ex.getMessage());
+            fail("RemoteException on testBeginGameAlreadyBegun: " + ex.getMessage());
         }
     }
 
@@ -358,6 +374,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAdjustDifficultyGameAlreadyBegun: " + ex.getMessage());
+            fail("RemoteException on testAdjustDifficultyGameAlreadyBegun: " + ex.getMessage());
         }
     }
 
@@ -376,6 +393,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAdjustDifficultyMinLimit: " + ex.getMessage());
+            fail("RemoteException on testAdjustDifficultyMinLimit: " + ex.getMessage());
         }
     }
 
@@ -394,6 +412,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testAdjustDifficultyMaxLimit: " + ex.getMessage());
+            fail("RemoteException on testAdjustDifficultyMaxLimit: " + ex.getMessage());
         }
     }
 
@@ -416,6 +435,7 @@ public class GameTest {
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("RemoteException on testPauseGameAleadyPaused: " + ex.getMessage());
+            fail("RemoteException on testPauseGameAleadyPaused: " + ex.getMessage());
         }
     }
 
@@ -435,7 +455,8 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testPauseGameAlreadyUnPaused: " + ex.getMessage());
+            fail("RemoteException on testPauseGameAlreadyUnPaused: " + ex.getMessage());
         }
     }
 
@@ -471,7 +492,8 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testPauseGame: " + ex.getMessage());
+            fail("RemoteException on testPauseGame: " + ex.getMessage());
         }
     }
 
@@ -504,6 +526,8 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testGetNextColorGreen: " + ex.getMessage());
+            fail("RemoteException on testGetNextColorGreen: " + ex.getMessage());
         }
     }
 

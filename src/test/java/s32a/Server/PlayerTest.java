@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import s32a.Shared.enums.GameStatus;
 
 /**
  *
@@ -53,7 +54,8 @@ public class PlayerTest
         try {
             player = new Player("Test", (double)15, Colors.Red);
             sideLength = (float)Lobby.getSingle().getAirhockeySettings().get("Side Length");
-            //g = new Game(player);
+            g = new Game(player);
+            g.statusProperty().set(GameStatus.Playing);
         }
         catch (RemoteException ex) {
             Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -123,12 +125,32 @@ public class PlayerTest
     }
     
     @Test
+    public void testSetScore()
+    {
+        System.out.println("setScore");
+        int expResult = 25;
+        try
+        {
+            player.setScore(25);
+        }
+        catch (RemoteException ex)
+        {
+            System.out.println("Remote exception in PlayerTest. This should not happen.");
+        }
+        
+        int result = player.getScore().getValue();
+        
+        assertEquals("Score has not been set properly", expResult, result);
+    }
+    
+    @Test
     public void testMoveBat()
     {
         try {
             System.out.println("moveBat");
             Vector2 expResult = new Vector2(5,0);
-            player.moveBat(1);
+            boolean success = player.moveBat(1);
+            System.out.println("Success: " + success);
             Vector2 result = new Vector2(player.getPosX().floatValue(), player.getPosY().floatValue());
             assertEquals("Bat not moved properly",expResult, result);
             expResult = new Vector2(0,0);

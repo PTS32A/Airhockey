@@ -5,6 +5,7 @@
  */
 package s32a.Client.ClientData;
 
+import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import s32a.Server.Lobby;
 import s32a.Shared.*;
 import s32a.Shared.enums.GameStatus;
 
@@ -57,12 +59,31 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.roundNoProperty = new SimpleIntegerProperty();
         this.puckXProperty = new SimpleDoubleProperty();
         this.puckYProperty = new SimpleDoubleProperty();
+        
+        float width = 500;
+        float x;
+        float y;
+        // Left corner of triangle
+        double aX = -width / 2;
+        double aY = 0;
+        // Top corner of triangle
+        double bX = 0;
+        double bY = width * Math.sin(Math.toRadians(60));
+        // Right corner of triangle
+        double cX = width / 2;
+        double cY = 0;
+        
+        Vector2 batPos2 = new Vector2((float) (aX + ((bX - aX) / 100 * 50)),
+                 (float) ((aY + ((bY - aY) / 100 * 50))));
+        Vector2 batPos3 = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
+                 (float) ((cY + ((bY - cY) / 100 * 50))));
+            
         this.player1XProperty = new SimpleDoubleProperty();
         this.player1YProperty = new SimpleDoubleProperty();
-        this.player2XProperty = new SimpleDoubleProperty();
-        this.player2YProperty = new SimpleDoubleProperty();
-        this.player3XProperty = new SimpleDoubleProperty();
-        this.player3YProperty = new SimpleDoubleProperty();
+        this.player2XProperty = new SimpleDoubleProperty(batPos2.x);
+        this.player2YProperty = new SimpleDoubleProperty(batPos2.y);
+        this.player3XProperty = new SimpleDoubleProperty(batPos3.x);
+        this.player3YProperty = new SimpleDoubleProperty(batPos3.y);
         this.player1Score = new SimpleIntegerProperty(20);
         this.player2Score = new SimpleIntegerProperty(20);
         this.player3Score = new SimpleIntegerProperty(20);
@@ -82,8 +103,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Incoming from server to start or stop puck movement.
-     *
+     * Outgoing to server to start nextRound.
      * @param input true or false for round change
      * @throws RemoteException
      */
