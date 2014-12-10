@@ -63,10 +63,18 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     private ObservableList<IPerson> rankings; // todo
     private List<IGame> backingActiveGames;
     private LobbyPublisher publisher;
+    
+    private final ObservableList<IPerson> data = (ObservableList<IPerson>)
+    FXCollections.observableArrayList( activePersons);
 
     @Override
     public HashMap<String, IPerson> getActivePersons(){
         return this.activePersons.get();
+    }
+    
+    public ObjectProperty<HashMap<String, IPerson>> getActivePersonsProperty()
+    {
+        return this.activePersons;
     }
     
     /**

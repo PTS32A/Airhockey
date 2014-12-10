@@ -11,22 +11,26 @@ import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import s32a.Shared.ILobby;
+import s32a.Server.Publishers.GamePublisher;
+import s32a.Shared.IPerson;
 
 /**
  *
@@ -39,7 +43,8 @@ public class AirhockeyServer{
     private static final int portNumber = 1099;
     private static final String bindingName = "AirhockeyServer";
     private String ipAddress;
-
+    private ObjectProperty<HashMap<String, IPerson>> activePersonsProp;
+    
     public AirhockeyServer() {
 
         try {
@@ -106,8 +111,18 @@ public class AirhockeyServer{
             gp.add(personIn, 1, 4);
 
             // Binding 
-            //gamesIn.textProperty().bind(lobby.getActiveGames().size());
-            //personIn.textProperty().bind(lobby.getActivePersons().size());
+            gamesIn.textProperty().bind(Bindings.size((lobby.getActiveGames())).asString());
+            
+            activePersonsProp.bind(lobby.getActivePersonsProperty());
+            
+            activePersonsProp.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                personIn.setText(activePersonsProp.get().size());
+            }
+        });
+            
     //        btn.setOnAction(new EventHandler<ActionEvent>() {
     //
     //            @Override
