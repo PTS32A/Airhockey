@@ -26,6 +26,14 @@ public interface ILobby extends Remote {
             throws RemoteException;
 
     /**
+     * @param name
+     * @return the up-to-date version of the person with the given name.
+     * @throws RemoteException
+     */
+    public IPerson getMyPerson(String name)
+            throws RemoteException;
+
+    /**
      * Gets all activePersons in the Lobby
      * @return Returns a HashMap containing the Persons
      * @throws RemoteException 

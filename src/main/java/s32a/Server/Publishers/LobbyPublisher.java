@@ -53,9 +53,9 @@ public class LobbyPublisher {
         }
         if (observers.put(name, input) == null){
             this.pushActiveGames();
-            this.pushPersons(this.persons.get());
+            this.pushPersons();
             this.pushRankings();
-            this.pushSettings(this.settings.get());
+            this.pushSettings();
             return true;
         }
         return false;
@@ -107,12 +107,12 @@ public class LobbyPublisher {
      */
     public void bindSettings(ObjectProperty<HashMap<String, Object>> input) {
         this.settings = input;
-        this.pushSettings(input.get());
+        this.pushSettings();
         this.settings.addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushSettings(newValue);
+                pushSettings();
             }
 
         });
@@ -122,11 +122,11 @@ public class LobbyPublisher {
      * Pushes the updated settings to the observers
      * @param newValue An updated setting
      */
-    private void pushSettings(Object newValue) {
+    private void pushSettings() {
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setSettings((HashMap<String, Object>) newValue);
+                observers.get(key).setSettings(settings.get());
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting settings for " + key + ": " + ex.getMessage());
@@ -141,12 +141,12 @@ public class LobbyPublisher {
      */
     public void bindPersons(ObjectProperty<HashMap<String, IPerson>> input) {
         this.persons = input;
-        this.pushPersons(input.get());
+        this.pushPersons();
         this.persons.addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushPersons(newValue);
+                pushPersons();
             }
 
         });
@@ -156,11 +156,11 @@ public class LobbyPublisher {
      * Pushes an update in a Person to the observers
      * @param newValue An object containing the update to be pushed
      */
-    private void pushPersons(Object newValue) {
+    private void pushPersons() {
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setPersons((HashMap<String, IPerson>) newValue);
+                observers.get(key).setPersons(persons.get());
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting Persons for " + key + ": " + ex.getMessage());

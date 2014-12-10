@@ -65,7 +65,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
     
     public IPerson getMyPerson(String playerName) throws RemoteException {
-        return this.activePersons.get().get(playerName);
+        return myLobby.getMyPerson(playerName);
     }
 
     @Override

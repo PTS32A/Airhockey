@@ -16,11 +16,13 @@ import java.rmi.registry.LocateRegistry;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
@@ -39,7 +41,7 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-public class AirhockeyServer{
+public class AirhockeyServer {
 
     private Lobby lobby;
     private Stage stage;
@@ -47,7 +49,7 @@ public class AirhockeyServer{
     private static final String bindingName = "AirhockeyServer";
     private String ipAddress;
     private ObjectProperty<HashMap<String, IPerson>> activePersonsProp;
-    
+
     public AirhockeyServer() {
 
         try {
@@ -90,63 +92,59 @@ public class AirhockeyServer{
         printIPAddresses();
 
         new JFXPanel();
-        Platform.runLater(() ->
-        {
-            this.stage = new Stage();
-            GridPane gp = new GridPane();
-            gp.setAlignment(Pos.CENTER);
-            gp.setHgap(10);
-            gp.setVgap(10);
-            gp.setPadding(new Insets(25, 25, 25, 25));
-            Label ip = new Label("IP Address:");
-            gp.add(ip, 0, 0);
-            Label ipIn = new Label(this.ipAddress);
-            gp.add(ipIn, 1, 0);
-            Label port = new Label("Port:");
-            gp.add(port, 0, 2);
-            Label portIn = new Label(String.valueOf(portNumber));
-            gp.add(portIn, 1, 2);
-            Label games = new Label("Active Games:");
-            gp.add(games, 0, 3);
-            Label gamesIn = new Label("0");
-            gp.add(gamesIn, 1, 3);
-            Label person = new Label("Active Users:");
-            gp.add(person, 0, 4);
-            Label personIn = new Label("0");
-            gp.add(personIn, 1, 4);
-
-            // Binding 
-            gamesIn.textProperty().bind(Bindings.size((lobby.getActiveGames())).asString());
-            
-            activePersonsProp.bind(lobby.getActivePersonsProperty());
-            
-            activePersonsProp.addListener(new ChangeListener() {
+        Platform.runLater(new Runnable() {
 
             @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                personIn.setText("" + activePersonsProp.get().size());
+            public void run() {
+                stage = new Stage();
+                GridPane gp = new GridPane();
+                gp.setAlignment(Pos.CENTER);
+                gp.setHgap(10);
+                gp.setVgap(10);
+                gp.setPadding(new Insets(25, 25, 25, 25));
+                Label ip = new Label("IP Address:");
+                gp.add(ip, 0, 0);
+                Label ipIn = new Label(ipAddress);
+                gp.add(ipIn, 1, 0);
+                Label port = new Label("Port:");
+                gp.add(port, 0, 2);
+                Label portIn = new Label(String.valueOf(portNumber));
+                gp.add(portIn, 1, 2);
+                Label games = new Label("Active Games:");
+                gp.add(games, 0, 3);
+                Label gamesIn = new Label("0");
+                gp.add(gamesIn, 1, 3);
+                Label person = new Label("Active Users:");
+                gp.add(person, 0, 4);
+                Label personIn = new Label("0");
+                gp.add(personIn, 1, 4);
+
+                // Binding
+                gamesIn.textProperty().bind(Bindings.size((lobby.getActiveGames())).asString());
+
+                activePersonsProp = new SimpleObjectProperty<>(null);              
+
+                activePersonsProp.addListener(new ChangeListener() {
+
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        personIn.setText(String.valueOf(activePersonsProp.get().size()));
+                    }
+                });
+                activePersonsProp.bind(lobby.getActivePersonsProperty());
+
+                Group root = new Group();
+                Scene scene = new Scene(root, 300, 300);
+                root.getChildren().add(gp);
+                stage.setScene(scene);
+                stage.setTitle("Server Information");
+                stage.show();
+
+                stage.setOnCloseRequest((WindowEvent event) -> {
+                    Platform.exit();
+                    System.exit(0);
+                });
             }
-        });
-            
-    //        btn.setOnAction(new EventHandler<ActionEvent>() {
-    //
-    //            @Override
-    //            public void handle(ActionEvent e) {
-    //                 
-    //            }
-    //        });
-            Group root = new Group();
-            Scene scene = new Scene(root, 300, 300);
-            root.getChildren().add(gp);
-            this.stage.setScene(scene);
-            this.stage.setTitle("Server Information");
-            this.stage.show();
-            
-            this.stage.setOnCloseRequest((WindowEvent event) -> {
-                Platform.exit();
-                System.exit(0);
-            });
-        
         });
     }
 
@@ -165,7 +163,8 @@ public class AirhockeyServer{
                     System.out.println("    " + allMyIp);
                 }
             }
-        } catch (UnknownHostException ex) {
+        }
+        catch (UnknownHostException ex) {
             System.out.println("Server: Cannot get IP address of local host");
             System.out.println("Server: UnknownHostException: " + ex.getMessage());
         }
@@ -179,7 +178,8 @@ public class AirhockeyServer{
                     System.out.println("        " + enumIpAddr.nextElement().toString());
                 }
             }
-        } catch (SocketException ex) {
+        }
+        catch (SocketException ex) {
             System.out.println("Server: Cannot retrieve network interface list");
             System.out.println("Server: UnknownHostException: " + ex.getMessage());
         }

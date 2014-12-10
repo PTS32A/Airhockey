@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
@@ -63,25 +64,39 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     private ObservableList<IPerson> rankings; // todo
     private List<IGame> backingActiveGames;
     private LobbyPublisher publisher;
-    
-    private final ObservableList<IPerson> data = (ObservableList<IPerson>)
-    FXCollections.observableArrayList( activePersons);
 
+    /**
+     * @param name
+     * @return Up-to-date version of person with given name
+     * @throws RemoteException
+     */
     @Override
-    public HashMap<String, IPerson> getActivePersons(){
-        return this.activePersons.get();
+    public IPerson getMyPerson(String name) throws RemoteException {
+        return this.activePersons.get().get(name);
     }
-    
-    public ObjectProperty<HashMap<String, IPerson>> getActivePersonsProperty()
-    {
+
+    /**
+     * Returns the hashmap containing active persons.
+     * @return
+     */
+    @Override
+    public HashMap<String, IPerson> getActivePersons() {
+        HashMap<String, IPerson> output = new HashMap<>(this.activePersons.get());
+        return output;
+    }
+
+    /**
+     * @return the ObjectProperty wrapping activePersons.
+     */
+    ObjectProperty<HashMap<String, IPerson>> getActivePersonsProperty() {
         return this.activePersons;
     }
-    
+
     /**
      * @return airhockeysettings boxed hashmap
      */
     @Override
-    public HashMap<String, Object> getAirhockeySettings(){
+    public HashMap<String, Object> getAirhockeySettings() {
         return this.airhockeySettings.get();
     }
 
@@ -99,7 +114,6 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         this.activeGames = FXCollections.observableArrayList(backingActiveGames);
         this.airhockeySettings.get().put("Goal Default", new Vector2(0, 0));
         this.airhockeySettings.get().put("Side Length", 500f);
-
 
         try {
             this.rankings = FXCollections.observableArrayList(myDatabaseControls.getRankings());
@@ -680,5 +694,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         catch (IllegalArgumentException | SQLException ex) {
         }
     }
+
+
 
 }
