@@ -146,7 +146,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     @Override
     public void setActiveGames(HashMap<String, IGame> activeGames) throws RemoteException {
         this.oActiveGames.clear();
-        this.oActiveGames.addAll(activeGames.values());
+        this.oActiveGames.setAll(activeGames.values());
         this.activeGamesProperty.set(activeGames);
     }
 
