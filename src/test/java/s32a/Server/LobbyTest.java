@@ -105,7 +105,7 @@ public class LobbyTest {
 //            fail("SQL exception on checkLogin: " + ex.getMessage());
 //        }
         assertTrue("Person was not correctly initialised",
-                this.mockLobby.getMyPerson(testey.getName()) instanceof IPerson);
+                this.mockLobby.getActivePersons().get(testey.getName()) instanceof IPerson);
         try {
 //            assertFalse("wrong password logged in anyway",
 //                    this.mockLobby.checkLogin("testey", "falsepass"));
@@ -204,7 +204,7 @@ public class LobbyTest {
         //assertEquals("playedGame wasn't started right", game, 
         //        ((Player)this.mockLobby.getMyPerson("testey")).getMyGame());
 
-        Player testey = (Player) this.mockLobby.getMyPerson("testey");
+        Player testey = (Player) this.mockLobby.getActivePersons().get("testey");
         assertEquals("currentPerson wasn't starting player",
                 ((Game)testey.getMyGame()).getMyPlayers().get(0), testey);
         assertEquals("color wasn't red", testey.getColor(), Colors.Red);
