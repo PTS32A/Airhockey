@@ -16,11 +16,7 @@ import java.util.List;
  * @author Kargathia
  */
 public interface ILobby extends Remote {
-
-    //Mag er uit:
-    public IPerson getMyPerson(String playerName)
-            throws RemoteException;
-
+    
     /**
      * Gets the Settings of the Application
      * @return Returns a HashMap containing the Settings

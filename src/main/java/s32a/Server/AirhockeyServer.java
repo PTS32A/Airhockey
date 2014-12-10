@@ -13,19 +13,16 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -91,7 +88,7 @@ public class AirhockeyServer{
             gp.setHgap(10);
             gp.setVgap(10);
             gp.setPadding(new Insets(25, 25, 25, 25));
-            Label ip = new Label("Ip Address:");
+            Label ip = new Label("IP Address:");
             gp.add(ip, 0, 0);
             Label ipIn = new Label(this.ipAddress);
             gp.add(ipIn, 1, 0);
@@ -124,7 +121,7 @@ public class AirhockeyServer{
             this.stage.setScene(scene);
             this.stage.setTitle("Server Information");
             this.stage.show();
-
+            
             this.stage.setOnCloseRequest((WindowEvent event) -> {
                 Platform.exit();
                 System.exit(0);
