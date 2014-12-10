@@ -7,25 +7,25 @@ package s32a.Server;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -48,7 +48,7 @@ public class AirhockeyServer{
         try {
             lobby = Lobby.getSingle();
             lobby.startPublisher();
-//            lobby.populate();
+            lobby.populate();
             System.out.println("Server: Lobby created");
         }
         catch (RemoteException ex) {
@@ -82,6 +82,8 @@ public class AirhockeyServer{
             Logger.getLogger(AirhockeyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        printIPAddresses();
+
         new JFXPanel();
         Platform.runLater(() ->
         {
@@ -91,7 +93,7 @@ public class AirhockeyServer{
             gp.setHgap(10);
             gp.setVgap(10);
             gp.setPadding(new Insets(25, 25, 25, 25));
-            Label ip = new Label("Ip Address:");
+            Label ip = new Label("IP Address:");
             gp.add(ip, 0, 0);
             Label ipIn = new Label(this.ipAddress);
             gp.add(ipIn, 1, 0);
@@ -124,13 +126,48 @@ public class AirhockeyServer{
             this.stage.setScene(scene);
             this.stage.setTitle("Server Information");
             this.stage.show();
-
+            
             this.stage.setOnCloseRequest((WindowEvent event) -> {
                 Platform.exit();
                 System.exit(0);
             });
         
         });
+    }
+
+    /**
+     * Prints all known IP addresses
+     */
+    private static void printIPAddresses() {
+        try {
+            InetAddress localhost = InetAddress.getLocalHost();
+            System.out.println("Server: IP Address: " + localhost.getHostAddress());
+            // Just in case this host has multiple IP addresses....
+            InetAddress[] allMyIps = InetAddress.getAllByName(localhost.getCanonicalHostName());
+            if (allMyIps != null && allMyIps.length > 1) {
+                System.out.println("Server: Full list of IP addresses:");
+                for (InetAddress allMyIp : allMyIps) {
+                    System.out.println("    " + allMyIp);
+                }
+            }
+        } catch (UnknownHostException ex) {
+            System.out.println("Server: Cannot get IP address of local host");
+            System.out.println("Server: UnknownHostException: " + ex.getMessage());
+        }
+
+        try {
+            System.out.println("Server: Full list of network interfaces:");
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                System.out.println("    " + intf.getName() + " " + intf.getDisplayName());
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    System.out.println("        " + enumIpAddr.nextElement().toString());
+                }
+            }
+        } catch (SocketException ex) {
+            System.out.println("Server: Cannot retrieve network interface list");
+            System.out.println("Server: UnknownHostException: " + ex.getMessage());
+        }
     }
 
     /**

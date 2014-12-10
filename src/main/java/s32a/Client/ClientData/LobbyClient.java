@@ -60,10 +60,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         this.chatProperty = FXCollections.observableList(chat);
         this.playerRatingProperty = new SimpleDoubleProperty(0);
     }
-
-    @Override
+    
     public IPerson getMyPerson(String playerName) throws RemoteException {
-        return myLobby.getMyPerson(playerName);
+        return this.activePersons.get().get(playerName);
     }
 
     @Override
@@ -153,8 +152,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public void setChat(List<String> chat) throws RemoteException {
-        this.chatProperty.clear();
-        this.chatProperty.addAll(chat);
+        this.chatProperty.setAll(chat);
     }
 
     @Override

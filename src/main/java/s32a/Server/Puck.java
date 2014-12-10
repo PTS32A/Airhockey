@@ -38,8 +38,8 @@ class Puck extends TimerTask {
 
     @Getter
     private ObjectProperty<Vector2> position;
-    @Getter
-    private DoubleProperty xPos, yPos;
+//    @Getter
+//    private DoubleProperty xPos, yPos;
     @Getter
     @Setter
     private float direction;
@@ -122,12 +122,13 @@ class Puck extends TimerTask {
             throw new IllegalArgumentException("myGame parameter was null");
         }
 
-        this.speed = new SimpleFloatProperty(speed);
+        this.speed = new SimpleFloatProperty(0f);
+        this.speed.set(speed);
         this.hitBy = new ArrayList<>();
 
         this.position = new SimpleObjectProperty(new Vector2(0f, 0f));
-        this.xPos = new SimpleDoubleProperty(0);
-        this.yPos = new SimpleDoubleProperty(0);
+//        this.xPos = new SimpleDoubleProperty(0);
+//        this.yPos = new SimpleDoubleProperty(0);
 
         this.sideLength = (float) lobby.getAirhockeySettings().get("Side Length");
         this.goalLength = sideLength * 0.4f;
@@ -186,14 +187,14 @@ class Puck extends TimerTask {
     public void resetPuck() {
         setEndData();
 
-        this.position.addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                xPos.set(((Vector2) newValue).x);
-                yPos.set(((Vector2) newValue).y);
-            }
-        });
+//        this.position.addListener(new ChangeListener() {
+//
+//            @Override
+//            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+//                xPos.set(((Vector2) newValue).x);
+//                yPos.set(((Vector2) newValue).y);
+//            }
+//        });
         this.position.set(centre);
 
         //this.position = new Vector2(0, centre.y * 2);

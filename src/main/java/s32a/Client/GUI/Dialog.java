@@ -11,6 +11,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import static javafx.scene.layout.AnchorPane.setBottomAnchor;
 import static javafx.scene.layout.AnchorPane.setLeftAnchor;
@@ -61,7 +63,15 @@ public class Dialog extends Stage {
                 close();
             }
         });
+        taMessage.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode() == KeyCode.ENTER) {
+                    btClose.fire();
+                }
+            }
+        });
         BorderPane buttonRegion = new BorderPane();
         buttonRegion.setRight(btClose);
         gridPane.add(buttonRegion, 0, 4);

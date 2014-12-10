@@ -64,17 +64,6 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     private List<IGame> backingActiveGames;
     private LobbyPublisher publisher;
 
-    /**
-     * returns a person by name. Syntactic sugar for activepersons.get(string)
-     *
-     * @param playerName
-     * @return
-     */
-    @Override
-    public IPerson getMyPerson(String playerName) {
-        return this.activePersons.get().get(playerName);
-    }
-
     @Override
     public HashMap<String, IPerson> getActivePersons(){
         return this.activePersons.get();
@@ -262,11 +251,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         Person person = (Person) input;
         Game newGame = null;
         try {
-            person = new Player(person.getName(), person.ratingProperty().get(),
+            Player player = new Player(person.getName(), person.ratingProperty().get(),
                     Colors.Red);
-            newGame = new Game((Player) person);
-            newGame.startPublisher((Player) person, client);
-            this.activePersons.get().replace(person.getName(), person);
+            newGame = new Game(player);
+            newGame.startPublisher(player, client);
+            this.activePersons.get().replace(person.getName(), player);
             this.activeGames.add(newGame);
         }
         catch (Exception ex) {
