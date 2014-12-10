@@ -146,6 +146,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 System.out.println("RemoteException on setting spectator info in setUp: " + ex.getMessage());
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            showDialog("Error", "myPerson was neither player nor spectator");
         }
         // binds upDateTime property
         this.lblTime.textProperty().bind(myGame.getGameTime());

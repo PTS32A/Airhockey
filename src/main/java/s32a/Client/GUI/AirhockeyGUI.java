@@ -74,7 +74,7 @@ public class AirhockeyGUI extends Application {
             lobby = new LobbyClient(this.requestRemoteLobby(ipAddress, bindingName, portNumber));
             if(lobby == null ){
                 showDialog("Error", "lobby is null");
-                System.exit(0);
+                return;
             }
         }
         catch (RemoteException ex) {
@@ -82,7 +82,7 @@ public class AirhockeyGUI extends Application {
             System.out.println(error);
             showDialog("Error", error);
             Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(0);
+            return;
         }
 
         Parent root = null;
