@@ -175,6 +175,7 @@ class Puck extends TimerTask {
         this.beingPushed = false;
 
         this.defaultRunCount = -1;
+        this.runCount = defaultRunCount;
 
         this.leftCorner = new Vector2((float) (-(sideLength / 2)), this.puckSize / 2);
         this.upperCorner = new Vector2(0, (float) (middleLine + this.puckSize / 2));
@@ -200,7 +201,6 @@ class Puck extends TimerTask {
         //this.position = new Vector2(0, centre.y * 2);
         this.direction = new Random().nextFloat() * 360;
         //this.direction = 180;
-        this.runCount = defaultRunCount;
         this.lastBouncerID = -1;
 
     }
@@ -276,6 +276,7 @@ class Puck extends TimerTask {
             } else {
                 updatePosition(speed.get() / 10);
                 this.runCount--;
+                System.out.println("Runcount: " + runCount);
             }
         }
     }

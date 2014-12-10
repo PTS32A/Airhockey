@@ -86,8 +86,9 @@ public class PuckTest
     @Test
     public void testUpdatePositionMovePuck()
     {
+        System.out.println("PuckTest: MovePuck");
+        
         try {
-            System.out.println("!!!MOVE PUCK TEST!!!");
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
             direction = 90; //Move to the right
@@ -119,6 +120,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceRight()
     {
+        System.out.println("PuckTest: PositionBounceRight");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
@@ -149,6 +152,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceLeft()
     {
+        System.out.println("PuckTest: PositionBounceLeft");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
@@ -179,6 +184,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceUp()
     {
+        System.out.println("PuckTest: PositionBounceUp");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
@@ -209,6 +216,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceDown()
     {
+        System.out.println("PuckTest: PositionBounceDown");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
@@ -239,6 +248,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionBounceDiagonalTowardsBottomWall()
     {
+        System.out.println("PuckTest: PositionBounceDiagonalTowardsBottomWall");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
@@ -268,6 +279,8 @@ public class PuckTest
     
     public void testUpdatePositionBounceDiagonalTowardsLeftWall()
     {
+        System.out.println("PuckTest: PositionBounceDiagonalTowardsLeftWall");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
@@ -298,6 +311,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionGoalHit()
     {
+        System.out.println("PuckTest: PositionGoalHit");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             position.x += ((Puck)game.getMyPuck()).getBatWidth() * 0.75f;
@@ -328,6 +343,8 @@ public class PuckTest
     @Test
     public void testUpdatePositionBatHit()
     {
+        System.out.println("PuckTest: PositionBatHit");
+        
         try {
             position = ((Puck)game.getMyPuck()).getCentre(); //Set position to centre
             puckSpeed = 10;
@@ -358,6 +375,8 @@ public class PuckTest
     (expected = IllegalArgumentException.class)
     public void testPuckWrongSpeed1()
     {
+        System.out.println("PuckTest: WrongSpeed1");
+        
         Puck p = new Puck(0, game);
         fail("Puckspeed must positive");
     }
@@ -366,6 +385,8 @@ public class PuckTest
     (expected = IllegalArgumentException.class)
     public void testPuckWrongSpeed2()
     {
+        System.out.println("PuckTest: WrongSpeed2");
+        
         Puck p = new Puck(-1, game);
         fail("Puckspeed must positive");
     }
@@ -374,13 +395,17 @@ public class PuckTest
     (expected = IllegalArgumentException.class)
     public void testPuckWrongGame()
     {
+        System.out.println("PuckTest: WrongGame");
+        
         Puck p = new Puck(1, null);
         fail("Game can't be null");
     }
     
     private void waitForPuck()
     {       
-        while (!game.statusProperty().get().equals(GameStatus.GameOver))
+        System.out.println("PuckTest: (Tool) WaitForPuck");
+        
+        while (game.statusProperty().get().equals(GameStatus.Playing))
         {
             //Wait indefinitly for Puck to finish
             System.out.print("");
@@ -389,6 +414,8 @@ public class PuckTest
     
     private int calculateNeededRunCount()
     {
+        System.out.println("PuckTest: (Tool) NeededRunCount");
+        
         int runCount = 0;
         
         runCount = (int)(distance / (puckSpeed / 10));
@@ -399,6 +426,8 @@ public class PuckTest
     
     private boolean checkEqualPositions(Vector2 p1, Vector2 p2)
     {
+        System.out.println("PuckTest: (Tool) EqualPositions");
+        
         if (p1.x < p2.x + puckSpeed && p1.x > p2.x - puckSpeed)
         {
             if (p1.y < p2.y + puckSpeed && p1.y > p2.y - puckSpeed)
