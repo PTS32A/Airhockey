@@ -59,7 +59,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     @FXML
     ListView lvPlayerInfo;
 
-    private AnimationTimer lobbyTimer;
     private ObservableList<Property> playerInfo;
 
     @Override
@@ -212,7 +211,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         try {
             lobby.logOut(super.getMe());
             super.goToLogin(getThisStage());
-            this.lobbyTimer.stop();
         }
         catch (IOException ex) {
             super.showDialog("Error", "Unable to log out: " + ex.getMessage());
