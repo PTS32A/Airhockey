@@ -8,19 +8,12 @@ package s32a.Server.Publishers;
 import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -32,13 +25,12 @@ import javafx.collections.ObservableList;
 import s32a.Server.Game;
 import s32a.Server.Player;
 import s32a.Shared.IGameClient;
-import s32a.Shared.IPlayer;
 import s32a.Shared.ISpectator;
 import s32a.Shared.enums.GameStatus;
 
 /**
- * NOTES: operations are currently not threadsafe. Some sort of monitor solution
- * needs to be implemented to prevent concurrent updates / reads on observers.
+ * NOTES: ConcurrentHashMap is implemented to prevent synchronisation issues on
+ * reading / writing observers. It is not clear whether this is sufficient.
  *
  * @author Kargathia
  */
@@ -63,9 +55,6 @@ public class GamePublisher {
     private ObservableList<String> chatbox;
     private ObjectProperty<GameStatus> statusProp;
     private StringProperty difficultyProp;
-
-    // the lock used to prevent concurrent updates / reads of observers
-    AtomicBoolean reading, writing;
 
     /**
      * Creates a new publisher associated with given game. Observers need to be
