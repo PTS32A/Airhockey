@@ -49,6 +49,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     
 
     public LobbyClient(ILobby myLobby) throws RemoteException {
+        if (myLobby == null) {
+            throw new RemoteException();
+        }
         this.myLobby = myLobby;
         this.activeGames = new ArrayList<>();
 //        this.rankings = new SimpleObjectProperty(new ArrayList<>());
