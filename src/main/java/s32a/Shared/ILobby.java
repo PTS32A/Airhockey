@@ -17,50 +17,156 @@ import java.util.List;
  */
 public interface ILobby extends Remote {
 
+    //Mag er uit:
     public IPerson getMyPerson(String playerName)
             throws RemoteException;
 
+    /**
+     * Gets the Settings of the Application
+     * @return Returns a HashMap containing the Settings
+     * @throws RemoteException 
+     */
     public HashMap getAirhockeySettings()
             throws RemoteException;
 
+    /**
+     * Gets all activePersons in the Lobby
+     * @return Returns a HashMap containing the Persons
+     * @throws RemoteException 
+     */
     public HashMap<String, IPerson> getActivePersons()
             throws RemoteException;
 
+    /**
+     * Gets the active Games in the Lobby
+     * @return Returns a list of active Games
+     * @throws RemoteException 
+     */
     public List<IGame> getActiveGames()
             throws RemoteException;
 
+    /**
+     * Adds a Person to the Database using a new unique playerName and a password
+     * @param playerName The playerName of the Person
+     * @param passWord  The password of the Person
+     * @return Returns a boolean indicating success
+     * @throws IllegalArgumentException
+     * @throws SQLException
+     * @throws RemoteException 
+     */
     public boolean addPerson(String playerName, String passWord)
             throws IllegalArgumentException, SQLException, RemoteException;
 
+    /**
+     * Verifies the given playerName and password with an existing Account
+     * @param playerName The playerName to be verified
+     * @param password The password to be verified
+     * @param client The LobbyClient the input is from
+     * @return Returns a boolean indicating whether the information given
+     * matches with an existing Account
+     * @throws IllegalArgumentException
+     * @throws SQLException
+     * @throws RemoteException 
+     */
     public boolean checkLogin(String playerName, String password, ILobbyClient client)
             throws IllegalArgumentException, SQLException, RemoteException;
 
+    /**
+     * Logs out a Person from the Lobby
+     * @param input The Person to be logged out
+     * @return
+     * @throws RemoteException 
+     */
     public boolean logOut(IPerson input)
             throws RemoteException;
 
+    /**
+     * Starts the Game for a client
+     * @param person The Person who is in the Game of this client
+     * @param client The GameClient of which the Game should start
+     * @return Returns the started Server Game containing all information
+     * the client needs to play the Game
+     * @throws RemoteException
+     * @throws IllegalArgumentException 
+     */
     public IGame startGame(IPerson person, IGameClient client)
             throws RemoteException, IllegalArgumentException;
 
+    /**
+     * Lets a Person with corresponding GameClient join a Game
+     * @param game The Game to be joined
+     * @param person The Person joining
+     * @param client The corresponding GameClient of the Person
+     * @return Return the Server Game
+     * @throws RemoteException
+     * @throws IllegalArgumentException 
+     */
     public IGame joinGame(IGame game, IPerson person, IGameClient client)
             throws RemoteException, IllegalArgumentException;
 
+    /**
+     * Let's a Person with corresponding GameClient spectate a Game
+     * @param gameInput The Game to be spectated
+     * @param personInput The Person spectating
+     * @param client The corresponding GameClient of the Person
+     * @return
+     * @throws RemoteException
+     * @throws IllegalArgumentException 
+     */
     public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
             throws RemoteException, IllegalArgumentException;
 
+    /**
+     * Adds a chat message to the Lobby's ChatBox
+     * @param message The message to be added
+     * @param from The name of the Person who sent the message
+     * @return Return a boolean indicating success of the addition
+     * @throws IllegalArgumentException
+     * @throws RemoteException 
+     */
     public boolean addChatMessage(String message, String from)
             throws IllegalArgumentException, RemoteException;
 
+    /**
+     * Ends the Game as a result of a Player leaving the Game
+     * @param game The Game to be ended
+     * @param hasLeft The Player who left the Game
+     * @return
+     * @throws RemoteException 
+     */
     public boolean endGame(IGame game, IPlayer hasLeft)
             throws RemoteException;
 
+    /**
+     * Stops a Person from spectating a Game
+     * @param game The spectated Game
+     * @param spectator The Person spectating the Game
+     * @throws RemoteException 
+     */
     public void stopSpectating(IGame game, IPerson spectator)
             throws RemoteException;
 
+    /**
+     * Gets a Game in the Lobby based on its gameID
+     * @param gameID The gameID of the Game
+     * @return Returns the Game
+     * @throws RemoteException 
+     */
     public IGame getMyGame(String gameID) throws RemoteException;
 
+    /**
+     * Gets the rankings of all existing Persons
+     * @return Returns a list of all existing Persons, containing their rankings
+     * @throws SQLException
+     * @throws RemoteException 
+     */
     public List<IPerson> getRankings()
             throws SQLException, RemoteException;
 
+    /**
+     * Populates the Lobby
+     * @throws RemoteException 
+     */
     public void populate()
             throws RemoteException;
 }

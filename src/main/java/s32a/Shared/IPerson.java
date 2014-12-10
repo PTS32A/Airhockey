@@ -17,6 +17,11 @@ import javafx.beans.property.StringProperty;
  */
 public interface IPerson extends Remote, Serializable {
 
+    /**
+     * Gets the name of the Person
+     * @return Returns the name of the Person
+     * @throws RemoteException 
+     */
     public String getName()
             throws RemoteException;
 }

@@ -19,9 +19,25 @@ import s32a.Shared.enums.Colors;
  */
 public interface IPlayer extends IPerson {
 
+    /**
+     * Gets the Color of the Player
+     * @return Returns the Color of the Player
+     * @throws RemoteException 
+     */
     public Colors getColor()
             throws RemoteException;
 
+    /**
+     * Moves this Player's bat in one of two directions
+     * For the Blue (left side) and Green (right side) Players, the bat moves
+     * up with parameter amount set to 1 and down with parameter amount set
+     * to -1. For the Red (down side) Player, the bat moves left and right
+     * respectively.     * 
+     * @param amount A float indication the direction of the bat to be moved
+     * @return Returns a boolean indicating the success of moving the bat
+     * @throws IllegalArgumentException
+     * @throws RemoteException 
+     */
     public boolean moveBat(float amount)
             throws IllegalArgumentException, RemoteException;
 }
