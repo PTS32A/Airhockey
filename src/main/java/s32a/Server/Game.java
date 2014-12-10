@@ -109,7 +109,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.gameInfo.put("nextColor", this.getNextColor());
 
         this.roundNo = new SimpleIntegerProperty(0);
-        float defaultSpeed = 15;
+        float defaultSpeed = 15f;
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
         this.difficultyProp = new SimpleStringProperty("speed");
@@ -133,13 +133,14 @@ public class Game extends UnicastRemoteObject implements IGame {
      */
     public void startPublisher(Player starter, IGameClient starterClient) throws RemoteException {
         this.publisher = new GamePublisher(this);
-        this.publisher.bindPuck(this.myPuck.getXPos(), this.myPuck.getYPos());
-        this.publisher.setChat(this.myChatbox.chatProperty());
-        this.publisher.bindSpectators(mySpectators);
-        this.publisher.bindNextPlayer(starter);
+        this.publisher.bindPuckPosition(this.myPuck.getPosition());
+        this.publisher.bindChat(this.myChatbox.chatProperty());
+        this.publisher.bindSpectators(this.mySpectators);
+        this.publisher.bindNextPlayer(starter);      
+        this.publisher.bindRoundNo(this.roundNo);
+        this.publisher.bindStatus(this.statusProp);
+        this.publisher.bindDifficulty(this.myPuck.getSpeed());
         this.publisher.addObserver(starter.getName(), starterClient);
-        this.publisher.bindRoundNo(roundNo);
-        this.publisher.bindStatus(statusProp);
     }
 
     /**
