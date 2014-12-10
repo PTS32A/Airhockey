@@ -690,4 +690,9 @@ public class Game extends UnicastRemoteObject implements IGame {
     public String getStatus() throws RemoteException {
         return this.statusProp.get().toString();
     }
+
+    @Override
+    public String getID() throws RemoteException {
+        return (String)this.gameInfo.get("gameID");
+    }
 }

@@ -249,7 +249,7 @@ class DatabaseControls {
         if(gameInput == null){
             throw new IllegalArgumentException("input was null");
         }
-        Game game = (Game)gameInput;
+        Game game = (Game) Lobby.getSingle().getActiveGames().get(gameInput.getID());
         if (game.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("Game contained less than three players");
         }

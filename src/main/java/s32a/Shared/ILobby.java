@@ -46,7 +46,7 @@ public interface ILobby extends Remote {
      * @return Returns a list of active Games
      * @throws RemoteException 
      */
-    public List<IGame> getActiveGames()
+    public HashMap<String, IGame> getActiveGames()
             throws RemoteException;
 
     /**

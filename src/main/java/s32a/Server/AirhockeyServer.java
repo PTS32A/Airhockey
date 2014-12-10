@@ -119,8 +119,14 @@ public class AirhockeyServer {
                 Label personIn = new Label("0");
                 gp.add(personIn, 1, 4);
 
-                // Binding
-                gamesIn.textProperty().bind(Bindings.size((lobby.getActiveGames())).asString());
+                gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
+                lobby.getActiveGamesProperty().addListener(new ChangeListener() {
+
+                    @Override
+                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                        gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
+                    }
+                });
 
                 activePersonsProp = new SimpleObjectProperty<>(null);              
                 activePersonsProp.addListener(new ChangeListener() {

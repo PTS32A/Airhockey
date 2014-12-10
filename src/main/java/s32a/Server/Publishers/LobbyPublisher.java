@@ -30,10 +30,10 @@ public class LobbyPublisher {
 
     private ConcurrentHashMap<String, ILobbyClient> observers;
     private Lobby lobby;
-    private ObservableList<IGame> games;
     private ObservableList<IPerson> rankings;
     private ObjectProperty<HashMap<String, Object>> settings;
     private ObjectProperty<HashMap<String, IPerson>> persons;
+    private ObjectProperty<HashMap<String, IGame>> games;
     private ObservableList<String> chat;
 
     public LobbyPublisher() throws RemoteException {
@@ -173,13 +173,13 @@ public class LobbyPublisher {
      * Binds the active Games to the observers' active Games
      * @param input An observable list of Games to be bound
      */
-    public void bindActiveGames(ObservableList<IGame> input) {
+    public void bindActiveGames(ObjectProperty<HashMap<String, IGame>> input) {
         this.games = input;
         this.pushActiveGames();
-        this.games.addListener(new ListChangeListener() {
+        this.games.addListener(new ChangeListener() {
 
             @Override
-            public void onChanged(ListChangeListener.Change c) {
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 pushActiveGames();
             }
         });
@@ -192,7 +192,7 @@ public class LobbyPublisher {
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setActiveGames(new ArrayList<>(games));
+                observers.get(key).setActiveGames(games.get());
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());

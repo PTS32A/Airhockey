@@ -346,4 +346,9 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     public String getStatus() throws RemoteException {
         return this.myGame.getStatus();
     }
+
+    @Override
+    public String getID() throws RemoteException {
+        return this.myGame.getID();
+    }
 }

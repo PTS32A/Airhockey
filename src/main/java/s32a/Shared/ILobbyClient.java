@@ -23,7 +23,7 @@ public interface ILobbyClient extends Remote{
      * @param activeGames A list of active Games
      * @throws RemoteException 
      */
-    public void setActiveGames(List<IGame> activeGames)
+    public void setActiveGames(HashMap<String, IGame> activeGames)
             throws RemoteException;
     
     /**

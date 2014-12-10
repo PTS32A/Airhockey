@@ -75,14 +75,48 @@ public interface IGame extends Remote, Serializable {
     public void startRound()
             throws RemoteException;
 
-    public String getDifficulty() throws RemoteException;
+    // -------------------- Getters of simple stats --------------------------
 
-    public String getPlayer1Name() throws RemoteException;
+    /**
+     * @return gameID expressed as string
+     * @throws RemoteException
+     */
+    public String getID()
+            throws RemoteException;
 
-    public String getPlayer2Name() throws RemoteException;
+    /**
+     * @return difficulty (puckspeed as string)
+     * @throws RemoteException
+     */
+    public String getDifficulty()
+            throws RemoteException;
 
-    public String getPlayer3Name() throws RemoteException;
+    /**
+     * @return player name if present, "-" otherwise
+     * @throws RemoteException
+     */
+    public String getPlayer1Name()
+            throws RemoteException;
 
-    public String getStatus() throws RemoteException;
+    /**
+     * @return player name if present, "-" otherwise
+     * @throws RemoteException
+     */
+    public String getPlayer2Name()
+            throws RemoteException;
+
+    /**
+     * @return player name if present, "-" otherwise
+     * @throws RemoteException
+     */
+    public String getPlayer3Name()
+            throws RemoteException;
+
+    /**
+     * @return game status expressed as string
+     * @throws RemoteException
+     */
+    public String getStatus()
+            throws RemoteException;
     
 }
