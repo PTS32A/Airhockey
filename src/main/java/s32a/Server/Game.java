@@ -408,6 +408,11 @@ public class Game extends UnicastRemoteObject implements IGame {
             averageRating += ((Player) p).ratingProperty().get();
         }
         averageRating = averageRating / myPlayers.size();
+        
+        if(averageRating < 10)
+            averageRating = 10;
+        else if (averageRating > 40)
+            averageRating = 40;
         return adjustDifficulty((float) averageRating);
     }
 

@@ -5,10 +5,6 @@
  */
 package s32a.Server;
 
-import s32a.Server.Spectator;
-import s32a.Shared.enums.Colors;
-import s32a.Server.Player;
-import s32a.Server.Game;
 import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
@@ -16,10 +12,15 @@ import java.util.logging.Logger;
 import javafx.beans.property.DoubleProperty;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import s32a.Client.ClientData.GameClient;
+import s32a.Server.Game;
+import s32a.Server.Player;
+import s32a.Server.Spectator;
+import s32a.Shared.enums.Colors;
 
 /**
  *
@@ -28,6 +29,7 @@ import static org.junit.Assert.*;
 public class GameTest {
 
     Game game;
+    GameClient client;
     Player starter;
     Spectator spec;
     String message;
@@ -47,10 +49,13 @@ public class GameTest {
     public void setUp() {
         try {
             //Player starter
+            client = new GameClient();
             starter = new Player("testPlayer", (double) 20, Colors.Red);
             game = new Game(starter);
             spec = new Spectator("testSpectator", (double) 0);
-            //game.addSpectator(spec);
+            
+            game.startPublisher(starter, client);
+            game.addSpectator(spec, client);
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,6 +69,7 @@ public class GameTest {
 
     /**
      * Test of addChatMessage method, of class Game.
+     * Test to confirm it isn't possible to send no(null) message.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testAddChatMessageNullMessage() {
@@ -77,6 +83,10 @@ public class GameTest {
         }
     }
 
+    /**
+    * Test of addChatMessage method, of class Game
+    * Test to confirm it isn't possible to send a chatmessage with no sender.
+    */
     @Test(expected = IllegalArgumentException.class)
     public void testAddChatMessageNullPlayer() {
         try {
@@ -86,91 +96,170 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAddChatMessageNullPlayer: " + ex.getMessage());
         }
     }
 
+    /**
+    * Test of addChatMessage method, of class Game
+    * Test to confirm it isn't possible to send an empty message.
+    */
     @Test(expected = IllegalArgumentException.class)
     public void testAddChatMessageEmpty() {
         try {
             message = "";
             game.addChatMessage(message, starter.getName());
-            fail("ChatMessage must containt characters other than white space");
+            fail("ChatMessage must contain characters");
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAddChatMessageEmpty: " + ex.getMessage());
         }
     }
 
+    /**
+    * Test of addChatMessage method, of class Game
+    * Test to confirm it isn't possible to send a message containing only white spaces.
+    */
     @Test(expected = IllegalArgumentException.class)
     public void testAddChatMessageWhiteSpaceMessage() {
         try {
             message = "   ";
             game.addChatMessage(message, starter.getName());
-            fail("ChatMessage must containt characters other than white space");
+            fail("ChatMessage must contain characters other than white space");
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAddChatMessageWhiteSpaceMessage: " + ex.getMessage());
         }
     }
 
+    /**
+    * Test of addPlayer method, of class Game.
+    * Test to confirm it isn't possible to create a game with no starterplayer.
+    */
     @Test(expected = IllegalArgumentException.class)
     public void testAddPlayerNullPlayer() {
-        //game.addPlayer(null);
-        fail("Given player can't be null");
+        try {
+            game.addPlayer(null, client);
+            fail("Given player can't be null");
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testAddPlayerNullPlayer: " + ex.getMessage());
+        }
+    }
+    
+    /**
+    * Test of addPlayer method, of class Game.
+    * Test to confirm it isn't possible to create a game with no gameclient.
+    */
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddPlayerNullClient() {
+        try {
+            game.addPlayer(starter, null);
+            fail("Given GameClient can't be null");
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testAddPlayerNullClient: " + ex.getMessage());
+        }
     }
 
     /**
      * Test of addPlayer method, of class Game.
+     * Test to confirm it isn't possible to join a game multiple times.
      */
     @Test
     public void testAddPlayerAlreadyAParticipant() {
-        Boolean expResult = false;
-        //Boolean result = game.addPlayer(starter);
-        //assertEquals("A player can't be added if he is already a participant", expResult, result);
-    }
-
-    @Test
-    public void testAddPlayerGameFull() {
         try {
-            Player p2 = new Player("testPlayer2", (double) 0, Colors.Blue);
-            Player p3 = new Player("testPlayer3", (double) 0, Colors.Green);
-            Player p4 = new Player("testPlayer4", (double) 0, Colors.Green);
-
-            //game.addPlayer(p2);
-            //game.addPlayer(p3);
             Boolean expResult = false;
-            //Boolean result = game.addPlayer(p4);
-
-            //assertEquals("A player can't be added if the game is full", expResult, result);
+            Boolean result = game.addPlayer(starter, client);
+            assertEquals("A player can't be added if he is already a participant", expResult, result);
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAddPlayerAlreadyAParticipant: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Test of addPlayer method, of class Game.
+     * Test to confirm it isn't possible to join a full game.
+     */
+    @Test
+    public void testAddPlayerGameFull() {
+        try {
+            Player p2 = new Player("testPlayer2", (double) 20, Colors.Blue);
+            Player p3 = new Player("testPlayer3", (double) 20, Colors.Green);
+            Player p4 = new Player("testPlayer4", (double) 20, Colors.Green);
+
+            game.addPlayer(p2, client);
+            game.addPlayer(p3, client);
+            Boolean expResult = false;
+            Boolean result = game.addPlayer(p4, client);
+
+            assertEquals("A player can't be added if the game is full", expResult, result);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testAddPlayerGameFull: " + ex.getMessage());
         }
     }
 
     /**
      * Test of addSpectator method, of class Game.
+     * Test to confirm it isn't possible to spectate a game as no(null) spectator.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testAddSpectatorNullSpectator() {
-        //game.addSpectator(null);
-        fail("Given spectator can't be null");
+        try {
+            game.addSpectator(null, client);
+            fail("Given spectator can't be null");
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testAddSpectatorNullSpectator: " + ex.getMessage());
+        }
+    }
+    
+    /**
+     * Test of addSpectator method, of class Game.
+     * Test to confirm it isn't possible to spectate a game without a client.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddSpectatorNullClient() {
+        try {
+            game.addSpectator(spec, null);
+            fail("Given GameClient can't be null");
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testAddSpectatorNullClient: " + ex.getMessage());
+        }
     }
 
+    /**
+     * Test of addSpectator method, of class Game.
+     * Test to confirm it isn't possible to spectate a game multiple times.
+     */
     @Test
     public void testAddSpectatorAllreadyAParticipant() {
-        Boolean expResult = false;
-        //Boolean result = game.addSpectator(spec);
-
-        //assertEquals("A spectator can't be added if he is already a participant", expResult, result);
+        try {
+            Boolean expResult = false;
+            Boolean result = game.addSpectator(spec, client);
+            
+            assertEquals("A spectator can't be added if he is already a participant", expResult, result);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on testAddSpectatorAllreadyAParticipant: " + ex.getMessage());
+        }
     }
 
     /**
      * Test of removeSpectator method, of class Game.
+     * Test to confirm it isn't possible to remove no(null) spectator.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testRemoveSpectatorNullSpectator() {
@@ -180,10 +269,14 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testRemoveSpectatorNullSpectator: " + ex.getMessage());
         }
     }
 
+    /**
+     * Test of removeSpectator method, of class Game.
+     * Test to confirm it isn't possible to remove a spectator who isn't spectating the game.
+     */
     @Test
     public void testRemoveSpectatorNotAParticipant() {
         try {
@@ -196,12 +289,13 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testRemoveSpectatorNotAParticipant: " + ex.getMessage());
         }
     }
 
     /**
      * Test of beginGame method, of class Game.
+     * Test to confirm it isn't possible to start a game with less than 3 players.
      */
     @Test
     public void testBeginGameNotEnoughPlayers() {
@@ -213,18 +307,22 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testBeginGameNotEnoughPlayers: " + ex.getMessage());
         }
     }
 
+    /**
+     * Test of beginGame method, of class Game.
+     * Test to confirm it isn't possible to start an already started game.
+     */
     @Test
-    public void testBeginGameAlreadyBegon() {
+    public void testBeginGameAlreadyBegun() {
         try {
-            Player p2 = new Player("testPlayer2", (double) 0, Colors.Blue);
-            Player p3 = new Player("testPlayer3", (double) 0, Colors.Green);
+            Player p2 = new Player("testPlayer2", (double) 20, Colors.Blue);
+            Player p3 = new Player("testPlayer3", (double) 20, Colors.Green);
 
-            //game.addPlayer(p2);
-            //game.addPlayer(p3);
+            game.addPlayer(p2, client);
+            game.addPlayer(p3, client);
             game.beginGame();
 
             Boolean expResult = false;
@@ -234,21 +332,22 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testBeginGameAlreadyBegun: " + ex.getMessage());
         }
     }
 
     /**
      * Test of adjustDifficulty method, of class Game.
+     * Test to confirm it isn't possible to adjust the difficulty of an already started game.
      */
     @Test
-    public void testAdjustDifficultyGameAlreadyBegon() {
+    public void testAdjustDifficultyGameAlreadyBegun() {
         try {
             Player p2 = new Player("testPlayer2", (double) 0, Colors.Blue);
             Player p3 = new Player("testPlayer3", (double) 0, Colors.Green);
 
-            //game.addPlayer(p2);
-            //game.addPlayer(p3);
+            game.addPlayer(p2, client);
+            game.addPlayer(p3, client);
             game.beginGame();
 
             Boolean expResult = false;
@@ -258,10 +357,14 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAdjustDifficultyGameAlreadyBegun: " + ex.getMessage());
         }
     }
 
+    /**
+     * Test of adjustDifficulty method, of class Game.
+     * Test to confirm it isn't possible to adjust the difficulty to less than the minimum
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testAdjustDifficultyMinLimit() {
         try {
@@ -272,10 +375,14 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAdjustDifficultyMinLimit: " + ex.getMessage());
         }
     }
 
+    /**
+     * Test of adjustDifficulty method, of class Game.
+     * Test to confirm it isn't possible to adjust the difficulty to more than the maximum
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testAdjustDifficultyMaxLimit() {
         try {
@@ -286,10 +393,14 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testAdjustDifficultyMaxLimit: " + ex.getMessage());
         }
     }
 
+    /**
+     * Test of pauseGame method, of class Game.
+     * Test to confirm it isn't possible to pause an already paused game.
+     */
     @Test
     public void testPauseGameAlreadyPaused() {
         try {
@@ -304,10 +415,14 @@ public class GameTest {
         }
         catch (RemoteException ex) {
             Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTest: " + ex.getMessage());
+            System.out.println("RemoteException on testPauseGameAleadyPaused: " + ex.getMessage());
         }
     }
 
+    /**
+     * Test of pauseGame method, of class Game.
+     * Test to confirm it isn't possible to unpause an already unpaused game.
+     */
     @Test
     public void testPauseGameAlreadyUnPaused() {
         try {
@@ -324,6 +439,9 @@ public class GameTest {
         }
     }
 
+    /**
+     * Test of pauseGame method, of class Game.
+     */
     @Test
     public void testPauseGame() {
         try {
@@ -359,6 +477,7 @@ public class GameTest {
 
     /**
      * Test of getNextColor method, of class Game.
+     * Test to confirm that the next colour after Red is Blue.
      */
     @Test
     public void testGetNextColorBlue() {
@@ -368,14 +487,24 @@ public class GameTest {
         assertEquals("Next color must be blue", expResult, result);
     }
 
+    /**
+     * Test of getNextColor method, of class Game.
+     * Test to confirm that the next colour after Blue is Green.
+     */
     @Test
     public void testGetNextColorGreen() {
-        //game.addPlayer(new Player("testPlayer2", (double)0, Colors.Blue));
-
-        Colors expResult = Colors.Green;
-        Colors result = game.getNextColor();
-
-        assertEquals("Next color must be green", expResult, result);
+        try {
+            game.startPublisher(starter, client);
+            game.addPlayer(new Player("testPlayer2", (double)20, Colors.Blue), client);
+            
+            Colors expResult = Colors.Green;
+            Colors result = game.getNextColor();
+            
+            assertEquals("Next color must be green", expResult, result);
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
