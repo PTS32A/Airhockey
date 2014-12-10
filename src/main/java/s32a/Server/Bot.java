@@ -38,17 +38,17 @@ public class Bot extends Player {
     public void moveBot() throws RemoteException {
         if (((Game)getMyGame()).statusProperty().get().equals(GameStatus.Playing)) {
             if (this.getColor() == Colors.Red) {
-                if (((Game)getMyGame()).getMyPuck().getXPos().get() >= getPosX().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getPosition().get().x >= getPosX().doubleValue()) {
                     moveBat(-1);
                 }
-                if (((Game)getMyGame()).getMyPuck().getXPos().get() <= getPosX().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getPosition().get().x <= getPosX().doubleValue()) {
                     moveBat(1);
                 }
             } else {
-                if (((Game)getMyGame()).getMyPuck().getYPos().get() >= getPosY().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getPosition().get().y >= getPosY().doubleValue()) {
                     moveBat(-1);
                 }
-                if (((Game)getMyGame()).getMyPuck().getYPos().get() <= getPosY().doubleValue()) {
+                if (((Game)getMyGame()).getMyPuck().getPosition().get().y <= getPosY().doubleValue()) {
                     moveBat(1);
                 }
             }
