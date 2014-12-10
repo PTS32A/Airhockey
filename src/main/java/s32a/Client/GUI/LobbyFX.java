@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -59,6 +60,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     ListView lvPlayerInfo;
 
     private AnimationTimer lobbyTimer;
+    private ObservableList<Property> playerInfo;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -72,8 +74,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             }
         });
         
-        ObservableList<Property> playerInfo;
-
+        playerInfo = FXCollections.observableArrayList();
+        playerInfo.setAll(lobby.getPlayerRatingProperty());
         try {
             this.lvChatbox.setItems(lobby.getChatProperty());
             this.tvHighscores.setItems(lobby.getRankings());
@@ -99,12 +101,13 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
 
     /**
      * updates relevant screens in display
+     * @param pR
      */
     public void updatePlayerInfo() {
         IPerson p = super.getMe();
         if (p != null) {
             lvPlayerInfo.setItems(FXCollections.observableArrayList("Name: "
-                    + me, "Rating: " + Double.toString(lobby.getPlayerRatingProperty().get())));
+                    + me, "Rating: " + playerInfo.get(0)));
         }
     }
 
