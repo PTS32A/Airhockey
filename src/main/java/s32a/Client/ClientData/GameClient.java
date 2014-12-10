@@ -68,6 +68,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.player3Score = new SimpleIntegerProperty(20);
         this.gameStatusProperty = new SimpleObjectProperty(GameStatus.Waiting);
         this.difficulty = new SimpleStringProperty("");
+        this.gameTime = new SimpleStringProperty("");
     }
     
     /**

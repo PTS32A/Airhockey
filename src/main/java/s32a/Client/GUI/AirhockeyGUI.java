@@ -177,20 +177,22 @@ public class AirhockeyGUI extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Game.fxml"));
         Parent root = (Parent) loader.load();
         GameFX controller = (GameFX) loader.getController();
-        // adds close event to controller through method
-        controller.addCloseEvent(stage);
-        if (lobby.getMyPerson(me) instanceof IPlayer) {
-            controller.addEvents((IPlayer) lobby.getMyPerson(me));
-        }
-        controller.setMyGame(client);
-
+        
         //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
 //        stage.setResizable(false);
         stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
-
+        
+        // adds close event to controller through method
+        controller.addCloseEvent(stage);
+        controller.setMyGame(client);
+        controller.bindMyGameProperties();
+        if (lobby.getMyPerson(me) instanceof IPlayer) {
+            controller.addEvents((IPlayer) lobby.getMyPerson(me));
+        }
+        
         // Terminates game
         stage.show();
     }

@@ -132,35 +132,17 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
 
         } else if (myPerson instanceof ISpectator) {
-            try {
-                // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
-                ISpectator mySpectator = (ISpectator) myPerson;
-                lblName.setText(myGame.getMyPlayers().get(0).getName());
-                btnStart.setVisible(false);
-                btnPause.setVisible(false);
-                btnQuit.setVisible(false);
-                this.sldCustomDifficulty.setVisible(false);
-                this.cbxCustomDifficulty.setVisible(false);
-            }
-            catch (RemoteException ex) {
-                System.out.println("RemoteException on setting spectator info in setUp: " + ex.getMessage());
-                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
+            ISpectator mySpectator = (ISpectator) myPerson;
+            btnStart.setVisible(false);
+            btnPause.setVisible(false);
+            btnQuit.setVisible(false);
+            this.sldCustomDifficulty.setVisible(false);
+            this.cbxCustomDifficulty.setVisible(false);
         } else {
             showDialog("Error", "myPerson was neither player nor spectator");
         }
-        // binds upDateTime property
-        this.lblTime.textProperty().bind(myGame.getGameTime());
-
-        // round number
-        this.lblRound.textProperty().bind(myGame.getRoundNoProperty().asString());
-
-        // Chatbox
-        this.lvChatbox.setItems(myGame.getChat());
-
-        // Difficulty 
-        this.lblDifficulty.textProperty().bind(myGame.getDifficulty());
-
+        
         // binds width / height for redrawing to canvas size
         this.width.bind(this.apGame.prefWidthProperty());
         this.height.bind(Bindings.subtract(this.apGame.prefHeightProperty(), 1));
@@ -179,9 +161,22 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 }
             }
         });
+    }
 
-        // draws the canvas
-        this.drawEdges();
+    public void bindMyGameProperties()
+    {
+        IPerson myPerson = super.getMe();
+        // binds upDateTime property
+        this.lblTime.textProperty().bind(myGame.getGameTime());
+
+        // round number
+        this.lblRound.textProperty().bind(myGame.getRoundNoProperty().asString());
+
+        // Chatbox
+        this.lvChatbox.setItems(myGame.getChat());
+
+        // Difficulty 
+        this.lblDifficulty.textProperty().bind(myGame.getDifficulty());
 
         /**
          * if currentPerson is spectator, graphics can start now. If he were a
@@ -189,9 +184,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
          */
         if (myPerson instanceof ISpectator) {
             this.startGraphics(myGame);
+            try {
+                lblName.setText(myGame.getMyPlayers().get(0).getName());
+            }
+            catch (RemoteException ex) {
+                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        // draws the canvas
+        this.drawEdges();
     }
-
     /**
      * Generates puck, and binds properties
      */
