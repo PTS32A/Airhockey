@@ -92,18 +92,10 @@ class Puck extends TimerTask {
     private Vector2 rightCorner;
 
     /**
-     * Threadsafe property set
-     *
      * @param input
      */
     void setSpeed(float input) {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                speed.set(input);
-            }
-        });
+        speed.set(input);
     }
 
     /**
@@ -133,7 +125,7 @@ class Puck extends TimerTask {
         this.speed = new SimpleFloatProperty(speed);
         this.hitBy = new ArrayList<>();
 
-        this.position = new SimpleObjectProperty(null);
+        this.position = new SimpleObjectProperty(new Vector2(0f, 0f));
         this.xPos = new SimpleDoubleProperty(0);
         this.yPos = new SimpleDoubleProperty(0);
 
@@ -198,17 +190,10 @@ class Puck extends TimerTask {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                Platform.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        xPos.set(((Vector2) newValue).x);
-                        yPos.set(((Vector2) newValue).y);
-                    }
-                });
+                xPos.set(((Vector2) newValue).x);
+                yPos.set(((Vector2) newValue).y);
             }
         });
-
         this.position.set(centre);
 
         //this.position = new Vector2(0, centre.y * 2);
