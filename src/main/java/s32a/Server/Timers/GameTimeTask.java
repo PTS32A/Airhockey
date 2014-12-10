@@ -44,13 +44,7 @@ public class GameTimeTask extends TimerTask {
             }
             final String output = minute + ":" + second;
 
-            Platform.runLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    myGame.setGameTime(output);
-                }
-            });
+            myGame.setGameTime(output);
         }
     }
 }
