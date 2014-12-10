@@ -27,6 +27,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -70,10 +72,7 @@ public class AirhockeyGUI extends Application {
 
         try {
             lobby = new LobbyClient(this.requestRemoteLobby(ipAddress, bindingName, portNumber));
-            if(lobby != null ){
-                showDialog("Success", "connected to lobby");
-            }
-            else {
+            if(lobby == null ){
                 showDialog("Error", "lobby is null");
                 System.exit(0);
             }
@@ -115,6 +114,7 @@ public class AirhockeyGUI extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+        showDialog("Success", "connected to lobby");
 
         // populates lobby
 //        Thread t = new Thread(new Runnable() {
@@ -242,11 +242,23 @@ public class AirhockeyGUI extends Application {
                             startClient();
                         }
                     });
+                    
                     Group root = new Group();
                     Scene scene = new Scene(root, 300, 150);
                     root.getChildren().add(gp);
                     stage.setScene(scene);
                     stage.setTitle("Server Information");
+                    
+                    stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+                        @Override
+                        public void handle(KeyEvent ke) {
+                            if (ke.getCode() == KeyCode.ENTER) {
+                                confirm.fire();
+                            }
+                        }
+                    });
+                    
                     stage.show();
                 }
                 catch (Exception ex) {

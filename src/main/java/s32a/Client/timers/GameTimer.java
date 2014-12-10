@@ -48,14 +48,8 @@ public class GameTimer extends AnimationTimer {
                 timer--;
             }
             else{
-                try {
-                    gameFX.nextRound();
-                    timer = 3;
-                }
-                catch (RemoteException ex) {
-                    Logger.getLogger(GameTimer.class.getName()).log(Level.SEVERE, null, ex);
-                    System.out.println("RemoteException in GameTimer; " + ex.getMessage());
-                }
+                gameFX.setCountdown("");
+                timer = 3;
             }
             prevUpd = now;
         }

@@ -17,9 +17,6 @@ import java.util.List;
  */
 public interface ILobby extends Remote {
 
-    public IPerson getMyPerson(String playerName)
-            throws RemoteException;
-
     public HashMap getAirhockeySettings()
             throws RemoteException;
 
