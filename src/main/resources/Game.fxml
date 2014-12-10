@@ -49,6 +49,5 @@
                </font>
             </Label>
          </children></AnchorPane>
-      <Label font="$x1" layoutX="10.0" layoutY="10.0" prefWidth="152.0" text="Round:" textAlignment="CENTER" />
   </children>
 </AnchorPane>
