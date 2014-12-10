@@ -57,6 +57,8 @@ public class LobbyTest {
             this.mockLobby.clearDatabase();
             this.mockLobbyClient = new LobbyClient(mockLobby);
             this.mockGameClient = new GameClient();
+            
+            mockLobby.startPublisher();
         }
         catch (RemoteException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -127,11 +129,6 @@ public class LobbyTest {
         try {
             this.mockLobby.addPerson(null, "testpass");
         }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("IllegalArgumentException on testAddUserNullPlayerName: " + ex.getMessage());
-            fail("IllegalArgumentException on testAddUserNullPlayerName: " + ex.getMessage());
-        }
         catch (SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQLException on testAddUserNullPlayerName: " + ex.getMessage());
@@ -148,11 +145,6 @@ public class LobbyTest {
     public void testAddUserNullPassword() {
         try {
             this.mockLobby.addPerson("testey", null);
-        }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("IllegalArgumentException on testAddUserNullPassword: " + ex.getMessage());
-            fail("IllegalArgumentException on testAddUserNullPassword: " + ex.getMessage());
         }
         catch (SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -171,11 +163,6 @@ public class LobbyTest {
         try {
             this.mockLobby.addPerson("testey   ", "testpass");
         }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("IllegalArgumentException on testAddUserTrailingWhiteSpaceName: " + ex.getMessage());
-            fail("IllegalArgumentException on testAddUserTrailingWhiteSpaceName: " + ex.getMessage());
-        }
         catch (SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQLException on testAddUserTrailingWhiteSpaceName: " + ex.getMessage());
@@ -192,11 +179,6 @@ public class LobbyTest {
     public void testAddUserLeadingWhiteSpacePassword() {
         try {
             this.mockLobby.addPerson("testey", "   testpass");
-        }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("IllegalArgumentException on testAddUserLeadingWhiteSpacePassword: " + ex.getMessage());
-            fail("IllegalArgumentException on testAddUserLeadingWhiteSpacePassword: " + ex.getMessage());
         }
         catch (SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -321,11 +303,6 @@ public class LobbyTest {
             this.mockLobby.addChatMessage(null,
                     ((Person) this.mockLobby.getActivePersons().get("testey")).getName());
         }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("IllegalArgumentException on testAddNullChatMessage: " + ex.getMessage());
-            fail("IllegalArgumentException on testAddNullChatMessage: " + ex.getMessage());
-        }
         catch (SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQLException on testAddNullChatMessage: " + ex.getMessage());
@@ -346,11 +323,6 @@ public class LobbyTest {
             this.mockLobby.checkLogin("testey", "testpass", mockLobbyClient);
 
             this.mockLobby.addChatMessage("anonpost", null);
-        }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("IllegalArgumentException on testAddFromNullChatMessage: " + ex.getMessage());
-            fail("IllegalArgumentException on testAddFromNullChatMessage: " + ex.getMessage());
         }
         catch (SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -443,11 +415,6 @@ public class LobbyTest {
     public void testLogout2() {
         try {
             this.mockLobby.logOut(null);
-        }
-        catch (IllegalArgumentException ex) {
-            Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("IllegalArgumentException on testLogout2: " + ex.getMessage());
-            fail("IllegalArgumentException on testLogout2: " + ex.getMessage());
         }
         catch (RemoteException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
