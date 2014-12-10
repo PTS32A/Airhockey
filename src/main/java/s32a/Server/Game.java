@@ -578,13 +578,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      * @param input
      */
     private void setRoundNo(int input) {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                roundNo.set(input);
-            }
-        });
+        roundNo.set(input);
     }
 
     /**

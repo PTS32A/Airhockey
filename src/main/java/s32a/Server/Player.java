@@ -60,13 +60,7 @@ public class Player extends Person implements IPlayer {
      * @throws java.rmi.RemoteException
      */
     public void setScore(int input) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                score.setValue(input);
-            }
-        });
+            score.setValue(input);
     }
 
     /**
