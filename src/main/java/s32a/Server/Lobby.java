@@ -19,6 +19,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import lombok.Getter;
 import s32a.Server.Publishers.LobbyPublisher;
 import s32a.Shared.IGame;
@@ -37,15 +38,10 @@ import s32a.Shared.enums.GameStatus;
  */
 public class Lobby extends UnicastRemoteObject implements ILobby {
 
-    /**
-     * The Lobby Singleton. Called by everything except some unit tests.
-     */
     private static Lobby _singleton;
 
     /**
-     * If _singleton is null, initializes it.
-     *
-     * @return instance of lobby (_singleton)
+     * @return instance of lobby (_singleton). Starts new if it was null.
      * @throws java.rmi.RemoteException
      */
     public static Lobby getSingle() throws RemoteException {
@@ -54,14 +50,21 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         }
         return _singleton;
     }
+
     @Getter
     private Chatbox mychatbox;
     private DatabaseControls myDatabaseControls;
-    private ObjectProperty<HashMap<String, Object>> airhockeySettingsProperty;
+//    private ObjectProperty<HashMap<String, Object>> airhockeySettingsProperty;
+//    @Getter
+//    private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
+//    @Getter
+//    private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
     @Getter
-    private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
+    private ObservableMap<String, Object> airhockeySettings;
     @Getter
-    private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
+    private ObservableMap<String, IPerson> activePersons;
+    @Getter
+    private ObservableMap<String, IGame> activeGames;
     private ObservableList<IPerson> rankings;
     private LobbyPublisher publisher;
 
@@ -73,20 +76,6 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     @Override
     public IPerson getMyPerson(String name) throws RemoteException {
         return this.activePersonsProperty.get().get(name);
-    }
-
-    /**
-     * Returns the hashmap containing active persons.
-     * @return
-     */
-    @Override
-    public HashMap<String, IPerson> getActivePersons() {
-        return this.activePersonsProperty.get();
-    }
-
-    @Override
-    public HashMap<String, IGame> getActiveGames() {
-        return this.activeGamesProperty.get();
     }
 
     /**
@@ -115,8 +104,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             this.rankings = FXCollections.observableArrayList(myDatabaseControls.getRankings());
         }
         catch (SQLException ex) {
-            System.out.println("SQL exception retrieving getRankings in lobby constructor");
-            Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("SQL exception retrieving getRankings in lobby constructor: "
+                    + ex.getMessage());
         }
     }
 
@@ -241,6 +230,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             myDatabaseControls.clearDatabase();
         }
         catch (SQLException ex) {
+            System.out.println("Error clearing database: " + ex.getMessage());
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

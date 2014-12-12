@@ -40,7 +40,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private ObservableList<IPerson> rankings;
     @Getter
     private DoubleProperty playerRatingProperty;
-    private List<IGame> backingActiveGames;
     @Getter
     private ObservableList<IGame> oActiveGames;
 
@@ -60,10 +59,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         this.settingsProperty = new SimpleObjectProperty<>(new HashMap<>());
         this.chat = new ArrayList<>();
         this.chatProperty = FXCollections.observableArrayList(chat);
-        this.playerRatingProperty = new SimpleDoubleProperty(0);
+        this.playerRatingProperty = new SimpleDoubleProperty(-5);
 
-        this.backingActiveGames = new ArrayList<>();
-        this.oActiveGames = FXCollections.observableArrayList(this.backingActiveGames);
+        this.oActiveGames = FXCollections.observableArrayList(new ArrayList<>());
     }
 
     @Override

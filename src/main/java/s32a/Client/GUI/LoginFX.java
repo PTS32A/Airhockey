@@ -45,8 +45,8 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
             super.showDialog("Error", "One or more fields are empty.");
         } else {
             try {
+                AirhockeyGUI.me = tfUserName.getText();
                 if (lobby.checkLogin(tfUserName.getText(), pwfPassword.getText(), lobby)) {
-                    AirhockeyGUI.me = tfUserName.getText();
                     super.goToLobby(getThisStage());
                 } else {
                     super.showDialog("Error", "Username or password is incorrect.");

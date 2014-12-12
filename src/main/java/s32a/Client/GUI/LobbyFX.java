@@ -59,8 +59,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     @FXML
     ListView lvPlayerInfo;
 
-    private ObservableList<Property> playerInfo;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -73,8 +71,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             }
         });
         
-        playerInfo = FXCollections.observableArrayList();
-        playerInfo.setAll(lobby.getPlayerRatingProperty());
         try {
             this.lvChatbox.setItems(lobby.getChatProperty());
             this.tvHighscores.setItems(lobby.getRankings());
@@ -106,7 +102,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         IPerson p = super.getMe();
         if (p != null) {
             lvPlayerInfo.setItems(FXCollections.observableArrayList("Name: "
-                    + me, "Rating: " + playerInfo.get(0)));
+                    + me, "Rating: " + lobby.getPlayerRatingProperty().get()));
         }
     }
 

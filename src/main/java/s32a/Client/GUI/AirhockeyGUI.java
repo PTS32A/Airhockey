@@ -53,7 +53,7 @@ public class AirhockeyGUI {
     @Getter
     private Stage stage;
     protected static LobbyClient lobby = null;
-    public static String me;
+    public static String me = "--";
     protected static String ipAddress = null, bindingName = "AirhockeyServer", portNumber = null;
 
     public void startGUI(Stage stage){
@@ -114,22 +114,6 @@ public class AirhockeyGUI {
         stage.setResizable(false);
         stage.show();
         showDialog("Success", "connected to lobby");
-
-        // populates lobby
-//        Thread t = new Thread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                try {
-//                    lobby.populate();
-//                }
-//                catch (RemoteException ex) {
-//                    System.out.println("RemoteException on populate: " + ex.getMessage());
-//                    Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//        });
-//        t.start();
     }
 
     /**

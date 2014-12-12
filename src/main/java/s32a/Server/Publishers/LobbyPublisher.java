@@ -20,6 +20,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import s32a.Server.Lobby;
 import s32a.Shared.IGame;
 import s32a.Shared.ILobbyClient;
@@ -35,9 +36,12 @@ public class LobbyPublisher {
     private Lobby lobby;
     private ObservableList<IPerson> rankings;
     private ObservableList<String> chat;
-    private ObjectProperty<HashMap<String, Object>> settings;
-    private ObjectProperty<HashMap<String, IPerson>> persons;
-    private ObjectProperty<HashMap<String, IGame>> games;
+//    private ObjectProperty<HashMap<String, Object>> settings;
+//    private ObjectProperty<HashMap<String, IPerson>> persons;
+//    private ObjectProperty<HashMap<String, IGame>> games;
+    private ObservableMap<String, Object> settings;
+    private ObservableMap<String, IPerson> persons;
+    private ObservableMap<String, IGame> games;
 
     private AtomicBoolean isNewRankings, isNewChat, isNewSettings, isNewPersons, isNewGames;
 

@@ -38,6 +38,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import s32a.Server.Publishers.GamePublisher;
+import s32a.Shared.IGame;
 import s32a.Shared.IPerson;
 
 /**
@@ -51,6 +52,8 @@ public class AirhockeyServer {
     private static final int portNumber = 1099;
     private static final String bindingName = "AirhockeyServer";
     private String ipAddress;
+    private ObjectProperty<HashMap<String, IPerson>> personsProperty;
+    private ObjectProperty<HashMap<String, IGame>> gamesProperty;
 
     public AirhockeyServer(Stage stage) {
 
@@ -115,28 +118,34 @@ public class AirhockeyServer {
         Label personIn = new Label("0");
         gp.add(personIn, 1, 4);
 
-        gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
-        lobby.getActiveGamesProperty().addListener(new ChangeListener() {
+        this.gamesProperty = new SimpleObjectProperty<>(null);
+        this.gamesProperty.bind(lobby.getActiveGamesProperty());
+        this.gamesProperty.addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+
                 final String size = String.valueOf(lobby.getActiveGames().keySet().size());
+                gamesIn.setText(size);
+                System.out.println("changed gamestext outside runlater");
                 Platform.runLater(new Runnable() {
 
                     @Override
                     public void run() {
                         gamesIn.setText(size);
+                        System.out.println("changed games text in runlater");
                     }
                 });
-
             }
         });
 
-        lobby.getActivePersonsProperty().addListener(new ChangeListener() {
+        this.personsProperty = new SimpleObjectProperty<>(null);
+        this.personsProperty.bind(lobby.getActivePersonsProperty());
+        this.personsProperty.addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                final String size = String.valueOf(lobby.getActivePersonsProperty().get().size());
+                final String size = String.valueOf(lobby.getActivePersons().keySet().size());
                 Platform.runLater(new Runnable() {
 
                     @Override

@@ -18,7 +18,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>s32a.Client.GUI.AirhockeyGUI</mainClass>
+                  <mainClass>s32a.Main.AirhockeyApplication</mainClass>
                 </transformer>
               </transformers>
             </configuration>

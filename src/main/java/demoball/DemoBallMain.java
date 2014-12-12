@@ -5,6 +5,7 @@
  */
 package demoball;
 
+import genericTests.TestClass;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -25,6 +26,8 @@ public class DemoBallMain extends Application
     @Override
     public void start(Stage stage) throws IOException
     {
+        TestClass testey = new TestClass();
+
         // loads FXML file, and shows it on screen
         this.stage = stage;
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("demoball.fxml"));

@@ -25,7 +25,6 @@ import s32a.Server.AirhockeyServer;
  */
 public class AirhockeyApplication extends Application {
 
-    private static String type;
     private Stage stage;
 
     @Override
