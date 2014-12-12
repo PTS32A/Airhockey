@@ -29,7 +29,7 @@ public interface IGameClient extends Remote{
      * @param players A list of Players to be added
      * @throws RemoteException 
      */
-    public void setPlayer(List<IPlayer> players)
+    public void setPlayers(List<IPlayer> players)
             throws RemoteException;
     
     /**

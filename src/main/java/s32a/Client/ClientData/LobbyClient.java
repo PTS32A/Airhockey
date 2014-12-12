@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import s32a.Client.GUI.AirhockeyGUI;
 import s32a.Shared.IGame;
 import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
@@ -162,11 +163,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public void setRating(Double rating) throws RemoteException {
-        this.playerRatingProperty.set(rating);
-    }
-
-    @Override
     public void setSettings(HashMap<String, Object> settings) throws RemoteException {
         this.settingsProperty.set(settings);
     }
@@ -174,6 +170,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     @Override
     public void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
         this.activePersonsProperty.set(persons);
+        this.playerRatingProperty.set(persons.get(AirhockeyGUI.me).getRating());
     }
 
     @Override

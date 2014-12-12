@@ -53,7 +53,7 @@ public class AirhockeyGUI extends Application {
     @Getter
     private Stage stage;
     protected static LobbyClient lobby = null;
-    protected static String me;
+    public static String me;
     protected static String ipAddress = null, bindingName = "AirhockeyServer", portNumber = null;
 
     @Override

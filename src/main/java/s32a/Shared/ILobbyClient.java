@@ -51,14 +51,6 @@ public interface ILobbyClient extends Remote{
             throws RemoteException;
     
     /**
-     * Sets the Rating of the this client's Person
-     * @param rating The rating to be set to
-     * @throws RemoteException 
-     */
-    public void setRating(Double rating)
-            throws RemoteException;
-    
-    /**
      * Sets the settings of the server Lobby in this client
      * @param settings A HashMap containing the Settings of the server's Lobby
      * @throws RemoteException 

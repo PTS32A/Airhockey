@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -31,18 +33,30 @@ public class LobbyPublisher {
     private ConcurrentHashMap<String, ILobbyClient> observers;
     private Lobby lobby;
     private ObservableList<IPerson> rankings;
+    private ObservableList<String> chat;
     private ObjectProperty<HashMap<String, Object>> settings;
     private ObjectProperty<HashMap<String, IPerson>> persons;
     private ObjectProperty<HashMap<String, IGame>> games;
-    private ObservableList<String> chat;
 
+    private AtomicBoolean isNewRankings, isNewChat, isNewSettings, isNewPersons, isNewGames;
+
+    /**
+     * Constructor. Initialises Properties that get bound.
+     *
+     * @throws RemoteException
+     */
     public LobbyPublisher() throws RemoteException {
         this.observers = new ConcurrentHashMap<>();
         this.lobby = Lobby.getSingle();
+        this.settings = new SimpleObjectProperty<>(null);
+        this.persons = new SimpleObjectProperty<>(null);
+        this.games = new SimpleObjectProperty<>(null);
+
     }
 
     /**
      * Adds an ILobbyClient as observer to the server.
+     *
      * @param name The name corresponding with the ILobbyClient
      * @param input The ILobbyClient to be added
      * @return Returns a boolean indicating success of the addition
@@ -51,18 +65,41 @@ public class LobbyPublisher {
         if (observers.containsKey(name)) {
             return false;
         }
-        if (observers.put(name, input) == null){
-            this.pushActiveGames();
-            this.pushPersons();
-            this.pushRankings();
-            this.pushSettings();
-            return true;
+        if (observers.put(name, input) == null) {
+            return this.pushToNewObserver(name, input);
         }
         return false;
     }
 
     /**
+     * Pushes all values to a newly registered observer. Avoids mass pushing
+     * everything to everyone.
+     *
+     * @param name
+     * @param newObsv
+     * @return
+     */
+    private boolean pushToNewObserver(String name, ILobbyClient newObsv) {
+        try {
+            newObsv.setActiveGames(this.games.get());
+            newObsv.setChat(new ArrayList<>(this.chat));
+            newObsv.setPersons(this.persons.get());
+            newObsv.setRankings(new ArrayList<>(this.rankings));
+            newObsv.setSettings(this.settings.get());
+            return true;
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteException pushing values to new observer " + name
+                    + " - removing observer");
+            this.removeObserver(name);
+            return false;
+        }
+
+    }
+
+    /**
      * Removes an observer
+     *
      * @param name The name corresponding with the observer
      */
     public void removeObserver(String name) {
@@ -71,9 +108,10 @@ public class LobbyPublisher {
 
     /**
      * Binds the list of the chat messages of the server to the client
+     *
      * @param chat An observable list of chat messages to be bound
      */
-    public void bindChat(ObservableList<String> chat){
+    public void bindChat(ObservableList<String> chat) {
         this.chat = chat;
         this.pushChat();
         this.chat.addListener(new ListChangeListener() {
@@ -86,9 +124,13 @@ public class LobbyPublisher {
     }
 
     /**
-     * Pushes an update in the ChatBox to the observers
+     * Pushes an update in the ChatBox to the observers. Only does so if the
+     * list is not null or empty.
      */
-    private void pushChat(){
+    private void pushChat() {
+        if (this.chat == null || this.chat.isEmpty()) {
+            return;
+        }
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
@@ -96,17 +138,19 @@ public class LobbyPublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
-                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                this.removeObserver(key);
             }
         }
     }
 
     /**
      * Binds the server's settings to the observers' settings
+     *
      * @param input The settings to be bound
      */
     public void bindSettings(ObjectProperty<HashMap<String, Object>> input) {
-        this.settings = input;
+        this.settings.bind(input);
         this.pushSettings();
         this.settings.addListener(new ChangeListener() {
 
@@ -120,6 +164,7 @@ public class LobbyPublisher {
 
     /**
      * Pushes the updated settings to the observers
+     *
      * @param newValue An updated setting
      */
     private void pushSettings() {
@@ -130,13 +175,15 @@ public class LobbyPublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting settings for " + key + ": " + ex.getMessage());
-                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                this.removeObserver(key);
             }
         }
     }
 
     /**
      * Binds the Persons to the observers' Persons
+     *
      * @param input A HashMap containing Persons to bound
      */
     public void bindPersons(ObjectProperty<HashMap<String, IPerson>> input) {
@@ -154,6 +201,7 @@ public class LobbyPublisher {
 
     /**
      * Pushes an update in a Person to the observers
+     *
      * @param newValue An object containing the update to be pushed
      */
     private void pushPersons() {
@@ -164,17 +212,19 @@ public class LobbyPublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting Persons for " + key + ": " + ex.getMessage());
-                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                this.removeObserver(key);
             }
         }
     }
 
     /**
      * Binds the active Games to the observers' active Games
+     *
      * @param input An observable list of Games to be bound
      */
     public void bindActiveGames(ObjectProperty<HashMap<String, IGame>> input) {
-        this.games = input;
+        this.games.bind(input);
         this.pushActiveGames();
         this.games.addListener(new ChangeListener() {
 
@@ -196,13 +246,15 @@ public class LobbyPublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());
-                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                this.removeObserver(key);
             }
         }
     }
 
     /**
      * Binds the rankings of the Persons to the observers' rankings
+     *
      * @param input An observable list of Persons, containing the rankings
      */
     public void bindRankings(ObservableList<IPerson> input) {
@@ -228,7 +280,8 @@ public class LobbyPublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting rankings for " + key + ": " + ex.getMessage());
-                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                this.removeObserver(key);
             }
         }
     }

@@ -208,7 +208,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayer(List<IPlayer> players) throws RemoteException {
+    public void setPlayers(List<IPlayer> players) throws RemoteException {
         this.myPlayers = players;
     }
 
