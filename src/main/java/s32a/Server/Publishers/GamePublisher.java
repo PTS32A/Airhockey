@@ -170,7 +170,7 @@ public class GamePublisher {
 
             @Override
             public void onChanged(ListChangeListener.Change c) {
-                if (c.wasAdded() || c.wasRemoved()) {
+                if(c.next() && (c.wasAdded() || c.wasRemoved())){
                     pushPlayers();
                 }
             }

@@ -194,7 +194,13 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
-        final double rating = persons.get(AirhockeyGUI.me).getRating();
+        final double rating;
+        if(persons.get(AirhockeyGUI.me) != null){
+            rating = persons.get(AirhockeyGUI.me).getRating();
+        } else {
+            rating = -1.0;
+        }
+
         Platform.runLater(new Runnable() {
 
             @Override

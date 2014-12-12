@@ -58,6 +58,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     private Chatbox mychatbox;
     private DatabaseControls myDatabaseControls;
     private ObjectProperty<HashMap<String, Object>> airhockeySettingsProperty;
+    @Getter
     private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
     @Getter
     private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
@@ -86,13 +87,6 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     @Override
     public HashMap<String, IGame> getActiveGames() {
         return this.activeGamesProperty.get();
-    }
-
-    /**
-     * @return the ObjectProperty wrapping activePersons.
-     */
-    ObjectProperty<HashMap<String, IPerson>> getActivePersonsProperty() {
-        return this.activePersonsProperty;
     }
 
     /**

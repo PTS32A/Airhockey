@@ -19,6 +19,7 @@ import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -26,6 +27,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -48,9 +51,8 @@ public class AirhockeyServer {
     private static final int portNumber = 1099;
     private static final String bindingName = "AirhockeyServer";
     private String ipAddress;
-    private ObjectProperty<HashMap<String, IPerson>> activePersonsProp;
 
-    public AirhockeyServer() {
+    public AirhockeyServer(Stage stage) {
 
         try {
             lobby = Lobby.getSingle();
@@ -91,64 +93,73 @@ public class AirhockeyServer {
 
         printIPAddresses();
 
-        new JFXPanel();
-        Platform.runLater(new Runnable() {
+        GridPane gp = new GridPane();
+        gp.setAlignment(Pos.CENTER);
+        gp.setHgap(10);
+        gp.setVgap(10);
+        gp.setPadding(new Insets(25, 25, 25, 25));
+        Label ip = new Label("IP Address:");
+        gp.add(ip, 0, 0);
+        Label ipIn = new Label(ipAddress);
+        gp.add(ipIn, 1, 0);
+        Label port = new Label("Port:");
+        gp.add(port, 0, 2);
+        Label portIn = new Label(String.valueOf(portNumber));
+        gp.add(portIn, 1, 2);
+        Label games = new Label("Active Games:");
+        gp.add(games, 0, 3);
+        Label gamesIn = new Label("0");
+        gp.add(gamesIn, 1, 3);
+        Label person = new Label("Active Users:");
+        gp.add(person, 0, 4);
+        Label personIn = new Label("0");
+        gp.add(personIn, 1, 4);
+
+        gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
+        lobby.getActiveGamesProperty().addListener(new ChangeListener() {
 
             @Override
-            public void run() {
-                stage = new Stage();
-                GridPane gp = new GridPane();
-                gp.setAlignment(Pos.CENTER);
-                gp.setHgap(10);
-                gp.setVgap(10);
-                gp.setPadding(new Insets(25, 25, 25, 25));
-                Label ip = new Label("IP Address:");
-                gp.add(ip, 0, 0);
-                Label ipIn = new Label(ipAddress);
-                gp.add(ipIn, 1, 0);
-                Label port = new Label("Port:");
-                gp.add(port, 0, 2);
-                Label portIn = new Label(String.valueOf(portNumber));
-                gp.add(portIn, 1, 2);
-                Label games = new Label("Active Games:");
-                gp.add(games, 0, 3);
-                Label gamesIn = new Label("0");
-                gp.add(gamesIn, 1, 3);
-                Label person = new Label("Active Users:");
-                gp.add(person, 0, 4);
-                Label personIn = new Label("0");
-                gp.add(personIn, 1, 4);
-
-                gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
-                lobby.getActiveGamesProperty().addListener(new ChangeListener() {
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                final String size = String.valueOf(lobby.getActiveGames().keySet().size());
+                Platform.runLater(new Runnable() {
 
                     @Override
-                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                        gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
+                    public void run() {
+                        gamesIn.setText(size);
                     }
                 });
 
-                activePersonsProp = new SimpleObjectProperty<>(null);              
-                activePersonsProp.addListener(new ChangeListener() {
+            }
+        });
+
+        lobby.getActivePersonsProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                final String size = String.valueOf(lobby.getActivePersonsProperty().get().size());
+                Platform.runLater(new Runnable() {
 
                     @Override
-                    public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                        personIn.setText(String.valueOf(activePersonsProp.get().size()));
+                    public void run() {
+                        personIn.setText(size);
                     }
                 });
-                activePersonsProp.bind(lobby.getActivePersonsProperty());
+            }
+        });
 
-                Group root = new Group();
-                Scene scene = new Scene(root, 300, 300);
-                root.getChildren().add(gp);
-                stage.setScene(scene);
-                stage.setTitle("Server Information");
-                stage.show();
+        Group root = new Group();
+        Scene scene = new Scene(root, 300, 300);
+        root.getChildren().add(gp);
+        stage.setScene(scene);
+        stage.setTitle("Server Information");
+        stage.show();
 
-                stage.setOnCloseRequest((WindowEvent event) -> {
-                    Platform.exit();
-                    System.exit(0);
-                });
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.exit();
+                System.exit(0);
             }
         });
     }
@@ -188,16 +199,5 @@ public class AirhockeyServer {
 //            System.out.println("Server: Cannot retrieve network interface list");
 //            System.out.println("Server: UnknownHostException: " + ex.getMessage());
 //        }
-    }
-
-    /**
-     * Runs the program as server - for debugging only. In release running as
-     * server is handled by running AirhockeyGUI with "server" as argument
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        AirhockeyServer server = new AirhockeyServer();
-//        launch(args);
     }
 }

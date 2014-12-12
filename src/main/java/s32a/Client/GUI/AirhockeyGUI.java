@@ -48,7 +48,7 @@ import s32a.Shared.ISpectator;
  *
  * @author Kargathia
  */
-public class AirhockeyGUI extends Application {
+public class AirhockeyGUI {
 
     @Getter
     private Stage stage;
@@ -56,8 +56,7 @@ public class AirhockeyGUI extends Application {
     public static String me;
     protected static String ipAddress = null, bindingName = "AirhockeyServer", portNumber = null;
 
-    @Override
-    public void start(Stage stage) throws Exception {
+    public void startGUI(Stage stage){
         this.stage = stage;
         // sets the static strings with server info
         this.getServerInfo(stage);
@@ -334,18 +333,5 @@ public class AirhockeyGUI extends Application {
             Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         return output;
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        if (args.length > 0 && args[0].equals("server")) {
-            // launch application as server
-            AirhockeyServer server = new AirhockeyServer();
-        } else {
-            // launch as client
-            launch(args);
-        }
     }
 }
