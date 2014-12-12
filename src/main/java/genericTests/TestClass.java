@@ -24,7 +24,7 @@ public class TestClass {
         System.out.println("testey");
         HashMap<String, String> testMap = new HashMap<>();
 
-        //objectproperty
+        //objectproperty - does not work
         ObjectProperty<HashMap<String, String>> testProp = new SimpleObjectProperty<>(testMap);
         testProp.addListener(new ChangeListener() {
 
@@ -34,7 +34,7 @@ public class TestClass {
             }
         });
 
-        //observable hashmap
+        //observable hashmap - works
         ObservableMap testOMap = FXCollections.observableMap(testMap);
         testOMap.addListener(new MapChangeListener() {
 
@@ -44,8 +44,20 @@ public class TestClass {
             }
         });
 
+        // second observable hashmap, pointer set at the first - works
+        ObservableMap testOMapCopy = testOMap;
+        testOMapCopy.addListener(new MapChangeListener() {
+
+            @Override
+            public void onChanged(MapChangeListener.Change change) {
+                System.out.println("testMap changed (oMapCopy)");
+            }
+        });
+
         testMap.put("testey", "test");
         testOMap.put("testey", "testO");
+
+
     }
 
 }
