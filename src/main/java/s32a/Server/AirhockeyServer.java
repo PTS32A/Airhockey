@@ -52,8 +52,8 @@ public class AirhockeyServer {
     private static final int portNumber = 1099;
     private static final String bindingName = "AirhockeyServer";
     private String ipAddress;
-    private ObjectProperty<HashMap<String, IPerson>> personsProperty;
-    private ObjectProperty<HashMap<String, IGame>> gamesProperty;
+//    private ObjectProperty<HashMap<String, IPerson>> personsProperty;
+//    private ObjectProperty<HashMap<String, IGame>> gamesProperty;
 
     public AirhockeyServer(Stage stage) {
 

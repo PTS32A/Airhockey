@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import lombok.Getter;
 import s32a.Client.GUI.AirhockeyGUI;
 import s32a.Shared.IGame;
@@ -44,9 +45,12 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private ObservableList<IGame> oActiveGames;
 
     private ILobby myLobby;
-    private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
-    private ObjectProperty<HashMap<String, Object>> settingsProperty;
-    private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
+//    private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
+//    private ObjectProperty<HashMap<String, Object>> settingsProperty;
+//    private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
+    private ObservableMap<String, IPerson> activePersons;
+    private ObservableMap<String, Object> settings;
+    private ObservableMap<String, IGame> activeGames;
 
     public LobbyClient(ILobby myLobby) throws RemoteException {
         if (myLobby == null) {
