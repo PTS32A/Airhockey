@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -181,10 +182,11 @@ public class GamePublisher {
      * proxy, not for updating score / bat position.
      */
     private void pushPlayers() {
+        List<IPlayer> playersArray = new ArrayList<>(players);
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setPlayers(new ArrayList(players));
+                observers.get(key).setPlayers(playersArray);
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException pushing players to " + key + ": " + ex.getMessage());
@@ -215,10 +217,11 @@ public class GamePublisher {
      * Pushes the (updated) list of spectators to all observers.
      */
     private void pushSpectators() {
+        List<ISpectator> spectatorsArray = new ArrayList<>(spectators);
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setSpectators(new ArrayList(spectators));
+                observers.get(key).setSpectators(spectatorsArray);
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException pushing spectators to " + key + ": " + ex.getMessage());

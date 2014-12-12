@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -42,12 +43,11 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private List<IGame> backingActiveGames;
     @Getter
     private ObservableList<IGame> oActiveGames;
-    
+
     private ILobby myLobby;
     private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
     private ObjectProperty<HashMap<String, Object>> settingsProperty;
     private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
-    
 
     public LobbyClient(ILobby myLobby) throws RemoteException {
         if (myLobby == null) {
@@ -65,7 +65,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         this.backingActiveGames = new ArrayList<>();
         this.oActiveGames = FXCollections.observableArrayList(this.backingActiveGames);
     }
-    
+
     @Override
     public IPerson getMyPerson(String playerName) throws RemoteException {
         return myLobby.getMyPerson(playerName);
@@ -87,7 +87,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public boolean addPerson(String playerName, String passWord) 
+    public boolean addPerson(String playerName, String passWord)
             throws IllegalArgumentException, SQLException, RemoteException {
         return myLobby.addPerson(playerName, passWord);
     }
@@ -144,38 +144,76 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         myLobby.populate();
     }
 
+    //----------------------------------- INCOMING FROM SERVER -----------------------------------------------
     @Override
     public void setActiveGames(HashMap<String, IGame> activeGames) throws RemoteException {
-        this.oActiveGames.clear();
-        this.oActiveGames.setAll(activeGames.values());
-        this.activeGamesProperty.set(activeGames);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                oActiveGames.clear();
+                oActiveGames.setAll(activeGames.values());
+                activeGamesProperty.set(activeGames);
+            }
+        });
+
     }
 
-
     @Override
-    public void setMyLobby(ILobby myLobby) throws RemoteException {
-        this.myLobby = myLobby;
+    public void setMyLobby(ILobby myLobbyInput) throws RemoteException {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                myLobby = myLobbyInput;
+            }
+        });
     }
 
     @Override
     public void setChat(List<String> chat) throws RemoteException {
-        this.chatProperty.setAll(chat);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                chatProperty.setAll(chat);
+            }
+        });
     }
 
     @Override
     public void setSettings(HashMap<String, Object> settings) throws RemoteException {
-        this.settingsProperty.set(settings);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                settingsProperty.set(settings);
+            }
+        });
     }
 
     @Override
     public void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
-        this.activePersonsProperty.set(persons);
-        this.playerRatingProperty.set(persons.get(AirhockeyGUI.me).getRating());
+        final double rating = persons.get(AirhockeyGUI.me).getRating();
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                activePersonsProperty.set(persons);
+                playerRatingProperty.set(rating);
+            }
+        });
     }
 
     @Override
     public void setRankings(List<IPerson> persons) throws RemoteException {
-        this.rankings = FXCollections.observableArrayList(persons);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                rankings = FXCollections.observableArrayList(persons);
+            }
+        });
     }
 
 }

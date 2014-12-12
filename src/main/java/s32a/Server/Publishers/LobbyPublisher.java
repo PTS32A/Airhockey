@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -131,10 +132,11 @@ public class LobbyPublisher {
         if (this.chat == null || this.chat.isEmpty()) {
             return;
         }
+        List<String> chatArray = new ArrayList<>(chat);
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setChat(new ArrayList<>(chat));
+                observers.get(key).setChat(chatArray);
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
@@ -273,10 +275,11 @@ public class LobbyPublisher {
      * Pushed the rankings to the observers
      */
     private void pushRankings() {
+        List<IPerson> rankingsArray = new ArrayList<>(rankings);
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setRankings(new ArrayList<>(rankings));
+                observers.get(key).setRankings(rankingsArray);
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting rankings for " + key + ": " + ex.getMessage());

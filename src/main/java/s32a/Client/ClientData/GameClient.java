@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -59,7 +60,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.roundNoProperty = new SimpleIntegerProperty();
         this.puckXProperty = new SimpleDoubleProperty();
         this.puckYProperty = new SimpleDoubleProperty();
-        
+
         float width = 500;
         float x;
         float y;
@@ -72,12 +73,12 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         // Right corner of triangle
         double cX = width / 2;
         double cY = 0;
-        
+
         Vector2 batPos2 = new Vector2((float) (aX + ((bX - aX) / 100 * 50)),
-                 (float) ((aY + ((bY - aY) / 100 * 50))));
+                (float) ((aY + ((bY - aY) / 100 * 50))));
         Vector2 batPos3 = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
-                 (float) ((cY + ((bY - cY) / 100 * 50))));
-            
+                (float) ((cY + ((bY - cY) / 100 * 50))));
+
         this.player1XProperty = new SimpleDoubleProperty();
         this.player1YProperty = new SimpleDoubleProperty();
         this.player2XProperty = new SimpleDoubleProperty(batPos2.x);
@@ -104,6 +105,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Outgoing to server to start nextRound.
+     *
      * @param input true or false for round change
      * @throws RemoteException
      */
@@ -209,7 +211,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPlayers(List<IPlayer> players) throws RemoteException {
-        this.myPlayers = players;
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                myPlayers = players;
+            }
+        });
     }
 
     /**
@@ -220,7 +228,14 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setChat(List<String> chat) throws RemoteException {
-        this.oChat.setAll(chat);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                oChat.setAll(chat);
+            }
+        });
+
     }
 
     /**
@@ -231,7 +246,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setSpectators(List<ISpectator> spectators) throws RemoteException {
-        mySpectators = spectators;
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                mySpectators = spectators;
+            }
+        });
     }
 
     /**
@@ -242,7 +263,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPlayer1Score(int score) throws RemoteException {
-        this.player1Score.set(score);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                player1Score.set(score);
+            }
+        });
     }
 
     /**
@@ -253,7 +280,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPlayer2Score(int score) throws RemoteException {
-        this.player2Score.set(score);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                player2Score.set(score);
+            }
+        });
     }
 
     /**
@@ -264,7 +297,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPlayer3Score(int score) throws RemoteException {
-        this.player3Score.set(score);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                player3Score.set(score);
+            }
+        });
     }
 
     /**
@@ -276,8 +315,14 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPuck(double x, double y) throws RemoteException {
-        this.puckXProperty.set(x);
-        this.puckYProperty.set(y);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                puckXProperty.set(x);
+                puckYProperty.set(y);
+            }
+        });
     }
 
     /**
@@ -289,8 +334,15 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPlayer1Bat(double x, double y) throws RemoteException {
-        this.player1XProperty.set(x);
-        this.player1YProperty.set(y);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                player1XProperty.set(x);
+                player1YProperty.set(y);
+            }
+        });
+
     }
 
     /**
@@ -302,8 +354,15 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPlayer2Bat(double x, double y) throws RemoteException {
-        this.player2XProperty.set(x);
-        this.player2YProperty.set(y);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                player2XProperty.set(x);
+                player2YProperty.set(y);
+            }
+        });
+
     }
 
     /**
@@ -315,8 +374,14 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setPlayer3Bat(double x, double y) throws RemoteException {
-        this.player3XProperty.set(x);
-        this.player3YProperty.set(y);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                player3XProperty.set(x);
+                player3YProperty.set(y);
+            }
+        });
     }
 
     /**
@@ -327,7 +392,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setDifficulty(String difficulty) throws RemoteException {
-        this.difficultyProperty.set(difficulty);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                difficultyProperty.set(difficulty);
+            }
+        });
     }
 
     /**
@@ -338,7 +409,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setStatus(GameStatus status) throws RemoteException {
-        this.gameStatusProperty.set(status);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                gameStatusProperty.set(status);
+            }
+        });
     }
 
     // ----------------------------------- Methods querying game info, used for game display in lobby -------------------
