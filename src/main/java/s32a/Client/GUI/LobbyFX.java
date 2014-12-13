@@ -72,9 +72,9 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         });
         
         try {
-            this.lvChatbox.setItems(lobby.getChatProperty());
-            this.tvHighscores.setItems(lobby.getRankings());
-            this.tvGameDisplay.setItems(lobby.getOActiveGames());
+            this.lvChatbox.setItems(lobby.getOChatList());
+            this.tvHighscores.setItems(lobby.getORankingsList());
+            this.tvGameDisplay.setItems(lobby.getOActiveGamesList());
 
             // sets valuefactories high scores
             this.tcHSName.setCellValueFactory(new PropertyValueFactory<>("name"));

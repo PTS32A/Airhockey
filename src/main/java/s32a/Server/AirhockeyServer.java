@@ -26,6 +26,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.MapChangeListener;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -118,39 +119,31 @@ public class AirhockeyServer {
         Label personIn = new Label("0");
         gp.add(personIn, 1, 4);
 
-        this.gamesProperty = new SimpleObjectProperty<>(null);
-        this.gamesProperty.bind(lobby.getActiveGamesProperty());
-        this.gamesProperty.addListener(new ChangeListener() {
+        lobby.getOActivePersons().addListener(new MapChangeListener() {
 
             @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-
-                final String size = String.valueOf(lobby.getActiveGames().keySet().size());
-                gamesIn.setText(size);
-                System.out.println("changed gamestext outside runlater");
-                Platform.runLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        gamesIn.setText(size);
-                        System.out.println("changed games text in runlater");
-                    }
-                });
-            }
-        });
-
-        this.personsProperty = new SimpleObjectProperty<>(null);
-        this.personsProperty.bind(lobby.getActivePersonsProperty());
-        this.personsProperty.addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                final String size = String.valueOf(lobby.getActivePersons().keySet().size());
+            public void onChanged(MapChangeListener.Change change) {
+                final String size = String.valueOf(lobby.getOActivePersons().keySet().size());
                 Platform.runLater(new Runnable() {
 
                     @Override
                     public void run() {
                         personIn.setText(size);
+                    }
+                });
+            }
+        });
+
+        lobby.getOActiveGames().addListener(new MapChangeListener() {
+
+            @Override
+            public void onChanged(MapChangeListener.Change change) {
+                final String size = String.valueOf(lobby.getOActiveGames().keySet().size());
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        gamesIn.setText(size);
                     }
                 });
             }

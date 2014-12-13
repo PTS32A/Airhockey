@@ -130,7 +130,7 @@ class Puck extends TimerTask {
 //        this.xPos = new SimpleDoubleProperty(0);
 //        this.yPos = new SimpleDoubleProperty(0);
 
-        this.sideLength = (float) lobby.getAirhockeySettings().get("Side Length");
+        this.sideLength = (float) lobby.getOAirhockeySettings().get("Side Length");
         this.goalLength = sideLength * 0.4f;
         this.batWidth = sideLength / 100 * 8;
 

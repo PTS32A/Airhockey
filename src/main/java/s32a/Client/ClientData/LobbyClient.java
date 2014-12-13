@@ -35,37 +35,34 @@ import s32a.Shared.IPlayer;
 public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, ILobby {
 
     @Getter
-    private ObservableList<String> chatProperty;
-    private List<String> chat;
+    private ObservableList<String> oChatList;
     @Getter
-    private ObservableList<IPerson> rankings;
+    private ObservableList<IPerson> oRankingsList;
     @Getter
     private DoubleProperty playerRatingProperty;
     @Getter
-    private ObservableList<IGame> oActiveGames;
+    private ObservableList<IGame> oActiveGamesList;
 
     private ILobby myLobby;
-//    private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
-//    private ObjectProperty<HashMap<String, Object>> settingsProperty;
-//    private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
-    private ObservableMap<String, IPerson> activePersons;
-    private ObservableMap<String, Object> settings;
-    private ObservableMap<String, IGame> activeGames;
+    @Getter
+    private ObservableMap<String, IPerson> oActivePersonsMap;
+    @Getter
+    private ObservableMap<String, Object> oSettingsMap;
+    @Getter
+    private ObservableMap<String, IGame> oActiveGamesMap;
 
     public LobbyClient(ILobby myLobby) throws RemoteException {
         if (myLobby == null) {
             throw new RemoteException();
         }
         this.myLobby = myLobby;
-        this.activeGamesProperty = new SimpleObjectProperty<>(new HashMap<>());
-        this.rankings = FXCollections.observableArrayList(new ArrayList<IPerson>());
-        this.activePersonsProperty = new SimpleObjectProperty<>(new HashMap<>());
-        this.settingsProperty = new SimpleObjectProperty<>(new HashMap<>());
-        this.chat = new ArrayList<>();
-        this.chatProperty = FXCollections.observableArrayList(chat);
+        this.oRankingsList = FXCollections.observableArrayList(new ArrayList<IPerson>());
+        this.oChatList = FXCollections.observableArrayList(new ArrayList<String>());
         this.playerRatingProperty = new SimpleDoubleProperty(-5);
-
-        this.oActiveGames = FXCollections.observableArrayList(new ArrayList<>());
+        this.oActiveGamesList = FXCollections.observableArrayList(new ArrayList<>());
+        this.oActivePersonsMap = FXCollections.observableHashMap();
+        this.oActiveGamesMap = FXCollections.observableHashMap();
+        this.oSettingsMap = FXCollections.observableHashMap();
     }
 
     @Override
@@ -75,17 +72,17 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public HashMap<String, IGame> getActiveGames() throws RemoteException {
-        return this.activeGamesProperty.get();
+        return new HashMap<>(oActiveGamesMap);
     }
 
     @Override
-    public HashMap getAirhockeySettings() throws RemoteException {
-        return this.settingsProperty.get();
+    public HashMap<String, Object> getAirhockeySettings() throws RemoteException {
+        return new HashMap<>(oSettingsMap);
     }
 
     @Override
     public HashMap<String, IPerson> getActivePersons() throws RemoteException {
-        return this.activePersonsProperty.get();
+        return new HashMap<>(oActivePersonsMap);
     }
 
     @Override
@@ -142,20 +139,26 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
+    public List<IPerson> getRankings() throws SQLException, RemoteException {
+        return this.oRankingsList;
+    }
+
+    @Override
     public void populate() throws RemoteException {
         myLobby.populate();
     }
 
     //----------------------------------- INCOMING FROM SERVER -----------------------------------------------
     @Override
-    public void setActiveGames(HashMap<String, IGame> activeGames) throws RemoteException {
+    public synchronized void setActiveGames(HashMap<String, IGame> activeGames) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                oActiveGames.clear();
-                oActiveGames.setAll(activeGames.values());
-                activeGamesProperty.set(activeGames);
+                oActiveGamesList.clear();
+                oActiveGamesList.setAll(activeGames.values());
+                oActiveGamesMap.clear();
+                oActiveGamesMap.putAll(activeGames);
             }
         });
 
@@ -178,7 +181,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                chatProperty.setAll(chat);
+                oChatList = FXCollections.observableArrayList(chat);
             }
         });
     }
@@ -189,7 +192,8 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                settingsProperty.set(settings);
+                oSettingsMap.clear();
+                oSettingsMap.putAll(settings);
             }
         });
     }
@@ -207,7 +211,8 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                activePersonsProperty.set(persons);
+                oActivePersonsMap.clear();
+                oActivePersonsMap.putAll(persons);
                 playerRatingProperty.set(rating);
             }
         });
@@ -219,9 +224,11 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                rankings = FXCollections.observableArrayList(persons);
+                oRankingsList = FXCollections.observableArrayList(persons);
             }
         });
     }
+
+
 
 }

@@ -18,7 +18,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import s32a.Server.Lobby;
@@ -36,14 +38,9 @@ public class LobbyPublisher {
     private Lobby lobby;
     private ObservableList<IPerson> rankings;
     private ObservableList<String> chat;
-//    private ObjectProperty<HashMap<String, Object>> settings;
-//    private ObjectProperty<HashMap<String, IPerson>> persons;
-//    private ObjectProperty<HashMap<String, IGame>> games;
     private ObservableMap<String, Object> settings;
     private ObservableMap<String, IPerson> persons;
     private ObservableMap<String, IGame> games;
-
-    private AtomicBoolean isNewRankings, isNewChat, isNewSettings, isNewPersons, isNewGames;
 
     /**
      * Constructor. Initialises Properties that get bound.
@@ -53,10 +50,9 @@ public class LobbyPublisher {
     public LobbyPublisher() throws RemoteException {
         this.observers = new ConcurrentHashMap<>();
         this.lobby = Lobby.getSingle();
-        this.settings = new SimpleObjectProperty<>(null);
-        this.persons = new SimpleObjectProperty<>(null);
-        this.games = new SimpleObjectProperty<>(null);
-
+        this.settings = FXCollections.observableHashMap();
+        this.persons = FXCollections.observableHashMap();
+        this.games = FXCollections.observableHashMap();
     }
 
     /**
@@ -86,16 +82,15 @@ public class LobbyPublisher {
      */
     private boolean pushToNewObserver(String name, ILobbyClient newObsv) {
         try {
-            newObsv.setActiveGames(this.games.get());
+            newObsv.setActiveGames(new HashMap<>(this.games));
             newObsv.setChat(new ArrayList<>(this.chat));
-            newObsv.setPersons(this.persons.get());
+            newObsv.setPersons(new HashMap<>(this.persons));
             newObsv.setRankings(new ArrayList<>(this.rankings));
-            newObsv.setSettings(this.settings.get());
+            newObsv.setSettings(new HashMap<>(this.settings));
             return true;
         }
         catch (RemoteException ex) {
-            System.out.println("RemoteException pushing values to new observer " + name
-                    + " - removing observer");
+            System.out.println("RemoteException pushing values to new observer " + name);
             this.removeObserver(name);
             return false;
         }
@@ -108,6 +103,7 @@ public class LobbyPublisher {
      * @param name The name corresponding with the observer
      */
     public void removeObserver(String name) {
+        System.out.println("Removed observer " + name + " from LobbyPublisher");
         observers.remove(name);
     }
 
@@ -144,7 +140,6 @@ public class LobbyPublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
-                System.out.println("Removed observer " + key + " from LobbyPublisher");
                 this.removeObserver(key);
             }
         }
@@ -155,16 +150,15 @@ public class LobbyPublisher {
      *
      * @param input The settings to be bound
      */
-    public void bindSettings(ObjectProperty<HashMap<String, Object>> input) {
-        this.settings.bind(input);
+    public void bindSettings(ObservableMap<String, Object> input) {
+        this.settings = input;
         this.pushSettings();
-        this.settings.addListener(new ChangeListener() {
+        this.settings.addListener(new MapChangeListener() {
 
             @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+            public void onChanged(MapChangeListener.Change change) {
                 pushSettings();
             }
-
         });
     }
 
@@ -174,14 +168,14 @@ public class LobbyPublisher {
      * @param newValue An updated setting
      */
     private void pushSettings() {
+        HashMap<String, Object> output = new HashMap<>(this.settings);
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setSettings(settings.get());
+                observers.get(key).setSettings(output);
             }
             catch (RemoteException ex) {
-                System.out.println("RemoteException setting settings for " + key + ": " + ex.getMessage());
-                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                System.out.println("RemoteException setting settings for " + key + ": " + ex.getMessage());              
                 this.removeObserver(key);
             }
         }
@@ -192,16 +186,15 @@ public class LobbyPublisher {
      *
      * @param input A HashMap containing Persons to bound
      */
-    public void bindPersons(ObjectProperty<HashMap<String, IPerson>> input) {
+    public void bindPersons(ObservableMap<String, IPerson> input) {
         this.persons = input;
         this.pushPersons();
-        this.persons.addListener(new ChangeListener() {
+        this.persons.addListener(new MapChangeListener() {
 
             @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+            public void onChanged(MapChangeListener.Change change) {
                 pushPersons();
             }
-
         });
     }
 
@@ -211,14 +204,14 @@ public class LobbyPublisher {
      * @param newValue An object containing the update to be pushed
      */
     private void pushPersons() {
+        HashMap<String, IPerson> output = new HashMap<>(this.persons);
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setPersons(persons.get());
+                observers.get(key).setPersons(output);
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting Persons for " + key + ": " + ex.getMessage());
-                System.out.println("Removed observer " + key + " from LobbyPublisher");
                 this.removeObserver(key);
             }
         }
@@ -229,13 +222,13 @@ public class LobbyPublisher {
      *
      * @param input An observable list of Games to be bound
      */
-    public void bindActiveGames(ObjectProperty<HashMap<String, IGame>> input) {
-        this.games.bind(input);
+    public void bindActiveGames(ObservableMap<String, IGame> input) {
+        this.games = input;
         this.pushActiveGames();
-        this.games.addListener(new ChangeListener() {
+        this.games.addListener(new MapChangeListener() {
 
             @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+            public void onChanged(MapChangeListener.Change change) {
                 pushActiveGames();
             }
         });
@@ -245,10 +238,11 @@ public class LobbyPublisher {
      * Pushes updates within the active Games
      */
     private void pushActiveGames() {
+        HashMap<String, IGame> output = new HashMap<>(this.games);
         for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
             String key = it.next();
             try {
-                observers.get(key).setActiveGames(games.get());
+                observers.get(key).setActiveGames(output);
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());

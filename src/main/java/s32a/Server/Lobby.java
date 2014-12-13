@@ -60,31 +60,13 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
 //    @Getter
 //    private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
     @Getter
-    private ObservableMap<String, Object> airhockeySettings;
+    private ObservableMap<String, Object> oAirhockeySettings;
     @Getter
-    private ObservableMap<String, IPerson> activePersons;
+    private ObservableMap<String, IPerson> oActivePersons;
     @Getter
-    private ObservableMap<String, IGame> activeGames;
+    private ObservableMap<String, IGame> oActiveGames;
     private ObservableList<IPerson> rankings;
     private LobbyPublisher publisher;
-
-    /**
-     * @param name
-     * @return Up-to-date version of person with given name
-     * @throws RemoteException
-     */
-    @Override
-    public IPerson getMyPerson(String name) throws RemoteException {
-        return this.activePersonsProperty.get().get(name);
-    }
-
-    /**
-     * @return airhockeysettings boxed hashmap
-     */
-    @Override
-    public HashMap<String, Object> getAirhockeySettings() {
-        return this.airhockeySettingsProperty.get();
-    }
 
     /**
      * Lobby is used as singleton. Public for unit tests.
@@ -94,11 +76,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public Lobby() throws RemoteException {
         this.mychatbox = new Chatbox();
         this.myDatabaseControls = new DatabaseControls();
-        this.activePersonsProperty = new SimpleObjectProperty<>(new HashMap<>());
-        this.airhockeySettingsProperty = new SimpleObjectProperty<>(new HashMap<>());
-        this.activeGamesProperty = new SimpleObjectProperty<>(new HashMap<>());
-        this.airhockeySettingsProperty.get().put("Goal Default", new Vector2(0, 0));
-        this.airhockeySettingsProperty.get().put("Side Length", 500f);
+        this.oActiveGames = FXCollections.observableHashMap();
+        this.oActivePersons = FXCollections.observableHashMap();
+        this.oAirhockeySettings = FXCollections.observableHashMap();
+        this.oAirhockeySettings.put("Goal Default", new Vector2(0, 0));
+        this.oAirhockeySettings.put("Side Length", 500f);
 
         try {
             this.rankings = FXCollections.observableArrayList(myDatabaseControls.getRankings());
@@ -118,10 +100,10 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public void startPublisher() throws RemoteException {
         this.publisher = new LobbyPublisher();
 
-        this.publisher.bindActiveGames(activeGamesProperty);
-        this.publisher.bindPersons(activePersonsProperty);
+        this.publisher.bindActiveGames(oActiveGames);
+        this.publisher.bindPersons(oActivePersons);
         this.publisher.bindRankings(rankings);
-        this.publisher.bindSettings(airhockeySettingsProperty);
+        this.publisher.bindSettings(oAirhockeySettings);
         this.publisher.bindChat(this.mychatbox.chatProperty());
     }
 
@@ -182,11 +164,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             return false;
         }
 
-        if (this.activePersonsProperty.get().put(playerName, newPerson) == null
+        if (this.oActivePersons.put(playerName, newPerson) == null
                 && this.publisher.addObserver(playerName, client)) {
             return true;
         } else {
-            this.activePersonsProperty.get().remove(playerName);
+            this.oActivePersons.remove(playerName);
             this.publisher.removeObserver(playerName);
             return false;
         }
@@ -211,11 +193,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             this.endGame(playerInput.getMyGame(), playerInput);
         } else if (input instanceof Spectator) {
             Spectator spectInput = (Spectator) input;
-            for (IGame g : activeGamesProperty.get().values()) {
+            for (IGame g : oActiveGames.values()) {
                 ((Game) g).removeSpectator(spectInput);
             }
         }
-        this.activePersonsProperty.get().remove(input.getName());
+        this.oActivePersons.remove(input.getName());
         this.publisher.removeObserver(input.getName());
         return true;
     }
@@ -259,13 +241,13 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         Person person = null;
         Game newGame = null;
         try {
-            person = (Person) this.activePersonsProperty.get().get(input.getName());
+            person = (Person) this.oActivePersons.get(input.getName());
             Player player = new Player(person.getName(), person.ratingProperty().get(),
                     Colors.Red);
             newGame = new Game(player);
             newGame.startPublisher(player, client);
-            this.activePersonsProperty.get().replace(person.getName(), player);
-            this.activeGamesProperty.get().put(newGame.getID(), newGame);
+            this.oActivePersons.replace(person.getName(), player);
+            this.oActiveGames.put(newGame.getID(), newGame);
         }
         catch (Exception ex) {
             this.returnToLobby(person);
@@ -297,7 +279,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         }
 
         Game game = (Game) this.getActiveGames().get(gameInput.getID());
-        Person person = (Person) this.activePersonsProperty.get().get(personInput.getName());
+        Person person = (Person) this.oActivePersons.get(personInput.getName());
         try {
             Player player;
             if (person.isBot()) {
@@ -308,7 +290,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                         game.getNextColor());
             }
             if (game.addPlayer(player, client)) {
-                this.activePersonsProperty.get().replace(person.getName(), player);
+                this.oActivePersons.replace(person.getName(), player);
             } else {
                 return null;
             }
@@ -366,7 +348,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             if (!game.addSpectator((Spectator) person, client)) {
                 return null;
             }
-            this.activePersonsProperty.get().replace(person.getName(), person);
+            this.oActivePersons.replace(person.getName(), person);
         }
         catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("IllegalArgumentException thrown in spectateGame: " + ex.getMessage());
@@ -405,10 +387,10 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      */
     @Override
     public boolean endGame(IGame gameInput, IPlayer hasLeft) throws RemoteException {
-        if (gameInput == null || !this.activeGamesProperty.get().containsKey(gameInput.getID())) {
+        if (gameInput == null || !this.oActiveGames.containsKey(gameInput.getID())) {
             return false;
         }
-        Game game = (Game) this.activeGamesProperty.get().get(gameInput.getID());
+        Game game = (Game) this.oActiveGames.get(gameInput.getID());
 
         if (game.getMyPlayers().size() == 3 && game.getRoundNo().get() > 0) {
             try {
@@ -425,12 +407,12 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         try {
             for (IPlayer Iplayer : game.getMyPlayers()) {
                 Player player = (Player) Iplayer;
-                if (this.activePersonsProperty.get().get(player.getName()) instanceof Player) {
+                if (this.oActivePersons.get(player.getName()) instanceof Player) {
                     player.setRating(this.myDatabaseControls.getNewRating((Person) player, hasLeft));
                     this.returnToLobby(player);
                 }
             }
-            this.activeGamesProperty.get().remove(game.getID());
+            this.oActiveGames.remove(game.getID());
             this.rankings = FXCollections.observableArrayList(this.myDatabaseControls.getRankings());
         }
         catch (IllegalArgumentException | SQLException ex) {
@@ -476,8 +458,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             boolean isBot = participant.isBot();
             if (participant instanceof Spectator && ((Spectator) participant).getMyGames().size() > 1) {
             } else {
-                this.activePersonsProperty.get().replace(participant.getName(), new Person(participant.getName(), participant.ratingProperty().get()));
-                ((Person) this.activePersonsProperty.get().get(participant.getName())).setBot(isBot);
+                this.oActivePersons.replace(participant.getName(), new Person(participant.getName(), participant.ratingProperty().get()));
+                ((Person) this.oActivePersons.get(participant.getName())).setBot(isBot);
             }
         }
         catch (Exception ex) {
@@ -575,7 +557,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         if (gameID.trim() == null) {
             throw new IllegalArgumentException();
         }
-        return this.activeGamesProperty.get().get(gameID);
+        return this.oActiveGames.get(gameID);
     }
 
     /**
@@ -603,68 +585,68 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     @Override
     public void populate() throws RemoteException {
         // adds bot 1-11
-        this.activePersonsProperty.get().put("bot1", new Person("bot1", (double) 15));
-        this.activePersonsProperty.get().put("bot2", new Person("bot2", (double) 15));
-        this.activePersonsProperty.get().put("bot3", new Person("bot3", (double) 15));
-        this.activePersonsProperty.get().put("bot4", new Person("bot4", (double) 15));
-        this.activePersonsProperty.get().put("bot5", new Person("bot5", (double) 15));
-        this.activePersonsProperty.get().put("bot6", new Person("bot6", (double) 15));
-        this.activePersonsProperty.get().put("bot7", new Person("bot7", (double) 15));
-        this.activePersonsProperty.get().put("bot8", new Person("bot8", (double) 15));
-        this.activePersonsProperty.get().put("bot9", new Person("bot9", (double) 15));
-        this.activePersonsProperty.get().put("bot10", new Person("bot10", (double) 15));
-        this.activePersonsProperty.get().put("bot11", new Person("bot11", (double) 15));
+        this.oActivePersons.put("bot1", new Person("bot1", (double) 15));
+        this.oActivePersons.put("bot2", new Person("bot2", (double) 15));
+        this.oActivePersons.put("bot3", new Person("bot3", (double) 15));
+        this.oActivePersons.put("bot4", new Person("bot4", (double) 15));
+        this.oActivePersons.put("bot5", new Person("bot5", (double) 15));
+        this.oActivePersons.put("bot6", new Person("bot6", (double) 15));
+        this.oActivePersons.put("bot7", new Person("bot7", (double) 15));
+        this.oActivePersons.put("bot8", new Person("bot8", (double) 15));
+        this.oActivePersons.put("bot9", new Person("bot9", (double) 15));
+        this.oActivePersons.put("bot10", new Person("bot10", (double) 15));
+        this.oActivePersons.put("bot11", new Person("bot11", (double) 15));
 
         // the same gameclient is used for all bots, as they do not operate an actual client
         s32a.Client.ClientData.GameClient botClient = new s32a.Client.ClientData.GameClient();
 
         //game 1
-        Person bot = (Person) this.activePersonsProperty.get().get("bot1");
+        Person bot = (Person) this.oActivePersons.get("bot1");
         bot.setBot(true);
         Game game = this.startGame(bot, botClient);
 
-        bot = (Person) this.activePersonsProperty.get().get("bot2");
+        bot = (Person) this.oActivePersons.get("bot2");
         bot.setBot(true);
         this.joinGame(game, bot, botClient);
 
-        bot = (Person) this.activePersonsProperty.get().get("bot3");
+        bot = (Person) this.oActivePersons.get("bot3");
         bot.setBot(true);
         this.joinGame(game, bot, botClient);
         game.beginGame();
 
         //game 2
-        bot = (Person) this.activePersonsProperty.get().get("bot4");
+        bot = (Person) this.oActivePersons.get("bot4");
         bot.setBot(true);
         game = this.startGame(bot, botClient);
 
-        bot = (Person) this.activePersonsProperty.get().get("bot5");
+        bot = (Person) this.oActivePersons.get("bot5");
         bot.setBot(true);
         this.joinGame(game, bot, botClient);
 
-        bot = (Person) this.activePersonsProperty.get().get("bot6");
+        bot = (Person) this.oActivePersons.get("bot6");
         bot.setBot(true);
         this.joinGame(game, bot, botClient);
         game.beginGame();
 
         // game 3
-        bot = (Person) this.activePersonsProperty.get().get("bot7");
+        bot = (Person) this.oActivePersons.get("bot7");
         bot.setBot(true);
         game = this.startGame(bot, botClient);
 
-        bot = (Person) this.activePersonsProperty.get().get("bot8");
+        bot = (Person) this.oActivePersons.get("bot8");
         bot.setBot(true);
         this.joinGame(game, bot, botClient);
 
-        bot = (Person) this.activePersonsProperty.get().get("bot9");
+        bot = (Person) this.oActivePersons.get("bot9");
         bot.setBot(true);
         this.joinGame(game, bot, botClient);
         game.pauseGame(true);
 
         // loose change
-        bot = (Person) this.activePersonsProperty.get().get("bot10");
+        bot = (Person) this.oActivePersons.get("bot10");
         bot.setBot(true);
 
-        bot = (Person) this.activePersonsProperty.get().get("bot11");
+        bot = (Person) this.oActivePersons.get("bot11");
         bot.setBot(true);
 
         // adds two bots to the system.
@@ -677,6 +659,47 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         }
     }
 
+    /**
+     *
+     * @return airhockeysettings cast to a non-observable hashmap.
+     * This as ObservableMap is not serializable.
+     * @throws RemoteException
+     */
+    @Override
+    public HashMap getAirhockeySettings() throws RemoteException {
+        return new HashMap<>(this.oAirhockeySettings);
+    }
+
+    /**
+     *
+     * @return activePersons cast to a non-observable hashmap.
+     * @throws RemoteException
+     */
+    @Override
+    public HashMap<String, IPerson> getActivePersons() throws RemoteException {
+        return new HashMap<>(this.oActivePersons);
+    }
+
+    /**
+     *
+     * @return activeGames cast to a non-observable hashmap.
+     * This as ObservableMap is not serializable.
+     * @throws RemoteException
+     */
+    @Override
+    public HashMap<String, IGame> getActiveGames() throws RemoteException {
+        return new HashMap<>(this.oActiveGames);
+    }
+
+    /**
+     * @param name
+     * @return Up-to-date version of person with given name
+     * @throws RemoteException
+     */
+    @Override
+    public IPerson getMyPerson(String name) throws RemoteException {
+        return this.oActivePersons.get(name);
+    }
 
 
 }
