@@ -17,6 +17,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
@@ -158,7 +159,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                oActiveGamesList.clear();
                 oActiveGamesList.setAll(activeGames.values());
                 oActiveGamesMap.clear();
                 oActiveGamesMap.putAll(activeGames);
@@ -184,7 +184,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                oChatList = FXCollections.observableArrayList(chat);
+                oChatList.setAll(chat);
             }
         });
     }
@@ -229,7 +229,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                oRankingsList = FXCollections.observableArrayList(persons);
+                oRankingsList.setAll(persons);
             }
         });
     }
