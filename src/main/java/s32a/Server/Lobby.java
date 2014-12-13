@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
@@ -54,18 +55,14 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     @Getter
     private Chatbox mychatbox;
     private DatabaseControls myDatabaseControls;
-//    private ObjectProperty<HashMap<String, Object>> airhockeySettingsProperty;
-//    @Getter
-//    private ObjectProperty<HashMap<String, IPerson>> activePersonsProperty;
-//    @Getter
-//    private ObjectProperty<HashMap<String, IGame>> activeGamesProperty;
     @Getter
     private ObservableMap<String, Object> oAirhockeySettings;
     @Getter
     private ObservableMap<String, IPerson> oActivePersons;
     @Getter
     private ObservableMap<String, IGame> oActiveGames;
-    private ObservableList<IPerson> rankings;
+    @Getter
+    private ObservableList<IPerson> oRankings;
     private LobbyPublisher publisher;
 
     /**
@@ -76,14 +73,14 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public Lobby() throws RemoteException {
         this.mychatbox = new Chatbox();
         this.myDatabaseControls = new DatabaseControls();
-        this.oActiveGames = FXCollections.observableHashMap();
-        this.oActivePersons = FXCollections.observableHashMap();
-        this.oAirhockeySettings = FXCollections.observableHashMap();
+        this.oActiveGames = FXCollections.observableMap(new HashMap<String, IGame>());
+        this.oActivePersons = FXCollections.observableMap(new HashMap<String, IPerson>());
+        this.oAirhockeySettings = FXCollections.observableMap(new HashMap<String, Object>());
         this.oAirhockeySettings.put("Goal Default", new Vector2(0, 0));
         this.oAirhockeySettings.put("Side Length", 500f);
 
         try {
-            this.rankings = FXCollections.observableArrayList(myDatabaseControls.getRankings());
+            this.oRankings = FXCollections.observableArrayList(myDatabaseControls.getRankings());
         }
         catch (SQLException ex) {
             System.out.println("SQL exception retrieving getRankings in lobby constructor: "
@@ -102,7 +99,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
 
         this.publisher.bindActiveGames(oActiveGames);
         this.publisher.bindPersons(oActivePersons);
-        this.publisher.bindRankings(rankings);
+        this.publisher.bindRankings(oRankings);
         this.publisher.bindSettings(oAirhockeySettings);
         this.publisher.bindChat(this.mychatbox.chatProperty());
     }
@@ -413,7 +410,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 }
             }
             this.oActiveGames.remove(game.getID());
-            this.rankings = FXCollections.observableArrayList(this.myDatabaseControls.getRankings());
+            this.oRankings = FXCollections.observableArrayList(this.myDatabaseControls.getRankings());
         }
         catch (IllegalArgumentException | SQLException ex) {
             return false;
@@ -570,7 +567,10 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      */
     @Override
     public List<IPerson> getRankings() throws SQLException, RemoteException {
-        return this.myDatabaseControls.getRankings();
+        List<IPerson> rankingsOutput = this.myDatabaseControls.getRankings();
+        this.oRankings.clear();
+        this.oRankings.addAll(rankingsOutput);
+        return rankingsOutput;
     }
 
     /**

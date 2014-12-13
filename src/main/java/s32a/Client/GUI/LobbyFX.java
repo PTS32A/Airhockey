@@ -101,8 +101,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     public void updatePlayerInfo() {
         IPerson p = super.getMe();
         if (p != null) {
-            lvPlayerInfo.setItems(FXCollections.observableArrayList("Name: "
-                    + me, "Rating: " + lobby.getPlayerRatingProperty().get()));
+            lvPlayerInfo.setItems(lobby.getPlayerInfo());
         }
     }
 

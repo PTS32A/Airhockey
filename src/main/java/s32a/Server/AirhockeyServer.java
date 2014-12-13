@@ -27,6 +27,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -53,8 +54,6 @@ public class AirhockeyServer {
     private static final int portNumber = 1099;
     private static final String bindingName = "AirhockeyServer";
     private String ipAddress;
-//    private ObjectProperty<HashMap<String, IPerson>> personsProperty;
-//    private ObjectProperty<HashMap<String, IGame>> gamesProperty;
 
     public AirhockeyServer(Stage stage) {
 
@@ -119,6 +118,7 @@ public class AirhockeyServer {
         Label personIn = new Label("0");
         gp.add(personIn, 1, 4);
 
+        personIn.setText(String.valueOf(lobby.getOActivePersons().keySet().size()));
         lobby.getOActivePersons().addListener(new MapChangeListener() {
 
             @Override
@@ -134,6 +134,7 @@ public class AirhockeyServer {
             }
         });
 
+        gamesIn.setText(String.valueOf(lobby.getOActiveGames().keySet().size()));
         lobby.getOActiveGames().addListener(new MapChangeListener() {
 
             @Override

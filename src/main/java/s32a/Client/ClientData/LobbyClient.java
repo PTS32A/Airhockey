@@ -39,9 +39,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     @Getter
     private ObservableList<IPerson> oRankingsList;
     @Getter
-    private DoubleProperty playerRatingProperty;
-    @Getter
     private ObservableList<IGame> oActiveGamesList;
+    @Getter
+    private ObservableList<String> playerInfo;
 
     private ILobby myLobby;
     @Getter
@@ -58,11 +58,14 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         this.myLobby = myLobby;
         this.oRankingsList = FXCollections.observableArrayList(new ArrayList<IPerson>());
         this.oChatList = FXCollections.observableArrayList(new ArrayList<String>());
-        this.playerRatingProperty = new SimpleDoubleProperty(-5);
+        this.playerInfo = FXCollections.observableArrayList(new ArrayList<String>());
         this.oActiveGamesList = FXCollections.observableArrayList(new ArrayList<>());
         this.oActivePersonsMap = FXCollections.observableHashMap();
         this.oActiveGamesMap = FXCollections.observableHashMap();
         this.oSettingsMap = FXCollections.observableHashMap();
+
+        this.playerInfo.add("Name: " + AirhockeyGUI.me);
+        this.playerInfo.add("Rating: -5");
     }
 
     @Override
@@ -213,7 +216,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
             public void run() {
                 oActivePersonsMap.clear();
                 oActivePersonsMap.putAll(persons);
-                playerRatingProperty.set(rating);
+
+                playerInfo.set(0, "Name: " + AirhockeyGUI.me);
+                playerInfo.set(1, "Rating: " + String.valueOf(rating));
             }
         });
     }

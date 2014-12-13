@@ -193,6 +193,7 @@ public class LobbyPublisher {
 
             @Override
             public void onChanged(MapChangeListener.Change change) {
+                System.out.println("persons changed in lobbypublisher");
                 pushPersons();
             }
         });
