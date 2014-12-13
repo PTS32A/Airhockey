@@ -141,7 +141,9 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.publisher.bindStatus(this.statusProp);
         this.publisher.bindDifficulty(this.myPuck.getSpeed());
         this.publisher.bindPlayers(myPlayers);
+        this.publisher.bindGameTime(this.gameTime);
         this.publisher.addObserver(starter.getName(), starterClient);
+
     }
 
     /**

@@ -58,7 +58,7 @@ public class GamePublisher {
     private IntegerProperty player1Score, player2Score, player3Score, roundNo;
     private ObservableList<String> chatbox;
     private ObjectProperty<GameStatus> statusProp;
-    private StringProperty difficultyProp;
+    private StringProperty difficultyProp, gameTimeProp;
 
     /**
      * Creates a new publisher associated with given game. Observers need to be
@@ -85,6 +85,7 @@ public class GamePublisher {
 
         this.roundNo = new SimpleIntegerProperty(-1);
         this.difficultyProp = new SimpleStringProperty("");
+        this.gameTimeProp = new SimpleStringProperty("");
     }
 
     /**
@@ -120,6 +121,8 @@ public class GamePublisher {
             client.setGame(this.myGame);
             client.setPlayers(new ArrayList<>(this.players));
             client.setPuck(this.puckPosition.get().x, this.puckPosition.get().y);
+            client.setGameTime(this.gameTimeProp.get());
+            client.setRoundNo(this.roundNo.get());
 
             if (this.player1Prop.get() != null) {
                 client.setPlayer1Bat(this.player1Prop.get().getPosX().get(),
@@ -390,6 +393,34 @@ public class GamePublisher {
         for (String key : observers.keySet()) {
             try {
                 observers.get(key).setStatus(statusProp.get());
+            }
+            catch (RemoteException ex) {
+                System.out.println("remoteException on setting status for " + key);
+                this.removeObserver(key);
+            }
+        }
+    }
+
+    /**
+     * Binds gameTime - only needs to be done once
+     * @param gameTime
+     */
+    public void bindGameTime(StringProperty gameTime) {
+        this.gameTimeProp.bind(gameTime);
+        this.pushGameTime();
+        this.gameTimeProp.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                pushGameTime();
+            }
+        });
+    }
+
+    private void pushGameTime(){
+        for (String key : observers.keySet()) {
+            try {
+                observers.get(key).setGameTime(gameTimeProp.get());
             }
             catch (RemoteException ex) {
                 System.out.println("remoteException on setting status for " + key);

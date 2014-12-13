@@ -132,4 +132,12 @@ public interface IGameClient extends Remote{
      */
     public void setStatus(GameStatus status)
             throws RemoteException;
+
+    /**
+     * Sets Game Time
+     * @param gameTime
+     * @throws RemoteException
+     */
+    public void setGameTime(String gameTime)
+            throws RemoteException;
 }

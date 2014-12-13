@@ -117,11 +117,12 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 this.cbxCustomDifficulty.textProperty().bind(
                         Bindings.concat("Use custom Speed: ", customSpeed.asString()));
 
-                // bot 10 and 11 were added in lobby.populate, and are currently not busy
+////                 bot 10 and 11 were added in lobby.populate, and are currently not busy
 //                IPerson bot = lobby.getActivePersons().get("bot10");
-//                lobby.joinGame(myGame, bot);
+//                GameClient client = new GameClient();
+//                lobby.joinGame(myGame, bot, client);
 //                bot = lobby.getActivePersons().get("bot11");
-//                lobby.joinGame(myGame, bot);
+//                lobby.joinGame(myGame, bot, client);
 
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
@@ -167,13 +168,13 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     {
         IPerson myPerson = super.getMe();
         // binds upDateTime property
-        this.lblTime.textProperty().bind(myGame.getGameTime());
+        this.lblTime.textProperty().bind(myGame.getGameTimeProperty());
 
         // round number
         this.lblRound.textProperty().bind(myGame.getRoundNoProperty().asString());
 
         // Chatbox
-        this.lvChatbox.setItems(myGame.getChat());
+        this.lvChatbox.setItems(myGame.getOChat());
 
         // Difficulty 
         this.lblDifficulty.textProperty().bind(myGame.getDifficultyProperty());

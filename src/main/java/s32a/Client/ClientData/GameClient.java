@@ -37,13 +37,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private List<IPlayer> myPlayers;
     @Getter
     private List<ISpectator> mySpectators;
-    private List<String> chat;
+    @Getter
     private ObservableList<String> oChat;
     @Getter
     private IntegerProperty roundNoProperty, player1Score, player2Score,
             player3Score;
     @Getter
-    private StringProperty gameTime, difficultyProperty;
+    private StringProperty gameTimeProperty, difficultyProperty;
     @Getter
     private ObjectProperty<GameStatus> gameStatusProperty;
     @Getter
@@ -55,8 +55,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     public GameClient() throws RemoteException {
         this.myPlayers = new ArrayList<>();
         this.mySpectators = new ArrayList<>();
-        this.chat = new ArrayList<>();
-        this.oChat = FXCollections.observableArrayList(chat);
+        this.oChat = FXCollections.observableArrayList(new ArrayList<String>());
         this.roundNoProperty = new SimpleIntegerProperty();
         this.puckXProperty = new SimpleDoubleProperty();
         this.puckYProperty = new SimpleDoubleProperty();
@@ -90,7 +89,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.player3Score = new SimpleIntegerProperty(20);
         this.gameStatusProperty = new SimpleObjectProperty(GameStatus.Waiting);
         this.difficultyProperty = new SimpleStringProperty("");
-        this.gameTime = new SimpleStringProperty("");
+        this.gameTimeProperty = new SimpleStringProperty("");
     }
 
     /**
@@ -184,15 +183,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Local method. Returns chat Messages
-     *
-     * @return
-     */
-    public ObservableList<String> getChat() {
-        return oChat;
-    }
-
-    /**
      * Incoming from server. Sets round number.
      *
      * @param round
@@ -200,7 +190,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setRoundNo(int round) throws RemoteException {
-        this.roundNoProperty.set(round);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                roundNoProperty.set(round);
+            }
+        });
     }
 
     /**
@@ -418,7 +414,18 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         });
     }
 
-    // ----------------------------------- Methods querying game info, used for game display in lobby -------------------
+    @Override
+    public void setGameTime(String gameTime) throws RemoteException {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                gameTimeProperty.set(gameTime);
+            }
+        });
+    }
+
+    // ----------------------------------- Methods querying game info, used for up-to-date game display in lobby -------------------
     @Override
     public String getDifficulty() throws RemoteException {
         return this.myGame.getDifficulty();
@@ -448,4 +455,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     public String getID() throws RemoteException {
         return this.myGame.getID();
     }
+
+    
 }
