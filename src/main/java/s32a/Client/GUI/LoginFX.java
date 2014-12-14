@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -29,6 +30,8 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
     TextField tfUserName;
     @FXML
     PasswordField pwfPassword;
+    @FXML
+    Label lblConnStatus;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,6 +72,14 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
                 super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
         }
+    }
+
+    /**
+     * Displays connection status, preventing having to use a popup.
+     * @param status
+     */
+    public void displayConnectionStatus(String status){
+        this.lblConnStatus.setText("Connection status: " + status);
     }
 
     /**

@@ -10,6 +10,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -43,7 +45,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private IntegerProperty roundNoProperty, player1Score, player2Score,
             player3Score;
     @Getter
-    private StringProperty gameTimeProperty, difficultyProperty;
+    private StringProperty gameTimeProperty, difficultyProperty,
+            player1NameProperty, player2NameProperty, player3NameProperty;
     @Getter
     private ObjectProperty<GameStatus> gameStatusProperty;
     @Getter
@@ -59,6 +62,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.roundNoProperty = new SimpleIntegerProperty();
         this.puckXProperty = new SimpleDoubleProperty();
         this.puckYProperty = new SimpleDoubleProperty();
+
+        this.player1NameProperty = new SimpleStringProperty("-");
+        this.player2NameProperty = new SimpleStringProperty("-");
+        this.player3NameProperty = new SimpleStringProperty("-");
 
         float width = 500;
         float x;
@@ -212,8 +219,31 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
             @Override
             public void run() {
                 myPlayers = players;
+                setPlayerNameProperties();
             }
         });
+    }
+
+    /**
+     * Sets player names based on most recent list of players
+     */
+    private void setPlayerNameProperties() {
+        try {
+            if (myPlayers.size() > 0) {
+                this.player1NameProperty.set(myPlayers.get(0).getName());
+            }
+            if (myPlayers.size() > 1) {
+
+                this.player2NameProperty.set(myPlayers.get(1).getName());
+
+            }
+            if (myPlayers.size() > 2) {
+                this.player3NameProperty.set(myPlayers.get(2).getName());
+            }
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteException setting playerNameProperty");
+        }
     }
 
     /**
@@ -456,5 +486,4 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         return this.myGame.getID();
     }
 
-    
 }

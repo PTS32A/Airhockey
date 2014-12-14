@@ -48,7 +48,7 @@ import s32a.Shared.enums.Colors;
 public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
-    Label lblName, lblDifficulty, lblScoreP1,
+    Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
             lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount;
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
@@ -102,7 +102,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 IPlayer myPlayer = (IPlayer) myPerson;
                 btnStopSpec.setVisible(false);
                 btnPause.setDisable(true);
-                lblName.setText(myPlayer.getName());
+//                lblName.setText(myPlayer.getName());
                 double bX = width.get() / 2;
                 double bY = height.get() - bX * Math.tan(Math.toRadians(30));
                 if (myPlayer.getColor() == Colors.Blue) {
@@ -143,7 +143,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         } else {
             showDialog("Error", "myPerson was neither player nor spectator");
         }
-        
+      
         // binds width / height for redrawing to canvas size
         this.width.bind(this.apGame.prefWidthProperty());
         this.height.bind(Bindings.subtract(this.apGame.prefHeightProperty(), 1));
@@ -170,6 +170,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // binds upDateTime property
         this.lblTime.textProperty().bind(myGame.getGameTimeProperty());
 
+        // binds Player name labels
+        lblPlayer1Name.textProperty().bind(myGame.getPlayer1NameProperty());
+        lblPlayer2Name.textProperty().bind(myGame.getPlayer2NameProperty());
+        lblPlayer3Name.textProperty().bind(myGame.getPlayer3NameProperty());
+
         // round number
         this.lblRound.textProperty().bind(myGame.getRoundNoProperty().asString());
 
@@ -185,12 +190,12 @@ public class GameFX extends AirhockeyGUI implements Initializable {
          */
         if (myPerson instanceof ISpectator) {
             this.startGraphics(myGame);
-            try {
-                lblName.setText(myGame.getMyPlayers().get(0).getName());
-            }
-            catch (RemoteException ex) {
-                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//                lblName.setText(myGame.getMyPlayers().get(0).getName());
+//            }
+//            catch (RemoteException ex) {
+//                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+//            }
         }
         // draws the canvas
         this.drawEdges();
@@ -555,7 +560,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     }
 
     private Stage getThisStage() {
-        return (Stage) lblName.getScene().getWindow();
+        return (Stage) lblPlayer1Name.getScene().getWindow();
     }
     
     public void setCountdown(String count)

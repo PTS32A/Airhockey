@@ -56,7 +56,7 @@ public class AirhockeyGUI {
     public static String me = "--";
     protected static String ipAddress = null, bindingName = "AirhockeyServer", portNumber = null;
 
-    public void startGUI(Stage stage){
+    public void startGUI(Stage stage) {
         this.stage = stage;
         // sets the static strings with server info
         this.getServerInfo(stage);
@@ -71,7 +71,7 @@ public class AirhockeyGUI {
 
         try {
             lobby = new LobbyClient(this.requestRemoteLobby(ipAddress, bindingName, portNumber));
-            if(lobby == null ){
+            if (lobby == null) {
                 showDialog("Error", "lobby is null");
                 return;
             }
@@ -86,7 +86,16 @@ public class AirhockeyGUI {
 
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Login.fxml"));
+            root = (Parent) loader.load();
+            LoginFX controller = (LoginFX) loader.getController();
+
+            // displays in LoginFX current connection status by calling displayConnectionStatus(String status)
+            if (lobby != null) {
+                controller.displayConnectionStatus("Connected");
+            } else {
+                controller.displayConnectionStatus("Connection problems");
+            }
         }
         catch (IOException ex) {
             System.out.println("failed to load Login.fxml");
@@ -113,7 +122,6 @@ public class AirhockeyGUI {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-        showDialog("Success", "connected to lobby");
     }
 
     /**
@@ -160,14 +168,14 @@ public class AirhockeyGUI {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Game.fxml"));
         Parent root = (Parent) loader.load();
         GameFX controller = (GameFX) loader.getController();
-        
+
         //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Game.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
 //        stage.setResizable(false);
         stage.setMinHeight(root.minHeight(600));
         stage.setMinWidth(root.minWidth(1100));
-        
+
         // adds close event to controller through method
         controller.addCloseEvent(stage);
         controller.setMyGame(client);
@@ -175,7 +183,7 @@ public class AirhockeyGUI {
         if (lobby.getMyPerson(me) instanceof IPlayer) {
             controller.addEvents((IPlayer) lobby.getMyPerson(me));
         }
-        
+
         // Terminates game
         stage.show();
     }
@@ -228,13 +236,13 @@ public class AirhockeyGUI {
                             startClient();
                         }
                     });
-                    
+
                     Group root = new Group();
                     Scene scene = new Scene(root, 300, 150);
                     root.getChildren().add(gp);
                     stage.setScene(scene);
                     stage.setTitle("Server Information");
-                    
+
                     stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
 
                         @Override
@@ -244,7 +252,7 @@ public class AirhockeyGUI {
                             }
                         }
                     });
-                    
+
                     stage.show();
                 }
                 catch (Exception ex) {
