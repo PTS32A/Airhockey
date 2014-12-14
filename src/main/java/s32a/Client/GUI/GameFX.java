@@ -48,7 +48,6 @@ import s32a.Shared.*;
 import s32a.Shared.enums.Colors;
 
 /**
- * NOTES: - SetBatPosition in DrawEdges should probably be moved to game
  *
  * @author Luke, Bob
  */
@@ -82,12 +81,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private boolean gameStart = false;
     @Getter
     private boolean actionTaken = true;
-//    private GameTimer gameTimer;
+
     @Setter
     @Getter
     private GameClient myGame;
     private ScheduledExecutorService gameTimer;
-//    private Timer gameTimer;
     private GameTimerTask afkTimerTask = null;
 
     @Override
@@ -128,12 +126,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 this.cbxCustomDifficulty.textProperty().bind(
                         Bindings.concat("Use custom Speed: ", customSpeed.asString()));
 
-////                 bot 10 and 11 were added in lobby.populate, and are currently not busy
-//                IPerson bot = lobby.getActivePersons().get("bot10");
-//                GameClient client = new GameClient();
-//                lobby.joinGame(myGame, bot, client);
-//                bot = lobby.getActivePersons().get("bot11");
-//                lobby.joinGame(myGame, bot, client);
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
             }
@@ -143,7 +135,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
 
         } else if (myPerson instanceof ISpectator) {
-            // Spectator - TODO: add list of games to ISpectator, and retrieve from there.
             ISpectator mySpectator = (ISpectator) myPerson;
             btnStart.setVisible(false);
             btnPause.setVisible(false);
@@ -193,7 +184,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // Difficulty 
         this.lblDifficulty.textProperty().bind(myGame.getDifficultyProperty());
 
-        this.addCountDownListener();
+        this.addGameStatusListeners();
 
         /**
          * if currentPerson is spectator, graphics can start now. If he were a
@@ -210,7 +201,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * Starts a listener for gamestatus.waiting. Whenever gamestatus becomes
      * Waiting, pulls count down times from game.
      */
-    private void addCountDownListener() {
+    private void addGameStatusListeners() {
         // timer task. self-cancelling once countdown is over
         TimerTask countDownDisplay = new TimerTask() {
 
@@ -522,16 +513,12 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
 
                             myPlayer.moveBat(-1);
-//                    System.out.println(me.getPosX().doubleValue());
-//                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                             actionTaken = true;
                         }
                     } else if (keyEvent.getCode() == KeyCode.D
                             || keyEvent.getCode() == KeyCode.RIGHT) {
                         if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                             myPlayer.moveBat(1);
-//                    System.out.println(me.getPosX().doubleValue());
-//                    System.out.println(myGame.getMyPlayers().get(0).getPosX());
                             actionTaken = true;
                         }
                     }
@@ -628,8 +615,4 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private Stage getThisStage() {
         return (Stage) lblPlayer1Name.getScene().getWindow();
     }
-
-//    public GameStatus getStatus() {
-//        return myGame.getGameStatusProperty().get();
-//    }
 }
