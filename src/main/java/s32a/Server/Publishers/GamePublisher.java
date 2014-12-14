@@ -123,6 +123,7 @@ public class GamePublisher {
             client.setPuck(this.puckPosition.get().x, this.puckPosition.get().y);
             client.setGameTime(this.gameTimeProp.get());
             client.setRoundNo(this.roundNo.get());
+            client.setStatus(this.statusProp.get());
 
             if (this.player1Prop.get() != null) {
                 client.setPlayer1Bat(this.player1Prop.get().getPosX().get(),

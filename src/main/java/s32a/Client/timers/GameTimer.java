@@ -25,13 +25,19 @@ public class GameTimer extends AnimationTimer {
     private final GameFX gameFX;
     private long lastAction;
     private long prevUpd;
-    private int timer;
+    private int countDownValue;
+    private boolean isCountDown;
 
     public GameTimer(GameFX gameFX) {
         this.gameFX = gameFX;
         this.lastAction = 0;
         this.prevUpd = 0;
-        this.timer = 3;
+        this.countDownValue = 4;
+        this.isCountDown = false;
+    }
+
+    public void startCountDown(){
+        this.isCountDown = true;
     }
 
     @Override
@@ -41,25 +47,17 @@ public class GameTimer extends AnimationTimer {
         }
         if (now - lastAction > 60000000000L) {
             gameFX.quitClick(null);
-        }
-        if (gameFX.getStatus().equals(GameStatus.Waiting) && now - prevUpd > 1000000000) {
-            if (timer != 0) {
-                gameFX.setCountdown(String.valueOf(timer));
-                timer--;
-            }
-            else{
-                gameFX.setCountdown("");
-                try {
-                    gameFX.nextRound();
-                }
-                catch (RemoteException ex) {
-                    Logger.getLogger(GameTimer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                timer = 3;
+        }   // HANDLE THIS SERVER SIDE
+        if (isCountDown && now - prevUpd > 1000000000) {
+            if (countDownValue > 0) {
+                countDownValue--;
+                gameFX.setCountdown(String.valueOf(countDownValue));
+            } else {
+                isCountDown = false;
+                countDownValue = 4;
             }
             prevUpd = now;
         }
-        
 
         // bot movement should be done server side
 //        for (IPlayer p : myGame.getMyPlayers()) {

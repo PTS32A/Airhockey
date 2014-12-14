@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -123,7 +124,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 //                lobby.joinGame(myGame, bot, client);
 //                bot = lobby.getActivePersons().get("bot11");
 //                lobby.joinGame(myGame, bot, client);
-
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
             }
@@ -143,7 +143,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         } else {
             showDialog("Error", "myPerson was neither player nor spectator");
         }
-      
+
         // binds width / height for redrawing to canvas size
         this.width.bind(this.apGame.prefWidthProperty());
         this.height.bind(Bindings.subtract(this.apGame.prefHeightProperty(), 1));
@@ -164,8 +164,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         });
     }
 
-    public void bindMyGameProperties()
-    {
+    public void bindMyGameProperties() {
         IPerson myPerson = super.getMe();
         // binds upDateTime property
         this.lblTime.textProperty().bind(myGame.getGameTimeProperty());
@@ -190,16 +189,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
          */
         if (myPerson instanceof ISpectator) {
             this.startGraphics(myGame);
-//            try {
-//                lblName.setText(myGame.getMyPlayers().get(0).getName());
-//            }
-//            catch (RemoteException ex) {
-//                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
-//            }
         }
         // draws the canvas
         this.drawEdges();
     }
+
     /**
      * Generates puck, and binds properties
      */
@@ -562,19 +556,27 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private Stage getThisStage() {
         return (Stage) lblPlayer1Name.getScene().getWindow();
     }
-    
-    public void setCountdown(String count)
-    {
-        lblCount.setText(count);
+
+    /**
+     * displays countdown value
+     *
+     * @param count
+     */
+    public void setCountdown(String count) {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lblCount.setText(count);
+                if (count.equals("0")) {
+                    lblCount.setText("");
+//                        myGame.startRound();
+                }
+            }
+        });
     }
-    
-    public void nextRound() throws RemoteException
-    {
-        myGame.setStatus(GameStatus.Playing);
-    }
-    
-    public GameStatus getStatus()
-    {
-        return myGame.getGameStatusProperty().get();
-    }
+
+//    public GameStatus getStatus() {
+//        return myGame.getGameStatusProperty().get();
+//    }
 }

@@ -94,7 +94,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.player1Score = new SimpleIntegerProperty(20);
         this.player2Score = new SimpleIntegerProperty(20);
         this.player3Score = new SimpleIntegerProperty(20);
-        this.gameStatusProperty = new SimpleObjectProperty(GameStatus.Waiting);
+        this.gameStatusProperty = new SimpleObjectProperty(GameStatus.Preparing);
         this.difficultyProperty = new SimpleStringProperty("");
         this.gameTimeProperty = new SimpleStringProperty("");
     }
@@ -435,6 +435,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setStatus(GameStatus status) throws RemoteException {
+        System.out.println("status set to: " + status.toString());
         Platform.runLater(new Runnable() {
 
             @Override
