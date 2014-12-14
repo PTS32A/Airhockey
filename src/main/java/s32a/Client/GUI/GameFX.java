@@ -10,6 +10,12 @@ import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -37,7 +43,7 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Client.ClientData.GameClient;
-import s32a.Client.timers.GameTimer;
+import s32a.Client.timers.GameTimerTask;
 import s32a.Shared.*;
 import s32a.Shared.enums.Colors;
 
@@ -76,10 +82,13 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private boolean gameStart = false;
     @Getter
     private boolean actionTaken = true;
-    private GameTimer gameTimer;
+//    private GameTimer gameTimer;
     @Setter
     @Getter
     private GameClient myGame;
+    private ScheduledExecutorService gameTimer;
+//    private Timer gameTimer;
+    private GameTimerTask afkTimerTask = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -96,6 +105,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void setUp() {
         IPerson myPerson = super.getMe();
+        gameTimer = Executors.newScheduledThreadPool(2);
+
         if (myPerson instanceof IPlayer) {
 
             try {
@@ -103,7 +114,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 IPlayer myPlayer = (IPlayer) myPerson;
                 btnStopSpec.setVisible(false);
                 btnPause.setDisable(true);
-//                lblName.setText(myPlayer.getName());
                 double bX = width.get() / 2;
                 double bY = height.get() - bX * Math.tan(Math.toRadians(30));
                 if (myPlayer.getColor() == Colors.Blue) {
@@ -183,6 +193,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // Difficulty 
         this.lblDifficulty.textProperty().bind(myGame.getDifficultyProperty());
 
+        this.addCountDownListener();
+
         /**
          * if currentPerson is spectator, graphics can start now. If he were a
          * player, they start when startGame is called.
@@ -192,6 +204,63 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         }
         // draws the canvas
         this.drawEdges();
+    }
+
+    /**
+     * Starts a listener for gamestatus.waiting. Whenever gamestatus becomes
+     * Waiting, pulls count down times from game.
+     */
+    private void addCountDownListener() {
+        // timer task. self-cancelling once countdown is over
+        TimerTask countDownDisplay = new TimerTask() {
+
+            @Override
+            public void run() {
+                try {
+                    int countDown = myGame.getCountDownTime();
+                    displayCountDown(countDown);
+                    if (countDown <= 0) {
+                        this.cancel();
+                    }
+                }
+                catch (RemoteException ex) {
+                    System.out.println("RemoteException retrieving countdown from game: " + ex.getMessage());
+                }
+            }
+        };
+
+        // adds listener to gamestatus property
+        myGame.getGameStatusProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if (myGame.getGameStatusProperty().get() == GameStatus.Waiting) {
+                    gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
+                }
+            }
+        });
+    }
+
+    /**
+     * Threadsafe display of given string in countdown display of given value.
+     *
+     * @param countDown
+     */
+    private void displayCountDown(int countDown) {
+        final String countDownString;
+        if (countDown > 0) {
+            countDownString = String.valueOf(countDown);
+        } else {
+            countDownString = "";
+        }
+
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                lblCount.setText(countDownString);
+            }
+        });
     }
 
     /**
@@ -373,8 +442,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void quitClick(Event evt) {
         try {
-            if (gameTimer != null) {
-                gameTimer.stop();
+            if (afkTimerTask != null) {
+                afkTimerTask.cancel();
+            }
+            if (gameTimer != null){
+                gameTimer.shutdown();
             }
             IPerson myPerson = super.getMe();
             if (myPerson instanceof ISpectator) {
@@ -437,8 +509,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void addEvents(IPlayer myPlayer) {
         // timer for afk timeout - probably should be moved serverside
-        gameTimer = new GameTimer(this);
-        gameTimer.start();
+        afkTimerTask = new GameTimerTask(this);
+        gameTimer.scheduleAtFixedRate(afkTimerTask, 500, 5000, TimeUnit.MILLISECONDS);
 
         //Moving left or right
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {
@@ -555,25 +627,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     private Stage getThisStage() {
         return (Stage) lblPlayer1Name.getScene().getWindow();
-    }
-
-    /**
-     * displays countdown value
-     *
-     * @param count
-     */
-    public void setCountdown(String count) {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                lblCount.setText(count);
-                if (count.equals("0")) {
-                    lblCount.setText("");
-//                        myGame.startRound();
-                }
-            }
-        });
     }
 
 //    public GameStatus getStatus() {

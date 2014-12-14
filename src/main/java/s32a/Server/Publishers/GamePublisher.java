@@ -382,7 +382,7 @@ public class GamePublisher {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-
+                pushStatus();
             }
         });
     }

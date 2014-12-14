@@ -68,13 +68,6 @@ public interface IGame extends Remote, Serializable {
     public boolean pauseGame(boolean isPaused)
             throws RemoteException;
 
-    /**
-     * Starts a new round
-     * @throws RemoteException 
-     */
-    public void startRound()
-            throws RemoteException;
-
     // -------------------- Getters of simple stats --------------------------
 
     /**
@@ -117,6 +110,15 @@ public interface IGame extends Remote, Serializable {
      * @throws RemoteException
      */
     public String getStatus()
+            throws RemoteException;
+
+    /**
+     * @return seconds left on countdown between rounds in this game.
+     * range is 4 -> 0
+     * -1 if no countdown currently in progress.
+     * @throws RemoteException
+     */
+    public int getCountDownTime()
             throws RemoteException;
     
 }

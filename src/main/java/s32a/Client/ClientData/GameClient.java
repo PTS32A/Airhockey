@@ -180,16 +180,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Outgoing to server. Starts next round.
-     *
-     * @throws RemoteException
-     */
-    @Override
-    public void startRound() throws RemoteException {
-        this.myGame.startRound();
-    }
-
-    /**
      * Incoming from server. Sets round number.
      *
      * @param round
@@ -435,7 +425,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setStatus(GameStatus status) throws RemoteException {
-        System.out.println("status set to: " + status.toString());
+//        System.out.println("status set to: " + status.toString());
         Platform.runLater(new Runnable() {
 
             @Override
@@ -485,6 +475,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Override
     public String getID() throws RemoteException {
         return this.myGame.getID();
+    }
+
+    @Override
+    public int getCountDownTime() throws RemoteException {
+        return this.myGame.getCountDownTime();
     }
 
 }

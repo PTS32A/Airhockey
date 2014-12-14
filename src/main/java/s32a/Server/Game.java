@@ -16,6 +16,10 @@ import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -49,10 +53,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     private transient Chatbox myChatbox;
     private Puck myPuck;
 
-    private List<ISpectator> backingSpectators;
     private transient ObservableList<ISpectator> mySpectators;
-
-    private List<IPlayer> backingPlayers;
     private transient ObservableList<IPlayer> myPlayers;
 
     private GamePublisher publisher;
@@ -67,9 +68,11 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     @Getter
     @Setter
-    private boolean continueRun;
+    private boolean continueRun = false;
 
-    private int maxRounds;
+    private int maxRounds = 10;
+
+    private AtomicInteger countDownTime;
 
     private transient Timer puckTimer;
 
@@ -86,10 +89,8 @@ public class Game extends UnicastRemoteObject implements IGame {
      * @param starter The player that starts the game initially
      */
     Game(IPlayer starter) throws RemoteException {
-        this.backingPlayers = new ArrayList<>();
-        this.myPlayers = FXCollections.observableArrayList(this.backingPlayers);
-        this.backingSpectators = new ArrayList<>();
-        this.mySpectators = FXCollections.observableArrayList(this.backingSpectators);
+        this.myPlayers = FXCollections.observableArrayList(new ArrayList<>());
+        this.mySpectators = FXCollections.observableArrayList(new ArrayList<>());
 
         this.myPlayers.add(starter);
 
@@ -109,17 +110,16 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.gameInfo.put("nextColor", this.getNextColor());
 
         this.roundNo = new SimpleIntegerProperty(0);
-        float defaultSpeed = 15f;
+        float defaultSpeed = 15f; // Default puckspeed
         this.myPuck = new Puck(defaultSpeed, this);
-        this.adjustDifficulty();
+        this.adjustDifficulty(); 
         this.difficultyProp = new SimpleStringProperty("speed");
         this.difficultyProp.bind(myPuck.getSpeed().asString());
-        this.maxRounds = 10;
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
         this.statusProp = new SimpleObjectProperty<>(GameStatus.Preparing);
+        this.countDownTime = new AtomicInteger(-1);
 
-        this.continueRun = false;
         this.myChatbox = new Chatbox();
     }
 
@@ -359,7 +359,7 @@ public class Game extends UnicastRemoteObject implements IGame {
                     this.myPuck.setPrintMessages(true);
                 }
 
-                this.startRound();
+                this.startCountDown();
                 return true;
             }
         }
@@ -461,15 +461,41 @@ public class Game extends UnicastRemoteObject implements IGame {
      *
      * @throws java.rmi.RemoteException
      */
-    @Override
     public void startRound() throws RemoteException {
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
-        printMessage("-ROUND " + (roundNo.get() + 1)); //Added +1 because roundNo seems to be starting at 0 without it
+        printMessage("-ROUND " + (roundNo.get() + 1)); 
 
         this.statusProp.set(GameStatus.Playing);
 
         this.run();
+    }
+
+    /**
+     * Starts a 4-second countdown before each round - including the first.
+     */
+    private void startCountDown() throws RemoteException{
+        this.countDownTime.set(4);
+
+        TimerTask countDown = new TimerTask() {
+
+            @Override
+            public void run() {
+                if(countDownTime.decrementAndGet() < 0)
+                {
+                    countDownTime.set(-1);
+                    try {
+                        startRound();
+                        this.cancel();
+                    }
+                    catch (RemoteException ex) {
+                        System.out.println("RemoteException in startCountdown starting new round: " + ex.getMessage());
+                    }
+                }
+            }
+        };
+
+        puckTimer.schedule(countDown, 1000, 1000);
     }
 
     // not featured in Interface, as it is only called by Puck
@@ -484,8 +510,9 @@ public class Game extends UnicastRemoteObject implements IGame {
             printMessage("END GAME");
             printMessage("");
         } else {
-            //Client is in charge of starting new round
+            //new round is started at the end of countdown
             this.statusProp.set(GameStatus.Waiting);
+            this.startCountDown();
         }
     }
 
@@ -697,5 +724,10 @@ public class Game extends UnicastRemoteObject implements IGame {
     @Override
     public String getID() throws RemoteException {
         return (String)this.gameInfo.get("gameID");
+    }
+
+    @Override
+    public int getCountDownTime() throws RemoteException {
+        return this.countDownTime.get();
     }
 }
