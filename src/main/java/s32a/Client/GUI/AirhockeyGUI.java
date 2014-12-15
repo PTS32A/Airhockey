@@ -10,6 +10,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -287,15 +289,18 @@ public class AirhockeyGUI {
 
         // get beurs associated with registry entry
         try {
-            output = (ILobby) Naming.lookup("rmi://"
-                    + ipAddress + ":"
-                    + portNumber + "/"
-                    + bindingName);
+            Registry registry = LocateRegistry.getRegistry(ipAddress, Integer.valueOf(portNumber));
+            output = (ILobby) registry.lookup(bindingName);
+
+//            output = (ILobby) Naming.lookup("rmi://"
+//                    + ipAddress + ":"
+//                    + portNumber + "/"
+//                    + bindingName);
         }
-        catch (MalformedURLException ex) {
-            System.out.println("Client: MalformedURLException: " + ex.getMessage());
-            output = null;
-        }
+//        catch (MalformedURLException ex) {
+//            System.out.println("Client: MalformedURLException: " + ex.getMessage());
+//            output = null;
+//        }
         catch (RemoteException ex) {
             System.out.println("Client: RemoteException: " + ex.getMessage());
             output = null;
