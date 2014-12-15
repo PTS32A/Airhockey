@@ -8,6 +8,7 @@ package s32a.Shared;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import s32a.Client.GUI.GameFX;
 import s32a.Shared.enums.GameStatus;
 
 /**
@@ -162,5 +163,14 @@ public interface IGameClient extends Remote {
      * @throws RemoteException
      */
     public void setGameTime(String gameTime)
+            throws RemoteException;
+    
+    /**
+     * Registers the GameFX of the client
+     * 
+     * @param fx
+     * @throws RemoteException 
+     */
+    public void registerGameFX(GameFX fx)
             throws RemoteException;
 }

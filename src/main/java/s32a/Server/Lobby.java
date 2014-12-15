@@ -435,6 +435,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 if (this.oActivePersons.get(player.getName()) instanceof Player) {
                     player.setRating(this.myDatabaseControls.getNewRating((Person) player, hasLeft));
                     this.returnToLobby(player);
+                    
+                    game.broadcastEndGame();
                 }
             }
             this.oActiveGames.remove(game.getID());

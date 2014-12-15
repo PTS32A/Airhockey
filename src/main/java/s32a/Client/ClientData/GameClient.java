@@ -24,6 +24,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import s32a.Client.GUI.GameFX;
 import s32a.Server.Lobby;
 import s32a.Shared.*;
 import s32a.Shared.enums.GameStatus;
@@ -54,6 +55,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Getter
     private DoubleProperty player1XProperty, player1YProperty, player2XProperty,
             player2YProperty, player3XProperty, player3YProperty;
+    
+    private GameFX fx;
 
     public GameClient() throws RemoteException {
         this.myPlayers = new ArrayList<>();
@@ -114,7 +117,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void endGame(){
-        
+        //fx.addCloseEvent();
     }
 
     /**
@@ -488,6 +491,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Override
     public int getCountDownTime() throws RemoteException {
         return this.myGame.getCountDownTime();
+    }
+
+    @Override
+    public void registerGameFX(GameFX fx) throws RemoteException {
+        this.fx = fx;
     }
 
 }

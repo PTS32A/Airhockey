@@ -460,6 +460,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             } else {
                 lobby.endGame(myGame, (IPlayer) myPerson);
             }
+            myGame.addChatMessage("has left the game", super.getMe().getName());
             getThisStage().close();
         }
         catch (RemoteException ex) {

@@ -538,6 +538,10 @@ public class Game extends UnicastRemoteObject implements IGame {
             this.startCountDown();
         }
     }
+    
+    public void broadcastEndGame() {
+        publisher.broadcastEndGame();
+    }
 
     /**
      * gets the color the next player to join should be assigned Not featured in

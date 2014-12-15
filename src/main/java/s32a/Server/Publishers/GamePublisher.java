@@ -650,4 +650,16 @@ public class GamePublisher {
             }
         }
     }
+    
+    public void broadcastEndGame() {
+        for (String key : observers.keySet()) {
+            try {
+                observers.get(key).endGame();
+            }
+            catch (RemoteException ex) {
+                Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("RemoteException ending game for " + key);
+            }
+        }
+    }
 }
