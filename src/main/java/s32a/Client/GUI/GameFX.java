@@ -187,21 +187,27 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         if (myPerson instanceof ISpectator) {
             this.startGraphics(myGame);
         }
-        // draws the canvas
-        this.drawEdges();
-        IPlayer myPlayer = (IPlayer) myPerson;
-        double bX = width.get() / 2;
-        double bY = height.get() - bX * Math.tan(Math.toRadians(30));
-        try {
-            if (myPlayer.getColor() == Colors.Blue) {
-                this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
-            } else if (myPlayer.getColor() == Colors.Green) {
-                this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
+        else if (myPerson instanceof IPlayer)
+        {
+            // draws the canvas
+            this.drawEdges();
+            IPlayer myPlayer = (IPlayer) myPerson;
+            double bX = width.get() / 2;
+            double bY = height.get() - bX * Math.tan(Math.toRadians(30));
+            try {
+                if (myPlayer.getColor() == Colors.Blue) {
+                    this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
+                } else if (myPlayer.getColor() == Colors.Green) {
+                    this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
+                }
+            }
+            catch (RemoteException ex) {
+                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        catch (RemoteException ex) {
-            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        
+        
     }
 
     /**

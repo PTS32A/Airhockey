@@ -214,11 +214,12 @@ public class Game extends UnicastRemoteObject implements IGame {
 
                     this.myPlayers.add(player);
                     this.publisher.addObserver(player.getName(), client);
+                    setBatPosition(player, myPlayers.size() - 1);
                     this.publisher.bindNextPlayer(player);
                     player.setMyGame(this);
                     this.adjustDifficulty();
 
-                    setBatPosition(player, myPlayers.size() - 1);
+                    
 
                     if (myPlayers.size() == 3) {
                         this.statusProp.set(GameStatus.Ready);
