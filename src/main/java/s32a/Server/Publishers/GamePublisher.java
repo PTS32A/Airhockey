@@ -52,7 +52,6 @@ public class GamePublisher {
     // all properties / collections being tracked by this publisher
     // all copies of / bound to original values
     private ObjectProperty<Player> player1Prop, player2Prop, player3Prop;
-    private ObservableList<ISpectator> spectators;
     private ObservableList<IPlayer> players;
     private ObjectProperty<Vector2> puckPosition;
     private IntegerProperty player1Score, player2Score, player3Score, roundNo;
@@ -69,7 +68,6 @@ public class GamePublisher {
     public GamePublisher(Game myGame) {
         this.observers = new ConcurrentHashMap<>();
         this.myGame = myGame;
-        this.spectators = null;
         this.players = null;
         this.chatbox = null;
         this.statusProp = new SimpleObjectProperty<>(null);
@@ -194,41 +192,6 @@ public class GamePublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException pushing players to " + key + ": " + ex.getMessage());
-                this.removeObserver(key);
-            }
-        }
-    }
-
-    /**
-     * Binds the list of spectators to the publisher. only needs to be done
-     * once.
-     *
-     * @param spectators
-     */
-    public void bindSpectators(ObservableList<ISpectator> spectators) {
-        this.spectators = spectators;
-        this.pushSpectators();
-        this.spectators.addListener(new ListChangeListener() {
-
-            @Override
-            public void onChanged(ListChangeListener.Change c) {
-                pushSpectators();
-            }
-        });
-    }
-
-    /**
-     * Pushes the (updated) list of spectators to all observers.
-     */
-    private void pushSpectators() {
-        List<ISpectator> spectatorsArray = new ArrayList<>(spectators);
-        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-            String key = it.next();
-            try {
-                observers.get(key).setSpectators(spectatorsArray);
-            }
-            catch (RemoteException ex) {
-                System.out.println("RemoteException pushing spectators to " + key + ": " + ex.getMessage());
                 this.removeObserver(key);
             }
         }

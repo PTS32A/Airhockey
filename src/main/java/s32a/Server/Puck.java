@@ -34,7 +34,7 @@ import s32a.Shared.enums.GameStatus;
  *
  * @author Kargathia
  */
-class Puck extends TimerTask {
+public class Puck extends TimerTask {
 
     @Getter
     private ObjectProperty<Vector2> position;

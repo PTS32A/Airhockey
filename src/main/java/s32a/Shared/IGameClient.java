@@ -45,15 +45,6 @@ public interface IGameClient extends Remote {
             throws RemoteException;
 
     /**
-     * Sets Spectators in the Game
-     *
-     * @param spectators A list of Spectators to be added
-     * @throws RemoteException
-     */
-    public void setSpectators(List<ISpectator> spectators)
-            throws RemoteException;
-
-    /**
      * Sets roundNo
      *
      * @param roundNo The number of the round

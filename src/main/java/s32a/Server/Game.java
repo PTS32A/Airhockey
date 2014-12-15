@@ -159,7 +159,6 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.publisher = new GamePublisher(this);
         this.publisher.bindPuckPosition(this.myPuck.getPosition());
         this.publisher.bindChat(this.myChatbox.chatProperty());
-        this.publisher.bindSpectators(this.mySpectators);
         this.publisher.bindNextPlayer(starter);
         this.publisher.bindRoundNo(this.roundNo);
         this.publisher.bindStatus(this.statusProp);

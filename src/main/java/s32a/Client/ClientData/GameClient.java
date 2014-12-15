@@ -39,8 +39,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Getter
     private List<IPlayer> myPlayers;
     @Getter
-    private List<ISpectator> mySpectators;
-    @Getter
     private ObservableList<String> oChat;
     @Getter
     private IntegerProperty roundNoProperty, player1Score, player2Score,
@@ -60,7 +58,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     public GameClient() throws RemoteException {
         this.myPlayers = new ArrayList<>();
-        this.mySpectators = new ArrayList<>();
         this.oChat = FXCollections.observableArrayList(new ArrayList<String>());
         this.roundNoProperty = new SimpleIntegerProperty();
         this.puckXProperty = new SimpleDoubleProperty();
@@ -263,23 +260,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
             }
         });
 
-    }
-
-    /**
-     * Incoming from server. Sets the spectators viewing this game.
-     *
-     * @param spectators
-     * @throws RemoteException
-     */
-    @Override
-    public void setSpectators(List<ISpectator> spectators) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                mySpectators = spectators;
-            }
-        });
     }
 
     /**
