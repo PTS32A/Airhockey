@@ -112,13 +112,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 IPlayer myPlayer = (IPlayer) myPerson;
                 btnStopSpec.setVisible(false);
                 btnPause.setDisable(true);
-                double bX = width.get() / 2;
-                double bY = height.get() - bX * Math.tan(Math.toRadians(30));
-                if (myPlayer.getColor() == Colors.Blue) {
-                    this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
-                } else if (myPlayer.getColor() == Colors.Green) {
-                    this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
-                }
+                
 
                 // bind custom difficulty indicators
                 this.customSpeed = new SimpleIntegerProperty(15);
@@ -129,7 +123,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
             }
-            catch (RemoteException ex) {
+            catch (Exception ex) {
                 System.out.println("RemoteException on setting player info in setUp: " + ex.getMessage());
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -195,6 +189,19 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         }
         // draws the canvas
         this.drawEdges();
+        IPlayer myPlayer = (IPlayer) myPerson;
+        double bX = width.get() / 2;
+        double bY = height.get() - bX * Math.tan(Math.toRadians(30));
+        try {
+            if (myPlayer.getColor() == Colors.Blue) {
+                this.apGame.getTransforms().add(new Rotate(-120, bX, bY, 0, Rotate.Z_AXIS));
+            } else if (myPlayer.getColor() == Colors.Green) {
+                this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
+            }
+        }
+        catch (RemoteException ex) {
+            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
