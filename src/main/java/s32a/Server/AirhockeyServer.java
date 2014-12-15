@@ -58,6 +58,9 @@ public class AirhockeyServer {
 
     public AirhockeyServer(Stage stage) {
 
+        // Solves socket connection refused bug
+        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+
         try {
             lobby = Lobby.getSingle();
             lobby.startPublisher();

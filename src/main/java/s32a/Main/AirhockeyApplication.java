@@ -31,8 +31,7 @@ public class AirhockeyApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Solves socket connection refused bug
-        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+        
 
         this.stage = primaryStage;
         AnchorPane anchor = new AnchorPane();
