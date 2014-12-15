@@ -171,8 +171,8 @@ public class Player extends Person implements IPlayer {
             y = Math.sin(Math.toRadians(direction)) * 5;
             
             //Round x & y to few decimals to prevent extremely small numbers (such as 1*10^(-16)) when the expected value is 0
-            x = Math.round(x * 1000) / 1000;
-            y = Math.round(y * 1000) / 1000;
+//            x = Math.round(x * 1000) / 1000;
+//            y = Math.round(y * 1000) / 1000;
             
             this.posX.set(posX.doubleValue() + x);
             this.posY.set(posY.doubleValue() + y);
