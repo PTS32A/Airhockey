@@ -159,8 +159,9 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                oActiveGamesList.setAll(activeGames.values());
                 oActiveGamesMap.clear();
+                oActiveGamesList.clear();
+                oActiveGamesList.addAll(activeGames.values());  
                 oActiveGamesMap.putAll(activeGames);
             }
         });
