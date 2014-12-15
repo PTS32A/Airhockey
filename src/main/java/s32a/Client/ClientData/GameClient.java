@@ -113,8 +113,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * Ends the game. Called by server.
      */
     @Override
-    public void endGame(){
-        //fx.addCloseEvent();
+    public void endGame() {
+        fx.closeStage();
     }
 
     /**

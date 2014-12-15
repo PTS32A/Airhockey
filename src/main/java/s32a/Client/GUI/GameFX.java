@@ -610,4 +610,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private Stage getThisStage() {
         return (Stage) lblPlayer1Name.getScene().getWindow();
     }
+    
+    public void closeStage() {
+        getThisStage().close();
+    }
 }
