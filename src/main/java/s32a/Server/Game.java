@@ -128,13 +128,15 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.myChatbox = new Chatbox();
     }
 
+    /**
+     * Forces the collection in lobby to fire change events. This is neccessary for proper operation of JavaFX elements displaying games in Lobby.
+     */
     private void addForceListChangeListeners(){
         this.statusProp.addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 try {
-                    System.out.println("status changed in game");
                     Lobby lobby = Lobby.getSingle();
                     lobby.updateOMap(lobby.getOActiveGames(), getID());
                 }

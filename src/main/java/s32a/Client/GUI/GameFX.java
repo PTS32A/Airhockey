@@ -112,7 +112,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 IPlayer myPlayer = (IPlayer) myPerson;
                 btnStopSpec.setVisible(false);
                 btnPause.setDisable(true);
-                
 
                 // bind custom difficulty indicators
                 this.customSpeed = new SimpleIntegerProperty(15);
@@ -169,6 +168,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         lblPlayer2Name.textProperty().bind(myGame.getPlayer2NameProperty());
         lblPlayer3Name.textProperty().bind(myGame.getPlayer3NameProperty());
 
+        // binds player Score labels
+        this.lblScoreP1.textProperty().bind(myGame.getPlayer1Score().asString());
+        this.lblScoreP2.textProperty().bind(myGame.getPlayer2Score().asString());
+        this.lblScoreP3.textProperty().bind(myGame.getPlayer3Score().asString());
+
         // round number
         this.lblRound.textProperty().bind(myGame.getRoundNoProperty().asString());
 
@@ -179,18 +183,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         this.lblDifficulty.textProperty().bind(myGame.getDifficultyProperty());
 
         this.addGameStatusListeners();
+        // draws the canvas
+        this.drawEdges();
 
-        /**
-         * if currentPerson is spectator, graphics can start now. If he were a
-         * player, they start when startGame is called.
-         */
-        if (myPerson instanceof ISpectator) {
-            this.startGraphics(myGame);
-        }
-        else if (myPerson instanceof IPlayer)
-        {
-            // draws the canvas
-            this.drawEdges();
+        if (myPerson instanceof IPlayer) {
             IPlayer myPlayer = (IPlayer) myPerson;
             double bX = width.get() / 2;
             double bY = height.get() - bX * Math.tan(Math.toRadians(30));
@@ -205,9 +201,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        
-        
+
     }
 
     /**
@@ -375,7 +369,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     btnPause.setDisable(false);
                     this.sldCustomDifficulty.setDisable(true);
                     this.cbxCustomDifficulty.setDisable(true);
-                    this.startGraphics(myGame);
                 } else {
                     super.showDialog("Error", "Failed to begin game");
                 }
@@ -388,18 +381,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         } else {
             super.showDialog("Warning", "Not enough players to begin game.");
         }
-    }
-
-    /**
-     * Starts display timer and binds score displays
-     *
-     * @param myGame
-     */
-    private void startGraphics(GameClient myGame) {
-        // binds score labels to player scores
-        this.lblScoreP1.textProperty().bind(myGame.getPlayer1Score().asString());
-        this.lblScoreP2.textProperty().bind(myGame.getPlayer2Score().asString());
-        this.lblScoreP3.textProperty().bind(myGame.getPlayer3Score().asString());
     }
 
     /**
@@ -449,7 +430,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             if (afkTimerTask != null) {
                 afkTimerTask.cancel();
             }
-            if (gameTimer != null){
+            if (gameTimer != null) {
                 gameTimer.shutdown();
             }
             IPerson myPerson = super.getMe();
