@@ -96,6 +96,7 @@ public class Player extends Person implements IPlayer {
      */
     @Override
     public boolean moveBat(float amount) throws IllegalArgumentException, RemoteException {
+        
         double direction = 0;
         double x;
         double y;
@@ -154,9 +155,9 @@ public class Player extends Person implements IPlayer {
                 float cY1 = (float) (cY + ((bY - cY) / 100 * 30));
                 float cY2 = (float) (cY + ((bY - cY) / 100 * 70));
                 if (amount == 1) {
-                    direction = 300;
-                } else {
                     direction = 120;
+                } else {
+                    direction = 300;
                 }
                 if (posY.doubleValue() + Math.sin(Math.toRadians(direction)) * 5 < cY1
                         || posY.doubleValue() + Math.sin(Math.toRadians(direction)) * 5 > cY2) {

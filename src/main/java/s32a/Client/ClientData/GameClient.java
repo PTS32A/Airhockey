@@ -24,6 +24,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import s32a.Client.GUI.GameFX;
 import s32a.Server.Lobby;
 import s32a.Shared.*;
 import s32a.Shared.enums.GameStatus;
@@ -37,8 +38,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     private IGame myGame;
     @Getter
     private List<IPlayer> myPlayers;
-    @Getter
-    private List<ISpectator> mySpectators;
     @Getter
     private ObservableList<String> oChat;
     @Getter
@@ -54,10 +53,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Getter
     private DoubleProperty player1XProperty, player1YProperty, player2XProperty,
             player2YProperty, player3XProperty, player3YProperty;
+    
+    private GameFX fx;
 
     public GameClient() throws RemoteException {
         this.myPlayers = new ArrayList<>();
-        this.mySpectators = new ArrayList<>();
         this.oChat = FXCollections.observableArrayList(new ArrayList<String>());
         this.roundNoProperty = new SimpleIntegerProperty();
         this.puckXProperty = new SimpleDoubleProperty();
@@ -113,8 +113,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * Ends the game. Called by server.
      */
     @Override
-    public void endGame(){
-        
+    public void endGame() {
+        fx.closeStage();
     }
 
     /**
@@ -260,23 +260,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
             }
         });
 
-    }
-
-    /**
-     * Incoming from server. Sets the spectators viewing this game.
-     *
-     * @param spectators
-     * @throws RemoteException
-     */
-    @Override
-    public void setSpectators(List<ISpectator> spectators) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                mySpectators = spectators;
-            }
-        });
     }
 
     /**
@@ -488,6 +471,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Override
     public int getCountDownTime() throws RemoteException {
         return this.myGame.getCountDownTime();
+    }
+
+    @Override
+    public void registerGameFX(GameFX fx) throws RemoteException {
+        this.fx = fx;
     }
 
 }

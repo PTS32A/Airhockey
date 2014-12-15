@@ -8,6 +8,7 @@ package s32a.Shared;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import s32a.Client.GUI.GameFX;
 import s32a.Shared.enums.GameStatus;
 
 /**
@@ -41,15 +42,6 @@ public interface IGameClient extends Remote {
      * @throws RemoteException
      */
     public void setPlayers(List<IPlayer> players)
-            throws RemoteException;
-
-    /**
-     * Sets Spectators in the Game
-     *
-     * @param spectators A list of Spectators to be added
-     * @throws RemoteException
-     */
-    public void setSpectators(List<ISpectator> spectators)
             throws RemoteException;
 
     /**
@@ -162,5 +154,14 @@ public interface IGameClient extends Remote {
      * @throws RemoteException
      */
     public void setGameTime(String gameTime)
+            throws RemoteException;
+    
+    /**
+     * Registers the GameFX of the client
+     * 
+     * @param fx
+     * @throws RemoteException 
+     */
+    public void registerGameFX(GameFX fx)
             throws RemoteException;
 }
