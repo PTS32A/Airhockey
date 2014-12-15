@@ -96,6 +96,7 @@ public class Player extends Person implements IPlayer {
      */
     @Override
     public boolean moveBat(float amount) throws IllegalArgumentException, RemoteException {
+        
         double direction = 0;
         double x;
         double y;

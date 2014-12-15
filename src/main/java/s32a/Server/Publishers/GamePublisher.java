@@ -489,7 +489,7 @@ public class GamePublisher {
     private void pushPlayer1Position() {
         for (String key : observers.keySet()) {
             try {
-                observers.get(key).setPlayer1Bat(player1Prop.get().getPosX().get(), player1Prop.get().getPosX().get());
+                observers.get(key).setPlayer1Bat(player1Prop.get().getPosX().get(), player1Prop.get().getPosY().get());
             }
             catch (RemoteException ex) {
                 System.out.println("remoteException on setting player 1 bat location for " + key);
