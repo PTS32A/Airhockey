@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Enumeration;
@@ -71,11 +72,8 @@ public class AirhockeyServer {
         // Bind using Naming
         if (lobby != null) {
             try {
-                LocateRegistry.createRegistry(portNumber);
-                Naming.rebind(bindingName, lobby);
-            }
-            catch (MalformedURLException ex) {
-                System.out.println("Server: MalformedURLException: " + ex.getMessage());
+                Registry registry = LocateRegistry.createRegistry(portNumber);
+                registry.rebind(bindingName, lobby);
             }
             catch (RemoteException ex) {
                 System.out.println("Server: RemoteException: " + ex.getMessage());
