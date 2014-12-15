@@ -110,6 +110,14 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
+     * Ends the game. Called by server.
+     */
+    @Override
+    public void endGame(){
+        
+    }
+
+    /**
      * Outgoing to server to start nextRound.
      *
      * @param input true or false for round change

@@ -295,7 +295,7 @@ public class AirhockeyGUI {
 //            output = (ILobby) Naming.lookup("rmi://"
 //                    + ipAddress + ":"
 //                    + portNumber + "/"
-//                    + bindingName);
+//                    + bindingName);   
         }
 //        catch (MalformedURLException ex) {
 //            System.out.println("Client: MalformedURLException: " + ex.getMessage());
