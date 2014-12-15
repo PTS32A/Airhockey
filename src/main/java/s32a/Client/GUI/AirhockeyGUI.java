@@ -281,8 +281,8 @@ public class AirhockeyGUI {
             return null;
         }
 
-        // Solves socket connection refused bug
-        System.setProperty("java.rmi.server.hostname", ipAddress);
+//        // Solves socket connection refused bug
+//        System.setProperty("java.rmi.server.hostname", ipAddress);
         ILobby output = null;
 
         // get beurs associated with registry entry
