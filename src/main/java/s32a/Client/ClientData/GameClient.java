@@ -85,8 +85,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         Vector2 batPos3 = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
                 (float) ((cY + ((bY - cY) / 100 * 50))));
 
-        this.player1XProperty = new SimpleDoubleProperty();
-        this.player1YProperty = new SimpleDoubleProperty();
+        this.player1XProperty = new SimpleDoubleProperty(0.0);
+        this.player1YProperty = new SimpleDoubleProperty(0.0);
         this.player2XProperty = new SimpleDoubleProperty(batPos2.x);
         this.player2YProperty = new SimpleDoubleProperty(batPos2.y);
         this.player3XProperty = new SimpleDoubleProperty(batPos3.x);

@@ -43,14 +43,12 @@
     <TextField fx:id="tfChatbox" prefHeight="25.0" prefWidth="246.0" promptText="Enter Message" text="" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="20.0" />
     <Slider fx:id="sldCustomDifficulty" blockIncrement="5.0" layoutX="8.0" layoutY="151.0" majorTickUnit="5.0" max="40.0" min="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="false" value="10.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="151.0" />
     <CheckBox fx:id="cbxCustomDifficulty" layoutX="148.0" layoutY="149.0" mnemonicParsing="false" text="Custom:" AnchorPane.leftAnchor="148.0" AnchorPane.topAnchor="149.0" />
-      <AnchorPane fx:id="apGame" layoutX="340.0" layoutY="68.0" prefHeight="500.0" prefWidth="500.0">
-         <children>
-            <Label fx:id="lblCount" alignment="CENTER" layoutX="191.0" layoutY="198.0" prefHeight="105.0" prefWidth="118.0" textAlignment="CENTER">
-               <font>
-                  <Font size="72.0" />
-               </font>
-            </Label>
-         </children></AnchorPane>
+      <Label fx:id="lblCount" alignment="CENTER" layoutX="531.0" layoutY="266.0" prefHeight="105.0" prefWidth="118.0" textAlignment="CENTER">
+         <font>
+            <Font size="72.0" />
+         </font>
+      </Label>
+      <AnchorPane fx:id="apGame" layoutX="340.0" layoutY="68.0" prefHeight="500.0" prefWidth="500.0" />
       <Label layoutX="14.0" layoutY="44.0" text="Player 2:">
          <font>
             <Font size="24.0" fx:id="x11" />

@@ -10,11 +10,9 @@ import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +25,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -62,8 +59,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     ListView lvChatbox;
     @FXML
     TextField tfChatbox;
-    @FXML
-    Canvas canvas;
     @FXML
     Slider sldCustomDifficulty;
     @FXML
@@ -142,10 +137,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // binds width / height for redrawing to canvas size
         this.width.bind(this.apGame.prefWidthProperty());
         this.height.bind(Bindings.subtract(this.apGame.prefHeightProperty(), 1));
-
-        // initialises graphics object
-        graphics = canvas.getGraphicsContext2D();
-        graphics.clearRect(0, 0, width.doubleValue(), height.doubleValue());
 
         // adds chatbox accept event
         this.tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
