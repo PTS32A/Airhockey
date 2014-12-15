@@ -5,13 +5,18 @@
  */
 package genericTests;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 /**
@@ -57,6 +62,32 @@ public class TestClass {
         testMap.put("testey", "test");
         testOMap.put("testey", "testO");
 
+        // ----------------------- testing firing of change event for observableCollection
+
+        ObservableList<CollectionClass> collectionList = FXCollections.observableArrayList(new ArrayList<>());
+        CollectionClass collClass = new CollectionClass();
+
+        collectionList.add(collClass);
+
+        collectionList.addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+                System.out.println("invalidationlistener invalidated -> " + String.valueOf(collClass.getChange()));
+            }
+        });
+
+        collectionList.addListener(new ListChangeListener() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                System.out.println("listchangelistener notified -> " + String.valueOf(collClass.getChange()));
+            }
+        });
+
+        collClass.incrementChange();
+        int index = collectionList.indexOf(collClass);
+        collectionList.set(index, collClass);
 
     }
 

@@ -194,6 +194,7 @@ public class LobbyPublisher {
             @Override
             public void onChanged(MapChangeListener.Change change) {
                 pushPersons();
+                pushActiveGames();
             }
         });
     }

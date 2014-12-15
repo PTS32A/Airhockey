@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,6 +106,31 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     }
 
     /**
+     * Replaces an item in the list with itself, forcing an ObservableList to
+     * fire change events.
+     *
+     * @param list
+     * @param item
+     */
+    public void updateOList(List list, Object item) {
+        int index = list.indexOf(item);
+        if (index > -1) {
+            list.set(index, item);
+        }
+    }
+
+    /**
+     * Replaces item with given key with itself.
+     * Forces an ObservableMap to fire changeEvents.
+     * @param map
+     * @param key
+     * @param item
+     */
+    public void updateOMap(Map map, String key){
+        map.replace(key, map.get(key));
+    }
+
+    /**
      * Adds a new person to the database. Does not add them to active persons
      * yet the database checks for uniqueness
      *
@@ -194,8 +220,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 ((Game) g).removeSpectator(spectInput);
             }
         }
-        this.oActivePersons.remove(input.getName());
         this.publisher.removeObserver(input.getName());
+        this.oActivePersons.remove(input.getName());      
         return true;
     }
 
@@ -288,6 +314,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             }
             if (game.addPlayer(player, client)) {
                 this.oActivePersons.replace(person.getName(), player);
+                this.updateOMap(oActiveGames, game.getID());
             } else {
                 return null;
             }
@@ -345,6 +372,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             if (!game.addSpectator((Spectator) person, client)) {
                 return null;
             }
+            this.updateOMap(oActiveGames, game.getID());
             this.oActivePersons.replace(person.getName(), person);
         }
         catch (IllegalArgumentException ex) {
@@ -661,8 +689,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
 
     /**
      *
-     * @return airhockeysettings cast to a non-observable hashmap.
-     * This as ObservableMap is not serializable.
+     * @return airhockeysettings cast to a non-observable hashmap. This as
+     * ObservableMap is not serializable.
      * @throws RemoteException
      */
     @Override
@@ -682,8 +710,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
 
     /**
      *
-     * @return activeGames cast to a non-observable hashmap.
-     * This as ObservableMap is not serializable.
+     * @return activeGames cast to a non-observable hashmap. This as
+     * ObservableMap is not serializable.
      * @throws RemoteException
      */
     @Override
@@ -700,6 +728,5 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public IPerson getMyPerson(String name) throws RemoteException {
         return this.oActivePersons.get(name);
     }
-
 
 }

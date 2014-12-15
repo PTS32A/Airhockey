@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -29,6 +31,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -45,16 +49,16 @@ import s32a.Shared.ISpectator;
  */
 public class Game extends UnicastRemoteObject implements IGame {
 
-    private transient StringProperty difficultyProp;
+    private StringProperty difficultyProp;
     @Getter
-    private transient ObjectProperty<GameStatus> statusProp;
+    private ObjectProperty<GameStatus> statusProp;
 
     @Getter
-    private transient Chatbox myChatbox;
+    private Chatbox myChatbox;
     private Puck myPuck;
 
-    private transient ObservableList<ISpectator> mySpectators;
-    private transient ObservableList<IPlayer> myPlayers;
+    private ObservableList<ISpectator> mySpectators;
+    private ObservableList<IPlayer> myPlayers;
 
     private GamePublisher publisher;
 
@@ -64,7 +68,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     @Getter
     private HashMap gameInfo;
     @Getter
-    private transient IntegerProperty roundNo;
+    private IntegerProperty roundNo;
 
     @Getter
     @Setter
@@ -74,10 +78,10 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     private AtomicInteger countDownTime;
 
-    private transient Timer puckTimer;
+    private Timer puckTimer;
 
     @Getter
-    private transient StringProperty gameTime;
+    private StringProperty gameTime;
 
     private boolean printMessages = false;
 
@@ -118,9 +122,27 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
         this.statusProp = new SimpleObjectProperty<>(GameStatus.Preparing);
+        this.addForceListChangeListeners();
         this.countDownTime = new AtomicInteger(-1);
 
         this.myChatbox = new Chatbox();
+    }
+
+    private void addForceListChangeListeners(){
+        this.statusProp.addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                try {
+                    System.out.println("status changed in game");
+                    Lobby lobby = Lobby.getSingle();
+                    lobby.updateOMap(lobby.getOActiveGames(), getID());
+                }
+                catch (RemoteException ex) {
+                    System.out.println("RemoteException on forcibly updating activegames from Game: " + ex.getMessage());
+                }
+            }
+        });
     }
 
     /**
