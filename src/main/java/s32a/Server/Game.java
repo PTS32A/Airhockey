@@ -497,6 +497,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      * Starts a 4-second countdown before each round - including the first.
      */
     private void startCountDown() throws RemoteException{
+        this.statusProp.set(GameStatus.Waiting);
         this.countDownTime.set(4);
 
         TimerTask countDown = new TimerTask() {
@@ -533,7 +534,6 @@ public class Game extends UnicastRemoteObject implements IGame {
             printMessage("");
         } else {
             //new round is started at the end of countdown
-            this.statusProp.set(GameStatus.Waiting);
             this.startCountDown();
         }
     }
