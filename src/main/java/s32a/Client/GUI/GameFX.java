@@ -497,7 +497,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     if (keyEvent.getCode() == KeyCode.A
                             || keyEvent.getCode() == KeyCode.LEFT) {
                         if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
-
                             myPlayer.moveBat(-1);
                             actionTaken = true;
                         }
@@ -583,9 +582,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 try {
                     if (cbxCustomDifficulty.isSelected()) {
-
                         myGame.adjustDifficulty((float) customSpeed.get());
-
                     } else {
                         myGame.adjustDifficulty();
                     }
@@ -601,7 +598,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private Stage getThisStage() {
         return (Stage) lblPlayer1Name.getScene().getWindow();
     }
-    
+
     public void closeStage() {
         getThisStage().close();
     }
