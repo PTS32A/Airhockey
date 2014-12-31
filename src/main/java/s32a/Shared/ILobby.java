@@ -77,11 +77,11 @@ public interface ILobby extends Remote {
 
     /**
      * Logs out a Person from the Lobby
-     * @param input The Person to be logged out
+     * @param playerName The Person to be logged out
      * @return
      * @throws RemoteException 
      */
-    public boolean logOut(IPerson input)
+    public boolean logOut(String playerName)
             throws RemoteException;
 
     /**
@@ -93,31 +93,31 @@ public interface ILobby extends Remote {
      * @throws RemoteException
      * @throws IllegalArgumentException 
      */
-    public IGame startGame(IPerson person, IGameClient client)
+    public IGame startGame(String person, IGameClient client)
             throws RemoteException, IllegalArgumentException;
 
     /**
      * Lets a Person with corresponding GameClient join a Game
-     * @param game The Game to be joined
-     * @param person The Person joining
+     * @param game The Game to be joined (gameID)
+     * @param person The Person joining (name)
      * @param client The corresponding GameClient of the Person
      * @return Return the Server Game
      * @throws RemoteException
      * @throws IllegalArgumentException 
      */
-    public IGame joinGame(IGame game, IPerson person, IGameClient client)
+    public IGame joinGame(String game, String person, IGameClient client)
             throws RemoteException, IllegalArgumentException;
 
     /**
      * Let's a Person with corresponding GameClient spectate a Game
-     * @param gameInput The Game to be spectated
-     * @param personInput The Person spectating
+     * @param gameInput The Game to be spectated (gameID)
+     * @param personInput The Person spectating (name)
      * @param client The corresponding GameClient of the Person
      * @return
      * @throws RemoteException
      * @throws IllegalArgumentException 
      */
-    public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
+    public IGame spectateGame(String gameInput, String personInput, IGameClient client)
             throws RemoteException, IllegalArgumentException;
 
     /**
@@ -133,21 +133,21 @@ public interface ILobby extends Remote {
 
     /**
      * Ends the Game as a result of a Player leaving the Game
-     * @param game The Game to be ended
-     * @param hasLeft The Player who left the Game
+     * @param game The Game to be ended (gameID)
+     * @param hasLeft The Player who left the Game (name)
      * @return
      * @throws RemoteException 
      */
-    public boolean endGame(IGame game, IPlayer hasLeft)
+    public boolean endGame(String game, String hasLeft)
             throws RemoteException;
 
     /**
      * Stops a Person from spectating a Game
-     * @param game The spectated Game
-     * @param spectator The Person spectating the Game
+     * @param game The spectated Game (gameID)
+     * @param spectator The Person spectating the Game (name)
      * @throws RemoteException 
      */
-    public void stopSpectating(IGame game, IPerson spectator)
+    public void stopSpectating(String game, String spectator)
             throws RemoteException;
 
     /**
