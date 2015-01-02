@@ -535,7 +535,11 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
     }
 
+    /**
+     * Broadcasts end of game to all unaware clients.
+     */
     public void broadcastEndGame() {
+        this.statusProp.set(GameStatus.GameOver);
         publisher.broadcastEndGame();
     }
 
