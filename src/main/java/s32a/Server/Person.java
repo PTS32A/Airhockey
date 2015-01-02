@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Objects;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,13 +23,13 @@ import s32a.Shared.IPerson;
  *
  * @author Kargathia
  */
-public class Person extends UnicastRemoteObject implements IPerson{
+public class Person extends UnicastRemoteObject implements IPerson {
 
     private transient StringProperty nameProp;
     private transient DoubleProperty ratingProp;
 
     @Getter
-    private String name;
+    private final String name;
     @Getter
     private double rating;
     @Getter
@@ -41,12 +42,11 @@ public class Person extends UnicastRemoteObject implements IPerson{
      * @param input
      */
     public void setRating(double input) {
-        
-        if (input < 0)
-        {
+
+        if (input < 0) {
             throw new IllegalArgumentException();
         }
-        
+
         this.rating = input;
         this.ratingProp.set(input);
     }
@@ -87,9 +87,48 @@ public class Person extends UnicastRemoteObject implements IPerson{
         this.ratingProp = new SimpleDoubleProperty(rating);
     }
 
+    /**
+     * JVM method used for deSerializing this class - instantiates transient
+     * fields.
+     *
+     * @param is
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     private void readObject(ObjectInputStream is) throws IOException, ClassNotFoundException {
         is.defaultReadObject();
         this.nameProp = new SimpleStringProperty(this.name);
         this.ratingProp = new SimpleDoubleProperty(this.rating);
     }
+
+    /**
+     * Sets .equals to compare two instances on Name, instead of all variables.
+     * NOTE: All subclasses will call this. A Player named "testey" will be
+     * considered equal to a spectator, or a person named "testey".
+     *
+     * @param other
+     * @return
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof Person)) {
+            return false;
+        }
+        Person otherMyClass = (Person) other;
+        return this.name.equals(otherMyClass.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
 }
