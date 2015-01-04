@@ -7,7 +7,6 @@ package s32a.Server;
 
 import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -18,12 +17,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -116,7 +109,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.roundNo = new SimpleIntegerProperty(0);
         float defaultSpeed = 15f; // Default puckspeed
         this.myPuck = new Puck(defaultSpeed, this);
-        this.adjustDifficulty(); 
+        this.adjustDifficulty();
         this.difficultyProp = new SimpleStringProperty("speed");
         this.difficultyProp.bind(myPuck.getSpeed().asString());
         this.puckTimer = new Timer();
@@ -129,9 +122,10 @@ public class Game extends UnicastRemoteObject implements IGame {
     }
 
     /**
-     * Forces the collection in lobby to fire change events. This is neccessary for proper operation of JavaFX elements displaying games in Lobby.
+     * Forces the collection in lobby to fire change events. This is neccessary
+     * for proper operation of JavaFX elements displaying games in Lobby.
      */
-    private void addForceListChangeListeners(){
+    private void addForceListChangeListeners() {
         this.statusProp.addListener(new ChangeListener() {
 
             @Override
@@ -141,7 +135,9 @@ public class Game extends UnicastRemoteObject implements IGame {
                     lobby.updateOMap(lobby.getOActiveGames(), getID());
                 }
                 catch (RemoteException ex) {
-                    System.out.println("RemoteException on forcibly updating activegames from Game: " + ex.getMessage());
+                    System.out.println("RemoteException on "
+                            + "forcibly updating activegames from Game: "
+                            + ex.getMessage());
                 }
             }
         });
@@ -214,14 +210,16 @@ public class Game extends UnicastRemoteObject implements IGame {
                     this.gameInfo.put("nextColor", getNextColor());
 
                     this.myPlayers.add(player);
-                    setBatPosition(player, myPlayers.size() - 1);
+                    this.setBatPosition(player, myPlayers.size() - 1);
                     this.publisher.addObserver(player.getName(), client);
                     this.publisher.bindNextPlayer(player);
                     player.setMyGame(this);
                     this.adjustDifficulty();
-                    
+                    this.addChatMessage("has joined the game", player.getName());
+
                     if (myPlayers.size() == 3) {
                         this.statusProp.set(GameStatus.Ready);
+                        this.addChatMessage("-- READY TO START --", "GAME");
                     }
 
                     return true;
@@ -486,7 +484,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     public void startRound() throws RemoteException {
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
-        printMessage("-ROUND " + (roundNo.get() + 1)); 
+        printMessage("-ROUND " + (roundNo.get() + 1));
 
         this.statusProp.set(GameStatus.Playing);
 
@@ -496,7 +494,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     /**
      * Starts a 4-second countdown before each round - including the first.
      */
-    private void startCountDown() throws RemoteException{
+    private void startCountDown() throws RemoteException {
         this.statusProp.set(GameStatus.Waiting);
         this.countDownTime.set(4);
 
@@ -504,8 +502,7 @@ public class Game extends UnicastRemoteObject implements IGame {
 
             @Override
             public void run() {
-                if(countDownTime.decrementAndGet() < 0)
-                {
+                if (countDownTime.decrementAndGet() < 0) {
                     countDownTime.set(-1);
                     try {
                         startRound();
@@ -537,8 +534,12 @@ public class Game extends UnicastRemoteObject implements IGame {
             this.startCountDown();
         }
     }
-    
+
+    /**
+     * Broadcasts end of game to all unaware clients.
+     */
     public void broadcastEndGame() {
+        this.statusProp.set(GameStatus.GameOver);
         publisher.broadcastEndGame();
     }
 
@@ -749,7 +750,7 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     @Override
     public String getID() throws RemoteException {
-        return (String)this.gameInfo.get("gameID");
+        return (String) this.gameInfo.get("gameID");
     }
 
     @Override

@@ -218,6 +218,15 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
         };
 
+        // timer task. Automatically shuts down game a set period of time after game end.
+        TimerTask gameShutDown = new TimerTask() {
+
+            @Override
+            public void run() {
+                quitClick(null);
+            }
+        };
+
         // adds listener to gamestatus property
         myGame.getGameStatusProperty().addListener(new ChangeListener() {
 
@@ -225,6 +234,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (myGame.getGameStatusProperty().get() == GameStatus.Waiting) {
                     gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
+                } else if(myGame.getGameStatusProperty().get() == GameStatus.GameOver){
+                    gameTimer.schedule(gameShutDown, 2, TimeUnit.MINUTES);
                 }
             }
         });
@@ -422,7 +433,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 afkTimerTask.cancel();
             }
             if (gameTimer != null) {
-                gameTimer.shutdown();
+                gameTimer.shutdownNow();
             }
             IPerson myPerson = super.getMe();
             if (myPerson instanceof ISpectator) {

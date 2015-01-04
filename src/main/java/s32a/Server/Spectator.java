@@ -60,13 +60,8 @@ public class Spectator extends Person implements ISpectator {
         return myGames.remove(input);
     }
 
-    /**
-     * @return game most recently added to the list - used to set up GameFX
-     */
-    public IGame getNewestGame() {
-        if (myGames == null || myGames.size() < 1) {
-            return null;
-        }
-        return myGames.get(myGames.size() - 1);
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
     }
 }

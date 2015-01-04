@@ -60,7 +60,7 @@ public class Player extends Person implements IPlayer {
      * @throws java.rmi.RemoteException
      */
     public void setScore(int input) throws RemoteException {
-            score.setValue(input);
+        score.setValue(input);
     }
 
     /**
@@ -96,7 +96,7 @@ public class Player extends Person implements IPlayer {
      */
     @Override
     public boolean moveBat(float amount) throws IllegalArgumentException, RemoteException {
-        
+
         double direction = 0;
         double x;
         double y;
@@ -112,7 +112,7 @@ public class Player extends Person implements IPlayer {
         double cX = sideLength / 2;
         double cY = 0;
 
-        if (!((Game)myGame).statusProperty().get().equals(GameStatus.Playing)) {
+        if (!((Game) myGame).statusProperty().get().equals(GameStatus.Playing)) {
             return false;
         } else {
             // Will reimplement this later.
@@ -169,16 +169,20 @@ public class Player extends Person implements IPlayer {
             }
             x = Math.cos(Math.toRadians(direction)) * 5;
             y = Math.sin(Math.toRadians(direction)) * 5;
-            
+
             //Round x & y to few decimals to prevent extremely small numbers (such as 1*10^(-16)) when the expected value is 0
 //            x = Math.round(x * 1000) / 1000;
 //            y = Math.round(y * 1000) / 1000;
-            
             this.posX.set(posX.doubleValue() + x);
             this.posY.set(posY.doubleValue() + y);
 //            this.rec.x = (int) posX.doubleValue();
 //            this.rec.y = (int) posY.doubleValue();
             return true;
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
     }
 }

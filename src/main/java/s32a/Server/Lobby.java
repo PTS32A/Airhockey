@@ -9,17 +9,12 @@ import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
@@ -30,7 +25,6 @@ import s32a.Shared.ILobby;
 import s32a.Shared.ILobbyClient;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
-import s32a.Shared.ISpectator;
 import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
 
@@ -124,7 +118,6 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * Forces an ObservableMap to fire changeEvents.
      * @param map
      * @param key
-     * @param item
      */
     public void updateOMap(Map map, String key){
         map.replace(key, map.get(key));
@@ -189,6 +182,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
 
         if (this.oActivePersons.put(playerName, newPerson) == null
                 && this.publisher.addObserver(playerName, client)) {
+            this.addChatMessage("logged in", playerName);
             return true;
         } else {
             this.oActivePersons.remove(playerName);
@@ -220,9 +214,15 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 ((Game) g).removeSpectator(spectInput);
             }
         }
+
         
         this.publisher.removeObserver(playername);
         this.oActivePersons.remove(playername);      
+
+        this.publisher.removeObserver(playername);
+        this.oActivePersons.remove(playername);
+        this.addChatMessage("logged out", playername);
+
         return true;
     }
 

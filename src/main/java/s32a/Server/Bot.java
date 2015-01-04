@@ -54,4 +54,9 @@ public class Bot extends Player {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
+    }
 }
