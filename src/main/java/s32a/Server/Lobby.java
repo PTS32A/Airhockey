@@ -206,22 +206,23 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean logOut(IPerson input) throws RemoteException {
-        if (input == null) {
+    public boolean logOut(String playername) throws RemoteException {
+        if (playername == null) {
             return false;
         }
 
-        if (input instanceof Player) {
-            Player playerInput = (Player) input;
-            this.endGame(playerInput.getMyGame(), playerInput);
-        } else if (input instanceof Spectator) {
-            Spectator spectInput = (Spectator) input;
+        if (this.oActivePersons.get(playername) instanceof Player) {
+            Player playerInput = (Player) this.oActivePersons.get(playername);
+            this.endGame(playerInput.getMyGame().getID(), playername);
+        } else if (this.oActivePersons.get(playername) instanceof Spectator) {
+            Spectator spectInput = (Spectator) this.oActivePersons.get(playername);
             for (IGame g : oActiveGames.values()) {
                 ((Game) g).removeSpectator(spectInput);
             }
         }
-        this.publisher.removeObserver(input.getName());
-        this.oActivePersons.remove(input.getName());      
+        
+        this.publisher.removeObserver(playername);
+        this.oActivePersons.remove(playername);      
         return true;
     }
 
@@ -251,10 +252,10 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game startGame(IPerson input, IGameClient client)
+    public Game startGame(String personname, IGameClient client)
             throws RemoteException, IllegalArgumentException {
-        if (input == null || (input instanceof Player)
-                || (input instanceof Spectator)) {
+        if (personname == null || (this.oActivePersons.get(personname) instanceof Player)
+                || (this.oActivePersons.get(personname) instanceof Spectator)) {
             return null;
         }
         if (client == null) {
@@ -264,7 +265,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         Person person = null;
         Game newGame = null;
         try {
-            person = (Person) this.oActivePersons.get(input.getName());
+            person = (Person) this.oActivePersons.get(personname);
             Player player = new Player(person.getName(), person.ratingProperty().get(),
                     Colors.Red);
             newGame = new Game(player);
@@ -274,7 +275,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         }
         catch (Exception ex) {
             this.returnToLobby(person);
-            this.endGame(newGame, null);
+            this.endGame(newGame.getID(), null);
             throw new IllegalArgumentException("Exception caught: " + ex.getMessage());
         }
         return newGame;
@@ -291,18 +292,18 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game joinGame(IGame gameInput, IPerson personInput, IGameClient client)
+    public Game joinGame(String gameInput, String personInput, IGameClient client)
             throws RemoteException, IllegalArgumentException {
-        if (personInput == null || (personInput instanceof Player)
-                || (personInput instanceof Spectator) || gameInput == null) {
+        if (personInput == null || (this.oActivePersons.get(personInput) instanceof Player)
+                || (this.oActivePersons.get(personInput) instanceof Spectator) || gameInput == null) {
             return null;
         }
         if (client == null) {
             return null;
         }
 
-        Game game = (Game) this.getActiveGames().get(gameInput.getID());
-        Person person = (Person) this.oActivePersons.get(personInput.getName());
+        Game game = (Game) this.getActiveGames().get(gameInput);
+        Person person = (Person) this.oActivePersons.get(personInput);
         try {
             Player player;
             if (person.isBot()) {
@@ -321,8 +322,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         }
         catch (Exception ex) {
             for (IPlayer player : game.getMyPlayers()) {
-                if (player.getName().equals(personInput.getName())) {
-                    this.endGame(game, player);
+                if (player.getName().equals(personInput)) {
+                    this.endGame(game.getID(), player.getName());
                     break;
                 }
             }
@@ -344,18 +345,18 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
+    public IGame spectateGame(String gameInput, String personInput, IGameClient client)
             throws IllegalArgumentException, RemoteException {
         if (personInput == null) {
             throw new IllegalArgumentException("Input is null");
         }
-        if (personInput instanceof Player) {
+        if (this.oActivePersons.get(personInput) instanceof Player) {
             throw new IllegalArgumentException("Input is already a Player");
         }
         if (gameInput == null) {
             throw new IllegalArgumentException("Game input is null");
         }
-        Game game = (Game) this.getActiveGames().get(gameInput.getID());
+        Game game = (Game) this.getActiveGames().get(gameInput);
         if (game.statusProperty().get() == GameStatus.GameOver) {
             throw new IllegalArgumentException("Unable to watch a finished game");
         }
@@ -366,7 +367,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             throw new IllegalArgumentException("Game client was null");
         }
 
-        Person person = (Person) this.getActivePersons().get(personInput.getName());
+        Person person = (Person) this.getActivePersons().get(personInput);
         try {
             person = new Spectator(person.getName(), person.ratingProperty().get());
             if (!game.addSpectator((Spectator) person, client)) {
@@ -411,11 +412,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean endGame(IGame gameInput, IPlayer hasLeft) throws RemoteException {
-        if (gameInput == null || !this.oActiveGames.containsKey(gameInput.getID())) {
+    public boolean endGame(String gameInput, String hasLeft) throws RemoteException {
+        if (gameInput == null || !this.oActiveGames.containsKey(gameInput)) {
             return false;
         }
-        Game game = (Game) this.oActiveGames.get(gameInput.getID());
+        Game game = (Game) this.oActiveGames.get(gameInput);
 
         if (game.getMyPlayers().size() == 3 && game.getRoundNo().get() > 0) {
             try {
@@ -433,7 +434,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             for (IPlayer Iplayer : game.getMyPlayers()) {
                 Player player = (Player) Iplayer;
                 if (this.oActivePersons.get(player.getName()) instanceof Player) {
-                    player.setRating(this.myDatabaseControls.getNewRating((Person) player, hasLeft));
+                    player.setRating(this.myDatabaseControls.getNewRating((Person) player, (Player) this.oActivePersons.get(hasLeft)));
                     this.returnToLobby(player);
                 }
             }
@@ -456,14 +457,14 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @throws java.rmi.RemoteException
      */
     @Override
-    public void stopSpectating(IGame gameInput, IPerson spectator) throws RemoteException {
-        if (spectator == null || gameInput == null || !(spectator instanceof Spectator)) {
+    public void stopSpectating(String gameInput, String spectator) throws RemoteException {
+        if (spectator == null || gameInput == null || !(this.oActivePersons.get(spectator) instanceof Spectator)) {
             return;
         }
-        Game game = (Game) this.getActiveGames().get(gameInput.getID());
+        Game game = (Game) this.getActiveGames().get(gameInput);
 
-        game.removeSpectator((Spectator) spectator);
-        this.returnToLobby(spectator);
+        game.removeSpectator((Spectator) this.oActivePersons.get(spectator));
+        this.returnToLobby(this.oActivePersons.get(spectator));
     }
 
     /**
@@ -632,43 +633,43 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         //game 1
         Person bot = (Person) this.oActivePersons.get("bot1");
         bot.setBot(true);
-        Game game = this.startGame(bot, botClient);
+        Game game = this.startGame(bot.getName(), botClient);
 
         bot = (Person) this.oActivePersons.get("bot2");
         bot.setBot(true);
-        this.joinGame(game, bot, botClient);
+        this.joinGame(game.getID(), bot.getName(), botClient);
 
         bot = (Person) this.oActivePersons.get("bot3");
         bot.setBot(true);
-        this.joinGame(game, bot, botClient);
+        this.joinGame(game.getID(), bot.getName(), botClient);
         game.beginGame();
 
         //game 2
         bot = (Person) this.oActivePersons.get("bot4");
         bot.setBot(true);
-        game = this.startGame(bot, botClient);
+        game = this.startGame(bot.getName(), botClient);
 
         bot = (Person) this.oActivePersons.get("bot5");
         bot.setBot(true);
-        this.joinGame(game, bot, botClient);
+        this.joinGame(game.getID(), bot.getName(), botClient);
 
         bot = (Person) this.oActivePersons.get("bot6");
         bot.setBot(true);
-        this.joinGame(game, bot, botClient);
+        this.joinGame(game.getID(), bot.getName(), botClient);
         game.beginGame();
 
         // game 3
         bot = (Person) this.oActivePersons.get("bot7");
         bot.setBot(true);
-        game = this.startGame(bot, botClient);
+        game = this.startGame(bot.getName(), botClient);
 
         bot = (Person) this.oActivePersons.get("bot8");
         bot.setBot(true);
-        this.joinGame(game, bot, botClient);
+        this.joinGame(game.getID(), bot.getName(), botClient);
 
         bot = (Person) this.oActivePersons.get("bot9");
         bot.setBot(true);
-        this.joinGame(game, bot, botClient);
+        this.joinGame(game.getID(), bot.getName(), botClient);
         game.pauseGame(true);
 
         // loose change

@@ -63,7 +63,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
             }
             catch (IOException ex) {
                 try {
-                    lobby.logOut(super.getMe());
+                    lobby.logOut(super.getMe().getName());
                 }
                 catch (RemoteException ex1) {
                     System.out.println("RemoteException on trying to logout after IOException: " + ex1.getMessage());

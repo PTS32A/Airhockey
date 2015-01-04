@@ -102,22 +102,22 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public boolean logOut(IPerson input) throws RemoteException {
+    public boolean logOut(String input) throws RemoteException {
         return myLobby.logOut(input);
     }
 
     @Override
-    public IGame startGame(IPerson person, IGameClient client) throws RemoteException {
+    public IGame startGame(String person, IGameClient client) throws RemoteException {
         return myLobby.startGame(person, client);
     }
 
     @Override
-    public IGame joinGame(IGame game, IPerson person, IGameClient client) throws RemoteException {
+    public IGame joinGame(String game, String person, IGameClient client) throws RemoteException {
         return myLobby.joinGame(game, person, client);
     }
 
     @Override
-    public IGame spectateGame(IGame gameInput, IPerson personInput, IGameClient client)
+    public IGame spectateGame(String gameInput, String personInput, IGameClient client)
             throws RemoteException {
         return myLobby.spectateGame(gameInput, personInput, client);
     }
@@ -128,12 +128,12 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public boolean endGame(IGame game, IPlayer hasLeft) throws RemoteException {
+    public boolean endGame(String game, String hasLeft) throws RemoteException {
         return myLobby.endGame(game, hasLeft);
     }
 
     @Override
-    public void stopSpectating(IGame game, IPerson spectator) throws RemoteException {
+    public void stopSpectating(String game, String spectator) throws RemoteException {
         myLobby.stopSpectating(game, spectator);
     }
 

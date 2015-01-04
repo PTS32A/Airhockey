@@ -426,11 +426,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
             IPerson myPerson = super.getMe();
             if (myPerson instanceof ISpectator) {
-                lobby.stopSpectating(myGame, (ISpectator) myPerson);
+                lobby.stopSpectating(myGame.getID(), myPerson.getName());
             } else if (myGame.getGameStatusProperty().get().equals(GameStatus.GameOver) || myGame.getRoundNoProperty().get() == 0) {
-                lobby.endGame(myGame, null);
+                lobby.endGame(myGame.getID(), null);
             } else {
-                lobby.endGame(myGame, (IPlayer) myPerson);
+                lobby.endGame(myGame.getID(), myPerson.getName());
             }
             myGame.addChatMessage("has left the game", super.getMe().getName());
             getThisStage().close();
@@ -470,7 +470,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void stopSpectating(Event evt) {
         try {
-            lobby.stopSpectating(myGame, super.getMe());
+            lobby.stopSpectating(myGame.getID(), super.getMe().getName());
             getThisStage().close();
         }
         catch (RemoteException ex) {
@@ -546,9 +546,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     System.out.println("closerequest handled");
                     IPerson p = getMe();
                     if (p instanceof ISpectator) {
-                        lobby.stopSpectating(myGame, p);
+                        lobby.stopSpectating(myGame.getID(), p.getName());
                     } else if (p instanceof IPlayer) {
-                        lobby.endGame(myGame, (IPlayer) p);
+                        lobby.endGame(myGame.getID(), p.getName());
                     }
                     stage.close();
                 }

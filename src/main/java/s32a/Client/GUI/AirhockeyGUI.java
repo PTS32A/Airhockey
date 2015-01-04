@@ -109,7 +109,7 @@ public class AirhockeyGUI {
             @Override
             public void handle(WindowEvent event) {
                 try {
-                    lobby.logOut(lobby.getMyPerson(me));
+                    lobby.logOut(lobby.getMyPerson(me).getName());
                     Platform.exit();
                     System.exit(0);
                 }

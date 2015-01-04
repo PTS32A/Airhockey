@@ -119,7 +119,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             }
             if (p instanceof IPerson) {
                 GameClient client = new GameClient();
-                IGame game = (IGame) lobby.startGame(p, client);
+                IGame game = (IGame) lobby.startGame(p.getName(), client);
                 if (game != null) {
                     openNewGameWindow(client);
                 } else {
@@ -145,10 +145,10 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             if (p instanceof IPerson) {
                 if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null) {
                     GameClient client = new GameClient();
+                    IGame game = (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem();
                     if (lobby.joinGame(
-                            (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem(),
-                            p, client) != null) {
-                        IGame game = (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem();
+                            game.getID(),
+                            p.getName(), client) != null) {
                         openNewGameWindow(client);
                     } else {
                         super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
@@ -179,7 +179,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             
             try{
                 GameClient client = new GameClient();
-                lobby.spectateGame(game, super.getMe(), client);
+                lobby.spectateGame(game.getID(), super.getMe().getName(), client);
                 openNewGameWindow(client);
             }
             catch(IllegalArgumentException ex){
@@ -204,7 +204,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      */
     public void logOut(Event evt) {
         try {
-            lobby.logOut(super.getMe());
+            lobby.logOut(super.getMe().getName());
             super.goToLogin(getThisStage());
         }
         catch (IOException ex) {
