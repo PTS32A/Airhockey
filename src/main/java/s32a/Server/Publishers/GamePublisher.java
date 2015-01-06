@@ -27,6 +27,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import s32a.Server.Game;
+import s32a.Server.Lobby;
 import s32a.Server.Player;
 import s32a.Shared.IGameClient;
 import s32a.Shared.IPlayer;

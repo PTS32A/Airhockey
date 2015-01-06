@@ -105,7 +105,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @param game
      */
     @Override
-    public void setGame(IGame game) {
+    public synchronized void setGame(IGame game) {
         this.myGame = game;
     }
 
@@ -113,7 +113,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * Ends the game. Called by server.
      */
     @Override
-    public void endGame() {
+    public synchronized void endGame() {
         fx.closeStage();
     }
 
@@ -194,7 +194,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setRoundNo(int round) throws RemoteException {
+    public synchronized void setRoundNo(int round) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -211,7 +211,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayers(List<IPlayer> players) throws RemoteException {
+    public synchronized void setPlayers(List<IPlayer> players) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -251,7 +251,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setChat(List<String> chat) throws RemoteException {
+    public synchronized void setChat(List<String> chat) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -269,7 +269,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayer1Score(int score) throws RemoteException {
+    public synchronized void setPlayer1Score(int score) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -286,7 +286,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayer2Score(int score) throws RemoteException {
+    public synchronized void setPlayer2Score(int score) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -303,7 +303,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayer3Score(int score) throws RemoteException {
+    public synchronized void setPlayer3Score(int score) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -321,7 +321,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPuck(double x, double y) throws RemoteException {
+    public synchronized void setPuck(double x, double y) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -340,7 +340,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayer1Bat(double x, double y) throws RemoteException {
+    public synchronized void setPlayer1Bat(double x, double y) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -360,7 +360,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayer2Bat(double x, double y) throws RemoteException {
+    public synchronized void setPlayer2Bat(double x, double y) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -380,7 +380,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setPlayer3Bat(double x, double y) throws RemoteException {
+    public synchronized void setPlayer3Bat(double x, double y) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -398,7 +398,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setDifficulty(String difficulty) throws RemoteException {
+    public synchronized void setDifficulty(String difficulty) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -415,7 +415,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public void setStatus(GameStatus status) throws RemoteException {
+    public synchronized void setStatus(GameStatus status) throws RemoteException {
 //        System.out.println("status set to: " + status.toString());
         Platform.runLater(new Runnable() {
 
@@ -426,8 +426,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         });
     }
 
+    /**
+     * Incoming from server.
+     * @param gameTime
+     * @throws RemoteException
+     */
     @Override
-    public void setGameTime(String gameTime) throws RemoteException {
+    public synchronized void setGameTime(String gameTime) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override

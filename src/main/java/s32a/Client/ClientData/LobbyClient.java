@@ -169,7 +169,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public void setMyLobby(ILobby myLobbyInput) throws RemoteException {
+    public synchronized void setMyLobby(ILobby myLobbyInput) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -180,7 +180,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public void setChat(List<String> chat) throws RemoteException {
+    public synchronized void setChat(List<String> chat) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -191,7 +191,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public void setSettings(HashMap<String, Object> settings) throws RemoteException {
+    public synchronized void setSettings(HashMap<String, Object> settings) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -203,7 +203,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
+    public synchronized void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
         final double rating;
         if(persons.get(AirhockeyGUI.me) != null){
             rating = persons.get(AirhockeyGUI.me).getRating();
@@ -225,7 +225,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public void setRankings(List<IPerson> persons) throws RemoteException {
+    public synchronized void setRankings(List<IPerson> persons) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override

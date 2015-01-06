@@ -232,7 +232,13 @@ public class AirhockeyGUI {
                                 showDialog("Error", "IP or port number field is empty");
                                 return;
                             }
-                            ipAddress = tfIp.getText();
+                            // sets hostname
+                            String ip = tfIp.getText();
+                            if(ip.equalsIgnoreCase("localhost")){
+                                ip = "127.0.0.1";
+                            }
+                            System.setProperty("java.rmi.server.hostname", ip);
+                            ipAddress = ip;
                             portNumber = tfPort.getText();
                             stage.close();
                             startClient();
