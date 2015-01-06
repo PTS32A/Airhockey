@@ -51,7 +51,7 @@ public class Player extends Person implements IPlayer {
     @Getter
     private float sideLength;
     @Getter
-    private int batWidth;
+    private double batWidth;
 
     /**
      * sets both int and property values
