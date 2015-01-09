@@ -368,7 +368,7 @@ public class Game extends UnicastRemoteObject implements IGame {
                 printMessage("BEGIN GAME");
 
                 //Timer will keep going until game end
-                long interval = 20; //10 ms for a max 50fps
+                long interval = 20;
                 puckTimer.scheduleAtFixedRate(myPuck, 1000, interval);
                 //Starts new Timer for gameTime
                 puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);

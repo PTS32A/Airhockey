@@ -93,7 +93,6 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         this.publisher = new LobbyPublisher();
 
         this.publisher.bindActiveGames(oActiveGames);
-        this.publisher.bindPersons(oActivePersons);
         this.publisher.bindRankings(oRankings);
         this.publisher.bindSettings(oAirhockeySettings);
         this.publisher.bindChat(this.mychatbox.chatProperty());
@@ -557,6 +556,16 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             throw new IllegalArgumentException("failed to save game: "
                     + ex.getMessage());
         }
+
+        // Notifies observers
+        String playerName = game.getMyPlayers().get(0).getName();
+        this.publisher.pushNewRanking(this.oActivePersons.get(playerName));
+
+        playerName = game.getMyPlayers().get(1).getName();
+        this.publisher.pushNewRanking(this.oActivePersons.get(playerName));
+
+        playerName = game.getMyPlayers().get(2).getName();
+        this.publisher.pushNewRanking(this.oActivePersons.get(playerName));
 
         return game;
     }

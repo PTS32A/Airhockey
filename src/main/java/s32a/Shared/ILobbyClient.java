@@ -57,12 +57,12 @@ public interface ILobbyClient extends Remote{
      */
     public void setSettings(HashMap<String, Object> settings) 
             throws RemoteException;
-    
+
     /**
-     * Sets the Persons iin this client
-     * @param settings A HashMap containg the settings of the Persons
-     * @throws RemoteException 
+     * Sets rating for an individual. Done on login and endgame.
+     * @param person
+     * @throws RemoteException
      */
-    public void setPersons(HashMap<String, IPerson> settings) 
+    public void setPersonRanking(IPerson person)
             throws RemoteException;
 }

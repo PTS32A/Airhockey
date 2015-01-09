@@ -22,6 +22,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
 import s32a.Client.GUI.AirhockeyGUI;
+import static s32a.Client.GUI.AirhockeyGUI.me;
 import s32a.Shared.IGame;
 import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
@@ -45,7 +46,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private ObservableList<String> playerInfo;
 
     private ILobby myLobby;
-    @Getter
+//    @Getter
     private ObservableMap<String, IPerson> oActivePersonsMap;
     @Getter
     private ObservableMap<String, Object> oSettingsMap;
@@ -161,7 +162,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
             public void run() {
                 oActiveGamesMap.clear();
                 oActiveGamesList.clear();
-                oActiveGamesList.addAll(activeGames.values());  
+                oActiveGamesList.addAll(activeGames.values());
                 oActiveGamesMap.putAll(activeGames);
             }
         });
@@ -202,27 +203,27 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         });
     }
 
-    @Override
-    public synchronized void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
-        final double rating;
-        if(persons.get(AirhockeyGUI.me) != null){
-            rating = persons.get(AirhockeyGUI.me).getRating();
-        } else {
-            rating = -1.0;
-        }
-
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                oActivePersonsMap.clear();
-                oActivePersonsMap.putAll(persons);
-
-                playerInfo.set(0, "Name: " + AirhockeyGUI.me);
-                playerInfo.set(1, "Rating: " + String.valueOf(rating));
-            }
-        });
-    }
+//    @Override
+//    public synchronized void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
+//        final double rating;
+//        if (persons.get(AirhockeyGUI.me) != null) {
+//            rating = persons.get(AirhockeyGUI.me).getRating();
+//        } else {
+//            rating = -1.0;
+//        }
+//
+//        Platform.runLater(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                oActivePersonsMap.clear();
+//                oActivePersonsMap.putAll(persons);
+//
+//                playerInfo.set(0, "Name: " + AirhockeyGUI.me);
+//                playerInfo.set(1, "Rating: " + String.valueOf(rating));
+//            }
+//        });
+//    }
 
     @Override
     public synchronized void setRankings(List<IPerson> persons) throws RemoteException {
@@ -235,6 +236,12 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         });
     }
 
-
+    @Override
+    public void setPersonRanking(IPerson person) throws RemoteException {
+        if (person.getName().equals(me)) {
+            playerInfo.set(0, "Name: " + AirhockeyGUI.me);
+            playerInfo.set(1, "Rating: " + String.valueOf(person.getRating()));
+        }
+    }
 
 }
