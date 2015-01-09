@@ -95,7 +95,7 @@ public class AirhockeyServer {
             Logger.getLogger(AirhockeyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        printIPAddresses();
+//        printIPAddresses();
 
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.CENTER);

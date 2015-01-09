@@ -106,7 +106,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param list
      * @param item
      */
-    public void updateOList(List list, Object item) {
+    public void updateOList(ObservableList list, Object item) {
         int index = list.indexOf(item);
         if (index > -1) {
             list.set(index, item);
@@ -119,7 +119,10 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param map
      * @param key
      */
-    public void updateOMap(Map map, String key){
+    public void updateOMap(ObservableMap map, String key){
+        if(key == null){
+            return;
+        }
         map.replace(key, map.get(key));
     }
 

@@ -53,7 +53,7 @@ public class Chatbox {
         builder.append(": ").append(message);
         message = builder.toString();
 
-        System.out.println(message);
+//        System.out.println(message);
         if (message.startsWith("<") && message.contains(">[")
                 && message.contains("]:")
                 && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1)

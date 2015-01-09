@@ -233,6 +233,7 @@ public class LobbyPublisher {
 
             @Override
             public void onChanged(MapChangeListener.Change change) {
+                System.out.println("pushing games");
                 pushActiveGames();
             }
         });

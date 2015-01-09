@@ -363,6 +363,12 @@ public class GamePublisher {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 pushStatus();
+                try {
+                    Lobby.getSingle().updateOMap(Lobby.getSingle().getOActiveGames(), myGame.getID());
+                }
+                catch (RemoteException ex) {
+                    Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
