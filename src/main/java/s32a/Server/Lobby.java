@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
@@ -105,11 +108,12 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param list
      * @param item
      */
-    public void updateOList(ObservableList list, Object item) {
-        int index = list.indexOf(item);
-        if (index > -1) {
-            list.set(index, item);
+    public void forceListUpdate(ObservableList list) {
+        if(list == null){
+            return;
         }
+        list.add(0, null);
+        list.remove(0);
     }
 
     /**
@@ -118,16 +122,18 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param map
      * @param key
      */
-    public void updateOMap(ObservableMap map, String key){
-        if(key == null){
+    public void forceMapUpdate(ObservableMap map){
+        if(map == null){
             return;
         }
-        map.replace(key, map.get(key));
+        // TODO: REPLACE THIS WITH SOMETHING LESS UGLY
+        map.put(" ", null);
+        map.remove(" ", null);
     }
 
     /**
      * Adds a new person to the database. Does not add them to active persons
-     * yet the database checks for uniqueness
+     * yet. The database checks for uniqueness.
      *
      * @param playerName can not be null or whitespace can't contain white
      * spaces
@@ -317,7 +323,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             }
             if (game.addPlayer(player, client)) {
                 this.oActivePersons.replace(person.getName(), player);
-                this.updateOMap(oActiveGames, game.getID());
+                this.forceMapUpdate(oActiveGames);
             } else {
                 return null;
             }
@@ -375,7 +381,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             if (!game.addSpectator((Spectator) person, client)) {
                 return null;
             }
-            this.updateOMap(oActiveGames, game.getID());
+            this.forceMapUpdate(oActiveGames);
             this.oActivePersons.replace(person.getName(), person);
         }
         catch (IllegalArgumentException ex) {

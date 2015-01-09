@@ -68,17 +68,17 @@ public class LobbyPublisher {
     /**
      * Starts a timed push mechanic to update all clients of changes. Prevents
      * spam. Only used for collections liable to have bursts of updates at once.
-     * 
+     *
      */
     private void initTimer() {
         Runnable pusher = new Runnable() {
 
             @Override
             public void run() {
-                if(gamesUpdated.getAndSet(false)){
+                if (gamesUpdated.getAndSet(false)) {
                     pushActiveGames();
                 }
-                if(rankingUpdated.getAndSet(false)){
+                if (rankingUpdated.getAndSet(false)) {
                     pushRankings();
                 }
             }
@@ -217,44 +217,6 @@ public class LobbyPublisher {
         });
     }
 
-//    /**
-//     * Binds the Persons to the observers' Persons
-//     *
-//     * @param input A HashMap containing Persons to bound
-//     */
-//    public void bindPersons(ObservableMap<String, IPerson> input) {
-//        this.persons = input;
-//        this.pushPersons();
-//        this.persons.addListener(new MapChangeListener() {
-//
-//            @Override
-//            public void onChanged(MapChangeListener.Change change) {
-//                pushPersons();
-//                pushActiveGames();
-//            }
-//        });
-//    }
-//
-//    /**
-//     * Pushes an update in a Person to the observers
-//     *
-//     * @param newValue An object containing the update to be pushed
-//     */
-//    private void pushPersons() {
-//        pool.execute(() -> {
-//            HashMap<String, IPerson> output = new HashMap<>(this.persons);
-//            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-//                String key = it.next();
-//                try {
-//                    observers.get(key).setPersons(output);
-//                }
-//                catch (RemoteException ex) {
-//                    System.out.println("RemoteException setting Persons for " + key + ": " + ex.getMessage());
-//                    this.removeObserver(key);
-//                }
-//            }
-//        });
-//    }
     /**
      * Called whenever rating updates for a player (postgame).
      *
@@ -288,12 +250,10 @@ public class LobbyPublisher {
      */
     public void bindActiveGames(ObservableMap<String, IGame> input) {
         this.games = input;
-        this.pushActiveGames();
         this.games.addListener(new MapChangeListener() {
 
             @Override
             public void onChanged(MapChangeListener.Change change) {
-                System.out.println("games were updated");
                 gamesUpdated.set(true);
             }
         });
@@ -303,20 +263,18 @@ public class LobbyPublisher {
      * Pushes updates within the active Games
      */
     private void pushActiveGames() {
-        pool.execute(() -> {
-            HashMap<String, IGame> output = new HashMap<>(this.games);
-            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                String key = it.next();
-                try {
-                    observers.get(key).setActiveGames(output);
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());
-                    System.out.println("Removed observer " + key + " from LobbyPublisher");
-                    this.removeObserver(key);
-                }
+        HashMap<String, IGame> output = new HashMap<>(this.games);
+        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            try {
+                observers.get(key).setActiveGames(output);
             }
-        });
+            catch (RemoteException ex) {
+                System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());
+                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                this.removeObserver(key);
+            }
+        }
     }
 
     /**
@@ -326,7 +284,6 @@ public class LobbyPublisher {
      */
     public void bindRankings(ObservableList<IPerson> input) {
         this.rankings = input;
-        this.pushRankings();
         this.rankings.addListener(new ListChangeListener() {
 
             @Override
@@ -340,19 +297,17 @@ public class LobbyPublisher {
      * Pushed the rankings to the observers
      */
     private void pushRankings() {
-        pool.execute(() -> {
-            List<IPerson> rankingsArray = new ArrayList<>(rankings);
-            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                String key = it.next();
-                try {
-                    observers.get(key).setRankings(rankingsArray);
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException setting rankings for " + key + ": " + ex.getMessage());
-                    System.out.println("Removed observer " + key + " from LobbyPublisher");
-                    this.removeObserver(key);
-                }
+        List<IPerson> rankingsArray = new ArrayList<>(rankings);
+        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+            String key = it.next();
+            try {
+                observers.get(key).setRankings(rankingsArray);
             }
-        });
+            catch (RemoteException ex) {
+                System.out.println("RemoteException setting rankings for " + key + ": " + ex.getMessage());
+                System.out.println("Removed observer " + key + " from LobbyPublisher");
+                this.removeObserver(key);
+            }
+        }
     }
 }

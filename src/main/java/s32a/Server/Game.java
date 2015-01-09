@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -132,7 +134,7 @@ public class Game extends UnicastRemoteObject implements IGame {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 try {
                     Lobby lobby = Lobby.getSingle();
-                    lobby.updateOMap(lobby.getOActiveGames(), getID());
+                    lobby.forceMapUpdate(lobby.getOActiveGames());
                 }
                 catch (RemoteException ex) {
                     System.out.println("RemoteException on "

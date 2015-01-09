@@ -408,7 +408,7 @@ public class GamePublisher {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 pushStatus();
                 try {
-                    Lobby.getSingle().updateOMap(Lobby.getSingle().getOActiveGames(), myGame.getID());
+                    Lobby.getSingle().forceMapUpdate(Lobby.getSingle().getOActiveGames());
                 }
                 catch (RemoteException ex) {
                     Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
