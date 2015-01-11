@@ -98,14 +98,14 @@ public class LobbyTest {
             assertTrue("Person could not be logged in", this.mockLobby.checkLogin("testey", "testpass", mockLobbyClient));
 
             assertTrue("Person was not correctly initialised",
-                    this.mockLobby.getActivePersons().get(testey.getName()) instanceof IPerson);
+                    this.mockLobby.getRMIActivePersons().get(testey.getName()) instanceof IPerson);
 
             assertFalse("wrong password logged in anyway",
                     this.mockLobby.checkLogin("testey", "falsepass", mockLobbyClient));
             assertFalse("wrong username logged in anyway",
                     this.mockLobby.checkLogin("falsetestey", "testpass", mockLobbyClient));
             assertEquals("Person not found in list",
-                    ((Person) this.mockLobby.getActivePersons().get("testey")).getName(), testey.getName());
+                    ((Person) this.mockLobby.getRMIActivePersons().get("testey")).getName(), testey.getName());
         }
         catch (IllegalArgumentException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -204,20 +204,20 @@ public class LobbyTest {
 
             Game game;
 
-            game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient);
+            game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey").getName(), mockGameClient);
 
             assertNotNull("startGame returned null", game);
             assertEquals("playedGame wasn't started right", game,
                     ((Player) this.mockLobby.getMyPerson("testey")).getMyGame());
 
-            Player testey = (Player) this.mockLobby.getActivePersons().get("testey");
+            Player testey = (Player) this.mockLobby.getRMIActivePersons().get("testey");
             assertEquals("currentPerson wasn't starting player",
                     ((Game) testey.getMyGame()).getMyPlayers().get(0), testey);
             assertEquals("color wasn't red", testey.getColor(), Colors.Red);
             assertEquals("starting score wasn't 20", testey.getScore(), 20);
             assertTrue("testey wasn't a starting player", testey.isStarter());
             assertNull("testey started a game while being a player",
-                    this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient));
+                    this.mockLobby.startGame(this.mockLobby.getMyPerson("testey").getName(), mockGameClient));
 
             this.mockLobby.addPerson("playey", "testpass");
 
@@ -226,26 +226,26 @@ public class LobbyTest {
             // playey
             this.mockLobby.checkLogin("playey", "testpass", mockLobbyClient);
 
-            Person playey = (Person) this.mockLobby.getActivePersons().get("playey");
+            Person playey = (Person) this.mockLobby.getRMIActivePersons().get("playey");
             assertEquals("playey was unable to join game",
-                    this.mockLobby.joinGame(game,
-                            (Person)this.mockLobby.getActivePersons().get("playey"), mockGameClient));
-            assertTrue("playey is not a player", this.mockLobby.getActivePersons().get("playey") instanceof Player);
-            playey = (Player) this.mockLobby.getActivePersons().get("playey");
+                    this.mockLobby.joinGame(game.getID(),
+                            ((Person)this.mockLobby.getRMIActivePersons().get("playey")).getName(), mockGameClient));
+            assertTrue("playey is not a player", this.mockLobby.getRMIActivePersons().get("playey") instanceof Player);
+            playey = (Player) this.mockLobby.getRMIActivePersons().get("playey");
             assertNull("playey was able to start game while in one",
-                    this.mockLobby.startGame(playey, mockGameClient));
+                    this.mockLobby.startGame(playey.getName(), mockGameClient));
             assertNull("playey was able to join the same game twice",
-                    this.mockLobby.joinGame(game,
-                            (Person) this.mockLobby.getActivePersons().get("playey"), mockGameClient));
+                    this.mockLobby.joinGame(game.getID(),
+                            ((Person) this.mockLobby.getRMIActivePersons().get("playey")).getName(), mockGameClient));
 
             // spectey
             this.mockLobby.checkLogin("spectey", "testpass", mockLobbyClient);
 
-            Person spectey = (Person) this.mockLobby.getActivePersons().get("spectey");
+            Person spectey = (Person) this.mockLobby.getRMIActivePersons().get("spectey");
             assertEquals("spectey didn't spectate the right game", game,
-                    this.mockLobby.spectateGame(game, spectey, mockGameClient));
+                    this.mockLobby.spectateGame(game.getID(), spectey.getName(), mockGameClient));
             assertNull("spectey was able to spectate the same game twice",
-                    this.mockLobby.spectateGame(game, spectey, mockGameClient));
+                    this.mockLobby.spectateGame(game.getID(), spectey.getName(), mockGameClient));
         }
         catch (IllegalArgumentException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -301,7 +301,7 @@ public class LobbyTest {
             this.mockLobby.checkLogin("testey", "testpass", mockLobbyClient);
 
             this.mockLobby.addChatMessage(null,
-                    ((Person) this.mockLobby.getActivePersons().get("testey")).getName());
+                    ((Person) this.mockLobby.getRMIActivePersons().get("testey")).getName());
         }
         catch (SQLException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -353,7 +353,7 @@ public class LobbyTest {
             game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient);
             assertTrue("game didn't end as it should with leaver",
                     this.mockLobby.endGame(game,
-                            (Player) this.mockLobby.getActivePersons().get("testey")));
+                            (Player) this.mockLobby.getRMIActivePersons().get("testey")));
 
             // TODO: check whether rating updates as it should
         }

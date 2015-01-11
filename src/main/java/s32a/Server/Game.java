@@ -100,12 +100,7 @@ public class Game extends UnicastRemoteObject implements IGame {
 
         this.gameInfo = new HashMap();
         this.gameInfo.put("gameID", starter.getName()
-                + String.valueOf(getInstance().get(Calendar.YEAR))
-                + String.valueOf(getInstance().get(Calendar.WEEK_OF_YEAR))
-                + String.valueOf(getInstance().get(Calendar.DAY_OF_WEEK))
-                + String.valueOf(getInstance().get(Calendar.HOUR_OF_DAY))
-                + String.valueOf(getInstance().get(Calendar.MINUTE))
-                + String.valueOf(getInstance().get(Calendar.SECOND)));
+                + System.currentTimeMillis());
         this.gameInfo.put("nextColor", this.getNextColor());
 
         this.roundNo = new SimpleIntegerProperty(0);
@@ -134,7 +129,7 @@ public class Game extends UnicastRemoteObject implements IGame {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 try {
                     Lobby lobby = Lobby.getSingle();
-                    lobby.forceMapUpdate(lobby.getOActiveGames());
+                    lobby.forceMapUpdate(lobby.getActiveGames());
                 }
                 catch (RemoteException ex) {
                     System.out.println("RemoteException on "

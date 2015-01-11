@@ -94,14 +94,12 @@ public class LobbyPublisher {
      * @param input The ILobbyClient to be added
      * @return Returns a boolean indicating success of the addition
      */
-    public boolean addObserver(String name, ILobbyClient input) {
+    public void addObserver(String name, ILobbyClient input) {
         if (observers.containsKey(name)) {
-            return false;
+            return;
         }
-        if (observers.put(name, input) == null) {
-            return this.pushToNewObserver(name, input);
-        }
-        return false;
+        observers.put(name, input);
+        this.pushToNewObserver(name, input);
     }
 
     /**
@@ -112,21 +110,19 @@ public class LobbyPublisher {
      * @param newObsv
      * @return
      */
-    private boolean pushToNewObserver(String name, ILobbyClient newObsv) {
-        try {
-            newObsv.setActiveGames(new HashMap<>(this.games));
-            newObsv.setChat(new ArrayList<>(this.chat));
-            newObsv.setPersonRanking(Lobby.getSingle().getMyPerson(name));
-            newObsv.setRankings(new ArrayList<>(this.rankings));
-            newObsv.setSettings(new HashMap<>(this.settings));
-            return true;
-        }
-        catch (RemoteException ex) {
-            System.out.println("RemoteException pushing values to new observer " + name);
-            this.removeObserver(name);
-            return false;
-        }
-
+    private void pushToNewObserver(String name, ILobbyClient newObsv) {
+        pool.execute(() -> {
+            try {
+                newObsv.setActiveGames(new HashMap<>(this.games));
+                newObsv.setChat(new ArrayList<>(this.chat));
+                newObsv.setPersonRanking(Lobby.getSingle().getMyPerson(name));
+                newObsv.setRankings(new ArrayList<>(this.rankings));
+            }
+            catch (RemoteException ex) {
+                System.out.println("RemoteException pushing values to new observer " + name);
+                this.removeObserver(name);
+            }
+        });
     }
 
     /**
@@ -135,8 +131,18 @@ public class LobbyPublisher {
      * @param name The name corresponding with the observer
      */
     public void removeObserver(String name) {
-        System.out.println("Removed observer " + name + " from LobbyPublisher");
-        observers.remove(name);
+        if (observers.remove(name) != null) {
+            System.out.println("Removed observer " + name + " from LobbyPublisher");
+            try {
+                Lobby.getSingle().logOut(name);
+            }
+            catch (RemoteException ex) {
+                System.out.println("remoteException on calling logout "
+                        + "from LobbyPublisher.removeObserver for "
+                        + name + ", ex: " + ex.getMessage());
+                Logger.getLogger(LobbyPublisher.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     /**
@@ -173,44 +179,6 @@ public class LobbyPublisher {
                 }
                 catch (RemoteException ex) {
                     System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
-                    this.removeObserver(key);
-                }
-            }
-        });
-    }
-
-    /**
-     * Binds the server's settings to the observers' settings
-     *
-     * @param input The settings to be bound
-     */
-    public void bindSettings(ObservableMap<String, Object> input) {
-        this.settings = input;
-        this.pushSettings();
-        this.settings.addListener(new MapChangeListener() {
-
-            @Override
-            public void onChanged(MapChangeListener.Change change) {
-                pushSettings();
-            }
-        });
-    }
-
-    /**
-     * Pushes the updated settings to the observers
-     *
-     * @param newValue An updated setting
-     */
-    private void pushSettings() {
-        pool.execute(() -> {
-            HashMap<String, Object> output = new HashMap<>(this.settings);
-            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                String key = it.next();
-                try {
-                    observers.get(key).setSettings(output);
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException setting settings for " + key + ": " + ex.getMessage());
                     this.removeObserver(key);
                 }
             }

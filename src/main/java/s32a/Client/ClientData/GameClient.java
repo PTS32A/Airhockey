@@ -53,7 +53,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Getter
     private DoubleProperty player1XProperty, player1YProperty, player2XProperty,
             player2YProperty, player3XProperty, player3YProperty;
-    
+
     private GameFX fx;
 
     public GameClient() throws RemoteException {
@@ -110,11 +110,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Ends the game. Called by server.
+     * Ends the game. Called by server. Ensures the game knows that status =
+     * GameOver, even if that specific update hasn't arrived yet.
      */
     @Override
     public synchronized void endGame() {
-        fx.closeStage();
+        this.gameStatusProperty.set(GameStatus.GameOver);
+        fx.quitClick(null);
     }
 
     /**
@@ -428,6 +430,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     /**
      * Incoming from server.
+     *
      * @param gameTime
      * @throws RemoteException
      */

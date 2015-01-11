@@ -135,4 +135,9 @@ public class Person extends UnicastRemoteObject implements IPerson {
         return hash;
     }
 
+    @Override
+    public String toString(){
+        return this.name;
+    }
+
 }

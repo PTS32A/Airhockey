@@ -49,14 +49,6 @@ public interface ILobbyClient extends Remote{
      */
     public void setRankings(List<IPerson> persons)
             throws RemoteException;
-    
-    /**
-     * Sets the settings of the server Lobby in this client
-     * @param settings A HashMap containing the Settings of the server's Lobby
-     * @throws RemoteException 
-     */
-    public void setSettings(HashMap<String, Object> settings) 
-            throws RemoteException;
 
     /**
      * Sets rating for an individual. Done on login and endgame.

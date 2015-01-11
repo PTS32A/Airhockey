@@ -423,7 +423,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     }
 
     /**
-     * Calls lobby.endGame(). Currently causing some errors.
+     * Calls lobby.endGame(). Closes down fx applications.
      *
      * @param evt
      */
@@ -436,9 +436,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 gameTimer.shutdownNow();
             }
             IPerson myPerson = super.getMe();
+            GameStatus status = myGame.getGameStatusProperty().get();
             if (myPerson instanceof ISpectator) {
                 lobby.stopSpectating(myGame.getID(), myPerson.getName());
-            } else if (myGame.getGameStatusProperty().get().equals(GameStatus.GameOver) || myGame.getRoundNoProperty().get() == 0) {
+            } else if (status.equals(GameStatus.GameOver) || status.equals(GameStatus.Preparing)) {
                 lobby.endGame(myGame.getID(), null);
             } else {
                 lobby.endGame(myGame.getID(), myPerson.getName());

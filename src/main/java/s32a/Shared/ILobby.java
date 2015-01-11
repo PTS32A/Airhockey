@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -22,7 +23,7 @@ public interface ILobby extends Remote {
      * @return Returns a HashMap containing the Settings
      * @throws RemoteException 
      */
-    public HashMap getAirhockeySettings()
+    public Map getRMIAirhockeySettings()
             throws RemoteException;
 
     /**
@@ -38,7 +39,7 @@ public interface ILobby extends Remote {
      * @return Returns a HashMap containing the Persons
      * @throws RemoteException 
      */
-    public HashMap<String, IPerson> getActivePersons()
+    public Map<String, IPerson> getRMIActivePersons()
             throws RemoteException;
 
     /**
@@ -46,7 +47,7 @@ public interface ILobby extends Remote {
      * @return Returns a list of active Games
      * @throws RemoteException 
      */
-    public HashMap<String, IGame> getActiveGames()
+    public Map<String, IGame> getRMIActiveGames()
             throws RemoteException;
 
     /**

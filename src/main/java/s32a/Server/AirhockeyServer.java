@@ -119,12 +119,12 @@ public class AirhockeyServer {
         Label personIn = new Label("0");
         gp.add(personIn, 1, 4);
 
-        personIn.setText(String.valueOf(lobby.getOActivePersons().keySet().size()));
-        lobby.getOActivePersons().addListener(new MapChangeListener() {
+        personIn.setText(String.valueOf(lobby.getActivePersons().keySet().size()));
+        lobby.getActivePersons().addListener(new MapChangeListener() {
 
             @Override
             public void onChanged(MapChangeListener.Change change) {
-                final String size = String.valueOf(lobby.getOActivePersons().keySet().size());
+                final String size = String.valueOf(lobby.getActivePersons().keySet().size());
                 Platform.runLater(new Runnable() {
 
                     @Override
@@ -135,12 +135,12 @@ public class AirhockeyServer {
             }
         });
 
-        gamesIn.setText(String.valueOf(lobby.getOActiveGames().keySet().size()));
-        lobby.getOActiveGames().addListener(new MapChangeListener() {
+        gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
+        lobby.getActiveGames().addListener(new MapChangeListener() {
 
             @Override
             public void onChanged(MapChangeListener.Change change) {
-                final String size = String.valueOf(lobby.getOActiveGames().keySet().size());
+                final String size = String.valueOf(lobby.getActiveGames().keySet().size());
                 Platform.runLater(new Runnable() {
 
                     @Override
