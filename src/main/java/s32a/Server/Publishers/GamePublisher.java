@@ -8,8 +8,10 @@ package s32a.Server.Publishers;
 import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,7 +65,7 @@ public class GamePublisher {
     private IntegerProperty player1Score, player2Score, player3Score, roundNo;
     private ObservableList<String> chatbox;
     private ObjectProperty<GameStatus> statusProp;
-    private StringProperty difficultyProp, gameTimeProp;
+    private StringProperty difficultyProp;
 
     private ScheduledExecutorService pool = Executors.newScheduledThreadPool(3);
     private AtomicBoolean publisherShutDown, scoreUpdated, batUpdated;
@@ -94,7 +96,6 @@ public class GamePublisher {
 
         this.roundNo = new SimpleIntegerProperty(-1);
         this.difficultyProp = new SimpleStringProperty("");
-        this.gameTimeProp = new SimpleStringProperty("");
 
         this.batUpdated = new AtomicBoolean(false);
         this.scoreUpdated = new AtomicBoolean(false);
@@ -169,25 +170,10 @@ public class GamePublisher {
                 client.setGame(this.myGame);
                 client.setPlayers(new ArrayList<>(this.players));
                 client.setPuck(this.puckPosition.get().x, this.puckPosition.get().y);
-                client.setGameTime(this.gameTimeProp.get());
                 client.setRoundNo(this.roundNo.get());
                 client.setStatus(this.statusProp.get());
 
-                if (this.player1Prop.get() != null) {
-                    client.setPlayer1Bat(this.player1Prop.get().getPosX().get(),
-                            this.player1Prop.get().getPosY().get());
-                    client.setPlayer1Score(this.player1Score.get());
-                }
-                if (this.player2Prop.get() != null) {
-                    client.setPlayer2Bat(this.player2Prop.get().getPosX().get(),
-                            this.player2Prop.get().getPosY().get());
-                    client.setPlayer2Score(this.player2Score.get());
-                }
-                if (this.player3Prop.get() != null) {
-                    client.setPlayer3Bat(this.player3Prop.get().getPosX().get(),
-                            this.player3Prop.get().getPosY().get());
-                    client.setPlayer3Score(this.player3Score.get());
-                }
+                this.pushBatPositions();
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException pushing values to new observer " + name);
@@ -435,41 +421,8 @@ public class GamePublisher {
     }
 
     /**
-     * Binds gameTime - only needs to be done once
-     *
-     * @param gameTime
-     */
-    public void bindGameTime(StringProperty gameTime) {
-        this.gameTimeProp.bind(gameTime);
-        this.pushGameTime();
-        this.gameTimeProp.addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushGameTime();
-            }
-        });
-    }
-
-    /**
-     * Pushes current game time to observers.
-     */
-    private void pushGameTime() {
-        pool.execute(() -> {
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setGameTime(gameTimeProp.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting status for " + key);
-                    this.removeObserver(key);
-                }
-            }
-        });
-    }
-
-    /**
      * Pushes score to observers. Called initially, and periodically by timer.
+     * Timer already is on non-JFX thread.
      */
     private void pushScore() {
         if (this.player1Prop.get() == null
@@ -477,11 +430,13 @@ public class GamePublisher {
                 || this.player3Prop.get() == null) {
             return;
         }
+        Map<String, Integer> scores = new HashMap<>();
+        scores.put("player1", player1Score.get());
+        scores.put("player2", player2Score.get());
+        scores.put("player3", player3Score.get());
         for (String key : observers.keySet()) {
             try {
-                observers.get(key).setPlayer1Score(player1Score.get());
-                observers.get(key).setPlayer2Score(player2Score.get());
-                observers.get(key).setPlayer3Score(player3Score.get());
+                observers.get(key).setPlayerScores(scores);
             }
             catch (RemoteException ex) {
                 System.out.println("remoteException on setting player score for " + key);
@@ -499,14 +454,17 @@ public class GamePublisher {
                 || this.player3Prop.get() == null) {
             return;
         }
+        Map<String, Double> posMap = new HashMap<>();
+        posMap.put("player1x", player1Prop.get().getPosX().get());
+        posMap.put("player2x", player2Prop.get().getPosX().get());
+        posMap.put("player3x", player3Prop.get().getPosX().get());
+
+        posMap.put("player1y", player1Prop.get().getPosY().get());
+        posMap.put("player2y", player2Prop.get().getPosY().get());
+        posMap.put("player3y", player3Prop.get().getPosY().get());
         for (String key : observers.keySet()) {
             try {
-                observers.get(key).setPlayer1Bat(player1Prop.get().getPosX().get(),
-                        player1Prop.get().getPosY().get());
-                observers.get(key).setPlayer2Bat(player2Prop.get().getPosX().get(),
-                        player2Prop.get().getPosY().get());
-                observers.get(key).setPlayer3Bat(player3Prop.get().getPosX().get(),
-                        player3Prop.get().getPosY().get());
+                observers.get(key).setPlayerBatPositions(posMap);
             }
             catch (RemoteException ex) {
                 System.out.println("remoteException on setting player bat locations for " + key);

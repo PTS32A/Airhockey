@@ -57,4 +57,11 @@ public interface ILobbyClient extends Remote{
      */
     public void setPersonRanking(IPerson person)
             throws RemoteException;
+
+    /**
+     * Notifies client his session was terminated by server.
+     * @throws RemoteException
+     */
+    public void enforceLogout()
+            throws RemoteException;
 }

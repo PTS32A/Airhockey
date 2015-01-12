@@ -12,12 +12,12 @@ import s32a.Client.GUI.GameFX;
  *
  * @author Luke
  */
-public class GameTimerTask extends TimerTask {
+public class AFKTimerTask extends TimerTask {
 
     private final GameFX gameFX;
-    private long lastAction;
+    private long lastAction, prevTimeUpdate;
 
-    public GameTimerTask(GameFX gameFX) {
+    public AFKTimerTask(GameFX gameFX) {
         this.gameFX = gameFX;
         this.lastAction = 0;
     }

@@ -67,11 +67,10 @@ public interface ILobby extends Remote {
      * @param playerName The playerName to be verified
      * @param password The password to be verified
      * @param client The LobbyClient the input is from
-     * @return Returns a boolean indicating whether the information given
-     * matches with an existing Account
      * @throws IllegalArgumentException
      * @throws SQLException
      * @throws RemoteException 
+     * @return the String
      */
     public boolean checkLogin(String playerName, String password, ILobbyClient client)
             throws IllegalArgumentException, SQLException, RemoteException;

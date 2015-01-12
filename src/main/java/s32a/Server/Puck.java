@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.Setter;
 import s32a.Shared.IPlayer;
 import s32a.Shared.enums.GameStatus;
+import s32a.Shared.enums.LobbySetting;
 
 /**
  *
@@ -130,7 +131,7 @@ public class Puck extends TimerTask {
 //        this.xPos = new SimpleDoubleProperty(0);
 //        this.yPos = new SimpleDoubleProperty(0);
 
-        this.sideLength = (float) lobby.getAirhockeySettings().get("Side Length");
+        this.sideLength = (float) lobby.getAirhockeySettings().get(LobbySetting.SideLength);
         this.goalLength = sideLength * 0.4f;
         this.batWidth = sideLength / 100 * 8;
 

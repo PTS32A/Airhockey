@@ -40,7 +40,7 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Client.ClientData.GameClient;
-import s32a.Client.timers.GameTimerTask;
+import s32a.Client.timers.AFKTimerTask;
 import s32a.Shared.*;
 import s32a.Shared.enums.Colors;
 
@@ -72,7 +72,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     private DoubleProperty width, height;
     private IntegerProperty customSpeed;
-    private GraphicsContext graphics;
     private boolean gameStart = false;
     @Getter
     private boolean actionTaken = true;
@@ -81,7 +80,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     @Getter
     private GameClient myGame;
     private ScheduledExecutorService gameTimer;
-    private GameTimerTask afkTimerTask = null;
+    private AFKTimerTask afkTimerTask = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -498,7 +497,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void addEvents(IPlayer myPlayer) {
         // timer for afk timeout - probably should be moved serverside
-        afkTimerTask = new GameTimerTask(this);
+        afkTimerTask = new AFKTimerTask(this);
         gameTimer.scheduleAtFixedRate(afkTimerTask, 500, 5000, TimeUnit.MILLISECONDS);
 
         //Moving left or right

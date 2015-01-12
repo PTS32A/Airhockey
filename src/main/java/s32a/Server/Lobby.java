@@ -11,13 +11,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import lombok.Getter;
@@ -28,6 +24,7 @@ import s32a.Shared.ILobby;
 import s32a.Shared.ILobbyClient;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
+import s32a.Shared.enums.LobbySetting;
 import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
 
@@ -54,7 +51,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     private Chatbox mychatbox;
     private DatabaseControls myDatabaseControls;
     @Getter
-    private ObservableMap<String, Object> airhockeySettings;
+    private ObservableMap<LobbySetting, Object> airhockeySettings;
     @Getter
     private ObservableMap<String, IPerson> activePersons;
     @Getter
@@ -73,9 +70,9 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         this.myDatabaseControls = new DatabaseControls();
         this.activeGames = FXCollections.observableMap(new HashMap<String, IGame>());
         this.activePersons = FXCollections.observableMap(new HashMap<String, IPerson>());
-        this.airhockeySettings = FXCollections.observableMap(new HashMap<String, Object>());
-        this.airhockeySettings.put("Goal Default", new Vector2(0, 0));
-        this.airhockeySettings.put("Side Length", 500f);
+        this.airhockeySettings = FXCollections.observableMap(new HashMap<LobbySetting, Object>());
+        this.airhockeySettings.put(LobbySetting.GoalDefault, new Vector2(0, 0));
+        this.airhockeySettings.put(LobbySetting.SideLength, 500f);
 
         try {
             this.oRankings = FXCollections.observableArrayList(myDatabaseControls.getRankings());
@@ -164,11 +161,9 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param password can't be null or whitespace can't contain trailing /
      * leading white spaces
      * @param client
-     * @return True if DatabaseControls.checkLogin() returned a person false if
-     * .checkLogin() returned null IllegalArgumentException when parameter was
-     * null or empty, or contained trailing / leading white spaces
      * @throws java.sql.SQLException
      * @throws java.rmi.RemoteException
+     * @return the String
      */
     @Override
     public boolean checkLogin(String playerName, String password, ILobbyClient client)
@@ -185,44 +180,45 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         if (newPerson == null) {
             return false;
         }
-
-        if (this.activePersons.put(playerName, newPerson) == null) {
-            this.publisher.addObserver(playerName, client);
-            this.addChatMessage("logged in", playerName);
-            return true;
-        } else {
-            this.activePersons.remove(playerName);
-            this.publisher.removeObserver(playerName);
-            return false;
+        // logs out existing user with this account.
+        // does not prevent duplicate login attempt in case of bugs preventing him
+        // from using existing session.
+        if (this.activePersons.containsKey(playerName)) {
+            this.logOut(playerName);
         }
+
+        this.activePersons.put(playerName, newPerson);
+        this.publisher.addObserver(playerName, client);
+        this.addChatMessage("logged in", playerName);
+        return true;
     }
 
     /**
      * logs out given player. Sets currentPerson to null if it was him. Should
      * always be called with currentPerson by the GUI
      *
-     * @param playername
+     * @param name
      * @return whether logout succeeded
      * @throws java.rmi.RemoteException
      */
     @Override
-    public boolean logOut(String playername) throws RemoteException {
-        if (playername == null) {
+    public boolean logOut(String name) throws RemoteException {
+        if (name == null || !this.activePersons.containsKey(name)) {
             return false;
         }
 
-        if (this.activePersons.get(playername) instanceof Player) {
-            Player playerInput = (Player) this.activePersons.get(playername);
-            this.endGame(playerInput.getMyGame().getID(), playername);
-        } else if (this.activePersons.get(playername) instanceof Spectator) {
-            Spectator spectInput = (Spectator) this.activePersons.get(playername);
+        if (this.activePersons.get(name) instanceof Player) {
+            Player playerInput = (Player) this.activePersons.get(name);
+            this.endGame(playerInput.getMyGame().getID(), name);
+        } else if (this.activePersons.get(name) instanceof Spectator) {
+            Spectator spectInput = (Spectator) this.activePersons.get(name);
             for (IGame g : activeGames.values()) {
                 ((Game) g).removeSpectator(spectInput);
             }
         }
-        this.publisher.removeObserver(playername);
-        this.activePersons.remove(playername);
-        this.addChatMessage("logged out", playername);
+        this.activePersons.remove(name);
+        this.publisher.enforceLogout(name, true);
+        this.addChatMessage("logged out", name);
 
         return true;
     }
@@ -247,16 +243,16 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * converted to Player Person is used as gamestarter for Game constructor
      * parameter person can't already be a Player or Spectator
      *
-     * @param input should be Lobby.currentPerson if called by GUI
+     * @param name
      * @param client
      * @return - the freshly started game if everything went well - null
      * @throws java.rmi.RemoteException
      */
     @Override
-    public Game startGame(String personname, IGameClient client)
+    public Game startGame(String name, IGameClient client)
             throws RemoteException, IllegalArgumentException {
-        if (personname == null || (this.activePersons.get(personname) instanceof Player)
-                || (this.activePersons.get(personname) instanceof Spectator)) {
+        if (name == null || (this.activePersons.get(name) instanceof Player)
+                || (this.activePersons.get(name) instanceof Spectator)) {
             return null;
         }
         if (client == null) {
@@ -266,7 +262,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         Person person = null;
         Game newGame = null;
         try {
-            person = (Person) this.activePersons.get(personname);
+            person = (Person) this.activePersons.get(name);
             Player player = new Player(person.getName(), person.ratingProperty().get(),
                     Colors.Red);
             newGame = new Game(player);
@@ -440,12 +436,22 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                     this.returnToLobby(player);
                 }
             }
+
+        }
+        catch (IllegalArgumentException ex) {
+            System.out.println("IllegalArgumentException in endgame: " + ex.getMessage());
+        }
+        catch (SQLException ex) {
+            System.out.println("SQLException in EndGame: " + ex.getMessage());
+        }
+
+        try {
             game.broadcastEndGame();
             this.activeGames.remove(gameInput);
             this.oRankings.setAll(this.myDatabaseControls.getRankings());
         }
-        catch (IllegalArgumentException | SQLException ex) {
-            return false;
+        catch (SQLException ex) {
+            System.out.println("SQLException in getRankings (EndGame): " + ex.getMessage());
         }
         return true;
     }
@@ -485,7 +491,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             return;
         }
         Person participant = (Person) this.activePersons.get(participantInput.getName());
-        try {          
+        try {
             if (participant instanceof Spectator && ((Spectator) participant).getMyGames().size() > 1) {
             } else {
                 boolean isBot = participant.isBot();
@@ -606,11 +612,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     }
 
     /**
-     * Used in iteration 1 of the project for testing and demonstration purposes.
-     * This adds a handful of persons to activePersons. it assumes these persons
-     * already have been added to the database. Is also responsible for setting
-     * Person.isBot to true. Next up it starts multiple games, some full with
-     * bots, some 2/3 full
+     * Used in iteration 1 of the project for testing and demonstration
+     * purposes. This adds a handful of persons to activePersons. it assumes
+     * these persons already have been added to the database. Is also
+     * responsible for setting Person.isBot to true. Next up it starts multiple
+     * games, some full with bots, some 2/3 full
      *
      * @throws java.rmi.RemoteException
      */

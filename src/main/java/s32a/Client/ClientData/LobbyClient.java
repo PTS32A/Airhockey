@@ -12,15 +12,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import lombok.Getter;
 import s32a.Client.GUI.AirhockeyGUI;
 import static s32a.Client.GUI.AirhockeyGUI.me;
@@ -29,7 +25,6 @@ import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
 import s32a.Shared.ILobbyClient;
 import s32a.Shared.IPerson;
-import s32a.Shared.IPlayer;
 
 /**
  *
@@ -47,12 +42,14 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private ObservableList<String> playerInfo;
 
     private ILobby myLobby;
+    private AirhockeyGUI gui;
 
-    public LobbyClient(ILobby myLobby) throws RemoteException {
+    public LobbyClient(AirhockeyGUI gui, ILobby myLobby) throws RemoteException {
         if (myLobby == null) {
             throw new RemoteException();
         }
         this.myLobby = myLobby;
+        this.gui = gui;
         this.oRankingsList = FXCollections.observableArrayList(new ArrayList<IPerson>());
         this.oChatList = FXCollections.observableArrayList(new ArrayList<String>());
         this.playerInfo = FXCollections.observableArrayList(new ArrayList<String>());
@@ -69,6 +66,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     /**
      * Returns up-to-date data - actual RMI query, and not from local stub.
+     *
      * @return
      * @throws RemoteException
      */
@@ -79,6 +77,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     /**
      * Returns up-to-date data - actual RMI query, and not from local stub.
+     *
      * @return
      * @throws RemoteException
      */
@@ -89,6 +88,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     /**
      * Returns up-to-date data - actual RMI query, and not from local stub.
+     *
      * @return
      * @throws RemoteException
      */
@@ -209,10 +209,39 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
     @Override
     public void setPersonRanking(IPerson person) throws RemoteException {
-        if (person.getName().equals(me)) {
-            playerInfo.set(0, "Name: " + AirhockeyGUI.me);
-            playerInfo.set(1, "Rating: " + String.valueOf(person.getRating()));
-        }
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    if (person.getName().equals(me)) {
+                        playerInfo.set(0, "Name: " + AirhockeyGUI.me);
+                        playerInfo.set(1, "Rating: " + String.valueOf(person.getRating()));
+                    }
+                }
+                catch (RemoteException ex) {
+                    System.out.println("remoteException on setPersonRanking: " + ex.getMessage());
+                }
+            }
+        });
+
+    }
+
+    /**
+     * Forcibly logs out client - in case of errors, duplicate logins -
+     * generally to make sure he's really logged out.
+     *
+     * @throws RemoteException
+     */
+    @Override
+    public void enforceLogout() throws RemoteException {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                gui.startClient();
+            }
+        });
     }
 
 }

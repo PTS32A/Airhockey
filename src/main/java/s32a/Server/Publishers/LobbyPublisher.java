@@ -120,7 +120,7 @@ public class LobbyPublisher {
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException pushing values to new observer " + name);
-                this.removeObserver(name);
+                this.enforceLogout(name, false);
             }
         });
     }
@@ -129,19 +129,29 @@ public class LobbyPublisher {
      * Removes an observer
      *
      * @param name The name corresponding with the observer
+     * @param notifyClient
      */
-    public void removeObserver(String name) {
-        if (observers.remove(name) != null) {
-            System.out.println("Removed observer " + name + " from LobbyPublisher");
+    public void enforceLogout(String name, boolean notifyClient) {
+        if (!observers.containsKey(name)) {
+            return;
+        }
+        if (notifyClient) {
             try {
-                Lobby.getSingle().logOut(name);
+                observers.get(name).enforceLogout();
             }
             catch (RemoteException ex) {
-                System.out.println("remoteException on calling logout "
-                        + "from LobbyPublisher.removeObserver for "
-                        + name + ", ex: " + ex.getMessage());
-                Logger.getLogger(LobbyPublisher.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        System.out.println("Removed observer " + name + " from LobbyPublisher");
+        try {
+            observers.remove(name);
+            Lobby.getSingle().logOut(name);
+        }
+        catch (RemoteException ex) {
+            System.out.println("remoteException on calling logout "
+                    + "from LobbyPublisher.removeObserver for "
+                    + name + ", ex: " + ex.getMessage());
+            Logger.getLogger(LobbyPublisher.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -179,7 +189,7 @@ public class LobbyPublisher {
                 }
                 catch (RemoteException ex) {
                     System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
-                    this.removeObserver(key);
+                    this.enforceLogout(key, false);
                 }
             }
         });
@@ -240,7 +250,7 @@ public class LobbyPublisher {
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());
                 System.out.println("Removed observer " + key + " from LobbyPublisher");
-                this.removeObserver(key);
+                this.enforceLogout(key, false);
             }
         }
     }
@@ -274,7 +284,7 @@ public class LobbyPublisher {
             catch (RemoteException ex) {
                 System.out.println("RemoteException setting rankings for " + key + ": " + ex.getMessage());
                 System.out.println("Removed observer " + key + " from LobbyPublisher");
-                this.removeObserver(key);
+                this.enforceLogout(key, false);
             }
         }
     }
