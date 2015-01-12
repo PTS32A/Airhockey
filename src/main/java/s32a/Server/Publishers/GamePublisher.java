@@ -8,11 +8,16 @@ package s32a.Server.Publishers;
 import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.FloatProperty;
@@ -60,9 +65,12 @@ public class GamePublisher {
     private IntegerProperty player1Score, player2Score, player3Score, roundNo;
     private ObservableList<String> chatbox;
     private ObjectProperty<GameStatus> statusProp;
-    private StringProperty difficultyProp, gameTimeProp;
+    private StringProperty difficultyProp;
 
-    private static ExecutorService pool = Executors.newCachedThreadPool();
+    private ScheduledExecutorService pool = Executors.newScheduledThreadPool(3);
+    private AtomicBoolean publisherShutDown, scoreUpdated, batUpdated;
+    private final long scoreUpdateDelay = 1000L;
+    private final long batUpdateDelay = 10L;
 
     /**
      * Creates a new publisher associated with given game. Observers need to be
@@ -88,7 +96,50 @@ public class GamePublisher {
 
         this.roundNo = new SimpleIntegerProperty(-1);
         this.difficultyProp = new SimpleStringProperty("");
-        this.gameTimeProp = new SimpleStringProperty("");
+
+        this.batUpdated = new AtomicBoolean(false);
+        this.scoreUpdated = new AtomicBoolean(false);
+        this.publisherShutDown = new AtomicBoolean(false);
+
+        this.initTimer();
+    }
+
+    /**
+     * Starts a scheduled execution of tasks governing the pushing of score and
+     * bat positions, as they're updated simultaneously.
+     *
+     */
+    private void initTimer() {
+        // governing pushing bat positions
+        Runnable posTask = new Runnable() {
+
+            @Override
+            public void run() {
+
+                if (batUpdated.getAndSet(false)) {
+                    pushBatPositions();
+                }
+
+            }
+        };
+
+        // pushing score
+        Runnable scoreTask = new Runnable() {
+
+            @Override
+            public void run() {
+                if (publisherShutDown.get()) {
+                    pool.shutdownNow();
+                    return;
+                }
+                if (scoreUpdated.getAndSet(false)) {
+                    pushScore();
+                }
+            }
+        };
+
+        pool.scheduleWithFixedDelay(posTask, 100L, batUpdateDelay, TimeUnit.MILLISECONDS);
+        pool.scheduleAtFixedRate(scoreTask, 500L, scoreUpdateDelay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -97,16 +148,11 @@ public class GamePublisher {
      *
      * @param name
      * @param client
-     * @return
      * @throws java.rmi.RemoteException
      */
-    public boolean addObserver(String name, IGameClient client) throws RemoteException {
-        if (!this.observers.containsKey(name)) {
-            this.observers.put(name, client);
-            return pushToNewObserver(name, client);
-        } else {
-            return false;
-        }
+    public void addObserver(String name, IGameClient client) throws RemoteException {
+        this.observers.put(name, client);
+        pushToNewObserver(name, client);
     }
 
     /**
@@ -114,42 +160,26 @@ public class GamePublisher {
      *
      * @param name
      * @param client
-     * @return
      * @throws RemoteException
      */
-    private boolean pushToNewObserver(String name, IGameClient client) {
-        try {
-            client.setChat(new ArrayList<>(this.chatbox));
-            client.setDifficulty(this.difficultyProp.get());
-            client.setGame(this.myGame);
-            client.setPlayers(new ArrayList<>(this.players));
-            client.setPuck(this.puckPosition.get().x, this.puckPosition.get().y);
-            client.setGameTime(this.gameTimeProp.get());
-            client.setRoundNo(this.roundNo.get());
-            client.setStatus(this.statusProp.get());
+    private void pushToNewObserver(String name, IGameClient client) {
+        pool.execute(() -> {
+            try {
+                client.setChat(new ArrayList<>(this.chatbox));
+                client.setDifficulty(this.difficultyProp.get());
+                client.setGame(this.myGame);
+                client.setPlayers(new ArrayList<>(this.players));
+                client.setPuck(this.puckPosition.get().x, this.puckPosition.get().y);
+                client.setRoundNo(this.roundNo.get());
+                client.setStatus(this.statusProp.get());
 
-            if (this.player1Prop.get() != null) {
-                client.setPlayer1Bat(this.player1Prop.get().getPosX().get(),
-                        this.player1Prop.get().getPosY().get());
-                client.setPlayer1Score(this.player1Score.get());
+                this.pushBatPositions();
             }
-            if (this.player2Prop.get() != null) {
-                client.setPlayer2Bat(this.player2Prop.get().getPosX().get(),
-                        this.player2Prop.get().getPosY().get());
-                client.setPlayer2Score(this.player2Score.get());
+            catch (RemoteException ex) {
+                System.out.println("RemoteException pushing values to new observer " + name);
+                this.removeObserver(name);
             }
-            if (this.player3Prop.get() != null) {
-                client.setPlayer3Bat(this.player3Prop.get().getPosX().get(),
-                        this.player3Prop.get().getPosY().get());
-                client.setPlayer3Score(this.player3Score.get());
-            }
-            return true;
-        }
-        catch (RemoteException ex) {
-            System.out.println("RemoteException pushing values to new observer " + name);
-            this.removeObserver(name);
-            return false;
-        }
+        });
     }
 
     /**
@@ -363,6 +393,12 @@ public class GamePublisher {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 pushStatus();
+                try {
+                    Lobby.getSingle().forceMapUpdate(Lobby.getSingle().getActiveGames());
+                }
+                catch (RemoteException ex) {
+                    Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -385,34 +421,56 @@ public class GamePublisher {
     }
 
     /**
-     * Binds gameTime - only needs to be done once
-     *
-     * @param gameTime
+     * Pushes score to observers. Called initially, and periodically by timer.
+     * Timer already is on non-JFX thread.
      */
-    public void bindGameTime(StringProperty gameTime) {
-        this.gameTimeProp.bind(gameTime);
-        this.pushGameTime();
-        this.gameTimeProp.addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushGameTime();
+    private void pushScore() {
+        if (this.player1Prop.get() == null
+                || this.player2Prop.get() == null
+                || this.player3Prop.get() == null) {
+            return;
+        }
+        Map<String, Integer> scores = new HashMap<>();
+        scores.put("player1", player1Score.get());
+        scores.put("player2", player2Score.get());
+        scores.put("player3", player3Score.get());
+        for (String key : observers.keySet()) {
+            try {
+                observers.get(key).setPlayerScores(scores);
             }
-        });
+            catch (RemoteException ex) {
+                System.out.println("remoteException on setting player score for " + key);
+                this.removeObserver(key);
+            }
+        }
     }
 
-    private void pushGameTime() {
-        pool.execute(() -> {
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setGameTime(gameTimeProp.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting status for " + key);
-                    this.removeObserver(key);
-                }
+    /**
+     * Pushes bat positions of all three players. Called by timer.
+     */
+    private void pushBatPositions() {
+        if (this.player1Prop.get() == null
+                || this.player2Prop.get() == null
+                || this.player3Prop.get() == null) {
+            return;
+        }
+        Map<String, Double> posMap = new HashMap<>();
+        posMap.put("player1x", player1Prop.get().getPosX().get());
+        posMap.put("player2x", player2Prop.get().getPosX().get());
+        posMap.put("player3x", player3Prop.get().getPosX().get());
+
+        posMap.put("player1y", player1Prop.get().getPosY().get());
+        posMap.put("player2y", player2Prop.get().getPosY().get());
+        posMap.put("player3y", player3Prop.get().getPosY().get());
+        for (String key : observers.keySet()) {
+            try {
+                observers.get(key).setPlayerBatPositions(posMap);
             }
-        });
+            catch (RemoteException ex) {
+                System.out.println("remoteException on setting player bat locations for " + key);
+                this.removeObserver(key);
+            }
+        }
     }
 
     /**
@@ -429,6 +487,9 @@ public class GamePublisher {
             this.bindPlayer2(input);
         } else if (this.player3Prop.get() == null) {
             this.bindPlayer3(input);
+            // pushes player stuff
+            this.pushBatPositions();
+            this.pushScore();
         } else {
             return false;
         }
@@ -446,14 +507,12 @@ public class GamePublisher {
 
         this.player1Prop.set(input);
         this.player1Score.bind(input.getScore());
-        this.pushPlayer1Position();
-        this.pushPlayer1Score();
 
         ChangeListener posListener = new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushPlayer1Position();
+                batUpdated.set(true);
             }
         };
         this.player1Prop.get().getPosX().addListener(posListener);
@@ -463,42 +522,7 @@ public class GamePublisher {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushPlayer1Score();
-            }
-        });
-    }
-
-    /**
-     * Pushes player1 puck position to all observers.
-     */
-    private void pushPlayer1Position() {
-        pool.execute(() -> {
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setPlayer1Bat(player1Prop.get().getPosX().get(), player1Prop.get().getPosY().get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting player 1 bat location for " + key);
-                    this.removeObserver(key);
-                }
-            }
-        });
-
-    }
-
-    /**
-     * Pushes player1 score to all observers.
-     */
-    private void pushPlayer1Score() {
-        pool.execute(() -> {
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setPlayer1Score(player1Score.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting player 1 score for " + key);
-                    this.removeObserver(key);
-                }
+                scoreUpdated.set(true);
             }
         });
     }
@@ -514,14 +538,12 @@ public class GamePublisher {
 
         this.player2Prop.set(input);
         this.player2Score.bind(input.getScore());
-        this.pushPlayer2Position();
-        this.pushPlayer2Score();
 
         ChangeListener posListener = new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushPlayer2Position();
+                batUpdated.set(true);
             }
         };
         this.player2Prop.get().getPosX().addListener(posListener);
@@ -531,47 +553,7 @@ public class GamePublisher {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushPlayer2Score();
-            }
-        });
-    }
-
-    /**
-     * Pushes player 2 puck position (x and y) to all observers.
-     */
-    private void pushPlayer2Position() {
-        pool.execute(() -> {
-            if (player2Prop.get() == null) {
-                return;
-            }
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setPlayer2Bat(player2Prop.get().getPosX().get(), player2Prop.get().getPosY().get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting player 2 bat location for " + key);
-                    this.removeObserver(key);
-                }
-            }
-        });
-    }
-
-    /**
-     * Pushes player 2 score to all observers.
-     */
-    private void pushPlayer2Score() {
-        pool.execute(() -> {
-            if (player2Prop.get() == null) {
-                return;
-            }
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setPlayer2Score(player2Score.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting player 2 score for " + key);
-                    this.removeObserver(key);
-                }
+                scoreUpdated.set(true);
             }
         });
     }
@@ -587,14 +569,12 @@ public class GamePublisher {
 
         this.player3Prop.set(input);
         this.player3Score.bind(input.getScore());
-        this.pushPlayer3Position();
-        this.pushPlayer3Score();
 
         ChangeListener posListener = new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushPlayer3Position();
+                batUpdated.set(true);
             }
         };
         this.player3Prop.get().getPosX().addListener(posListener);
@@ -604,53 +584,17 @@ public class GamePublisher {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                pushPlayer3Score();
+                scoreUpdated.set(true);
             }
         });
     }
 
     /**
-     * Pushes position of player 3 puck (x + y) to all observers.
+     * Broadcasts end of game to all listeners. Declares end of game for
+     * scheduled updater.
      */
-    private void pushPlayer3Position() {
-        pool.execute(() -> {
-            if (player3Prop.get() == null) {
-                return;
-            }
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setPlayer3Bat(player3Prop.get().getPosX().get(), player3Prop.get().getPosY().get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting player 3 bat location for " + key);
-                    this.removeObserver(key);
-                }
-            }
-        });
-    }
-
-    /**
-     * Pushes player 3 score to all observers.
-     */
-    private void pushPlayer3Score() {
-        pool.execute(() -> {
-            if (player3Prop.get() == null) {
-                return;
-            }
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setPlayer3Score(player3Score.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting player 3 score for " + key);
-                    this.removeObserver(key);
-                }
-            }
-        });
-
-    }
-
     public void broadcastEndGame() {
+        publisherShutDown.set(true);
         pool.execute(() -> {
             for (String key : observers.keySet()) {
                 try {

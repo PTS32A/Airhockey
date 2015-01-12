@@ -5,21 +5,13 @@
  */
 package s32a.Client.GUI;
 
-import s32a.Shared.enums.GameStatus;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -70,7 +62,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 }
             }
         });
-        
+
         try {
             this.lvChatbox.setItems(lobby.getOChatList());
             this.tvHighscores.setItems(lobby.getORankingsList());
@@ -96,6 +88,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
 
     /**
      * updates relevant screens in display
+     *
      * @param pR
      */
     public void updatePlayerInfo() {
@@ -113,7 +106,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     public void newGame(Event evt) {
         try {
             IPerson p = super.getMe();
-            if(p == null){
+            if (p == null) {
                 super.showDialog("Error", "You are not logged in");
                 return;
             }
@@ -176,13 +169,13 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
 
         if (this.tvGameDisplay.getSelectionModel().getSelectedItem() != null) {
             IGame game = (IGame) this.tvGameDisplay.getSelectionModel().getSelectedItem();
-            
-            try{
+
+            try {
                 GameClient client = new GameClient();
                 lobby.spectateGame(game.getID(), super.getMe().getName(), client);
                 openNewGameWindow(client);
             }
-            catch(IllegalArgumentException ex){
+            catch (IllegalArgumentException ex) {
                 super.showDialog("Error", ex.getMessage());
             }
             catch (RemoteException ex) {
@@ -196,7 +189,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         super.showDialog("Controls", "Use the left and right arrow keys or"
                 + " the A and D keys to move your bat.");
     }
-    
+
     /**
      * logs out current user, ends his active game
      *
@@ -259,7 +252,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 }
             }
         });
-
 
     }
 }

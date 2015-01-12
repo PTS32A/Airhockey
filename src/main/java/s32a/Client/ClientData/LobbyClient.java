@@ -11,23 +11,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import lombok.Getter;
 import s32a.Client.GUI.AirhockeyGUI;
+import static s32a.Client.GUI.AirhockeyGUI.me;
 import s32a.Shared.IGame;
 import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
 import s32a.Shared.ILobbyClient;
 import s32a.Shared.IPerson;
-import s32a.Shared.IPlayer;
 
 /**
  *
@@ -45,25 +42,18 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private ObservableList<String> playerInfo;
 
     private ILobby myLobby;
-    @Getter
-    private ObservableMap<String, IPerson> oActivePersonsMap;
-    @Getter
-    private ObservableMap<String, Object> oSettingsMap;
-    @Getter
-    private ObservableMap<String, IGame> oActiveGamesMap;
+    private AirhockeyGUI gui;
 
-    public LobbyClient(ILobby myLobby) throws RemoteException {
+    public LobbyClient(AirhockeyGUI gui, ILobby myLobby) throws RemoteException {
         if (myLobby == null) {
             throw new RemoteException();
         }
         this.myLobby = myLobby;
+        this.gui = gui;
         this.oRankingsList = FXCollections.observableArrayList(new ArrayList<IPerson>());
         this.oChatList = FXCollections.observableArrayList(new ArrayList<String>());
         this.playerInfo = FXCollections.observableArrayList(new ArrayList<String>());
         this.oActiveGamesList = FXCollections.observableArrayList(new ArrayList<>());
-        this.oActivePersonsMap = FXCollections.observableHashMap();
-        this.oActiveGamesMap = FXCollections.observableHashMap();
-        this.oSettingsMap = FXCollections.observableHashMap();
 
         this.playerInfo.add("Name: " + AirhockeyGUI.me);
         this.playerInfo.add("Rating: -5");
@@ -74,19 +64,37 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         return myLobby.getMyPerson(playerName);
     }
 
+    /**
+     * Returns up-to-date data - actual RMI query, and not from local stub.
+     *
+     * @return
+     * @throws RemoteException
+     */
     @Override
-    public HashMap<String, IGame> getActiveGames() throws RemoteException {
-        return new HashMap<>(oActiveGamesMap);
+    public Map<String, IGame> getRMIActiveGames() throws RemoteException {
+        return myLobby.getRMIActiveGames();
     }
 
+    /**
+     * Returns up-to-date data - actual RMI query, and not from local stub.
+     *
+     * @return
+     * @throws RemoteException
+     */
     @Override
-    public HashMap<String, Object> getAirhockeySettings() throws RemoteException {
-        return new HashMap<>(oSettingsMap);
+    public Map<String, Object> getRMIAirhockeySettings() throws RemoteException {
+        return myLobby.getRMIAirhockeySettings();
     }
 
+    /**
+     * Returns up-to-date data - actual RMI query, and not from local stub.
+     *
+     * @return
+     * @throws RemoteException
+     */
     @Override
-    public HashMap<String, IPerson> getActivePersons() throws RemoteException {
-        return new HashMap<>(oActivePersonsMap);
+    public Map<String, IPerson> getRMIActivePersons() throws RemoteException {
+        return myLobby.getRMIActivePersons();
     }
 
     @Override
@@ -159,10 +167,8 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                oActiveGamesMap.clear();
                 oActiveGamesList.clear();
-                oActiveGamesList.addAll(activeGames.values());  
-                oActiveGamesMap.putAll(activeGames);
+                oActiveGamesList.addAll(activeGames.values());
             }
         });
 
@@ -191,40 +197,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     }
 
     @Override
-    public synchronized void setSettings(HashMap<String, Object> settings) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                oSettingsMap.clear();
-                oSettingsMap.putAll(settings);
-            }
-        });
-    }
-
-    @Override
-    public synchronized void setPersons(HashMap<String, IPerson> persons) throws RemoteException {
-        final double rating;
-        if(persons.get(AirhockeyGUI.me) != null){
-            rating = persons.get(AirhockeyGUI.me).getRating();
-        } else {
-            rating = -1.0;
-        }
-
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                oActivePersonsMap.clear();
-                oActivePersonsMap.putAll(persons);
-
-                playerInfo.set(0, "Name: " + AirhockeyGUI.me);
-                playerInfo.set(1, "Rating: " + String.valueOf(rating));
-            }
-        });
-    }
-
-    @Override
     public synchronized void setRankings(List<IPerson> persons) throws RemoteException {
         Platform.runLater(new Runnable() {
 
@@ -235,6 +207,41 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         });
     }
 
+    @Override
+    public void setPersonRanking(IPerson person) throws RemoteException {
+        Platform.runLater(new Runnable() {
 
+            @Override
+            public void run() {
+                try {
+                    if (person.getName().equals(me)) {
+                        playerInfo.set(0, "Name: " + AirhockeyGUI.me);
+                        playerInfo.set(1, "Rating: " + String.valueOf(person.getRating()));
+                    }
+                }
+                catch (RemoteException ex) {
+                    System.out.println("remoteException on setPersonRanking: " + ex.getMessage());
+                }
+            }
+        });
+
+    }
+
+    /**
+     * Forcibly logs out client - in case of errors, duplicate logins -
+     * generally to make sure he's really logged out.
+     *
+     * @throws RemoteException
+     */
+    @Override
+    public void enforceLogout() throws RemoteException {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                gui.startClient();
+            }
+        });
+    }
 
 }

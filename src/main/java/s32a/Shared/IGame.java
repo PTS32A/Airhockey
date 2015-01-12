@@ -120,5 +120,13 @@ public interface IGame extends Remote, Serializable {
      */
     public int getCountDownTime()
             throws RemoteException;
+
+    /**
+     * Returns game start time in millis.
+     * @return
+     * @throws RemoteException
+     */
+    public long getGameStartTime()
+            throws RemoteException;
     
 }

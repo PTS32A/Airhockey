@@ -5,18 +5,20 @@
  */
 package s32a.Server;
 
+import s32a.Shared.enums.GameSetting;
 import s32a.Server.Lobby;
 import com.badlogic.gdx.math.Vector2;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Calendar;
-import static java.util.Calendar.getInstance;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -36,6 +38,7 @@ import s32a.Shared.enums.GameStatus;
 import s32a.Server.Timers.GameTimeTask;
 import s32a.Shared.*;
 import s32a.Shared.ISpectator;
+import s32a.Shared.enums.LobbySetting;
 
 /**
  * @author Kargathia
@@ -59,7 +62,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      * includes gameID, nextColor, sideLength, gameDate
      */
     @Getter
-    private HashMap gameInfo;
+    private Map<GameSetting, Object> gameInfo;
     @Getter
     private IntegerProperty roundNo;
 
@@ -97,14 +100,9 @@ public class Game extends UnicastRemoteObject implements IGame {
         ((Player) starter).setStarter(true);
 
         this.gameInfo = new HashMap();
-        this.gameInfo.put("gameID", starter.getName()
-                + String.valueOf(getInstance().get(Calendar.YEAR))
-                + String.valueOf(getInstance().get(Calendar.WEEK_OF_YEAR))
-                + String.valueOf(getInstance().get(Calendar.DAY_OF_WEEK))
-                + String.valueOf(getInstance().get(Calendar.HOUR_OF_DAY))
-                + String.valueOf(getInstance().get(Calendar.MINUTE))
-                + String.valueOf(getInstance().get(Calendar.SECOND)));
-        this.gameInfo.put("nextColor", this.getNextColor());
+        this.gameInfo.put(GameSetting.GameID, starter.getName()
+                + System.currentTimeMillis());
+        this.gameInfo.put(GameSetting.NextColor, this.getNextColor());
 
         this.roundNo = new SimpleIntegerProperty(0);
         float defaultSpeed = 15f; // Default puckspeed
@@ -132,7 +130,7 @@ public class Game extends UnicastRemoteObject implements IGame {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 try {
                     Lobby lobby = Lobby.getSingle();
-                    lobby.updateOMap(lobby.getOActiveGames(), getID());
+                    lobby.forceMapUpdate(lobby.getActiveGames());
                 }
                 catch (RemoteException ex) {
                     System.out.println("RemoteException on "
@@ -160,9 +158,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.publisher.bindStatus(this.statusProp);
         this.publisher.bindDifficulty(this.myPuck.getSpeed());
         this.publisher.bindPlayers(myPlayers);
-        this.publisher.bindGameTime(this.gameTime);
         this.publisher.addObserver(starter.getName(), starterClient);
-
     }
 
     /**
@@ -207,7 +203,7 @@ public class Game extends UnicastRemoteObject implements IGame {
             Player player = (Player) playerInput;
             if (!myPlayers.contains(player)) {
                 if (myPlayers.size() < 3) {
-                    this.gameInfo.put("nextColor", getNextColor());
+                    this.gameInfo.put(GameSetting.NextColor, getNextColor());
 
                     this.myPlayers.add(player);
                     this.setBatPosition(player, myPlayers.size() - 1);
@@ -219,7 +215,7 @@ public class Game extends UnicastRemoteObject implements IGame {
 
                     if (myPlayers.size() == 3) {
                         this.statusProp.set(GameStatus.Ready);
-                        this.addChatMessage("-- READY TO START --", "GAME");
+                        this.addChatMessage("-- Ready to Start --", "GAME");
                     }
 
                     return true;
@@ -243,7 +239,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
         Player p = (Player) pInput;
 
-        float width = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
+        float width = (float) Lobby.getSingle().getAirhockeySettings().get(LobbySetting.SideLength);
         float bat = width / 100 * 8;
         float x;
         float y;
@@ -368,17 +364,20 @@ public class Game extends UnicastRemoteObject implements IGame {
                 printMessage("BEGIN GAME");
 
                 //Timer will keep going until game end
-                long interval = 20; //10 ms for a max 50fps
+                long interval = 20;
                 puckTimer.scheduleAtFixedRate(myPuck, 1000, interval);
                 //Starts new Timer for gameTime
-                puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);
+//                puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);
 
-                if (myPlayers.get(0).getName().equals("j") || myPlayers.get(1).getName().equals("j")
+                // REMOVE THIS SHIT IN FINAL BUILD
+                if (myPlayers.get(0).getName().equals("j")
+                        || myPlayers.get(1).getName().equals("j")
                         || myPlayers.get(2).getName().equals("j")) {
                     this.printMessages = true;
                     this.myPuck.setPrintMessages(true);
                 }
 
+                this.gameInfo.put(GameSetting.GameStartTime, System.currentTimeMillis());
                 this.startCountDown();
                 return true;
             }
@@ -526,7 +525,7 @@ public class Game extends UnicastRemoteObject implements IGame {
 
         if (roundNo.get() >= maxRounds) {
             //End game
-            this.statusProp.set(GameStatus.GameOver);
+            this.broadcastEndGame();
             printMessage("END GAME");
             printMessage("");
         } else {
@@ -539,8 +538,15 @@ public class Game extends UnicastRemoteObject implements IGame {
      * Broadcasts end of game to all unaware clients.
      */
     public void broadcastEndGame() {
-        this.statusProp.set(GameStatus.GameOver);
-        publisher.broadcastEndGame();
+        try {
+            this.addChatMessage("-- Game Over --", "GAME");
+            this.statusProp.set(GameStatus.GameOver);
+            publisher.broadcastEndGame();
+        }
+        catch (RemoteException ex) {
+            System.out.println("RemoteException in broadcastEndGame: " + ex.getMessage());
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -569,7 +575,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      */
     @Override
     public String toString() {
-        return (String) gameInfo.get("gameID");
+        return (String) gameInfo.get(GameSetting.GameID);
     }
 
     /**
@@ -750,11 +756,19 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     @Override
     public String getID() throws RemoteException {
-        return (String) this.gameInfo.get("gameID");
+        return (String) this.gameInfo.get(GameSetting.GameID);
     }
 
     @Override
     public int getCountDownTime() throws RemoteException {
         return this.countDownTime.get();
+    }
+
+    @Override
+    public long getGameStartTime() throws RemoteException {
+        if(!this.gameInfo.containsKey(GameSetting.GameStartTime)){
+            return -1L;
+        }
+        return (Long)this.gameInfo.get(GameSetting.GameStartTime);
     }
 }

@@ -56,7 +56,9 @@ public class AirhockeyGUI {
     private Stage stage;
     protected static LobbyClient lobby = null;
     public static String me = "--";
-    protected static String ipAddress = null, bindingName = "AirhockeyServer", portNumber = null;
+    protected static String ipAddress = null, 
+            bindingName = "AirhockeyServer",
+            portNumber = null;
 
     public void startGUI(Stage stage) {
         this.stage = stage;
@@ -69,10 +71,10 @@ public class AirhockeyGUI {
     /**
      * Starts client GUI after IP address and port number were provided
      */
-    private void startClient() {
+    public void startClient() {
 
         try {
-            lobby = new LobbyClient(this.requestRemoteLobby(ipAddress, bindingName, portNumber));
+            lobby = new LobbyClient(this, this.requestRemoteLobby(ipAddress, bindingName, portNumber));
             if (lobby == null) {
                 showDialog("Error", "lobby is null");
                 return;

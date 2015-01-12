@@ -28,7 +28,9 @@ import javafx.scene.shape.Line;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Shared.IPlayer;
+import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
+import s32a.Shared.enums.LobbySetting;
 
 /**
  *
@@ -130,7 +132,7 @@ public class Puck extends TimerTask {
 //        this.xPos = new SimpleDoubleProperty(0);
 //        this.yPos = new SimpleDoubleProperty(0);
 
-        this.sideLength = (float) lobby.getOAirhockeySettings().get("Side Length");
+        this.sideLength = (float) lobby.getAirhockeySettings().get(LobbySetting.SideLength);
         this.goalLength = sideLength * 0.4f;
         this.batWidth = sideLength / 100 * 8;
 
@@ -354,7 +356,7 @@ public class Puck extends TimerTask {
                     position.set(batBouncePosition);
 
                     //Continue the position with the remaining distance, calculated using batBouncePosition and newPosition
-                    continueUpdatePosition(batBouncePosition, newPosition);
+                    //continueUpdatePosition(batBouncePosition, newPosition);
                 }
 
             } else {
@@ -432,7 +434,7 @@ public class Puck extends TimerTask {
 
             printMessage("Left Wall-Bounce");
 
-            updateDirection(60);
+            updateDirection(61);
 
             return getIntersection(position.get(), newPosition, leftCorner, upperCorner);
         } else if (outside == 1) {
@@ -440,7 +442,7 @@ public class Puck extends TimerTask {
 
             printMessage("Right Wall-Bounce");
 
-            updateDirection(-60);
+            updateDirection(-59);
 
             return getIntersection(position.get(), newPosition, rightCorner, upperCorner);
         } else {
@@ -678,94 +680,90 @@ public class Puck extends TimerTask {
         for (IPlayer Ip : myGame.getMyPlayers()) {
             Player p = (Player) Ip;
             batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
+            
+            
+            Vector2 batBouncePosition = null;
+            //Pythagoras
+            double deltaX = Math.abs(position.get().x - batCentre.x);
+            double deltaY = Math.abs(position.get().y - batCentre.y);
+            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-            if (myGame.getMyPlayers().indexOf(p) == this.lastBouncerID) {
-                //If the current bat has last bounced the puck and Puck is now within the circle of this Bat,
-                //Then the Puck should be pushed in the same direction instead of bounced.
-                if (isInCircle(position.get(), batCentre, radius)) {
-                    //Push
-                    beingPushed = true; //This will use increased speed for next frame's movement and will be reset after that.
+            //radius is same for both for this example
+            if (distance < (puckSize/2) + (p.getBatWidth()/2)) {
 
-                    //No bouncing, only pushing, so no need to check other bats.
-                    return null;
-                } else {
-                    //Continue checking for next bat
-                    continue;
+                //Reverse angle of the collision point
+                double degrees = Math.toDegrees(Math.atan2
+                    (batCentre.y - position.get().y, batCentre.x - position.get().x));
+
+                //Flip angle back to origin and add ofset
+                double xMovement = Math.cos(Math.toRadians((int) (180+degrees)));
+                double yMovement = Math.sin(Math.toRadians((int) (180+degrees)));
+                batBouncePosition = new Vector2(position.get().x + (float)xMovement, position.get().y + (float)yMovement);
+                if (p.getColor() == Colors.Green) {
+                    direction = (float)(180+degrees);
                 }
+                else if (p.getColor() == Colors.Blue) {
+                    direction = (float)(180-degrees);
+                }
+                else{
+                    if (batCentre.x < 0) {
+                        direction = (float)(180-degrees);
+                    }
+                    else{
+                        direction = (float)(180+degrees);
+                    }
+                }
+                
+                correctDirection();
+                
             }
-
-            Vector2 batBouncePosition = getIntersectionWithCircle(position.get(), pos, batCentre, radius);
+                    //getIntersectionWithCircle(position.get(), pos, batCentre, radius);
 
             if (batBouncePosition != null) {
 
                 //Bat bounce by player p
                 printMessage("Bat-Bounce @ player " + p.getColor());
                 this.hitBy.add(p);
-                this.lastBouncerID = myGame.getMyPlayers().indexOf(p);
+                
+                
+//                int index = myGame.getMyPlayers().indexOf(p);
 
-                //DIRECTION CALCULATIONS
-                if (false) {
-                    //Basic formula: new direction = 180 - old direction - 2 * sin^-1((circleX - batBouncePosition.x) / radius)
-                    double angleDecider = Math.toDegrees(Math.asin((batCentre.x - batBouncePosition.x) / radius));
+//                if (index == 0) {
+//                    //RED
+//                    updateDirection(180);
+//
+//                    float correction = 0;
+//
+//                    float distanceFromCenter = pos.x - batCentre.x;
+//
+//                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
+//
+//                    direction += correction;
+//                } else if (index == 1) {
+//                    //BLUE
+//                    updateDirection(60);
+//
+//                    float correction = 0;
+//
+//                    float distanceFromCenter = pos.y - batCentre.y;
+//
+//                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
+//
+//                    direction -= correction;
+//                } else if (index == 2) {
+//                    //GREEN
+//                    updateDirection(-60);
+//
+//                    float correction = 0;
+//
+//                    float distanceFromCenter = pos.y - batCentre.y;
+//
+//                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
+//
+//                    direction += correction;
+//                }
 
-                    while (angleDecider > 359) {
-                        angleDecider -= 360;
-                    }
-
-                    while (angleDecider < 0) {
-                        angleDecider += 360;
-                    }
-
-                    if (angleDecider < 180 - direction) {
-                        //direction = (float)(180 - direction - 2 * angleDecider);
-                        direction = (float) (direction + 2 * angleDecider - 180);
-                    } else if (angleDecider >= 180 - direction) {
-                        direction = (float) (direction + 2 * angleDecider - 180);
-                    } else {
-                        direction += 180;
-                    }
-
-                    direction = -direction;
-                }
-
-                int index = myGame.getMyPlayers().indexOf(p);
-
-                if (index == 0) {
-                    //RED
-                    updateDirection(180);
-
-                    float correction = 0;
-
-                    float distanceFromCenter = pos.x - batCentre.x;
-
-                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
-
-                    direction += correction;
-                } else if (index == 1) {
-                    //BLUE
-                    updateDirection(60);
-
-                    float correction = 0;
-
-                    float distanceFromCenter = pos.y - batCentre.y;
-
-                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
-
-                    direction -= correction;
-                } else if (index == 2) {
-                    //GREEN
-                    updateDirection(-60);
-
-                    float correction = 0;
-
-                    float distanceFromCenter = pos.y - batCentre.y;
-
-                    correction = (distanceFromCenter / ((batWidth / 2) + (puckSize / 2))) * 180;
-
-                    direction += correction;
-                }
-
-                correctDirection();
+                //correctDirection();
 
                 return batBouncePosition;
             }

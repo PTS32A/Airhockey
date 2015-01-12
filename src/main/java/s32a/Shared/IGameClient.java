@@ -8,6 +8,7 @@ package s32a.Shared;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 import s32a.Client.GUI.GameFX;
 import s32a.Shared.enums.GameStatus;
 
@@ -73,60 +74,21 @@ public interface IGameClient extends Remote {
             throws RemoteException;
 
     /**
-     * Sets Player1's bat position using X and Y coordinates
-     *
-     * @param x The X coordinate
-     * @param y The Y coordinate
-     * @throws RemoteException
+     * Updates scores for all three players.
+     * Keys are "player[number]" -> "player1"
+     * @param scores
+     * @throws RemoteException 
      */
-    public void setPlayer1Bat(double x, double y)
+    public void setPlayerScores(Map<String, Integer> scores)
             throws RemoteException;
 
     /**
-     * Sets Player2's bat position using X and Y coordinates
-     *
-     * @param x The X coordinate
-     * @param y The Y coordinate
+     * Updates bat positions for all three players.
+     * Keys are formatted "player[number][x/y]" -> "player1x"
+     * @param positions
      * @throws RemoteException
      */
-    public void setPlayer2Bat(double x, double y)
-            throws RemoteException;
-
-    /**
-     * Sets Player3's bat position using X and Y coordinates
-     *
-     * @param x The X coordinate
-     * @param y The Y coordinate
-     * @throws RemoteException
-     */
-    public void setPlayer3Bat(double x, double y)
-            throws RemoteException;
-
-    /**
-     * Sets Player1's score
-     *
-     * @param score The score to be set to
-     * @throws RemoteException
-     */
-    public void setPlayer1Score(int score)
-            throws RemoteException;
-
-    /**
-     * Sets Player2's score
-     *
-     * @param score The score to be set to
-     * @throws RemoteException
-     */
-    public void setPlayer2Score(int score)
-            throws RemoteException;
-
-    /**
-     * Sets Player3's score
-     *
-     * @param score The score to be set to
-     * @throws RemoteException
-     */
-    public void setPlayer3Score(int score)
+    public void setPlayerBatPositions(Map<String, Double> positions)
             throws RemoteException;
 
     /**
@@ -145,15 +107,6 @@ public interface IGameClient extends Remote {
      * @throws RemoteException
      */
     public void setStatus(GameStatus status)
-            throws RemoteException;
-
-    /**
-     * Sets Game Time
-     *
-     * @param gameTime
-     * @throws RemoteException
-     */
-    public void setGameTime(String gameTime)
             throws RemoteException;
     
     /**

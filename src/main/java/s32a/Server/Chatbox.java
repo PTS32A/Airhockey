@@ -20,19 +20,18 @@ import s32a.Shared.IPerson;
  */
 public class Chatbox {
 
-    private List<String> chat;
-    private ObservableList<String> chatProp;
+    private ObservableList<String> chat;
+    private final int chatLimit = 500;
 
     public ObservableList<String> chatProperty() {
-        return this.chatProp;
+        return this.chat;
     }
 
     /**
      * The chat box element.
      */
     public Chatbox() {
-        this.chat = new ArrayList<>();
-        this.chatProp = FXCollections.observableArrayList(this.chat);
+        this.chat = FXCollections.observableArrayList(new ArrayList<String>());
     }
 
     /**
@@ -53,12 +52,18 @@ public class Chatbox {
         builder.append(": ").append(message);
         message = builder.toString();
 
-        System.out.println(message);
+//        System.out.println(message);
         if (message.startsWith("<") && message.contains(">[")
                 && message.contains("]:")
                 && message.regionMatches((message.indexOf("[") + 3), ":", 0, 1)
                 && message.regionMatches((message.indexOf("[") + 6), ":", 0, 1)) {
-            this.chatProp.add(message);
+            this.chat.add(message);
+            
+            // chat restricts itself to the last 500 messages
+            while(this.chat.size() > chatLimit){
+                this.chat.remove(0);
+            }
+
             return true;
         } else {
             return false;

@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -22,7 +23,7 @@ public interface ILobby extends Remote {
      * @return Returns a HashMap containing the Settings
      * @throws RemoteException 
      */
-    public HashMap getAirhockeySettings()
+    public Map getRMIAirhockeySettings()
             throws RemoteException;
 
     /**
@@ -38,7 +39,7 @@ public interface ILobby extends Remote {
      * @return Returns a HashMap containing the Persons
      * @throws RemoteException 
      */
-    public HashMap<String, IPerson> getActivePersons()
+    public Map<String, IPerson> getRMIActivePersons()
             throws RemoteException;
 
     /**
@@ -46,7 +47,7 @@ public interface ILobby extends Remote {
      * @return Returns a list of active Games
      * @throws RemoteException 
      */
-    public HashMap<String, IGame> getActiveGames()
+    public Map<String, IGame> getRMIActiveGames()
             throws RemoteException;
 
     /**
@@ -66,11 +67,10 @@ public interface ILobby extends Remote {
      * @param playerName The playerName to be verified
      * @param password The password to be verified
      * @param client The LobbyClient the input is from
-     * @return Returns a boolean indicating whether the information given
-     * matches with an existing Account
      * @throws IllegalArgumentException
      * @throws SQLException
      * @throws RemoteException 
+     * @return the String
      */
     public boolean checkLogin(String playerName, String password, ILobbyClient client)
             throws IllegalArgumentException, SQLException, RemoteException;

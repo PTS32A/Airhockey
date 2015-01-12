@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -53,7 +54,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Getter
     private DoubleProperty player1XProperty, player1YProperty, player2XProperty,
             player2YProperty, player3XProperty, player3YProperty;
-    
+
     private GameFX fx;
 
     public GameClient() throws RemoteException {
@@ -110,11 +111,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Ends the game. Called by server.
+     * Ends the game. Called by server. Ensures the game knows that status =
+     * GameOver, even if that specific update hasn't arrived yet.
      */
     @Override
     public synchronized void endGame() {
-        fx.closeStage();
+        this.gameStatusProperty.set(GameStatus.GameOver);
+        fx.quitClick(null);
     }
 
     /**
@@ -194,7 +197,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public synchronized void setRoundNo(int round) throws RemoteException {
+    public void setRoundNo(int round) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -211,7 +214,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public synchronized void setPlayers(List<IPlayer> players) throws RemoteException {
+    public void setPlayers(List<IPlayer> players) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -251,7 +254,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public synchronized void setChat(List<String> chat) throws RemoteException {
+    public void setChat(List<String> chat) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -263,57 +266,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Incoming from server. Sets player 1's score.
-     *
-     * @param score
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized void setPlayer1Score(int score) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                player1Score.set(score);
-            }
-        });
-    }
-
-    /**
-     * Incoming from server. Sets player 2's score.
-     *
-     * @param score
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized void setPlayer2Score(int score) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                player2Score.set(score);
-            }
-        });
-    }
-
-    /**
-     * Incoming from server. Sets player 3's score.
-     *
-     * @param score
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized void setPlayer3Score(int score) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                player3Score.set(score);
-            }
-        });
-    }
-
-    /**
      * Incoming from server. Sets puck's position.
      *
      * @param x
@@ -321,7 +273,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public synchronized void setPuck(double x, double y) throws RemoteException {
+    public void setPuck(double x, double y) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -333,72 +285,13 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Incoming from server. Sets player1's position.
-     *
-     * @param x
-     * @param y
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized void setPlayer1Bat(double x, double y) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                player1XProperty.set(x);
-                player1YProperty.set(y);
-            }
-        });
-
-    }
-
-    /**
-     * Incoming from server. Sets player2's position.
-     *
-     * @param x
-     * @param y
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized void setPlayer2Bat(double x, double y) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                player2XProperty.set(x);
-                player2YProperty.set(y);
-            }
-        });
-
-    }
-
-    /**
-     * Incoming from server. Sets player3's position.
-     *
-     * @param x
-     * @param y
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized void setPlayer3Bat(double x, double y) throws RemoteException {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                player3XProperty.set(x);
-                player3YProperty.set(y);
-            }
-        });
-    }
-
-    /**
      * Incoming from server. Sets difficulty/ PuckSpeed.
      *
      * @param difficulty
      * @throws RemoteException
      */
     @Override
-    public synchronized void setDifficulty(String difficulty) throws RemoteException {
+    public void setDifficulty(String difficulty) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -415,7 +308,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      * @throws RemoteException
      */
     @Override
-    public synchronized void setStatus(GameStatus status) throws RemoteException {
+    public void setStatus(GameStatus status) throws RemoteException {
 //        System.out.println("status set to: " + status.toString());
         Platform.runLater(new Runnable() {
 
@@ -427,17 +320,54 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Incoming from server.
-     * @param gameTime
+     * Updates scores for all three players.
+     * Keys are "player[number]" -> "player1"
+     * @param scores
      * @throws RemoteException
      */
     @Override
-    public synchronized void setGameTime(String gameTime) throws RemoteException {
+    public void setPlayerScores(Map<String, Integer> scores) throws RemoteException {
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                gameTimeProperty.set(gameTime);
+                if(scores.containsKey("player1")){
+                    player1Score.set(scores.get("player1"));
+                }
+                if(scores.containsKey("player2")){
+                    player2Score.set(scores.get("player2"));
+                }
+                if(scores.containsKey("player3")){
+                    player3Score.set(scores.get("player3"));
+                }
+            }
+        });
+    }
+
+    /**
+     * Updates bat positions for all three players.
+     * Keys are formatted "player[number][x/y]" -> "player1x"
+     * @param positions
+     * @throws RemoteException
+     */
+    @Override
+    public void setPlayerBatPositions(Map<String, Double> positions) throws RemoteException {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if(positions.containsKey("player1x") && positions.containsKey("player1y")){
+                    player1XProperty.set(positions.get("player1x"));
+                    player1YProperty.set(positions.get("player1y"));
+                }
+                if(positions.containsKey("player2x") && positions.containsKey("player2y")){
+                    player2XProperty.set(positions.get("player2x"));
+                    player2YProperty.set(positions.get("player2y"));
+                }
+                if(positions.containsKey("player3x") && positions.containsKey("player3y")){
+                    player3XProperty.set(positions.get("player3x"));
+                    player3YProperty.set(positions.get("player3y"));
+                }
             }
         });
     }
@@ -483,4 +413,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.fx = fx;
     }
 
+    @Override
+    public long getGameStartTime() throws RemoteException {
+        return this.myGame.getGameStartTime();
+    }
 }

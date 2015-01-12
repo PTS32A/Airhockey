@@ -11,10 +11,14 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Objects;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Shared.IPerson;
@@ -129,6 +133,11 @@ public class Person extends UnicastRemoteObject implements IPerson {
         int hash = 5;
         hash = 97 * hash + Objects.hashCode(this.name);
         return hash;
+    }
+
+    @Override
+    public String toString(){
+        return this.name;
     }
 
 }

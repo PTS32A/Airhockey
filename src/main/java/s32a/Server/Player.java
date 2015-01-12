@@ -20,6 +20,7 @@ import s32a.Shared.IGame;
 import s32a.Shared.IPlayer;
 import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
+import s32a.Shared.enums.LobbySetting;
 
 /**
  *
@@ -51,7 +52,7 @@ public class Player extends Person implements IPlayer {
     @Getter
     private float sideLength;
     @Getter
-    private int batWidth;
+    private double batWidth;
 
     /**
      * sets both int and property values
@@ -74,8 +75,8 @@ public class Player extends Person implements IPlayer {
     public Player(String name, double rating, Colors color) throws RemoteException {
         super(name, rating);
         this.color = color;
-        this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get("Goal Default");
-        sideLength = (float) Lobby.getSingle().getAirhockeySettings().get("Side Length");
+        this.goalPos = (Vector2) Lobby.getSingle().getAirhockeySettings().get(LobbySetting.GoalDefault);
+        sideLength = (float) Lobby.getSingle().getAirhockeySettings().get(LobbySetting.SideLength);
         batWidth = (int) (sideLength * 0.08);
         this.posX = new SimpleDoubleProperty(.0);
         this.posY = new SimpleDoubleProperty(.0);
