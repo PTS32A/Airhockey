@@ -28,6 +28,7 @@ import javafx.scene.shape.Line;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Shared.IPlayer;
+import s32a.Shared.enums.Colors;
 import s32a.Shared.enums.GameStatus;
 import s32a.Shared.enums.LobbySetting;
 
@@ -433,7 +434,7 @@ public class Puck extends TimerTask {
 
             printMessage("Left Wall-Bounce");
 
-            updateDirection(60);
+            updateDirection(61);
 
             return getIntersection(position.get(), newPosition, leftCorner, upperCorner);
         } else if (outside == 1) {
@@ -441,7 +442,7 @@ public class Puck extends TimerTask {
 
             printMessage("Right Wall-Bounce");
 
-            updateDirection(-60);
+            updateDirection(-59);
 
             return getIntersection(position.get(), newPosition, rightCorner, upperCorner);
         } else {
@@ -697,9 +698,22 @@ public class Puck extends TimerTask {
                 //Flip angle back to origin and add ofset
                 double xMovement = Math.cos(Math.toRadians((int) (180+degrees)));
                 double yMovement = Math.sin(Math.toRadians((int) (180+degrees)));
-                
                 batBouncePosition = new Vector2(position.get().x + (float)xMovement, position.get().y + (float)yMovement);
-                direction = (float)(180+degrees);
+                if (p.getColor() == Colors.Green) {
+                    direction = (float)(180+degrees);
+                }
+                else if (p.getColor() == Colors.Blue) {
+                    direction = (float)(180-degrees);
+                }
+                else{
+                    if (batCentre.x < 0) {
+                        direction = (float)(180-degrees);
+                    }
+                    else{
+                        direction = (float)(180+degrees);
+                    }
+                }
+                
                 correctDirection();
                 
             }
