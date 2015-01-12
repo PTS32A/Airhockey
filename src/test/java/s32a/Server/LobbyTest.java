@@ -202,9 +202,10 @@ public class LobbyTest {
             this.mockLobby.addPerson("testey", "testpass");
             this.mockLobby.checkLogin("testey", "testpass", mockLobbyClient);
 
+            Person test = (Person)this.mockLobby.getMyPerson("testey");
             Game game;
 
-            game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient);
+            game = this.mockLobby.startGame(test.getName(), mockGameClient);
 
             assertNotNull("startGame returned null", game);
             assertEquals("playedGame wasn't started right", game,
@@ -217,7 +218,7 @@ public class LobbyTest {
             assertEquals("starting score wasn't 20", testey.getScore(), 20);
             assertTrue("testey wasn't a starting player", testey.isStarter());
             assertNull("testey started a game while being a player",
-                    this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient));
+                    this.mockLobby.startGame(test.getName(), mockGameClient));
 
             this.mockLobby.addPerson("playey", "testpass");
 
@@ -228,24 +229,24 @@ public class LobbyTest {
 
             Person playey = (Person) this.mockLobby.getActivePersons().get("playey");
             assertEquals("playey was unable to join game",
-                    this.mockLobby.joinGame(game,
-                            (Person)this.mockLobby.getActivePersons().get("playey"), mockGameClient));
+                    this.mockLobby.joinGame(game.getID(),
+                            playey.getName(), mockGameClient));
             assertTrue("playey is not a player", this.mockLobby.getActivePersons().get("playey") instanceof Player);
             playey = (Player) this.mockLobby.getActivePersons().get("playey");
             assertNull("playey was able to start game while in one",
-                    this.mockLobby.startGame(playey, mockGameClient));
+                    this.mockLobby.startGame(playey.getName(), mockGameClient));
             assertNull("playey was able to join the same game twice",
-                    this.mockLobby.joinGame(game,
-                            (Person) this.mockLobby.getActivePersons().get("playey"), mockGameClient));
+                    this.mockLobby.joinGame(game.getID(),
+                            playey.getName(), mockGameClient));
 
             // spectey
             this.mockLobby.checkLogin("spectey", "testpass", mockLobbyClient);
 
             Person spectey = (Person) this.mockLobby.getActivePersons().get("spectey");
             assertEquals("spectey didn't spectate the right game", game,
-                    this.mockLobby.spectateGame(game, spectey, mockGameClient));
+                    this.mockLobby.spectateGame(game.getID(), spectey.getName(), mockGameClient));
             assertNull("spectey was able to spectate the same game twice",
-                    this.mockLobby.spectateGame(game, spectey, mockGameClient));
+                    this.mockLobby.spectateGame(game.getID(), spectey.getName(), mockGameClient));
         }
         catch (IllegalArgumentException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -345,15 +346,16 @@ public class LobbyTest {
             this.mockLobby.addPerson("testey", "testpass");
             this.mockLobby.checkLogin("testey", "testpass", mockLobbyClient);
 
-            Game game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient);
+            Person testey = (Person)this.mockLobby.getMyPerson("testey");
+            Game game = this.mockLobby.startGame(testey.getName(), mockGameClient);
             assertNotNull("game wasn't started properly", game);
-            assertTrue("game didn't end as it should", this.mockLobby.endGame(game, null));
+            assertTrue("game didn't end as it should", this.mockLobby.endGame(game.getID(), null));
             assertFalse("successfully ended a previously ended game",
-                    this.mockLobby.endGame(game, null));
-            game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient);
+                    this.mockLobby.endGame(game.getID(), null));
+            game = this.mockLobby.startGame(testey.getName(), mockGameClient);
             assertTrue("game didn't end as it should with leaver",
-                    this.mockLobby.endGame(game,
-                            (Player) this.mockLobby.getActivePersons().get("testey")));
+                    this.mockLobby.endGame(game.getID(),
+                            testey.getName()));
 
             // TODO: check whether rating updates as it should
         }
@@ -380,19 +382,20 @@ public class LobbyTest {
             this.mockLobby.addPerson("testey", "testpass");
             this.mockLobby.checkLogin("testey", "testpass", mockLobbyClient);
             
-            Game game = this.mockLobby.startGame(this.mockLobby.getMyPerson("testey"), mockGameClient);
+            Person testey = (Person)this.mockLobby.getMyPerson("testey");
+            Game game = this.mockLobby.startGame(testey.getName(), mockGameClient);
             
             this.mockLobby.addPerson("testey1", "testpass");
             this.mockLobby.checkLogin("testey1", "testpass", mockLobbyClient);
-            this.mockLobby.joinGame(game, this.mockLobby.getMyPerson("testey"), mockGameClient);
+            this.mockLobby.joinGame(game.getID(), testey.getName(), mockGameClient);
             
             this.mockLobby.addPerson("testey2", "testpass");
             //this.mockLobby.checkLogin("testey2", "testpass");
-            this.mockLobby.joinGame(game, this.mockLobby.getMyPerson("testey"), mockGameClient);
+            this.mockLobby.joinGame(game.getID(), testey.getName(), mockGameClient);
             
             game.beginGame();
             
-            assertTrue("Logout didn't succeed", this.mockLobby.logOut(this.mockLobby.getMyPerson("testey")));
+            assertTrue("Logout didn't succeed", this.mockLobby.logOut(testey.getName()));
         }
         catch (IllegalArgumentException ex) {
             Logger.getLogger(LobbyTest.class.getName()).log(Level.SEVERE, null, ex);
