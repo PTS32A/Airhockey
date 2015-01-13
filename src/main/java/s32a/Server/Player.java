@@ -113,7 +113,9 @@ public class Player extends Person implements IPlayer {
         double cX = sideLength / 2;
         double cY = 0;
 
-        if (!((Game) myGame).statusProperty().get().equals(GameStatus.Playing)) {
+        if (!((Game) myGame).statusProperty().get().equals(GameStatus.Playing) 
+                && !((Game) myGame).statusProperty().get().equals(GameStatus
+                        .Waiting)) {
             return false;
         } else {
             // Will reimplement this later.
