@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package genericTests;
+package s32a;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,17 +43,20 @@ public class FTPTest {
             file.createNewFile();
             System.out.println(file.length());
             fis = new FileInputStream(file.getAbsolutePath());
+            client.makeDirectory("/Airhockey/Codebase/test");
+            client.makeDirectory("\\Airhockey\\Codebase\\testey");
 
     //
             // Store file to server
             //
+            String desiredName = "s32a\\Server\\.gitattributes";
             System.out.println("storefile: " + file.getAbsolutePath() + " - "
-                    + client.storeFile("/Airhockey/" + filename, fis));
+                    + client.storeFile("/Airhockey/" + desiredName, fis));
             System.out.println("file stored");
 
-            File output = new File("colors.json");
-            fos = new FileOutputStream(output.getAbsolutePath());
-            client.retrieveFile("/colors.json", fos);
+//            File output = new File("colors.json");
+//            fos = new FileOutputStream(output.getAbsolutePath());
+//            client.retrieveFile("/colors.json", fos);
 
 
             client.logout();
