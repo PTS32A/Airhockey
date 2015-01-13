@@ -55,17 +55,20 @@ public class CodebaseDeployer {
         this.serverLoc = serverDirFile.getAbsolutePath();
         System.out.println("serverFile: " + serverLoc);
 
+        System.out.println("server files:");
         this.directories = new ArrayList<>();
         Map<String, File> files = this.getSubFiles(serverDirFile);
+        System.out.println("");
 
-        this.classesLoc.replace("AirhockeyServer", "AirhockeyClient");
+        System.out.println("Client files:");
+        this.classesLoc = this.classesLoc.replace("AirhockeyServer", "AirhockeyClient");
         File clientDirFile = new File(classesLoc +
                 "s32a" + fs +
-                "")
+                "Client");
+        files.putAll(this.getSubFiles(clientDirFile));
+        System.out.println("");
 
         this.uploadFiles(files);
-
-
     }
 
     /**
@@ -112,23 +115,24 @@ public class CodebaseDeployer {
             client.setFileType(FTP.ASCII_FILE_TYPE);
 
             //Clears FTP server
-            client.removeDirectory("/Airhockey/Codebase/s32a");
-//            client.makeDirectory("/Airhockey/Codebase/s32a");
-//            //Creates all directories required on the server
-//            System.out.println("creating directories");
-//            for(String s : directories){
-//                client.makeDirectory(s);
-//            }
-//
-//            System.out.println("Uploading classes");
-//            String defaultLoc = fs + "Airhockey" + fs + "Codebase" + fs;
-//            for(String dest : input.keySet()){
-//                fis = new FileInputStream(input.get(dest));
-//                if(!client.storeFile(defaultLoc + dest, fis)){
-//                    System.out.println("unable to save: " + defaultLoc + dest);
-//                }
-//                fis.close();
-//            }
+//            client.removeDirectory("/Airhockey/Codebase/s32a");
+            
+            //Creates all directories required on the server
+            System.out.println("creating directories");
+            client.makeDirectory("/Airhockey/Codebase/s32a");
+            for(String s : directories){
+                client.makeDirectory(s);
+            }
+
+            System.out.println("Uploading classes");
+            String defaultLoc = fs + "Airhockey" + fs + "Codebase" + fs;
+            for(String dest : input.keySet()){
+                fis = new FileInputStream(input.get(dest));
+                if(!client.storeFile(defaultLoc + dest, fis)){
+                    System.out.println("unable to save: " + defaultLoc + dest);
+                }
+                fis.close();
+            }
 
             client.logout();
         }

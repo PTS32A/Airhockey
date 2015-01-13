@@ -22,25 +22,31 @@ public class DeployerMain {
 //        FTPTest test = new FTPTest();
         
         String ftpAddress = "athena.fhict.nl";
-        String userName = "";
-        String password = "";
+        String userName = "i293443";
+        String password = "ifvr2edfh101";
 
         Console cnsl = null;
         String alpha = null;
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter FTP server address if it is NOT " + ftpAddress);
+        System.out.println("FTP Server: (Leave blank for default)");
 
         String command = scanner.nextLine();
         if (!command.trim().isEmpty()) {
             ftpAddress = command;
         }
 
-        System.out.println("Username:");
-        userName = scanner.nextLine();
+        System.out.println("Username: (Leave blank for default)");
+        command = scanner.nextLine();
+        if(!command.trim().isEmpty()){
+            userName = command;
+        }
 
-        System.out.println("password:");
-        password = scanner.nextLine();
+        System.out.println("password: (Leave blank for default)");
+        command = scanner.nextLine();
+        if(!command.trim().isEmpty()){
+            password = command;
+        }
 
         CodebaseDeployer deployer = new CodebaseDeployer(ftpAddress, userName, password);
 
