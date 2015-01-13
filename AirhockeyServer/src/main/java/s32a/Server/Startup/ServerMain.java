@@ -42,6 +42,7 @@ public class ServerMain extends Application{
     
     private Stage stage;
     private ServerInfo serverInfo;
+    private FTPHandler handler;
 
     @Override
     public void start(Stage primaryStage) {
