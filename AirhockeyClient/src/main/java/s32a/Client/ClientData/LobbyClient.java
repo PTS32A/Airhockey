@@ -155,11 +155,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         return this.oRankingsList;
     }
 
-    @Override
-    public void populate() throws RemoteException {
-        myLobby.populate();
-    }
-
     //----------------------------------- INCOMING FROM SERVER -----------------------------------------------
     @Override
     public synchronized void setActiveGames(HashMap<String, IGame> activeGames) throws RemoteException {
