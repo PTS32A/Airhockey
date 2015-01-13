@@ -7,6 +7,7 @@ package genericTests;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -22,6 +23,7 @@ public class FTPTest {
     public FTPTest() {
         FTPClient client = new FTPSClient(false);
         FileInputStream fis = null;
+        FileOutputStream fos = null;
 
         try {
             System.out.println("connecting");
@@ -46,9 +48,14 @@ public class FTPTest {
             // Store file to server
             //
             System.out.println("storefile: " + file.getAbsolutePath() + " - "
-                    + client.storeFile(File.separator + filename, fis));
-            client.completePendingCommand();
+                    + client.storeFile("/Airhockey/" + filename, fis));
             System.out.println("file stored");
+
+            File output = new File("colors.json");
+            fos = new FileOutputStream(output.getAbsolutePath());
+            client.retrieveFile("/colors.json", fos);
+
+
             client.logout();
         }
         catch (IOException e) {
@@ -61,7 +68,11 @@ public class FTPTest {
                 if (fis != null) {
                     fis.close();
                 }
+                if (fos != null){
+                    fos.close();
+                }
                 client.disconnect();
+                System.exit(0);
             }
             catch (IOException e) {
                 e.printStackTrace();
