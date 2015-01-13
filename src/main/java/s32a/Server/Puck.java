@@ -428,13 +428,13 @@ public class Puck extends TimerTask {
                 outside = 1;
             }
         }
-
+        Random r = new Random();
         if (outside == -1) {
             //Left of field
 
             printMessage("Left Wall-Bounce");
 
-            updateDirection(61);
+            updateDirection(60 + r.nextInt(10));
 
             return getIntersection(position.get(), newPosition, leftCorner, upperCorner);
         } else if (outside == 1) {
@@ -442,7 +442,7 @@ public class Puck extends TimerTask {
 
             printMessage("Right Wall-Bounce");
 
-            updateDirection(-59);
+            updateDirection(-60 + r.nextInt(10));
 
             return getIntersection(position.get(), newPosition, rightCorner, upperCorner);
         } else {
@@ -451,7 +451,7 @@ public class Puck extends TimerTask {
 
                 printMessage("Bottom Wall-Bounce");
 
-                updateDirection(180);
+                updateDirection(180 + r.nextInt(10));
 
                 return getIntersection(position.get(), newPosition, leftCorner, rightCorner);
             } else if (y > middleLine + puckSize / 2) {
@@ -459,7 +459,7 @@ public class Puck extends TimerTask {
 
                 printMessage("Top Corner-Bounce");
 
-                updateDirection(180);
+                updateDirection(180 + r.nextInt(10));
 
                 return new Vector2(0, (float) middleLine);
             }
@@ -687,14 +687,13 @@ public class Puck extends TimerTask {
             double deltaX = Math.abs(position.get().x - batCentre.x);
             double deltaY = Math.abs(position.get().y - batCentre.y);
             double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-            //radius is same for both for this example
+            
             if (distance < (puckSize/2) + (p.getBatWidth()/2)) {
 
                 //Reverse angle of the collision point
                 double degrees = Math.toDegrees(Math.atan2
                     (batCentre.y - position.get().y, batCentre.x - position.get().x));
-
+                
                 //Flip angle back to origin and add ofset
                 double xMovement = Math.cos(Math.toRadians((int) (180+degrees)));
                 double yMovement = Math.sin(Math.toRadians((int) (180+degrees)));
