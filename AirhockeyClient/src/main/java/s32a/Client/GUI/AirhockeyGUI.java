@@ -240,6 +240,7 @@ public class AirhockeyGUI {
                     gp.add(ip, 0, 1);
                     
                     serverNameBox = new ComboBox(observableServerNames);
+                    serverNameBox.setPromptText("Choose a server");
                     serverNameBox.valueProperty().addListener(new ChangeListener<String>() {
                         @Override 
                         public void changed(ObservableValue ov, String t, String t1) { 
@@ -254,9 +255,19 @@ public class AirhockeyGUI {
                             }
                         }    
                     });
+                    try
+                    {
+                        ///serverNameBox.getSelectionModel().selectFirst();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.out.println("Exception: " + ex.getMessage());
+                    }
                     gp.add(serverNameBox, 0, 2);
                     
                     serverDescriptionArea = new TextArea();
+                    serverDescriptionArea.setText("Server description");
+                    serverDescriptionArea.editableProperty().set(false);
                     gp.add(serverDescriptionArea, 0, 3);
                     
                     Button confirm = new Button("Confirm");
@@ -279,7 +290,7 @@ public class AirhockeyGUI {
                     });
 
                     Group root = new Group();
-                    Scene scene = new Scene(root, 700, 350);
+                    Scene scene = new Scene(root, 700, 380);
                     root.getChildren().add(gp);
                     stage.setScene(scene);
                     stage.setTitle("Server Information");
