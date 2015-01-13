@@ -17,6 +17,12 @@ public class ServerInfo implements IServerInfo {
     private final int portNumber;
 
     public ServerInfo(String name, String description, String bindingName, String IP, int portNumber) {
+        System.out.println("New ServerInfo: ");
+        System.out.println("name: " + name);
+        System.out.println("description: " + description);
+        System.out.println("bindingName: " + bindingName);
+        System.out.println("IP: " + IP);
+        System.out.println("portNumber: " + portNumber);
         this.name = name;
         this.description = description;
         this.bindingName = bindingName;

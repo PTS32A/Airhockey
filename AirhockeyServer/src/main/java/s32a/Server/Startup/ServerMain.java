@@ -37,12 +37,11 @@ import s32a.Server.AirhockeyServer;
  *
  * @author Kargathia
  */
-public class ServerMain extends Application{
+public class ServerMain extends Application {
 
-    
     private Stage stage;
     private ServerInfo serverInfo;
-    private FTPHandler handler;
+    private FTPHandler handler = null;
 
     @Override
     public void start(Stage primaryStage) {
@@ -85,24 +84,22 @@ public class ServerMain extends Application{
 
                         @Override
                         public void handle(ActionEvent e) {
-                            FTPClient client = new FTPSClient(false);
+                            String user = tfUser.getText();
+                            String pass = tfPass.getText();
+                            String server = tfIp.getText();
+                            handler = new FTPHandler(server, user, pass);
                             try {
-                                String user = tfUser.getText();
-                                String pass = tfPass.getText();
-                                client.connect(tfIp.getText());
-                                boolean login = client.login(user, pass);
+                                boolean login = handler.checkLogin();
                                 if (login) {
-                                    client.logout();
                                     stage.close();
                                     serverSetUp();
-                                }
-                                else{
+                                } else {
                                     tfPort.setText("Could not connect, check spelling and internet connection.");
                                 }
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
-                            
+
                         }
                     });
 
@@ -123,17 +120,15 @@ public class ServerMain extends Application{
                     });
 
                     stage.show();
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     //showDialog("Error", "Could not open game: " + ex.getMessage());
                     System.out.println(ex.toString());
                 }
             }
-       });
+        });
     }
-    
-    private void serverSetUp() throws IOException
-    {
+
+    private void serverSetUp() throws IOException {
         Platform.runLater(new Runnable() {
 
             @Override
@@ -158,7 +153,7 @@ public class ServerMain extends Application{
                     Label ip = new Label("IP Adress:");
                     gp.add(ip, 0, 3);
                     TextField tfIP = new TextField();
-                    tfIP.setText("0.0.0.0");
+                    tfIP.setPromptText("0.0.0.0");
                     gp.add(tfIP, 1, 3);
                     Label port = new Label("Port:");
                     gp.add(port, 0, 4);
@@ -176,12 +171,11 @@ public class ServerMain extends Application{
 
                         @Override
                         public void handle(ActionEvent e) {
-                            if(serverInfo(tfSN.getText(), tfBind.getText(),
-                                    tfIP.getText(), tfPort.getText(), tfDesc.getText())){
+                            if (serverInfo(tfSN.getText(), tfBind.getText(),
+                                    tfIP.getText(), tfPort.getText(), tfDesc.getText())) {
                                 //Todo
                                 stage.close();
-                            }
-                            else{
+                            } else {
                                 //Error
                             }
                         }
@@ -204,33 +198,33 @@ public class ServerMain extends Application{
                     });
 
                     stage.show();
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     //showDialog("Error", "Could not open game: " + ex.getMessage());
                     System.out.println(ex.toString());
                 }
             }
-       });
+        });
     }
-    
-    public boolean serverInfo(String name, String bind, String ip, String port, String description)
-    {
-        try{
+
+    public boolean serverInfo(String name, String bind, String ip, String port, String description) {
+        try {
             this.serverInfo = new ServerInfo(name, description, bind, ip, Integer.valueOf(port));
+            if (this.handler == null) {
+                return false;
+            }
+            this.handler.registerServer(serverInfo);
             return true;
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return false;
     }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         launch(args);
     }
-
-    
 
 }

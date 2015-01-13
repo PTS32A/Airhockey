@@ -41,6 +41,7 @@ public class FTPHandler {
         FTPClient client = null;
         try {
             client = new FTPSClient(false);
+            client.connect(this.ftpServer);
             success = client.login(username, password);
         } catch (IOException ex) {
             success = false;
@@ -118,7 +119,7 @@ public class FTPHandler {
         File file = null;
         BufferedWriter writer = null;
         try {
-            file = new File(input.getName());
+            file = new File(input.getIP() + ".server");
             System.out.println("Saving to: " + file.getAbsolutePath());
             if (file.exists()) {
                 file.delete();
@@ -128,11 +129,11 @@ public class FTPHandler {
             file.createNewFile();
 
             // writes info
-            writer.write(input.getName() + eol);
-            writer.write(input.getDescription() + eol);
-            writer.write(input.getBindingName() + eol);
-            writer.write(input.getIP() + eol);
-            writer.write(input.getPort() + eol);
+            writer.write(":" + input.getName() + eol);
+            writer.write(":" + input.getDescription() + eol);
+            writer.write(":" + input.getBindingName() + eol);
+            writer.write(":" + input.getIP() + eol);
+            writer.write(":" + input.getPort());
 
         } catch (IOException ex) {
             Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
