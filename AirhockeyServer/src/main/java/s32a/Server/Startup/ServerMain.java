@@ -21,6 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -62,21 +63,33 @@ public class ServerMain extends Application{
                     TextField tfIp = new TextField();
                     tfIp.setText("athena.fhict.nl");
                     gp.add(tfIp, 1, 1);
+                    Label user = new Label("Username:");
+                    gp.add(user, 0, 2);
+                    TextField tfUser = new TextField();
+                    tfUser.setText("i293443");
+                    gp.add(tfUser, 1, 2);
+                    Label pass = new Label("Password:");
+                    gp.add(pass, 0, 3);
+                    PasswordField tfPass = new PasswordField();
+                    tfPass.setText("ifvr2edfh101");
+                    gp.add(tfPass, 1, 3);
                     Label port = new Label("Status:");
-                    gp.add(port, 0, 2);
+                    gp.add(port, 0, 4);
                     TextField tfPort = new TextField();
                     tfPort.setText("Not Connected");
-                    gp.add(tfPort, 1, 2);
+                    gp.add(tfPort, 1, 4);
                     Button confirm = new Button("Connect");
-                    gp.add(confirm, 1, 3);
+                    gp.add(confirm, 1, 5);
                     confirm.setOnAction(new EventHandler<ActionEvent>() {
 
                         @Override
                         public void handle(ActionEvent e) {
                             FTPClient client = new FTPSClient(false);
                             try {
+                                String user = tfUser.getText();
+                                String pass = tfPass.getText();
                                 client.connect(tfIp.getText());
-                                boolean login = client.login("i293443", "ifvr2edfh101");
+                                boolean login = client.login(user, pass);
                                 if (login) {
                                     client.logout();
                                     stage.close();
@@ -93,7 +106,7 @@ public class ServerMain extends Application{
                     });
 
                     Group root = new Group();
-                    Scene scene = new Scene(root, 300, 150);
+                    Scene scene = new Scene(root, 300, 250);
                     root.getChildren().add(gp);
                     stage.setScene(scene);
                     stage.setTitle("FTP Server");
