@@ -167,10 +167,10 @@ public interface ILobby extends Remote {
     public List<IPerson> getRankings()
             throws SQLException, RemoteException;
 
-    /**
-     * Populates the Lobby
-     * @throws RemoteException 
-     */
-    public void populate()
-            throws RemoteException;
+//    /**
+//     * Populates the Lobby
+//     * @throws RemoteException
+//     */
+//    public void populate()
+//            throws RemoteException;
 }

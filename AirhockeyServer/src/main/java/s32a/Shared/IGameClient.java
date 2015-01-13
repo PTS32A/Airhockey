@@ -9,7 +9,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
-import s32a.Client.GUI.GameFX;
 import s32a.Shared.enums.GameStatus;
 
 /**
@@ -107,14 +106,5 @@ public interface IGameClient extends Remote {
      * @throws RemoteException
      */
     public void setStatus(GameStatus status)
-            throws RemoteException;
-    
-    /**
-     * Registers the GameFX of the client
-     * 
-     * @param fx
-     * @throws RemoteException 
-     */
-    public void registerGameFX(GameFX fx)
             throws RemoteException;
 }
