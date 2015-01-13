@@ -5,7 +5,6 @@
  */
 package s32a.Main;
 
-import genericTests.FTPTest;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,7 +31,6 @@ public class AirhockeyApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-//        FTPTest test = new FTPTest();
 
         this.stage = primaryStage;
         AnchorPane anchor = new AnchorPane();
