@@ -56,8 +56,16 @@ public class CodebaseDeployer {
         System.out.println("serverFile: " + serverLoc);
 
         this.directories = new ArrayList<>();
-        Map<String, File> serverFiles = this.getSubFiles(serverDirFile);
-        this.uploadFiles(serverFiles);
+        Map<String, File> files = this.getSubFiles(serverDirFile);
+
+        this.classesLoc.replace("AirhockeyServer", "AirhockeyClient");
+        File clientDirFile = new File(classesLoc +
+                "s32a" + fs +
+                "")
+
+        this.uploadFiles(files);
+
+
     }
 
     /**
@@ -102,41 +110,25 @@ public class CodebaseDeployer {
             client.enterLocalPassiveMode();
 
             client.setFileType(FTP.ASCII_FILE_TYPE);
-            //
-            // Create an InputStream of the file to be uploaded
-            //
-//            String filename = ".gitattributes";
-//            File file = new File(filename);
-//            file.createNewFile();
-//            System.out.println(file.length());
-//            fis = new FileInputStream(file.getAbsolutePath());
-//            client.makeDirectory("/Airhockey/Codebase/test");
-//            client.makeDirectory("\\Airhockey\\Codebase\\testey");
 
-    //
-            // Store file to server
-            //
-//            String desiredName = "s32a\\Server\\.gitattributes";
-//            System.out.println("storefile: " + file.getAbsolutePath() + " - "
-//                    + client.storeFile("/Airhockey/" + desiredName, fis));
-//            System.out.println("file stored");
-
-//            File output = new File("colors.json");
-//            fos = new FileOutputStream(output.getAbsolutePath());
-//            client.retrieveFile("/colors.json", fos);
-
-            for(String s : directories){
-                client.makeDirectory(s);
-            }
-
-            String defaultLoc = fs + "Airhockey" + fs + "Codebase" + fs;
-            for(String dest : input.keySet()){
-                fis = new FileInputStream(input.get(dest));
-                if(!client.storeFile(defaultLoc + dest, fis)){
-                    System.out.println("unable to save: " + defaultLoc + dest);
-                }
-                fis.close();
-            }
+            //Clears FTP server
+            client.removeDirectory("/Airhockey/Codebase/s32a");
+//            client.makeDirectory("/Airhockey/Codebase/s32a");
+//            //Creates all directories required on the server
+//            System.out.println("creating directories");
+//            for(String s : directories){
+//                client.makeDirectory(s);
+//            }
+//
+//            System.out.println("Uploading classes");
+//            String defaultLoc = fs + "Airhockey" + fs + "Codebase" + fs;
+//            for(String dest : input.keySet()){
+//                fis = new FileInputStream(input.get(dest));
+//                if(!client.storeFile(defaultLoc + dest, fis)){
+//                    System.out.println("unable to save: " + defaultLoc + dest);
+//                }
+//                fis.close();
+//            }
 
             client.logout();
         }
