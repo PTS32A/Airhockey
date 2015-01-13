@@ -11,8 +11,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -26,7 +24,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 import s32a.Client.GUI.GameFX;
-import s32a.Server.Lobby;
 import s32a.Shared.*;
 import s32a.Shared.enums.GameStatus;
 
@@ -408,7 +405,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         return this.myGame.getCountDownTime();
     }
 
-    @Override
     public void registerGameFX(GameFX fx) throws RemoteException {
         this.fx = fx;
     }

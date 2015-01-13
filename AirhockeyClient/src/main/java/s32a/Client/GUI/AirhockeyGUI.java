@@ -6,20 +6,21 @@
 package s32a.Client.GUI;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,8 +28,9 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -37,13 +39,11 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import s32a.Client.ClientData.GameClient;
 import s32a.Client.ClientData.LobbyClient;
-import s32a.Server.AirhockeyServer;
-import s32a.Shared.IGame;
-import s32a.Shared.IGameClient;
+import s32a.Client.Startup.ServerInfo;
 import s32a.Shared.ILobby;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
-import s32a.Shared.ISpectator;
+import s32a.Shared.IServerInfo;
 
 /**
  * NOTES: find out what game is currently active for the closeGame click event
@@ -59,9 +59,31 @@ public class AirhockeyGUI {
     protected static String ipAddress = null, 
             bindingName = "AirhockeyServer",
             portNumber = null;
+    
+    private ComboBox serverNameBox;
+    private TextArea serverDescriptionArea;
+    
+    private List<IServerInfo> servers;
+    private List<String> serverNames;
+    private ObservableList<String> observableServerNames;
 
     public void startGUI(Stage stage) {
         this.stage = stage;
+        this.servers = new ArrayList<>();
+        this.serverNames = new ArrayList<>();
+        
+        //Hard coded fake servers for testing:
+        servers.add(new ServerInfo("Server1", "This is description 1", "bindingName1", "101.100.100.100", 1099));
+        servers.add(new ServerInfo("Server2", "This is description 2", "bindingName2", "102.100.100.100", 1099));
+        servers.add(new ServerInfo("Server3", "This is description 3", "bindingName2", "103.100.100.100", 1099));
+        
+        for (IServerInfo serverInfo : servers)
+        {
+            serverNames.add(serverInfo.getName());
+        }
+        
+        observableServerNames = FXCollections.observableArrayList(serverNames);
+                
         // sets the static strings with server info
         this.getServerInfo(stage);
 
@@ -214,41 +236,50 @@ public class AirhockeyGUI {
                     gp.setHgap(10);
                     gp.setVgap(10);
                     gp.setPadding(new Insets(25, 25, 25, 25));
-                    Label ip = new Label("Ip Address:");
+                    Label ip = new Label("Servers:");
                     gp.add(ip, 0, 1);
-                    TextField tfIp = new TextField();
-                    tfIp.setText("localhost");
-                    gp.add(tfIp, 1, 1);
-                    Label port = new Label("Port:");
-                    gp.add(port, 0, 2);
-                    TextField tfPort = new TextField();
-                    tfPort.setText("1099");
-                    gp.add(tfPort, 1, 2);
+                    
+                    serverNameBox = new ComboBox(observableServerNames);
+                    serverNameBox.valueProperty().addListener(new ChangeListener<String>() {
+                        @Override 
+                        public void changed(ObservableValue ov, String t, String t1) { 
+                            int index = serverNameBox.getSelectionModel().getSelectedIndex();
+                            if (index >= 0 && servers.size() > index)
+                            {
+                                serverDescriptionArea.setText(servers.get(index).getDescription());
+                            }
+                            else
+                            {
+                                serverDescriptionArea.setText("");
+                            }
+                        }    
+                    });
+                    gp.add(serverNameBox, 0, 2);
+                    
+                    serverDescriptionArea = new TextArea();
+                    gp.add(serverDescriptionArea, 0, 3);
+                    
                     Button confirm = new Button("Confirm");
-                    gp.add(confirm, 1, 3);
+                    gp.add(confirm, 0, 4);
                     confirm.setOnAction(new EventHandler<ActionEvent>() {
 
                         @Override
                         public void handle(ActionEvent e) {
-                            if (tfIp.getText().trim().isEmpty() || tfPort.getText().trim().isEmpty()) {
-                                showDialog("Error", "IP or port number field is empty");
-                                return;
+                            int index = serverNameBox.getSelectionModel().getSelectedIndex();
+                            
+                            if (index >= 0 && servers.size() > index)
+                            {
+                                ipAddress = servers.get(index).getIP();
+                                portNumber = servers.get(index).getPort() + "";
+                                
+                                stage.close();
+                                startClient();
                             }
-                            // sets hostname
-                            String ip = tfIp.getText();
-                            if(ip.equalsIgnoreCase("localhost")){
-                                ip = "127.0.0.1";
-                            }
-                            System.setProperty("java.rmi.server.hostname", ip);
-                            ipAddress = ip;
-                            portNumber = tfPort.getText();
-                            stage.close();
-                            startClient();
                         }
                     });
 
                     Group root = new Group();
-                    Scene scene = new Scene(root, 300, 150);
+                    Scene scene = new Scene(root, 700, 350);
                     root.getChildren().add(gp);
                     stage.setScene(scene);
                     stage.setTitle("Server Information");
