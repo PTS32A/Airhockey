@@ -81,6 +81,11 @@ public class FTPHandler {
         return success;
     }
     
+    /**
+     * Retrieves server and codebase info from FTP server.
+     * Codebase will need to be queried separately afterwards.
+     * @return 
+     */
     public List<ServerInfo> getFTPData(){
         FTPClient client = null;
         FileInputStream fis = null;
@@ -147,6 +152,9 @@ public class FTPHandler {
      * @return 
      */
     private String readCodebaseInfo(File input){
+        if(input == null){
+            return null;
+        }
         String output = null;
         Scanner in = null;
         try {
@@ -159,6 +167,7 @@ public class FTPHandler {
             if(in != null){
                 in.close();
             }
+            input.delete();
         }
         return output;
     }

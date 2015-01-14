@@ -148,9 +148,8 @@ public class ServerSelectGUI {
     }
 
     /**
-     * Opens new window requesting server info - ipAddress and port number
-     * portNumber can be pre-filled with 1099, but the textbox should still be
-     * there bindingName is hardcoded on both client and server side
+     * Displays given servers in GUI. Starts client on button click.
+     * @param serverInput 
      */
     private void displayServers(List<ServerInfo> serverInput) {
         if (serverInput == null) {
@@ -233,6 +232,7 @@ public class ServerSelectGUI {
             stage.setScene(scene);
             stage.setTitle("Server Information");
 
+            // confirms on hitting enter
             stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
 
                 @Override
