@@ -119,7 +119,8 @@ public class LobbyPublisher {
                 newObsv.setRankings(new ArrayList<>(this.rankings));
             }
             catch (RemoteException ex) {
-                System.out.println("RemoteException pushing values to new observer " + name);
+                System.out.println("RemoteException pushing values to new observer " 
+                        + name + ": " + ex.getMessage());
                 this.enforceLogout(name, false);
             }
         });

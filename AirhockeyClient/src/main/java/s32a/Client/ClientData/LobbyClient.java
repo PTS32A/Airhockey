@@ -20,6 +20,7 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 import s32a.Client.GUI.AirhockeyGUI;
 import static s32a.Client.GUI.AirhockeyGUI.me;
+import s32a.Client.Startup.ClientMain;
 import s32a.Shared.IGame;
 import s32a.Shared.IGameClient;
 import s32a.Shared.ILobby;
@@ -55,7 +56,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
         this.playerInfo = FXCollections.observableArrayList(new ArrayList<String>());
         this.oActiveGamesList = FXCollections.observableArrayList(new ArrayList<>());
 
-        this.playerInfo.add("Name: " + AirhockeyGUI.me);
+        this.playerInfo.add("Name: " + me);
         this.playerInfo.add("Rating: -5");
     }
 
@@ -210,7 +211,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
             public void run() {
                 try {
                     if (person.getName().equals(me)) {
-                        playerInfo.set(0, "Name: " + AirhockeyGUI.me);
+                        playerInfo.set(0, "Name: " + me);
                         playerInfo.set(1, "Rating: " + String.valueOf(person.getRating()));
                     }
                 }
@@ -234,7 +235,7 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
-                gui.startClient();
+                ClientMain.launchClient();
             }
         });
     }

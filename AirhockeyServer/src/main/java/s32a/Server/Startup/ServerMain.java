@@ -24,6 +24,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import s32a.Server.AirhockeyServer;
+import s32a.Shared.ServerInfo;
 
 /**
  *
@@ -126,107 +127,106 @@ public class ServerMain extends Application {
     }
 
     private void serverSetUp() throws IOException {
-//        Platform.runLater(new Runnable() {
-//
-//            @Override
-//            public void run() {
-                try {
-//                    stage = new Stage();
-                    GridPane gp = new GridPane();
-                    gp.setAlignment(Pos.CENTER);
-                    gp.setHgap(10);
-                    gp.setVgap(10);
-                    gp.setPadding(new Insets(25, 25, 25, 25));
-                    Label serverName = new Label("Server name:");
-                    gp.add(serverName, 0, 1);
-                    TextField tfSN = new TextField();
-                    tfSN.setText("Airhockey");
-                    gp.add(tfSN, 1, 1);
-                    Label bind = new Label("Binding Name:");
-                    gp.add(bind, 0, 2);
-                    TextField tfBind = new TextField();
-                    tfBind.setText("AirhockeyServer");
-                    gp.add(tfBind, 1, 2);
-                    Label ip = new Label("IP Adress:");
-                    gp.add(ip, 0, 3);
-                    TextField tfIP = new TextField();
-                    tfIP.setPromptText("0.0.0.0");
-                    gp.add(tfIP, 1, 3);
-                    Label port = new Label("Port:");
-                    gp.add(port, 0, 4);
-                    TextField tfPort = new TextField();
-                    tfPort.setText("1099");
-                    gp.add(tfPort, 1, 4);
-                    Label desc = new Label("Description");
-                    gp.add(desc, 0, 5);
-                    TextField tfDesc = new TextField();
-                    tfDesc.setText("");
-                    gp.add(tfDesc, 1, 5);
-                    Button btnConfirm = new Button("Start Server");
-                    gp.add(btnConfirm, 1, 6);
-                    btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
+        try {
+            GridPane gp = new GridPane();
+            gp.setAlignment(Pos.CENTER);
+            gp.setHgap(10);
+            gp.setVgap(10);
+            gp.setPadding(new Insets(25, 25, 25, 25));
+            Label serverName = new Label("Server name:");
+            gp.add(serverName, 0, 1);
+            TextField tfSN = new TextField();
+            tfSN.setText("Airhockey");
+            gp.add(tfSN, 1, 1);
+            Label bind = new Label("Binding Name:");
+            gp.add(bind, 0, 2);
+            TextField tfBind = new TextField();
+            tfBind.setText("AirhockeyServer");
+            gp.add(tfBind, 1, 2);
+            Label ip = new Label("IP Adress:");
+            gp.add(ip, 0, 3);
+            TextField tfIP = new TextField();
+            tfIP.setPromptText("0.0.0.0");
+            tfIP.setText("127.0.0.1");
+            gp.add(tfIP, 1, 3);
+            Label port = new Label("Port:");
+            gp.add(port, 0, 4);
+            TextField tfPort = new TextField();
+            tfPort.setText("1099");
+            gp.add(tfPort, 1, 4);
+            Label desc = new Label("Description");
+            gp.add(desc, 0, 5);
+            TextField tfDesc = new TextField();
+            tfDesc.setText("");
+            gp.add(tfDesc, 1, 5);
+            Button btnConfirm = new Button("Start Server");
+            gp.add(btnConfirm, 1, 6);
+            btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
 
-                        @Override
-                        public void handle(ActionEvent e) {
-                            System.out.println("Starting Server");
-                            if (serverInfo(tfSN.getText(), tfBind.getText(),
-                                    tfIP.getText(), tfPort.getText(), tfDesc.getText())) {
-//                                stage.hide();
-                                server = new AirhockeyServer(
-                                                stage, 
-                                                serverInfo.getIP(), 
-                                                serverInfo.getBindingName(), 
-                                                serverInfo.getPort());
-                            } else {
-                                System.out.println("Error occured, unable to open server");
-                            }
-                        }
-                    });
-
-                    Group root = new Group();
-                    Scene scene = new Scene(root, 300, 300);
-                    root.getChildren().add(gp);
-                    stage.setScene(scene);
-                    stage.setTitle("Start New Server");
-
-                    stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-                        @Override
-                        public void handle(KeyEvent ke) {
-                            if (ke.getCode() == KeyCode.ENTER) {
-                                btnConfirm.fire();
-                            }
-                        }
-                    });
-
-                    stage.show();
-                } catch (Exception ex) {
-                    //showDialog("Error", "Could not open game: " + ex.getMessage());
-                    System.out.println(ex.toString());
+                @Override
+                public void handle(ActionEvent e) {
+                    System.out.println("Starting Server");
+                    if (serverInfo(tfSN.getText(), tfBind.getText(),
+                            tfIP.getText(), tfPort.getText(), tfDesc.getText())) {
+                        server = new AirhockeyServer(
+                                stage,
+                                serverInfo.getIP(),
+                                serverInfo.getBindingName(),
+                                serverInfo.getPort());
+                    } else {
+                        System.out.println("Error occured, unable to open server");
+                    }
                 }
-            }
-//        });
-//    }
+            });
+
+            Group root = new Group();
+            Scene scene = new Scene(root, 300, 300);
+            root.getChildren().add(gp);
+            stage.setScene(scene);
+            stage.setTitle("Start New Server");
+
+            stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+                @Override
+                public void handle(KeyEvent ke) {
+                    if (ke.getCode() == KeyCode.ENTER) {
+                        btnConfirm.fire();
+                    }
+                }
+            });
+
+            stage.show();
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+        }
+    }
 
     public boolean serverInfo(String address, String bind, String ip, String port, String description) {
         try {
             // sets security manager
             System.setProperty("java.security.policy", "rmi.policy");
             System.setSecurityManager(new SecurityManager());
-            
+
             // sets up server info
             this.serverInfo = new ServerInfo(address, description, bind, ip, Integer.valueOf(port));
             if (this.handler == null) {
                 return false;
             }
-            String codebase = this.handler.registerServer(serverInfo);
+
+            // sets hostname
+            System.setProperty("java.rmi.server.hostname", ip);
+
             // sets codebase property
+            String codebase = this.handler.registerServer(serverInfo);          
             System.setProperty("java.rmi.server.codebase", codebase);
-            return true;
+        } catch (NumberFormatException ex) {
+            System.out.println("unable to parse " + port + " to a number");
+            return false;
         } catch (Exception ex) {
             ex.printStackTrace();
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**

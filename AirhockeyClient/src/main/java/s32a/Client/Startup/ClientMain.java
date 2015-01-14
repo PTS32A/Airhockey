@@ -16,26 +16,34 @@ import s32a.Client.GUI.AirhockeyGUI;
  */
 public class ClientMain extends Application {
 
-    private Stage stage;
-    
+    private static Stage stage;
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        
+
         launch(args);
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        
-        this.stage = primaryStage;
-//        ClientMainGUI clientMainGui = new ClientMainGUI(stage);
-//        clientMainGui.startGUI();
-        
+    /**
+     * Repeatable method for (re)starting the client application.
+     */
+    public static void launchClient() {
         AirhockeyGUI gui = new AirhockeyGUI();
-        gui.startGUI(stage);
+        gui.setStage(stage);
+        ServerSelectGUI serverSelect = new ServerSelectGUI(stage, gui);
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        // sets security manager
+        System.setProperty("java.security.policy", "rmi.policy");
+        System.setSecurityManager(new SecurityManager());
+
+        ClientMain.stage = stage;
+        launchClient();
     }
 
 }

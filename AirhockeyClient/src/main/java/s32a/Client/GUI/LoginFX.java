@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import s32a.Client.Startup.ClientMain;
 
 /**
  *
@@ -54,31 +55,37 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
                 } else {
                     super.showDialog("Error", "Username or password is incorrect.");
                 }
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
                 super.showDialog("Error", "Unable to login: " + ex.getMessage());
-            }
-            catch (SQLException ex) {
+                // executed if not logged in
+                ClientMain.launchClient();
+            } catch (SQLException ex) {
                 super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
-            }
-            catch (IOException ex) {
+                // executed if not logged in
+                ClientMain.launchClient();
+            } catch (IOException ex) {
                 try {
                     lobby.logOut(super.getMe().getName());
-                }
-                catch (RemoteException ex1) {
+                    // executed if not logged in
+                    ClientMain.launchClient();
+                } catch (RemoteException ex1) {
                     System.out.println("RemoteException on trying to logout after IOException: " + ex1.getMessage());
                     Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex1);
+                    // executed if not logged in
+                    ClientMain.launchClient();
                 }
                 super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
+
         }
     }
 
     /**
      * Displays connection status, preventing having to use a popup.
+     *
      * @param status
      */
-    public void displayConnectionStatus(String status){
+    public void displayConnectionStatus(String status) {
         this.lblConnStatus.setText("Connection status: " + status);
     }
 
@@ -90,8 +97,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
     public void register(Event evt) {
         try {
             super.goToRegister(getThisStage());
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             super.showDialog("Error", "Unable to go to Register: " + ex.getMessage());
         }
     }

@@ -30,20 +30,24 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import lombok.Getter;
+import lombok.Setter;
 import s32a.Client.ClientData.GameClient;
 import s32a.Client.ClientData.LobbyClient;
-import s32a.Client.Startup.ServerInfo;
 import s32a.Shared.ILobby;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
 import s32a.Shared.IServerInfo;
+import s32a.Shared.ServerInfo;
 
 /**
  * NOTES: find out what game is currently active for the closeGame click event
@@ -52,48 +56,19 @@ import s32a.Shared.IServerInfo;
  */
 public class AirhockeyGUI {
 
+    @Setter 
     @Getter
     private Stage stage;
     protected static LobbyClient lobby = null;
     public static String me = "--";
-    protected static String ipAddress = null, 
-            bindingName = "AirhockeyServer",
-            portNumber = null;
-    
-    private ComboBox serverNameBox;
-    private TextArea serverDescriptionArea;
-    
-    private List<IServerInfo> servers;
-    private List<String> serverNames;
-    private ObservableList<String> observableServerNames;
-
-    public void startGUI(Stage stage) {
-        this.stage = stage;
-        this.servers = new ArrayList<>();
-        this.serverNames = new ArrayList<>();
-        
-        //Hard coded fake servers for testing:
-        servers.add(new ServerInfo("Server1", "This is description 1", "bindingName1", "101.100.100.100", 1099));
-        servers.add(new ServerInfo("Server2", "This is description 2", "bindingName2", "102.100.100.100", 1099));
-        servers.add(new ServerInfo("Server3", "This is description 3", "bindingName2", "103.100.100.100", 1099));
-        
-        for (IServerInfo serverInfo : servers)
-        {
-            serverNames.add(serverInfo.getName());
-        }
-        
-        observableServerNames = FXCollections.observableArrayList(serverNames);
-                
-        // sets the static strings with server info
-        this.getServerInfo(stage);
-
-        //goToLobby(stage);
-    }
 
     /**
      * Starts client GUI after IP address and port number were provided
+     * @param ipAddress
+     * @param bindingName
+     * @param portNumber
      */
-    public void startClient() {
+    public void startClient(String ipAddress, int portNumber, String bindingName) {
 
         try {
             lobby = new LobbyClient(this, this.requestRemoteLobby(ipAddress, bindingName, portNumber));
@@ -101,8 +76,7 @@ public class AirhockeyGUI {
                 showDialog("Error", "lobby is null");
                 return;
             }
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             String error = "RemoteException in trying to open new LobbyClient";
             System.out.println(error);
             showDialog("Error", error);
@@ -122,8 +96,7 @@ public class AirhockeyGUI {
             } else {
                 controller.displayConnectionStatus("Connection problems");
             }
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             System.out.println("failed to load Login.fxml");
             Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -133,11 +106,10 @@ public class AirhockeyGUI {
             @Override
             public void handle(WindowEvent event) {
                 try {
-                    lobby.logOut(lobby.getMyPerson(me).getName());
+                    lobby.logOut(me);
                     Platform.exit();
                     System.exit(0);
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     System.out.println("RemoteException on logout: " + ex.getMessage());
                     Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -219,104 +191,7 @@ public class AirhockeyGUI {
         myDialog.show();
     }
 
-    /**
-     * Opens new window requesting server info - ipAddress and port number
-     * portNumber can be pre-filled with 1099, but the textbox should still be
-     * there bindingName is hardcoded on both client and server side
-     */
-    private void getServerInfo(Stage stage) {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    Stage stage = new Stage();
-                    GridPane gp = new GridPane();
-                    gp.setAlignment(Pos.CENTER);
-                    gp.setHgap(10);
-                    gp.setVgap(10);
-                    gp.setPadding(new Insets(25, 25, 25, 25));
-                    Label ip = new Label("Servers:");
-                    gp.add(ip, 0, 1);
-                    
-                    serverNameBox = new ComboBox(observableServerNames);
-                    serverNameBox.setPromptText("Choose a server");
-                    serverNameBox.valueProperty().addListener(new ChangeListener<String>() {
-                        @Override 
-                        public void changed(ObservableValue ov, String t, String t1) { 
-                            int index = serverNameBox.getSelectionModel().getSelectedIndex();
-                            if (index >= 0 && servers.size() > index)
-                            {
-                                serverDescriptionArea.setText(servers.get(index).getDescription());
-                            }
-                            else
-                            {
-                                serverDescriptionArea.setText("");
-                            }
-                        }    
-                    });
-                    try
-                    {
-                        ///serverNameBox.getSelectionModel().selectFirst();
-                    }
-                    catch (Exception ex)
-                    {
-                        System.out.println("Exception: " + ex.getMessage());
-                    }
-                    gp.add(serverNameBox, 0, 2);
-                    
-                    serverDescriptionArea = new TextArea();
-                    serverDescriptionArea.setText("Server description");
-                    serverDescriptionArea.editableProperty().set(false);
-                    gp.add(serverDescriptionArea, 0, 3);
-                    
-                    Button confirm = new Button("Confirm");
-                    gp.add(confirm, 0, 4);
-                    confirm.setOnAction(new EventHandler<ActionEvent>() {
-
-                        @Override
-                        public void handle(ActionEvent e) {
-                            int index = serverNameBox.getSelectionModel().getSelectedIndex();
-                            
-                            if (index >= 0 && servers.size() > index)
-                            {
-                                ipAddress = servers.get(index).getIP();
-                                portNumber = servers.get(index).getPort() + "";
-                                
-                                stage.close();
-                                startClient();
-                            }
-                        }
-                    });
-
-                    Group root = new Group();
-                    Scene scene = new Scene(root, 700, 380);
-                    root.getChildren().add(gp);
-                    stage.setScene(scene);
-                    stage.setTitle("Server Information");
-
-                    stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-                        @Override
-                        public void handle(KeyEvent ke) {
-                            if (ke.getCode() == KeyCode.ENTER) {
-                                confirm.fire();
-                            }
-                        }
-                    });
-
-                    stage.show();
-                }
-                catch (Exception ex) {
-                    showDialog("Error", "Could not open game: " + ex.getMessage());
-                }
-            }
-        });
-        while (stage.isShowing()) {
-
-        }
-
-    }
+    
 
     /**
      * Makes the initial RMI connection by retrieving the ILobby bound in the
@@ -327,8 +202,8 @@ public class AirhockeyGUI {
      * @param portNumber
      * @return
      */
-    private ILobby requestRemoteLobby(String ipAddress, String bindingName, String portNumber) {
-        if (ipAddress == null || bindingName == null || portNumber == null) {
+    private ILobby requestRemoteLobby(String ipAddress, String bindingName, int portNumber) {
+        if (ipAddress == null || bindingName == null || portNumber == -1) {
             showDialog("Error", "no binding name, ipAddress or portNumber provided");
             return null;
         }
@@ -339,23 +214,21 @@ public class AirhockeyGUI {
 
         // get beurs associated with registry entry
         try {
-            Registry registry = LocateRegistry.getRegistry(ipAddress, Integer.valueOf(portNumber));
+            Registry registry = LocateRegistry.getRegistry(ipAddress, portNumber);
             output = (ILobby) registry.lookup(bindingName);
 
 //            output = (ILobby) Naming.lookup("rmi://"
 //                    + ipAddress + ":"
 //                    + portNumber + "/"
 //                    + bindingName);   
-        }
-//        catch (MalformedURLException ex) {
-//            System.out.println("Client: MalformedURLException: " + ex.getMessage());
-//            output = null;
-//        }
+        } //        catch (MalformedURLException ex) {
+        //            System.out.println("Client: MalformedURLException: " + ex.getMessage());
+        //            output = null;
+        //        }
         catch (RemoteException ex) {
             System.out.println("Client: RemoteException: " + ex.getMessage());
             output = null;
-        }
-        catch (NotBoundException ex) {
+        } catch (NotBoundException ex) {
             System.out.println("Client: NotBoundException: " + ex.getMessage());
             output = null;
         }
@@ -376,8 +249,7 @@ public class AirhockeyGUI {
         IPerson output = null;
         try {
             output = lobby.getMyPerson(me);
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("RemoteException on retrieving current person: " + ex.getMessage());
             Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
         }

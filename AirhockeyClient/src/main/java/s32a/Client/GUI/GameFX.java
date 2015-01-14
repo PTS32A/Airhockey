@@ -25,6 +25,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -34,6 +35,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -361,6 +363,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      *
      * @param evt
      */
+    @FXML
     public void startClick(Event evt) {
         if (myGame != null && myGame.getMyPlayers().size() == 3) {
 
@@ -410,6 +413,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      *
      * @param evt
      */
+    @FXML
     public void pauseClick(Event evt) {
         try {
             myGame.pauseGame(!myGame.getGameStatusProperty().get().equals(GameStatus.Paused));
@@ -426,6 +430,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      *
      * @param evt
      */
+    @FXML
     public void quitClick(Event evt) {
         try {
             if (afkTimerTask != null) {
@@ -457,6 +462,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      *
      * @param evt
      */
+    @FXML
     public void sendMessage(Event evt) {
         IPerson currentPerson = super.getMe();
 
@@ -479,6 +485,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      *
      * @param evt
      */
+    @FXML
     public void stopSpectating(Event evt) {
         try {
             lobby.stopSpectating(myGame.getID(), super.getMe().getName());
