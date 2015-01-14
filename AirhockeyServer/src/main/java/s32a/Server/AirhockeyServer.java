@@ -6,31 +6,14 @@
 package s32a.Server;
 
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Enumeration;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableMap;
-import javafx.embed.swing.JFXPanel;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -40,9 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import s32a.Server.Publishers.GamePublisher;
-import s32a.Shared.IGame;
-import s32a.Shared.IPerson;
 
 /**
  *
@@ -51,12 +31,14 @@ import s32a.Shared.IPerson;
 public class AirhockeyServer {
 
     private Lobby lobby;
-    private Stage stage;
-    private static final int portNumber = 1099;
-    private static final String bindingName = "AirhockeyServer";
-    private String ipAddress;
+//    private int portNumber;
+//    private String bindingName;
+//    private String ipAddress;
 
-    public AirhockeyServer(Stage stage) {
+    public AirhockeyServer(Stage stage, String IPAddress, String bindingName, int portNumber) {
+//        this.ipAddress = address;
+//        this.portNumber = port;
+//        this.bindingName = bindingName;             
 
 //        // Solves socket connection refused bug
         System.setProperty("java.rmi.server.hostname", "127.0.0.1");
@@ -85,14 +67,14 @@ public class AirhockeyServer {
             System.out.println("Server: Lobby not bound");
         }
 
-        ipAddress = "";
+//        ipAddress = "";
 
-        try {
-            ipAddress = InetAddress.getLocalHost().toString();
-        }
-        catch (UnknownHostException ex) {
-            Logger.getLogger(AirhockeyServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            ipAddress = InetAddress.getLocalHost().toString();
+//        }
+//        catch (UnknownHostException ex) {
+//            Logger.getLogger(AirhockeyServer.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
 //        printIPAddresses();
 
@@ -103,10 +85,10 @@ public class AirhockeyServer {
         gp.setPadding(new Insets(25, 25, 25, 25));
         Label ip = new Label("IP Address:");
         gp.add(ip, 0, 0);
-        Label ipIn = new Label(ipAddress);
+        Label ipIn = new Label(IPAddress);
         gp.add(ipIn, 1, 0);
-        Label port = new Label("Port:");
-        gp.add(port, 0, 2);
+        Label lblPort = new Label("Port:");
+        gp.add(lblPort, 0, 2);
         Label portIn = new Label(String.valueOf(portNumber));
         gp.add(portIn, 1, 2);
         Label games = new Label("Active Games:");

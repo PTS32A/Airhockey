@@ -19,11 +19,14 @@ public class DeployerMain {
      */
     public static void main(String[] args) {
 
+//        FTPTest localtest = new FTPTest(true);
 //        FTPTest test = new FTPTest();
-        
+
         String ftpAddress = "athena.fhict.nl";
         String userName = "i293443";
         String password = "ifvr2edfh101";
+        String codebaseURL = "http://athena.fhict.nl/users/i293443/Airhockey/Codebase";
+        boolean SSL = true;
 
         Console cnsl = null;
         String alpha = null;
@@ -38,17 +41,44 @@ public class DeployerMain {
 
         System.out.println("Username: (Leave blank for default)");
         command = scanner.nextLine();
-        if(!command.trim().isEmpty()){
+        if (!command.trim().isEmpty()) {
             userName = command;
         }
 
         System.out.println("password: (Leave blank for default)");
         command = scanner.nextLine();
-        if(!command.trim().isEmpty()){
+        if (!command.trim().isEmpty()) {
             password = command;
         }
 
-        CodebaseDeployer deployer = new CodebaseDeployer(ftpAddress, userName, password);
+        boolean valid = false;
+        while (!valid) {
+            System.out.println("SSL y/n: (Leave blank for default)");
+            command = scanner.nextLine();
+            valid = true;
+            if (command.trim().isEmpty()) {
+                // default state
+            } else if (command.equalsIgnoreCase("y")) {
+                SSL = true;
+            } else if (command.equalsIgnoreCase("n")) {
+                SSL = false;
+            } else {
+                valid = false;
+            }
+        }
+        
+        System.out.println("codebase URL: (Leave blank for default)");
+        command = scanner.nextLine();
+        if(!command.trim().isEmpty()){
+            codebaseURL = command;
+        }
+
+        CodebaseDeployer deployer = new CodebaseDeployer(
+                ftpAddress, 
+                userName, 
+                password, 
+                codebaseURL, 
+                SSL);
 
     }
 

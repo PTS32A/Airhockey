@@ -8,9 +8,11 @@ package s32a.Server.Startup;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTP;
@@ -24,23 +26,31 @@ import org.apache.commons.net.ftp.FTPSClient;
 public class FTPHandler {
 
     private final String ftpServer, username, password;
+    private final boolean SSL;
     private String eol = System.getProperty("line.separator");
 
-    public FTPHandler(String ftpServer, String username, String password) {
+    public FTPHandler(String ftpServer, String username, String password, boolean SSL) {
         this.ftpServer = ftpServer;
         this.username = username;
         this.password = password;
+        this.SSL = SSL;
     }
 
     /**
      * Checks whether client was able to login with given info.
+     *
      * @return
      */
     public boolean checkLogin() {
         boolean success = false;
         FTPClient client = null;
         try {
-            client = new FTPSClient(false);
+            if (SSL) {
+                client = new FTPSClient(false);
+            } else {
+                client = new FTPClient();
+            }
+
             client.connect(this.ftpServer);
             success = client.login(username, password);
         } catch (IOException ex) {
@@ -62,17 +72,25 @@ public class FTPHandler {
      * Registers
      *
      * @param input
+     * @return The url that should be used as java for codebase purposes
      */
-    public void registerServer(ServerInfo input) {
+    public String registerServer(ServerInfo input) {
         File file = this.saveInfoToFile(input);
         if (file == null || file.length() == 0) {
             System.out.println("No file to store: " + file.getAbsolutePath());
-            return;
+            return null;
         }
 
-        FTPClient client = new FTPSClient(false);
+        FTPClient client = null;
         FileInputStream fis = null;
         FileOutputStream fos = null;
+        String output = null;
+
+        if (SSL) {
+            client = new FTPSClient(false);
+        } else {
+            client = new FTPClient();
+        }
 
         try {
             System.out.println("connecting");
@@ -81,11 +99,15 @@ public class FTPHandler {
             System.out.println("login: " + login);
             client.enterLocalPassiveMode();
 
-            client.setFileType(FTP.ASCII_FILE_TYPE);
-
             fis = new FileInputStream(file);
             client.storeFile("/Airhockey/Servers/" + input.getIP(), fis);
-
+            
+            File codebase = new File("codebase.properties");
+            fos = new FileOutputStream(codebase.getAbsolutePath());
+            client.retrieveFile("/Airhockey/Codebase/codebase.properties", fos);
+            fos.close();
+            output = this.readCodebaseInfo(codebase);
+            
             client.logout();
         } catch (IOException ex) {
             System.out.println("IOException: " + ex.getMessage());
@@ -101,11 +123,11 @@ public class FTPHandler {
                     fos.close();
                 }
                 client.disconnect();
-                System.exit(0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return output;
     }
 
     /**
@@ -146,5 +168,27 @@ public class FTPHandler {
             }
         }
         return file;
+    }
+    
+    /**
+     * Reads the file containing the codebase address as it should be used by java
+     * @param input
+     * @return 
+     */
+    private String readCodebaseInfo(File input){
+        String output = null;
+        Scanner in = null;
+        try {
+            in = new Scanner(input);
+            output = in.nextLine();
+            System.out.println("codebase: " + output);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if(in != null){
+                in.close();
+            }
+        }
+        return output;
     }
 }
