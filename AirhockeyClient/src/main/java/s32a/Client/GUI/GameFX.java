@@ -117,8 +117,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 System.out.println("RemoteException on setting player info in setUp: " + ex.getMessage());
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -188,8 +187,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 } else if (myPlayer.getColor() == Colors.Green) {
                     this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
                 }
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -212,8 +210,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     if (countDown <= 0) {
                         this.cancel();
                     }
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     System.out.println("RemoteException retrieving countdown from game: " + ex.getMessage());
                 }
             }
@@ -236,7 +233,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (myGame.getGameStatusProperty().get() == GameStatus.Waiting) {
                     gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
-                } else if(myGame.getGameStatusProperty().get() == GameStatus.GameOver){
+                } else if (myGame.getGameStatusProperty().get() == GameStatus.GameOver) {
                     System.out.println("shutting down in 2 mins");
                     gameTimer.schedule(gameShutDown, 2, TimeUnit.MINUTES);
                     Platform.runLater(new Runnable() {
@@ -260,6 +257,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         final String countDownString;
         if (countDown > 0) {
             countDownString = String.valueOf(countDown);
+        } else if (myGame.getGameStatusProperty().get() == GameStatus.GameOver) {
+            countDownString = "GAME OVER";
         } else {
             countDownString = "";
         }
@@ -385,8 +384,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 } else {
                     super.showDialog("Error", "Failed to begin game");
                 }
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("RemoteException on beginGame: " + ex.getMessage());
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -410,8 +408,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             } else {
                 myGame.adjustDifficulty();
             }
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("RemoteException in setting difficulty: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -427,8 +424,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         try {
             myGame.pauseGame(!myGame.getGameStatusProperty().get().equals(GameStatus.Paused));
             actionTaken = true;
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("RemoteException on pausing / unpausing the game: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -459,8 +455,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
             myGame.addChatMessage("has left the game", super.getMe().getName());
             getThisStage().close();
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("RemoteException on quitClick: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -478,8 +473,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         if (currentPerson != null) {
             try {
                 myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("RemoteException in addChatMessage: " + ex.getMessage());
             }
         } else {
@@ -499,8 +493,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         try {
             lobby.stopSpectating(myGame.getID(), super.getMe().getName());
             getThisStage().close();
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("RemoteException on stopSpectating: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -534,8 +527,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                             actionTaken = true;
                         }
                     }
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     System.out.println("RemoteException in moveBat: " + ex.getMessage());
                 }
 
@@ -578,8 +570,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         lobby.endGame(myGame.getID(), p.getName());
                     }
                     stage.close();
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     System.out.println("RemoteException in close event: " + ex.getMessage());
                 }
             }
@@ -613,8 +604,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     } else {
                         myGame.adjustDifficulty();
                     }
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     System.out.println("RemoteException on adjustDifficulty changeEventHandler: " + ex.getMessage());
                     Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
                 }

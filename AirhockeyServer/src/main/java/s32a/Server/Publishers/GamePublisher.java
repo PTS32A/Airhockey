@@ -606,5 +606,6 @@ public class GamePublisher {
                 }
             }
         });
+        
     }
 }
