@@ -42,12 +42,12 @@ import s32a.Shared.ServerInfo;
  */
 public class ServerSelectGUI {
 
-    private Stage stage;
-    private AirhockeyGUI gui;
+    private final Stage stage;
+    private final AirhockeyGUI gui;
     private FTPHandler handler;
 
     private ComboBox cmbxServers;
-    private TextArea serverDescriptionArea;
+    private TextArea taServerDescription;
 
     public ServerSelectGUI(Stage stage, AirhockeyGUI gui) {
         this.stage = stage;
@@ -195,18 +195,18 @@ public class ServerSelectGUI {
                 @Override
                 public void changed(ObservableValue ov, ServerInfo oldV, ServerInfo newV) {
                     if (newV != null) {
-                        serverDescriptionArea.setText(newV.getDescription());
+                        taServerDescription.setText(newV.getDescription());
                     } else {
-                        serverDescriptionArea.setText("");
+                        taServerDescription.setText("");
                     }
                 }
             });
             gp.add(cmbxServers, 0, 2);
 
-            serverDescriptionArea = new TextArea();
-            serverDescriptionArea.setText("Server description");
-            serverDescriptionArea.editableProperty().set(false);
-            gp.add(serverDescriptionArea, 0, 3);
+            taServerDescription = new TextArea();
+            taServerDescription.setText("Server description");
+            taServerDescription.editableProperty().set(false);
+            gp.add(taServerDescription, 0, 3);
 
             // Adds confirmation button 
             // Leads to startClient

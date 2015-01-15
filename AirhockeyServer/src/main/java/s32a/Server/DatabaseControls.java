@@ -270,7 +270,7 @@ class DatabaseControls {
         try {
             prepStat = this.conn.prepareStatement(query);
 
-            prepStat.setString(1, (String) game.getGameInfo().get("gameID"));
+            prepStat.setString(1, game.getID());
             java.util.Date utilDate = new java.util.Date();
             java.sql.Timestamp sqlDate = new java.sql.Timestamp(utilDate.getTime());
             prepStat.setTimestamp(2, sqlDate);

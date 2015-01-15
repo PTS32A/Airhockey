@@ -525,9 +525,9 @@ public class Game extends UnicastRemoteObject implements IGame {
 
         if (roundNo.get() >= maxRounds) {
             //End game
-            this.broadcastEndGame();
             printMessage("END GAME");
             printMessage("");
+            Lobby.getSingle().endGame(this.getID(), null);
         } else {
             //new round is started at the end of countdown
             this.startCountDown();

@@ -510,12 +510,11 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param game
      * @return
      */
-    private IGame adjustScore(IGame gameInput, boolean earlyEnding)
+    private IGame adjustScore(Game game, boolean earlyEnding)
             throws IllegalArgumentException, RemoteException {
-        if (gameInput == null) {
+        if (game == null) {
             throw new IllegalArgumentException("input was null");
         }
-        Game game = (Game) this.activeGames.get(gameInput.getID());
 
         if (game.getMyPlayers().size() < 3) {
             throw new IllegalArgumentException("game wasn't full");

@@ -224,6 +224,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             @Override
             public void run() {
+                System.out.println("shutdown being enacted");
                 quitClick(null);
             }
         };
@@ -236,7 +237,15 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 if (myGame.getGameStatusProperty().get() == GameStatus.Waiting) {
                     gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
                 } else if(myGame.getGameStatusProperty().get() == GameStatus.GameOver){
+                    System.out.println("shutting down in 2 mins");
                     gameTimer.schedule(gameShutDown, 2, TimeUnit.MINUTES);
+                    Platform.runLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            lblCount.setText("GAME OVER");
+                        }
+                    });
                 }
             }
         });
