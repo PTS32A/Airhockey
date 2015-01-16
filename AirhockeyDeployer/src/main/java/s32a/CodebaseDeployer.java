@@ -200,6 +200,7 @@ public class CodebaseDeployer {
                     System.out.println("unable to save: " + defaultLoc + dest);
                 }
                 fis.close();
+                client.completePendingCommand();
             }
 
             client.logout();

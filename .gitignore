@@ -21,3 +21,7 @@ hs_err_pid*
 
 # server info files #
 *.server
+
+# local ftp server config - contains reference to local dir #
+ftpd.ini
+transfers.log
