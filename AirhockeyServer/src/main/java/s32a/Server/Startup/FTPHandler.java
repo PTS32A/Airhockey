@@ -101,7 +101,7 @@ public class FTPHandler {
             client.enterLocalPassiveMode();
 
             fis = new FileInputStream(infoFile);
-            client.storeFile("/Airhockey/Servers/" + input.getIP(), fis);
+            client.storeFile("/Airhockey/Servers/" + input.getIP() + ".server", fis);
             
             File codebase = new File("codebase.properties");
             fos = new FileOutputStream(codebase.getAbsolutePath());

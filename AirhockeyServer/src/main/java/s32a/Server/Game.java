@@ -45,7 +45,7 @@ import s32a.Shared.enums.LobbySetting;
  */
 public class Game extends UnicastRemoteObject implements IGame {
 
-    private StringProperty difficultyProp;
+//    private StringProperty difficultyProp;
     @Getter
     private ObjectProperty<GameStatus> statusProp;
 
@@ -108,8 +108,8 @@ public class Game extends UnicastRemoteObject implements IGame {
         float defaultSpeed = 15f; // Default puckspeed
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
-        this.difficultyProp = new SimpleStringProperty("speed");
-        this.difficultyProp.bind(myPuck.getSpeed().asString());
+//        this.difficultyProp = new SimpleStringProperty("speed");
+//        this.difficultyProp.bind(myPuck.getSpeed().asString());
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
         this.statusProp = new SimpleObjectProperty<>(GameStatus.Preparing);
@@ -124,7 +124,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      * for proper operation of JavaFX elements displaying games in Lobby.
      */
     private void addForceListChangeListeners() {
-        this.statusProp.addListener(new ChangeListener() {
+        ChangeListener propListener = new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
@@ -138,7 +138,10 @@ public class Game extends UnicastRemoteObject implements IGame {
                             + ex.getMessage());
                 }
             }
-        });
+        };
+
+        this.statusProp.addListener(propListener);
+        this.myPuck.getSpeed().addListener(propListener);
     }
 
     /**
@@ -651,14 +654,14 @@ public class Game extends UnicastRemoteObject implements IGame {
         roundNo.set(input);
     }
 
-    /**
-     * getter for difficulty as a property
-     *
-     * @return
-     */
-    public StringProperty difficultyProperty() {
-        return this.difficultyProp;
-    }
+//    /**
+//     * getter for difficulty as a property
+//     *
+//     * @return
+//     */
+//    public StringProperty difficultyProperty() {
+//        return this.difficultyProp;
+//    }
 
     /**
      *
@@ -719,7 +722,11 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     @Override
     public String getDifficulty() throws RemoteException {
-        return this.difficultyProp.get();
+//        return this.difficultyProp.get();
+        if(this.myPuck == null || this.myPuck.getSpeed() == null){
+            return "-1";
+        }
+        return String.valueOf(this.myPuck.getSpeed().get());
     }
 
     @Override

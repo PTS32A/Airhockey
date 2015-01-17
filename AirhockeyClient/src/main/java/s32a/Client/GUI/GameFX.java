@@ -54,7 +54,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
     Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
-            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount;
+            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver;
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
     @FXML
@@ -240,7 +240,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
                         @Override
                         public void run() {
-                            lblCount.setText("GAME OVER");
+                            lblGameOver.setVisible(true);
                         }
                     });
                 }
@@ -257,8 +257,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         final String countDownString;
         if (countDown > 0) {
             countDownString = String.valueOf(countDown);
-        } else if (myGame.getGameStatusProperty().get() == GameStatus.GameOver) {
-            countDownString = "GAME OVER";
         } else {
             countDownString = "";
         }
@@ -325,6 +323,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         lGoal.setStroke(Color.BLUE);
         rGoal.setStroke(Color.LIMEGREEN);
         bGoal.setStroke(Color.RED);
+        lGoal.setStrokeWidth(4.0);
+        rGoal.setStrokeWidth(4.0);
+        bGoal.setStrokeWidth(4.0);
         apGame.getChildren().add(bottomLine);
         apGame.getChildren().add(rightLine);
         apGame.getChildren().add(leftLine);

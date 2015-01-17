@@ -180,6 +180,7 @@ public class CodebaseDeployer {
             //Uploads codebase URL
             fis = new FileInputStream(this.codebaseFile);
             boolean stored = client.storeFile("Airhockey/Codebase/codebase.properties", fis);
+//            client.completePendingCommand();
             System.out.println("Stored codebase file: " + stored);
             fis.close();
                       
@@ -200,7 +201,7 @@ public class CodebaseDeployer {
                     System.out.println("unable to save: " + defaultLoc + dest);
                 }
                 fis.close();
-                client.completePendingCommand();
+//                client.completePendingCommand();
             }
 
             client.logout();

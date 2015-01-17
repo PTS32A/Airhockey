@@ -42,6 +42,11 @@
     <ListView fx:id="lvChatbox" prefHeight="217.0" prefWidth="245.0" AnchorPane.bottomAnchor="42.0" AnchorPane.leftAnchor="21.0" />
     <TextField fx:id="tfChatbox" prefHeight="25.0" prefWidth="246.0" promptText="Enter Message" text="" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="20.0" />
     <Slider fx:id="sldCustomDifficulty" blockIncrement="5.0" layoutX="8.0" layoutY="151.0" majorTickUnit="5.0" max="40.0" min="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="false" value="10.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="151.0" />
+      <Label fx:id="lblGameOver" layoutX="406.0" layoutY="426.0" text="Game Over" visible="false">
+         <font>
+            <Font size="69.0" />
+         </font>
+      </Label>
     <CheckBox fx:id="cbxCustomDifficulty" layoutX="148.0" layoutY="149.0" mnemonicParsing="false" text="Custom:" AnchorPane.leftAnchor="148.0" AnchorPane.topAnchor="149.0" />
       <Label fx:id="lblCount" alignment="CENTER" layoutX="531.0" layoutY="266.0" prefHeight="105.0" prefWidth="118.0" textAlignment="CENTER">
          <font>
