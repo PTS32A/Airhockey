@@ -26,8 +26,6 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -36,7 +34,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -44,6 +41,7 @@ import lombok.Getter;
 import lombok.Setter;
 import s32a.Client.ClientData.GameClient;
 import s32a.Client.timers.AFKTimerTask;
+import s32a.Client.timers.GameTimeTask;
 import s32a.Shared.*;
 import s32a.Shared.enums.Colors;
 
@@ -88,6 +86,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private GameClient myGame;
     private ScheduledExecutorService gameTimer;
     private AFKTimerTask afkTimerTask = null;
+    private GameTimeTask gameTimeTask = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -448,6 +447,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             if (afkTimerTask != null) {
                 afkTimerTask.cancel();
             }
+            if (gameTimeTask != null) {
+                gameTimeTask.cancel();
+            }
             if (gameTimer != null) {
                 gameTimer.shutdownNow();
             }
@@ -516,7 +518,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // timer for afk timeout - probably should be moved serverside
         afkTimerTask = new AFKTimerTask(this);
         gameTimer.scheduleAtFixedRate(afkTimerTask, 500, 5000, TimeUnit.MILLISECONDS);
-
+        
+        gameTimeTask = new GameTimeTask(myGame);
+        gameTimer.scheduleAtFixedRate(gameTimeTask, 100, 1000, TimeUnit.MILLISECONDS);
+        
         //Moving left or right
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {
             @Override

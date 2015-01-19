@@ -392,6 +392,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         });
     }
 
+    
+    public void setGameTimeProperty(String time) {
+        gameTimeProperty.set(time);
+    }
+    
     // ----------------------------------- Methods querying game info, used for up-to-date game display in lobby -------------------
     @Override
     public String getDifficulty() throws RemoteException {
