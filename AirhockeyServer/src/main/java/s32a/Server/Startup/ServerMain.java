@@ -73,9 +73,10 @@ public class ServerMain extends Application {
                     gp.add(tfPass, 1, 4);
                     Label port = new Label("Status:");
                     gp.add(port, 0, 5);
-                    TextField tfPort = new TextField();
-                    tfPort.setText("Not Connected");
-                    gp.add(tfPort, 1, 5);
+                    TextField tfConnStatus = new TextField();
+                    tfConnStatus.setText("Not Connected");
+                    tfConnStatus.setEditable(false);
+                    gp.add(tfConnStatus, 1, 5);
                     Button btnConfirm = new Button("Connect");
                     gp.add(btnConfirm, 1, 6);
                     btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
@@ -93,7 +94,7 @@ public class ServerMain extends Application {
                                     stage.close();
                                     serverSetUp();
                                 } else {
-                                    tfPort.setText("Could not connect, check spelling and internet connection.");
+                                    tfConnStatus.setText("Could not connect, check spelling and internet connection.");
                                 }
                             } catch (IOException ex) {
                                 ex.printStackTrace();
