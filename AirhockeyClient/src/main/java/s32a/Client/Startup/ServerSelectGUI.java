@@ -21,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -31,6 +32,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import s32a.Client.GUI.AirhockeyGUI;
 import s32a.Shared.IServerInfo;
@@ -49,17 +51,38 @@ public class ServerSelectGUI {
     private ComboBox cmbxServers;
     private TextArea taServerDescription;
 
+    private ObservableList<ServerInfo> servers;
+    List<Control> serverDisplayControls;
+
+    private final String defaultServer = "athena.fhict.nl";
+    private final boolean defaultSSL = true;
+    private final String defaultUser = "i293443";
+    private final String defaultPass = "ifvr2edfh101";
+
     public ServerSelectGUI(Stage stage, AirhockeyGUI gui) {
         this.stage = stage;
         this.gui = gui;
 
-        this.displayFTPLogin();
+        this.servers
+                = FXCollections.observableArrayList(new ArrayList<ServerInfo>());
+
+        this.displayServers(false);
     }
 
     /**
      * Shows a screen for logging in to the central FTP server
      */
     private void displayFTPLogin() {
+        Stage ftpLoginStage = new Stage();
+        ftpLoginStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                stage.show();
+            }
+        });
+
+
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.CENTER);
         gp.setHgap(10);
@@ -69,25 +92,25 @@ public class ServerSelectGUI {
         Label ip = new Label("FTP website:");
         gp.add(ip, 0, 1);
         TextField tfFTPAddress = new TextField();
-        tfFTPAddress.setText("athena.fhict.nl");
+        tfFTPAddress.setText(defaultServer);
         gp.add(tfFTPAddress, 1, 1);
 
         CheckBox cbxSSL = new CheckBox("SSL");
-        cbxSSL.setSelected(true);
+        cbxSSL.setSelected(defaultSSL);
         gp.add(cbxSSL, 1, 2);
 
         Label user = new Label("Username:");
         gp.add(user, 0, 3);
         TextField tfUser = new TextField();
-        tfUser.setText("i293443");
+        tfUser.setText(defaultUser);
         gp.add(tfUser, 1, 3);
 
         Label pass = new Label("Password:");
         gp.add(pass, 0, 4);
         PasswordField tfPass = new PasswordField();
-        tfPass.setText("ifvr2edfh101");
+        tfPass.setText(defaultPass);
         gp.add(tfPass, 1, 4);
-        
+
         CheckBox cbxAnyConnect = new CheckBox("AnyConnect running");
         gp.add(cbxAnyConnect, 1, 5);
 
@@ -107,20 +130,11 @@ public class ServerSelectGUI {
                 String pass = tfPass.getText();
                 String server = tfFTPAddress.getText();
                 boolean SSL = cbxSSL.isSelected();
-                handler = new FTPHandler(server, user, pass, SSL);
-                boolean login = handler.checkLogin();
-                if (login) {
-                    stage.hide();
-                    displayServers(handler.getFTPData());
 
-                    // sets codebase property
-                    System.setProperty("java.rmi.server.codebase", handler.getCodebaseURL());
-                    
-                    // sets hostname
-                    if(cbxAnyConnect.isSelected()){
-                        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
-                    }
-        
+                if (loginToFTP(server, user, pass, SSL)) {
+                    setDataFromFTP(cbxAnyConnect.isSelected());
+                    displayServers(true);
+                    ftpLoginStage.close();
                 } else {
                     tfPort.setText("Could not connect, check spelling and internet connection.");
                 }
@@ -131,10 +145,10 @@ public class ServerSelectGUI {
         Group root = new Group();
         Scene scene = new Scene(root, 300, 300);
         root.getChildren().add(gp);
-        stage.setScene(scene);
-        stage.setTitle("Central Server Login");
+        ftpLoginStage.setScene(scene);
+        ftpLoginStage.setTitle("Central Server Login");
 
-        stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+        ftpLoginStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
 
             @Override
             public void handle(KeyEvent ke) {
@@ -144,28 +158,51 @@ public class ServerSelectGUI {
             }
         });
 
-        stage.show();
+        stage.hide();
+        ftpLoginStage.show();
     }
 
     /**
      * Displays given servers in GUI. Starts client on button click.
-     * @param serverInput 
+     *
+     * @param serverInput
      */
-    private void displayServers(List<ServerInfo> serverInput) {
-        if (serverInput == null) {
-            serverInput = new ArrayList<>();
-        }
-        ObservableList<ServerInfo> servers
-                = FXCollections.observableArrayList(serverInput);
+    private void displayServers(boolean loggedIn) {
+        
+
+        this.serverDisplayControls = new ArrayList<>();
+
 
         try {
+            // GridPane creation
             GridPane gp = new GridPane();
             gp.setAlignment(Pos.CENTER);
             gp.setHgap(10);
             gp.setVgap(10);
             gp.setPadding(new Insets(25, 25, 25, 25));
-            Label ip = new Label("Servers:");
-            gp.add(ip, 0, 1);
+
+            // button for connecting with default settings
+            Button btnFTPConnect = new Button("Connect (Default)");
+            btnFTPConnect.setOnAction(new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent event) {
+                    if (loginToFTP(defaultServer, defaultUser, defaultPass, defaultSSL)) {
+                        setDataFromFTP(false);
+                    }
+                }
+            });
+            gp.add(btnFTPConnect, 0, 0);
+
+            Button btnChangeFTPSettings = new Button("Connect (Custom)");
+            btnChangeFTPSettings.setOnAction(new EventHandler<ActionEvent>() {
+
+                @Override
+                public void handle(ActionEvent event) {
+                    displayFTPLogin();
+                }
+            });
+            gp.add(btnChangeFTPSettings, 0, 1);
 
             // Adds combobox for displaying servers
             // Includes cell factory to support a combobox of custom objects
@@ -201,17 +238,24 @@ public class ServerSelectGUI {
                     }
                 }
             });
-            gp.add(cmbxServers, 0, 2);
+            gp.add(cmbxServers, 1, 1);
+            serverDisplayControls.add(cmbxServers);
+            cmbxServers.setDisable(!loggedIn);
 
+            // server display text area
             taServerDescription = new TextArea();
             taServerDescription.setText("Server description");
             taServerDescription.editableProperty().set(false);
-            gp.add(taServerDescription, 0, 3);
+            taServerDescription.setWrapText(true);
+            taServerDescription.setMaxWidth(300);
+            taServerDescription.setMaxHeight(100);
+            gp.add(taServerDescription, 1, 2);
+            serverDisplayControls.add(taServerDescription);
+            taServerDescription.setDisable(!loggedIn);
 
             // Adds confirmation button 
             // Leads to startClient
             Button btnConfirm = new Button("Confirm");
-            gp.add(btnConfirm, 0, 4);
             btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
 
                 @Override
@@ -225,9 +269,12 @@ public class ServerSelectGUI {
                     }
                 }
             });
+            gp.add(btnConfirm, 1, 3);
+            serverDisplayControls.add(btnConfirm);
+            btnConfirm.setDisable(!loggedIn);
 
             Group root = new Group();
-            Scene scene = new Scene(root, 700, 380);
+            Scene scene = new Scene(root, 500, 280);
             root.getChildren().add(gp);
             stage.setScene(scene);
             stage.setTitle("Server Information");
@@ -246,6 +293,39 @@ public class ServerSelectGUI {
             stage.show();
         } catch (Exception ex) {
             System.out.println("Error: Could not open game: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Logs in to FTP server, and retrieves info. Can be called with default
+     * info.
+     *
+     * @param server
+     * @param user
+     * @param pw
+     * @param SSL
+     * @return connection success
+     */
+    private boolean loginToFTP(String server, String user, String pw, boolean SSL) {
+        handler = new FTPHandler(server, user, pw, SSL);
+        return handler.checkLogin();
+    }
+
+    /**
+     * After being logged in to FTP, handles the data retrieved from there.
+     */
+    private void setDataFromFTP(boolean anyConnect) {
+        servers.addAll(handler.getFTPData());
+
+        // sets codebase property
+        System.setProperty("java.rmi.server.codebase", handler.getCodebaseURL());
+
+        if(anyConnect){
+            System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+        }
+
+        for (Control c : serverDisplayControls) {
+            c.setDisable(false);
         }
     }
 
