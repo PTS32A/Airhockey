@@ -181,6 +181,7 @@ public class AirhockeyGUI {
         stage.setMinWidth(root.minWidth(1100));
 
         // adds close event to controller through method
+        stage.setTitle("Airhockey");
         controller.addCloseEvent(stage);
         controller.setMyGame(client);
         controller.bindMyGameProperties();
