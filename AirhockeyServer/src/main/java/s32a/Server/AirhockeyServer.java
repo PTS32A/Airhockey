@@ -47,9 +47,11 @@ public class AirhockeyServer {
             lobby = Lobby.getSingle();
             lobby.startPublisher();
             System.out.println("Server: Lobby created");
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("Server: RemoteException: " + ex.getMessage());
+            lobby = null;
+        } catch (NullPointerException ex) {
+            System.out.println("Null pointer in Lobby - database error");
             lobby = null;
         }
 
@@ -58,8 +60,7 @@ public class AirhockeyServer {
             try {
                 Registry registry = LocateRegistry.createRegistry(portNumber);
                 registry.rebind(bindingName, lobby);
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("Server: RemoteException: " + ex.getMessage());
             }
             System.out.println("Server: Lobby bound to " + bindingName);
@@ -68,16 +69,13 @@ public class AirhockeyServer {
         }
 
 //        ipAddress = "";
-
 //        try {
 //            ipAddress = InetAddress.getLocalHost().toString();
 //        }
 //        catch (UnknownHostException ex) {
 //            Logger.getLogger(AirhockeyServer.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-
 //        printIPAddresses();
-
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.CENTER);
         gp.setHgap(10);
@@ -150,6 +148,19 @@ public class AirhockeyServer {
     }
 
     /**
+     * Performs a quick check whether it was possible to init Lobby
+     * @return
+     */
+    public static boolean checkLobby() {
+        try {
+            Lobby.getSingle();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    /**
      * Prints all known IP addresses
      */
     private static void printIPAddresses() {
@@ -164,8 +175,7 @@ public class AirhockeyServer {
                     System.out.println("    " + allMyIp);
                 }
             }
-        }
-        catch (UnknownHostException ex) {
+        } catch (UnknownHostException ex) {
             System.out.println("Server: Cannot get IP address of local host");
             System.out.println("Server: UnknownHostException: " + ex.getMessage());
         }

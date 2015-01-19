@@ -70,7 +70,8 @@ public class ServerSelectGUI {
     }
 
     /**
-     * Shows a screen for logging in to the central FTP server
+     * Shows a screen for logging in to the central FTP server with non-default
+     * values.
      */
     private void displayFTPLogin() {
         Stage ftpLoginStage = new Stage();
@@ -81,7 +82,6 @@ public class ServerSelectGUI {
                 stage.show();
             }
         });
-
 
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.CENTER);
@@ -168,10 +168,7 @@ public class ServerSelectGUI {
      * @param serverInput
      */
     private void displayServers(boolean loggedIn) {
-        
-
         this.serverDisplayControls = new ArrayList<>();
-
 
         try {
             // GridPane creation
@@ -320,7 +317,7 @@ public class ServerSelectGUI {
         // sets codebase property
         System.setProperty("java.rmi.server.codebase", handler.getCodebaseURL());
 
-        if(anyConnect){
+        if (anyConnect) {
             System.setProperty("java.rmi.server.hostname", "127.0.0.1");
         }
 

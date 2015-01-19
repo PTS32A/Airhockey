@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -143,6 +144,20 @@ public class GamePublisher {
     }
 
     /**
+     * pool.execute, wrapped in a try-catch
+     *
+     * @param r
+     */
+    private void tryExecute(Runnable r) {
+        try {
+            pool.execute(r);
+        } catch (RejectedExecutionException ex) {
+            System.out.println("RejectedExecutionException caught and handled: "
+                    + ex.getMessage());
+        }
+    }
+
+    /**
      * Tries to add an observer to the list. If the list already contains given
      * observer, return false;
      *
@@ -163,21 +178,24 @@ public class GamePublisher {
      * @throws RemoteException
      */
     private void pushToNewObserver(String name, IGameClient client) {
-        pool.execute(() -> {
-            try {
-                client.setChat(new ArrayList<>(this.chatbox));
-                client.setDifficulty(this.difficultyProp.get());
-                client.setGame(this.myGame);
-                client.setPlayers(new ArrayList<>(this.players));
-                client.setPuck(this.puckPosition.get().x, this.puckPosition.get().y);
-                client.setRoundNo(this.roundNo.get());
-                client.setStatus(this.statusProp.get());
+        tryExecute(new Runnable() {
 
-                this.pushBatPositions();
-            }
-            catch (RemoteException ex) {
-                System.out.println("RemoteException pushing values to new observer " + name);
-                this.removeObserver(name);
+            @Override
+            public void run() {
+                try {
+                    client.setChat(new ArrayList<>(chatbox));
+                    client.setDifficulty(difficultyProp.get());
+                    client.setGame(myGame);
+                    client.setPlayers(new ArrayList<>(players));
+                    client.setPuck(puckPosition.get().x, puckPosition.get().y);
+                    client.setRoundNo(roundNo.get());
+                    client.setStatus(statusProp.get());
+
+                    pushBatPositions();
+                } catch (RemoteException ex) {
+                    System.out.println("RemoteException pushing values to new observer " + name);
+                    removeObserver(name);
+                }
             }
         });
     }
@@ -219,16 +237,19 @@ public class GamePublisher {
      * proxy, not for updating score / bat position.
      */
     private void pushPlayers() {
-        pool.execute(() -> {
-            List<IPlayer> playersArray = new ArrayList<>(players);
-            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                String key = it.next();
-                try {
-                    observers.get(key).setPlayers(playersArray);
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException pushing players to " + key + ": " + ex.getMessage());
-                    this.removeObserver(key);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                List<IPlayer> playersArray = new ArrayList<>(players);
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setPlayers(playersArray);
+                    } catch (RemoteException ex) {
+                        System.out.println("RemoteException pushing players to " + key + ": " + ex.getMessage());
+                        removeObserver(key);
+                    }
                 }
             }
         });
@@ -256,15 +277,18 @@ public class GamePublisher {
      * Pushes (updated) roundNo to all observers
      */
     private void pushRoundNo() {
-        pool.execute(() -> {
-            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                String key = it.next();
-                try {
-                    observers.get(key).setRoundNo(roundNo.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
-                    this.removeObserver(key);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setRoundNo(roundNo.get());
+                    } catch (RemoteException ex) {
+                        System.out.println("RemoteException setting roundNo for " + key + ": " + ex.getMessage());
+                        removeObserver(key);
+                    }
                 }
             }
         });
@@ -292,19 +316,21 @@ public class GamePublisher {
      * Pushes (updated) difficulty to all observers.
      */
     private void pushDifficulty() {
-        pool.execute(() -> {
-            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                String key = it.next();
-                try {
-                    observers.get(key).setDifficulty(difficultyProp.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException setting Difficulty for " + key + ": " + ex.getMessage());
-                    this.removeObserver(key);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setDifficulty(difficultyProp.get());
+                    } catch (RemoteException ex) {
+                        System.out.println("RemoteException setting Difficulty for " + key + ": " + ex.getMessage());
+                        removeObserver(key);
+                    }
                 }
             }
         });
-
     }
 
     /**
@@ -329,19 +355,21 @@ public class GamePublisher {
      * Pushes the (updated) list of chatmessages to all observers
      */
     private void pushChat() {
-        pool.execute(() -> {
-            ArrayList<String> chatArray = new ArrayList<>(chatbox);
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setChat(chatArray);
-                }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException on pushing chatbox to " + key + ": " + ex.getMessage());
-                    this.removeObserver(key);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                ArrayList<String> chatArray = new ArrayList<>(chatbox);
+                for (String key : observers.keySet()) {
+                    try {
+                        observers.get(key).setChat(chatArray);
+                    } catch (RemoteException ex) {
+                        System.out.println("RemoteException on pushing chatbox to " + key + ": " + ex.getMessage());
+                        removeObserver(key);
+                    }
                 }
             }
         });
-
     }
 
     /**
@@ -367,14 +395,17 @@ public class GamePublisher {
      * and y.
      */
     private void pushPuckPosition() {
-        pool.execute(() -> {
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setPuck(puckPosition.get().x, puckPosition.get().y);
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting puck location for " + key);
-                    this.removeObserver(key);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                for (String key : observers.keySet()) {
+                    try {
+                        observers.get(key).setPuck(puckPosition.get().x, puckPosition.get().y);
+                    } catch (RemoteException ex) {
+                        System.out.println("remoteException on setting puck location for " + key);
+                        removeObserver(key);
+                    }
                 }
             }
         });
@@ -395,8 +426,7 @@ public class GamePublisher {
                 pushStatus();
                 try {
                     Lobby.getSingle().forceMapUpdate(Lobby.getSingle().getActiveGames());
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -407,14 +437,17 @@ public class GamePublisher {
      * pushes updated status to all observers.
      */
     private void pushStatus() {
-        pool.execute(() -> {
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).setStatus(statusProp.get());
-                }
-                catch (RemoteException ex) {
-                    System.out.println("remoteException on setting status for " + key);
-                    this.removeObserver(key);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                for (String key : observers.keySet()) {
+                    try {
+                        observers.get(key).setStatus(statusProp.get());
+                    } catch (RemoteException ex) {
+                        System.out.println("remoteException on setting status for " + key);
+                        removeObserver(key);
+                    }
                 }
             }
         });
@@ -437,8 +470,7 @@ public class GamePublisher {
         for (String key : observers.keySet()) {
             try {
                 observers.get(key).setPlayerScores(scores);
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("remoteException on setting player score for " + key);
                 this.removeObserver(key);
             }
@@ -465,8 +497,7 @@ public class GamePublisher {
         for (String key : observers.keySet()) {
             try {
                 observers.get(key).setPlayerBatPositions(posMap);
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("remoteException on setting player bat locations for " + key);
                 this.removeObserver(key);
             }
@@ -595,17 +626,19 @@ public class GamePublisher {
      */
     public void broadcastEndGame() {
         publisherShutDown.set(true);
-        pool.execute(() -> {
-            for (String key : observers.keySet()) {
-                try {
-                    observers.get(key).endGame();
-                }
-                catch (RemoteException ex) {
-                    Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
-                    System.out.println("RemoteException ending game for " + key);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                for (String key : observers.keySet()) {
+                    try {
+                        observers.get(key).endGame();
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
+                        System.out.println("RemoteException ending game for " + key);
+                    }
                 }
             }
         });
-        
     }
 }

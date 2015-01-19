@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -88,6 +89,20 @@ public class LobbyPublisher {
     }
 
     /**
+     * pool.execute, wrapped in a try-catch
+     *
+     * @param r
+     */
+    private void tryExecute(Runnable r) {
+        try {
+            pool.execute(r);
+        } catch (RejectedExecutionException ex) {
+            System.out.println("RejectedExecutionException caught and handled: "
+                    + ex.getMessage());
+        }
+    }
+
+    /**
      * Adds an ILobbyClient as observer to the server.
      *
      * @param name The name corresponding with the ILobbyClient
@@ -111,17 +126,20 @@ public class LobbyPublisher {
      * @return
      */
     private void pushToNewObserver(String name, ILobbyClient newObsv) {
-        pool.execute(() -> {
-            try {
-                newObsv.setActiveGames(new HashMap<>(this.games));
-                newObsv.setChat(new ArrayList<>(this.chat));
-                newObsv.setPersonRanking(Lobby.getSingle().getMyPerson(name));
-                newObsv.setRankings(new ArrayList<>(this.rankings));
-            }
-            catch (RemoteException ex) {
-                System.out.println("RemoteException pushing values to new observer " 
-                        + name + ": " + ex.getMessage());
-                this.enforceLogout(name, false);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    newObsv.setActiveGames(new HashMap<>(games));
+                    newObsv.setChat(new ArrayList<>(chat));
+                    newObsv.setPersonRanking(Lobby.getSingle().getMyPerson(name));
+                    newObsv.setRankings(new ArrayList<>(rankings));
+                } catch (RemoteException ex) {
+                    System.out.println("RemoteException pushing values to new observer "
+                            + name + ": " + ex.getMessage());
+                    enforceLogout(name, false);
+                }
             }
         });
     }
@@ -139,16 +157,14 @@ public class LobbyPublisher {
         if (notifyClient) {
             try {
                 observers.get(name).enforceLogout();
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
             }
         }
         System.out.println("Removed observer " + name + " from LobbyPublisher");
         try {
             observers.remove(name);
             Lobby.getSingle().logOut(name);
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("remoteException on calling logout "
                     + "from LobbyPublisher.removeObserver for "
                     + name + ", ex: " + ex.getMessage());
@@ -178,19 +194,22 @@ public class LobbyPublisher {
      * list is not null or empty.
      */
     private void pushChat() {
-        pool.execute(() -> {
-            if (this.chat == null || this.chat.isEmpty()) {
-                return;
-            }
-            List<String> chatArray = new ArrayList<>(chat);
-            for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-                String key = it.next();
-                try {
-                    observers.get(key).setChat(chatArray);
+        tryExecute(new Runnable() {
+
+            @Override
+            public void run() {
+                if (chat == null || chat.isEmpty()) {
+                    return;
                 }
-                catch (RemoteException ex) {
-                    System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
-                    this.enforceLogout(key, false);
+                List<String> chatArray = new ArrayList<>(chat);
+                for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
+                    String key = it.next();
+                    try {
+                        observers.get(key).setChat(chatArray);
+                    } catch (RemoteException ex) {
+                        System.out.println("RemoteException setting chat for " + key + ": " + ex.getMessage());
+                        enforceLogout(key, false);
+                    }
                 }
             }
         });
@@ -205,7 +224,7 @@ public class LobbyPublisher {
         if (person == null) {
             return;
         }
-        pool.execute(new Runnable() {
+        tryExecute(new Runnable() {
 
             @Override
             public void run() {
@@ -214,8 +233,7 @@ public class LobbyPublisher {
                     if (client != null) {
                         client.setPersonRanking(person);
                     }
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     Logger.getLogger(LobbyPublisher.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -247,8 +265,7 @@ public class LobbyPublisher {
             String key = it.next();
             try {
                 observers.get(key).setActiveGames(output);
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("RemoteException setting active Games for " + key + ": " + ex.getMessage());
                 System.out.println("Removed observer " + key + " from LobbyPublisher");
                 this.enforceLogout(key, false);
@@ -281,8 +298,7 @@ public class LobbyPublisher {
             String key = it.next();
             try {
                 observers.get(key).setRankings(rankingsArray);
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("RemoteException setting rankings for " + key + ": " + ex.getMessage());
                 System.out.println("Removed observer " + key + " from LobbyPublisher");
                 this.enforceLogout(key, false);

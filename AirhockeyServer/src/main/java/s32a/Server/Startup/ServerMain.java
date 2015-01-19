@@ -168,6 +168,10 @@ public class ServerMain extends Application {
                     System.out.println("Starting Server");
                     if (serverInfo(tfSN.getText(), tfBind.getText(),
                             tfIP.getText(), tfPort.getText(), tfDesc.getText())) {
+                        if(!AirhockeyServer.checkLobby()){
+                            System.out.println("Unable to initiate Lobby");
+                            return;
+                        }
                         server = new AirhockeyServer(
                                 stage,
                                 serverInfo.getIP(),
