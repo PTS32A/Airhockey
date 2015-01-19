@@ -630,6 +630,11 @@ public class GamePublisher {
 
             @Override
             public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    System.out.println("Error in thread.sleep on game endgame");
+                }
                 for (String key : observers.keySet()) {
                     try {
                         observers.get(key).endGame();

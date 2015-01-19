@@ -446,6 +446,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 gameTimer.shutdownNow();
             }
             IPerson myPerson = super.getMe();
+            this.displayPostGameStats();
             GameStatus status = myGame.getGameStatusProperty().get();
             if (myPerson instanceof ISpectator) {
                 lobby.stopSpectating(myGame.getID(), myPerson.getName());
@@ -613,11 +614,15 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         });
     }
 
+    /**
+     * Displays end of game stats whenever game window is closed.
+     */
+    private void displayPostGameStats(){
+        // open new stage, and chuck all info in here, including whether game was ended before time
+    }
+
     private Stage getThisStage() {
         return (Stage) lblPlayer1Name.getScene().getWindow();
     }
 
-    public void closeStage() {
-        getThisStage().close();
-    }
 }
