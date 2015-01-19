@@ -121,8 +121,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
-                // adds listener disabling starter functionality if player != starter
-                this.addPlayerListeners();
             } catch (Exception ex) {
                 System.out.println("RemoteException on setting player info in setUp: " + ex.getMessage());
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
@@ -155,6 +153,20 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     }
 
     public void bindMyGameProperties() {
+        // Disables certain controls if person is not starter
+        myGame.getPlayer1NameProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if(!myGame.getPlayer1NameProperty().get().equals(me)){
+                    cbxCustomDifficulty.setDisable(true);
+                    sldCustomDifficulty.setDisable(true);
+                    btnStart.setDisable(true);
+                    myGame.getPlayer1NameProperty().removeListener(this);
+                }
+            }
+        });
+
         IPerson myPerson = super.getMe();
         // binds upDateTime property
         this.lblTime.textProperty().bind(myGame.getGameTimeProperty());
@@ -197,21 +209,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
         }
 
-    }
-
-    private void addPlayerListeners(){
-        myGame.getPlayer1NameProperty().addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if(!myGame.getPlayer1NameProperty().get().equals(me)){
-                    cbxCustomDifficulty.setDisable(true);
-                    sldCustomDifficulty.setDisable(true);
-                    btnStart.setDisable(true);
-                    myGame.getPlayer1NameProperty().removeListener(this);
-                }
-            }
-        });
     }
 
     /**
