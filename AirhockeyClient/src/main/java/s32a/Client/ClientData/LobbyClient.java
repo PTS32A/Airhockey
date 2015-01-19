@@ -45,6 +45,12 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
     private ILobby myLobby;
     private AirhockeyGUI gui;
 
+    /**
+     * Constructor
+     * @param gui
+     * @param myLobby
+     * @throws RemoteException
+     */
     public LobbyClient(AirhockeyGUI gui, ILobby myLobby) throws RemoteException {
         if (myLobby == null) {
             throw new RemoteException();

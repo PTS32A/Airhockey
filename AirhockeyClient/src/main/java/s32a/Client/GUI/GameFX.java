@@ -152,6 +152,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         });
     }
 
+    /**
+     * Binds gameclient properties to various listeners and bindings in this GameFX.
+     * Done so after gameclient is initialized (not on startup gamefx)
+     */
     public void bindMyGameProperties() {
         // Disables certain controls if person is not starter
         myGame.getPlayer1NameProperty().addListener(new ChangeListener() {

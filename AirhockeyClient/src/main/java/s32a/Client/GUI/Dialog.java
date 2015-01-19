@@ -31,6 +31,12 @@ import javafx.stage.Stage;
  */
 public class Dialog extends Stage {
 
+    /**
+     * this application's equivalent of a mbox in C#
+     * @param owner
+     * @param header
+     * @param message
+     */
     public Dialog(Stage owner, String header, String message) {
         super();
         initOwner(owner);

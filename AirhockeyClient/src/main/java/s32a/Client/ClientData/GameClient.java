@@ -56,6 +56,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     // boolean preventing failsafe methods causing quitclick to be called multiple times
     private boolean isShutDown = false;
 
+    /**
+     * Constructor
+     * @throws RemoteException
+     */
     public GameClient() throws RemoteException {
         this.myPlayers = new ArrayList<>();
         this.oChat = FXCollections.observableArrayList(new ArrayList<String>());
@@ -99,6 +103,11 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.gameTimeProperty = new SimpleStringProperty("");
     }
 
+    /**
+     * Links this GameClient and its gameFX. Only used for endGame.
+     * @param fx
+     * @throws RemoteException
+     */
     public void setGameFX(GameFX fx) throws RemoteException {
         this.fx = fx;
     }

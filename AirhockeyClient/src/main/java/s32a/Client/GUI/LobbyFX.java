@@ -89,7 +89,6 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     /**
      * updates relevant screens in display
      *
-     * @param pR
      */
     public void updatePlayerInfo() {
         IPerson p = super.getMe();
@@ -185,6 +184,10 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         }
     }
 
+    /**
+     * A simple help screen, showing controls.
+     * @param evt
+     */
     public void showControls(Event evt) {
         super.showDialog("Controls", "Use the left and right arrow keys or"
                 + " the A and D keys to move your bat.");

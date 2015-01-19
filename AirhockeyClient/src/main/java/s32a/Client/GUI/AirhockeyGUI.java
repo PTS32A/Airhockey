@@ -59,7 +59,13 @@ public class AirhockeyGUI {
     @Setter 
     @Getter
     private Stage stage;
+    /**
+     * Lobby instance is kept centrally, to be queried throughout the client
+     */
     protected static LobbyClient lobby = null;
+    /**
+     * The name of the current player. Kept short as it is referenced often.
+     */
     public static String me = "--";
 
     /**

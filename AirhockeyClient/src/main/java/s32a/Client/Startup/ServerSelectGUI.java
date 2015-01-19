@@ -59,6 +59,11 @@ public class ServerSelectGUI {
     private String user = "i293443";
     private String pass = "ifvr2edfh101";
 
+    /**
+     * Constructor
+     * @param stage
+     * @param gui
+     */
     public ServerSelectGUI(Stage stage, AirhockeyGUI gui) {
         this.stage = stage;
         this.gui = gui;

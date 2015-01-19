@@ -40,12 +40,21 @@ public class FTPHandler {
     public String getCodebaseURL() {
         return codebaseURL;
     }
-    
+
+    /**
+     * @return the URL of the active FTP server
+     */
     public String getFTPServerURL(){
         return this.ftpServer;
     }
 
-
+    /**
+     * Constructor
+     * @param ftpServer
+     * @param username
+     * @param password
+     * @param SSL
+     */
     public FTPHandler(String ftpServer, String username, String password, boolean SSL) {
         this.ftpServer = ftpServer;
         this.username = username;
