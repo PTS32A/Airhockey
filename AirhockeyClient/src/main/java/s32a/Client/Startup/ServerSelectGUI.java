@@ -54,10 +54,10 @@ public class ServerSelectGUI {
     private ObservableList<ServerInfo> servers;
     List<Control> serverDisplayControls;
 
-    private final String defaultServer = "athena.fhict.nl";
-    private final boolean defaultSSL = true;
-    private final String defaultUser = "i293443";
-    private final String defaultPass = "ifvr2edfh101";
+    private String server = "athena.fhict.nl";
+    private boolean SSL = true;
+    private String user = "i293443";
+    private String pass = "ifvr2edfh101";
 
     public ServerSelectGUI(Stage stage, AirhockeyGUI gui) {
         this.stage = stage;
@@ -92,23 +92,23 @@ public class ServerSelectGUI {
         Label ip = new Label("FTP website:");
         gp.add(ip, 0, 1);
         TextField tfFTPAddress = new TextField();
-        tfFTPAddress.setText(defaultServer);
+        tfFTPAddress.setText(this.server);
         gp.add(tfFTPAddress, 1, 1);
 
         CheckBox cbxSSL = new CheckBox("SSL");
-        cbxSSL.setSelected(defaultSSL);
+        cbxSSL.setSelected(this.SSL);
         gp.add(cbxSSL, 1, 2);
 
-        Label user = new Label("Username:");
-        gp.add(user, 0, 3);
+        Label lblUser = new Label("Username:");
+        gp.add(lblUser, 0, 3);
         TextField tfUser = new TextField();
-        tfUser.setText(defaultUser);
+        tfUser.setText(this.user);
         gp.add(tfUser, 1, 3);
 
-        Label pass = new Label("Password:");
-        gp.add(pass, 0, 4);
+        Label lblPass = new Label("Password:");
+        gp.add(lblPass, 0, 4);
         PasswordField tfPass = new PasswordField();
-        tfPass.setText(defaultPass);
+        tfPass.setText(this.pass);
         gp.add(tfPass, 1, 4);
 
         CheckBox cbxAnyConnect = new CheckBox("AnyConnect running");
@@ -126,12 +126,12 @@ public class ServerSelectGUI {
 
             @Override
             public void handle(ActionEvent e) {
-                String user = tfUser.getText();
-                String pass = tfPass.getText();
-                String server = tfFTPAddress.getText();
-                boolean SSL = cbxSSL.isSelected();
+                user = tfUser.getText();
+                pass = tfPass.getText();
+                server = tfFTPAddress.getText();
+                SSL = cbxSSL.isSelected();
 
-                if (loginToFTP(server, user, pass, SSL)) {
+                if (loginToFTP(server, lblUser, lblPass, SSL)) {
                     setDataFromFTP(cbxAnyConnect.isSelected());
                     displayServers(true);
                     ftpLoginStage.close();
@@ -179,19 +179,19 @@ public class ServerSelectGUI {
             gp.setPadding(new Insets(25, 25, 25, 25));
 
             // button for connecting with default settings
-            Button btnFTPConnect = new Button("Connect (Default)");
+            Button btnFTPConnect = new Button("Refresh");
             btnFTPConnect.setOnAction(new EventHandler<ActionEvent>() {
 
                 @Override
                 public void handle(ActionEvent event) {
-                    if (loginToFTP(defaultServer, defaultUser, defaultPass, defaultSSL)) {
+                    if (loginToFTP(server, user, pass, SSL)) {
                         setDataFromFTP(false);
                     }
                 }
             });
             gp.add(btnFTPConnect, 0, 0);
 
-            Button btnChangeFTPSettings = new Button("Connect (Custom)");
+            Button btnChangeFTPSettings = new Button("Settings");
             btnChangeFTPSettings.setOnAction(new EventHandler<ActionEvent>() {
 
                 @Override
