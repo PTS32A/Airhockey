@@ -57,7 +57,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
     Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
-            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver;
+            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
     @FXML
@@ -458,7 +458,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             GameStatus status = myGame.getGameStatusProperty().get();
             if (myPerson instanceof ISpectator) {
                 lobby.stopSpectating(myGame.getID(), myPerson.getName());
-            } else if (status.equals(GameStatus.GameOver) || status.equals(GameStatus.Preparing)) {
+            } else if (status.equals(GameStatus.GameOver) || status.equals(GameStatus.Preparing)) {              
                 lobby.endGame(myGame.getID(), null);
             } else {
                 lobby.endGame(myGame.getID(), myPerson.getName());
@@ -621,6 +621,24 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         // Remove this println after implementation
         System.out.println("Display post game stats");
         // open new stage, and chuck all info in here, including whether game was ended before time
+        String message = "";
+        message += "Round: " + this.getMyGame().getRoundNoProperty().getValue() + "\n";
+        try
+        {
+            message += this.getWinnerText() + "\n";
+            
+            message += "P1 " + this.getMyGame().getPlayer1Name() + ": " + this.getMyGame().getPlayer1Score().getValue() + "\n";
+            message += "P2 " + this.getMyGame().getPlayer2Name() + ": " + this.getMyGame().getPlayer2Score().getValue() + "\n";
+            message += "P3 " + this.getMyGame().getPlayer3Name() + ": " + this.getMyGame().getPlayer3Score().getValue() + "\n";
+        }
+        catch (RemoteException ex)
+        {
+            System.out.println("RemoteException (setting winning player text): " + ex.getMessage());
+            message += "Failed to retreive player info.";
+        }        
+        
+        Dialog d = new Dialog(this.getMyStage(), "Statistics", message);
+        d.show();
     }
 
     private void closeMyStage(){
@@ -635,4 +653,43 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         });
     }
 
+    private String getWinnerText() throws RemoteException
+    {
+        String playerWinString = "Player ";
+        
+        int winningScore = 0;
+        int p1Score = this.getMyGame().getPlayer1Score().getValue();
+        int p2Score = this.getMyGame().getPlayer2Score().getValue();
+        int p3Score = this.getMyGame().getPlayer3Score().getValue();
+        
+        if (p1Score > p2Score)
+        {
+            if (p1Score > p3Score)
+            {
+                playerWinString +=  this.getMyGame().getPlayer1Name();
+                winningScore = p1Score;
+            }
+            else
+            {
+                playerWinString += this.getMyGame().getPlayer3Name();
+                winningScore = p3Score;
+            }
+        }
+        else
+        {
+            if (p2Score > p3Score)
+            {
+                playerWinString += this.getMyGame().getPlayer2Name();
+                winningScore = p2Score;
+            }
+            else
+            {
+               playerWinString += this.getMyGame().getPlayer3Name();
+               winningScore = p3Score;
+            }
+        }
+        
+        playerWinString += " won with score " + winningScore;
+        return playerWinString;
+    }
 }

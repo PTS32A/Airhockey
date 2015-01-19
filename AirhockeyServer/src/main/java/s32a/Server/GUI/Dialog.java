@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package s32a.Client.GUI;
+package s32a.Server.GUI;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

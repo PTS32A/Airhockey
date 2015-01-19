@@ -5,6 +5,7 @@
  */
 package s32a.Server.Startup;
 
+import java.awt.Dialog;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -158,9 +160,11 @@ public class ServerMain extends Application {
             gp.add(tfPort, 1, 4);
             Label desc = new Label("Description");
             gp.add(desc, 0, 5);
-            TextField tfDesc = new TextField();
-            tfDesc.setText("");
-            gp.add(tfDesc, 1, 5);
+            TextArea taDesc = new TextArea();
+            taDesc.setText("");
+            taDesc.setMaxWidth(200);
+            taDesc.setMaxHeight(75);
+            gp.add(taDesc, 1, 5);
             Button btnConfirm = new Button("Start Server");
             gp.add(btnConfirm, 1, 6);
             btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
@@ -169,9 +173,11 @@ public class ServerMain extends Application {
                 public void handle(ActionEvent e) {
                     System.out.println("Starting Server");
                     if (serverInfo(tfSN.getText(), tfBind.getText(),
-                            tfIP.getText(), tfPort.getText(), tfDesc.getText())) {
+                            tfIP.getText(), tfPort.getText(), taDesc.getText())) {
                         if(!AirhockeyServer.checkLobby()){
                             System.out.println("Unable to initiate Lobby");
+                            s32a.Server.GUI.Dialog d = new s32a.Server.GUI.Dialog(stage, "Server error", "Unable to initiate Lobby");
+                            d.show();
                             return;
                         }
                         server = new AirhockeyServer(

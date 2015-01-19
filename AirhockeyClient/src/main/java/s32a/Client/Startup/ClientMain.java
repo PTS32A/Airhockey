@@ -6,9 +6,9 @@
 package s32a.Client.Startup;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import s32a.Client.GUI.AirhockeyGUI;
+import s32a.Client.GUI.Dialog;
 
 /**
  *

@@ -120,16 +120,7 @@ public class ServerSelectGUI {
         Label lblPort = new Label("Status:");
         gp.add(lblPort, 0, 6);
         TextField tfPort = new TextField();
-        
-        try //Try-catch because untested
-        {
-            tfPort.editableProperty().setValue(false);
-        }
-        catch (Exception ex)
-        {
-            System.out.println("Exception in making the status textfield non-editable. Data" + ex.getMessage());
-        }
-        
+        tfPort.editableProperty().setValue(false);
         tfPort.setText("Not Connected");
         gp.add(tfPort, 1, 6);
 
@@ -258,7 +249,7 @@ public class ServerSelectGUI {
             taServerDescription.editableProperty().set(false);
             taServerDescription.setWrapText(true);
             taServerDescription.setMaxWidth(300);
-            taServerDescription.setMaxHeight(100);
+            taServerDescription.setMaxHeight(75);
             gp.add(taServerDescription, 1, 2);
             serverDisplayControls.add(taServerDescription);
             taServerDescription.setDisable(!loggedIn);
