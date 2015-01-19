@@ -23,6 +23,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import s32a.Server.AirhockeyServer;
 import s32a.Shared.ServerInfo;
 
@@ -221,8 +222,23 @@ public class ServerMain extends Application {
             System.setProperty("java.rmi.server.hostname", ip);
 
             // sets codebase property
-            String codebase = this.handler.registerServer(serverInfo);          
-            System.setProperty("java.rmi.server.codebase", codebase);
+            String codebase = this.handler.registerServer(serverInfo);
+            if(codebase == null){
+                return false;
+            } else {
+                System.setProperty("java.rmi.server.codebase", codebase);
+            }
+
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+                @Override
+                public void handle(WindowEvent event) {
+                    System.out.println("dropping server reference");
+                    handler.unRegisterServer(serverInfo);
+                    System.exit(0);
+                }
+            });
+            
         } catch (NumberFormatException ex) {
             System.out.println("unable to parse " + port + " to a number");
             return false;

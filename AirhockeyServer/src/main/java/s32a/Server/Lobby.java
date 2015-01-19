@@ -76,8 +76,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
 
         try {
             this.oRankings = FXCollections.observableArrayList(myDatabaseControls.getRankings());
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             System.out.println("SQL exception retrieving getRankings in lobby constructor: "
                     + ex.getMessage());
         }
@@ -231,8 +230,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public void clearDatabase() throws RemoteException {
         try {
             myDatabaseControls.clearDatabase();
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             System.out.println("Error clearing database: " + ex.getMessage());
             Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -269,8 +267,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             newGame.startPublisher(player, client);
             this.activePersons.replace(person.getName(), player);
             this.activeGames.put(newGame.getID(), newGame);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.returnToLobby(person);
             this.endGame(newGame.getID(), null);
             throw new IllegalArgumentException("Exception caught: " + ex.getMessage());
@@ -316,8 +313,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             } else {
                 return null;
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             for (IPlayer player : game.getMyPlayers()) {
                 if (player.getName().equals(personInput)) {
                     this.endGame(game.getID(), player.getName());
@@ -372,8 +368,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             }
             this.forceMapUpdate(activeGames);
             this.activePersons.replace(person.getName(), person);
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("IllegalArgumentException thrown in spectateGame: " + ex.getMessage());
         }
         return game;
@@ -422,26 +417,24 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 if (game == null) {
                     return false;
                 }
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
                 return false;
             }
         }
 
         try {
             for (IPlayer Iplayer : game.getMyPlayers()) {
-                Player player = (Player) Iplayer;
-                if (this.activePersons.get(player.getName()) instanceof Player) {
-                    player.setRating(this.myDatabaseControls.getNewRating((Person) player, (Player) this.activePersons.get(hasLeft)));
-                    this.returnToLobby(player);
+                Person p = (Person) activePersons.get(Iplayer.getName());
+                if (p == null) {
+                    return false;
                 }
+                p.setRating(this.myDatabaseControls.getNewRating(p, (Person) this.activePersons.get(hasLeft)));
+                this.returnToLobby(p);
             }
 
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             System.out.println("IllegalArgumentException in endgame: " + ex.getMessage());
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             System.out.println("SQLException in EndGame: " + ex.getMessage());
         }
 
@@ -449,8 +442,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             game.broadcastEndGame();
             this.activeGames.remove(gameInput);
             this.oRankings.setAll(this.myDatabaseControls.getRankings());
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             System.out.println("SQLException in getRankings (EndGame): " + ex.getMessage());
         }
         return true;
@@ -499,8 +491,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                         new Person(participant.getName(), participant.ratingProperty().get()));
                 ((Person) this.activePersons.get(participant.getName())).setBot(isBot);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -536,8 +527,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
                 player2rating = speedRating;
                 player3rating = speedRating;
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             // do nothing, and just let player ratings sort it out
         }
 
@@ -559,8 +549,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         try {
             // saves game
             this.myDatabaseControls.saveGame(game);
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new IllegalArgumentException("failed to save game: "
                     + ex.getMessage());
         }

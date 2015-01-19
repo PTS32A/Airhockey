@@ -625,7 +625,7 @@ public class GamePublisher {
      * scheduled updater.
      */
     public void broadcastEndGame() {
-        publisherShutDown.set(true);
+        System.out.println("broadcasting end game");
         tryExecute(new Runnable() {
 
             @Override
@@ -643,6 +643,7 @@ public class GamePublisher {
                         System.out.println("RemoteException ending game for " + key);
                     }
                 }
+                publisherShutDown.set(true);
             }
         });
     }

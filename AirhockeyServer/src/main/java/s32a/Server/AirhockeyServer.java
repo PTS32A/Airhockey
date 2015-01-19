@@ -36,12 +36,6 @@ public class AirhockeyServer {
 //    private String ipAddress;
 
     public AirhockeyServer(Stage stage, String IPAddress, String bindingName, int portNumber) {
-//        this.ipAddress = address;
-//        this.portNumber = port;
-//        this.bindingName = bindingName;             
-
-//        // Solves socket connection refused bug
-        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
 
         try {
             lobby = Lobby.getSingle();
@@ -58,7 +52,21 @@ public class AirhockeyServer {
         // Bind using Naming
         if (lobby != null) {
             try {
-                Registry registry = LocateRegistry.createRegistry(portNumber);
+                Registry registry = null;
+                
+                // Checks whether usable registry pre-exists
+                try{
+                    registry = LocateRegistry.getRegistry(portNumber);
+                    registry.list();
+                } catch (RemoteException ex){
+                    System.out.println("Unable to find existing registry");
+                    registry = null;
+                }
+
+                // if not: creates new
+                if(registry == null){
+                    registry = LocateRegistry.createRegistry(portNumber);
+                }
                 registry.rebind(bindingName, lobby);
             } catch (RemoteException ex) {
                 System.out.println("Server: RemoteException: " + ex.getMessage());
@@ -136,15 +144,6 @@ public class AirhockeyServer {
         stage.setScene(scene);
         stage.setTitle("Server Information");
         stage.show();
-
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-
-            @Override
-            public void handle(WindowEvent event) {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
     }
 
     /**

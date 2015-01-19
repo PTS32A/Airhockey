@@ -30,6 +30,12 @@ public class FTPHandler {
     private final boolean SSL;
     private String eol = System.getProperty("line.separator");
 
+    /**
+     * String containing reference to this server on FTP location.
+     * Wiped on server shutdown.
+     */
+    private String ftpRefLocation = null;
+
     public FTPHandler(String ftpServer, String username, String password, boolean SSL) {
         this.ftpServer = ftpServer;
         this.username = username;
@@ -101,14 +107,18 @@ public class FTPHandler {
             client.enterLocalPassiveMode();
 
             fis = new FileInputStream(infoFile);
-            client.storeFile("/Airhockey/Servers/" + input.getIP() + ".server", fis);
-            
+            this.ftpRefLocation = "/Airhockey/Servers/"
+                    + input.getIP()
+                    + "-" + input.getBindingName()
+                    + ".server";
+            client.storeFile(this.ftpRefLocation, fis);
+
             File codebase = new File("codebase.properties");
             fos = new FileOutputStream(codebase.getAbsolutePath());
             client.retrieveFile("/Airhockey/Codebase/codebase.properties", fos);
             fos.close();
             output = this.readCodebaseInfo(codebase);
-            
+
             client.logout();
         } catch (IOException ex) {
             System.out.println("IOException: " + ex.getMessage());
@@ -171,14 +181,16 @@ public class FTPHandler {
         }
         return file;
     }
-    
+
     /**
-     * Reads the file containing the codebase address as it should be used by java
+     * Reads the file containing the codebase address as it should be used by
+     * java
+     *
      * @param input
-     * @return 
+     * @return
      */
-    private String readCodebaseInfo(File input){
-        if(input == null){
+    private String readCodebaseInfo(File input) {
+        if (input == null) {
             return null;
         }
         String output = null;
@@ -190,11 +202,45 @@ public class FTPHandler {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            if(in != null){
+            if (in != null) {
                 in.close();
             }
             input.delete();
         }
         return output;
+    }
+
+    void unRegisterServer(ServerInfo serverInfo) {
+        FTPClient client = null;
+
+        if (SSL) {
+            client = new FTPSClient(false);
+        } else {
+            client = new FTPClient();
+        }
+
+        try {
+            System.out.println("connecting");
+            client.connect(ftpServer);
+            if(!client.login(username, password)){
+                return;
+            }
+
+            boolean success = client.deleteFile(this.ftpRefLocation);
+            System.out.println("dropped remote reference to file: " + success);
+            client.logout();
+
+        } catch (IOException ex) {
+            System.out.println("IOException: " + ex.getMessage());
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            System.out.println("exception caught: " + ex.getMessage());
+        } finally {
+            try {
+                client.disconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

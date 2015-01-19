@@ -301,7 +301,7 @@ class DatabaseControls {
      * @return his new rating
      * @throws java.sql.SQLException
      */
-    public double getNewRating(IPerson player, IPlayer hasLeft) throws SQLException, RemoteException {
+    public double getNewRating(IPerson player, IPerson hasLeft) throws SQLException, RemoteException {
         this.initConnection();
         double output = -1;
         try (CallableStatement callStat = conn.prepareCall("{? = call getNewRating(?, ?)}")) {

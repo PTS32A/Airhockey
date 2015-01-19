@@ -53,6 +53,8 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
             player2YProperty, player3XProperty, player3YProperty;
 
     private GameFX fx;
+    // boolean preventing failsafe methods causing quitclick to be called multiple times
+    private boolean isShutDown = false;
 
     public GameClient() throws RemoteException {
         this.myPlayers = new ArrayList<>();
@@ -97,6 +99,10 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         this.gameTimeProperty = new SimpleStringProperty("");
     }
 
+    public void setGameFX(GameFX fx) throws RemoteException {
+        this.fx = fx;
+    }
+
     /**
      * Sets game for client. Incoming from Server
      *
@@ -113,8 +119,16 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public synchronized void endGame() {
+        if(this.isShutDown){
+            return;
+        }
         this.gameStatusProperty.set(GameStatus.GameOver);
-        fx.quitClick(null);
+        if(fx != null){
+            fx.quitClick(null);
+            this.isShutDown = true;
+        } else {
+            System.out.println("gameClient GameFX = null");
+        }
     }
 
     /**
@@ -403,10 +417,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     @Override
     public int getCountDownTime() throws RemoteException {
         return this.myGame.getCountDownTime();
-    }
-
-    public void registerGameFX(GameFX fx) throws RemoteException {
-        this.fx = fx;
     }
 
     @Override

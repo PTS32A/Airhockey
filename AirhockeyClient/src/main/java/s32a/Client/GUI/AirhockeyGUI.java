@@ -160,7 +160,7 @@ public class AirhockeyGUI {
     /**
      *
      */
-    void goToGame(Stage stage, GameClient client) throws IOException {
+    GameFX goToGame(Stage stage, GameClient client) throws IOException {
 
         // gets the controller class while initializing
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Game.fxml"));
@@ -178,12 +178,14 @@ public class AirhockeyGUI {
         controller.addCloseEvent(stage);
         controller.setMyGame(client);
         controller.bindMyGameProperties();
+        controller.setMyStage(stage);
         if (lobby.getMyPerson(me) instanceof IPlayer) {
             controller.addEvents((IPlayer) lobby.getMyPerson(me));
         }
 
         // Terminates game
         stage.show();
+        return controller;
     }
 
     void showDialog(String type, String message) {

@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -51,6 +52,10 @@ import s32a.Shared.enums.Colors;
  * @author Luke, Bob
  */
 public class GameFX extends AirhockeyGUI implements Initializable {
+
+    @Getter
+    @Setter
+    Stage myStage = null;
 
     @FXML
     Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
@@ -105,7 +110,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             try {
                 // Player
-                IPlayer myPlayer = (IPlayer) myPerson;
                 btnStopSpec.setVisible(false);
                 btnPause.setDisable(true);
 
@@ -117,13 +121,14 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
+                // adds listener disabling starter functionality if player != starter
+                this.addPlayerListeners();
             } catch (Exception ex) {
                 System.out.println("RemoteException on setting player info in setUp: " + ex.getMessage());
                 Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else if (myPerson instanceof ISpectator) {
-            ISpectator mySpectator = (ISpectator) myPerson;
             btnStart.setVisible(false);
             btnPause.setVisible(false);
             btnQuit.setVisible(false);
@@ -194,6 +199,21 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     }
 
+    private void addPlayerListeners(){
+        myGame.getPlayer1NameProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if(!myGame.getPlayer1NameProperty().get().equals(me)){
+                    cbxCustomDifficulty.setDisable(true);
+                    sldCustomDifficulty.setDisable(true);
+                    btnStart.setDisable(true);
+                    myGame.getPlayer1NameProperty().removeListener(this);
+                }
+            }
+        });
+    }
+
     /**
      * Starts a listener for gamestatus.waiting. Whenever gamestatus becomes
      * Waiting, pulls count down times from game.
@@ -216,34 +236,18 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
         };
 
-        // timer task. Automatically shuts down game a set period of time after game end.
-        TimerTask gameShutDown = new TimerTask() {
-
-            @Override
-            public void run() {
-                System.out.println("shutdown being enacted");
-                quitClick(null);
-            }
-        };
-
         // adds listener to gamestatus property
         myGame.getGameStatusProperty().addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (myGame.getGameStatusProperty().get() == GameStatus.Waiting) {
-                    gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
-                } else if (myGame.getGameStatusProperty().get() == GameStatus.GameOver) {
-                    System.out.println("shutting down in 2 mins");
-                    gameTimer.schedule(gameShutDown, 2, TimeUnit.MINUTES);
-                    Platform.runLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            lblGameOver.setVisible(true);
-                        }
-                    });
-                }
+                    try{
+                        gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
+                    } catch (RejectedExecutionException ex){
+                        System.out.println("rejected execution of countdowndisplay");
+                    }
+                } 
             }
         });
     }
@@ -456,7 +460,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 lobby.endGame(myGame.getID(), myPerson.getName());
             }
             myGame.addChatMessage("has left the game", super.getMe().getName());
-            getThisStage().close();
+            closeMyStage();
         } catch (RemoteException ex) {
             System.out.println("RemoteException on quitClick: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
@@ -494,7 +498,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     public void stopSpectating(Event evt) {
         try {
             lobby.stopSpectating(myGame.getID(), super.getMe().getName());
-            getThisStage().close();
+            closeMyStage();
         } catch (RemoteException ex) {
             System.out.println("RemoteException on stopSpectating: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
@@ -548,8 +552,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
         };
 
-        getThisStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
-        getThisStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
+        getMyStage().addEventFilter(KeyEvent.KEY_PRESSED, keyPressed);
+        getMyStage().addEventFilter(KeyEvent.KEY_RELEASED, keyReleased);
     }
 
     /**
@@ -563,18 +567,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             @Override
             public void handle(WindowEvent event) {
-                try {
-                    System.out.println("closerequest handled");
-                    IPerson p = getMe();
-                    if (p instanceof ISpectator) {
-                        lobby.stopSpectating(myGame.getID(), p.getName());
-                    } else if (p instanceof IPlayer) {
-                        lobby.endGame(myGame.getID(), p.getName());
-                    }
-                    stage.close();
-                } catch (RemoteException ex) {
-                    System.out.println("RemoteException in close event: " + ex.getMessage());
-                }
+                quitClick(null);
             }
         });
     }
@@ -617,12 +610,22 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     /**
      * Displays end of game stats whenever game window is closed.
      */
-    private void displayPostGameStats(){
+    private void displayPostGameStats() {
+        // Remove this println after implementation
+        System.out.println("Display post game stats");
         // open new stage, and chuck all info in here, including whether game was ended before time
     }
 
-    private Stage getThisStage() {
-        return (Stage) lblPlayer1Name.getScene().getWindow();
+    private void closeMyStage(){
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if(getMyStage() != null){
+                    getMyStage().close();
+                }
+            }
+        });
     }
 
 }
