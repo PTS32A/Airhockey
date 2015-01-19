@@ -93,6 +93,17 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.width = new SimpleDoubleProperty(.0);
         this.height = new SimpleDoubleProperty(.0);
+        
+        //Try-Catch because untested. 
+        try
+        {
+            this.getStage().setTitle("Airhockey");
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Exception in setting the title of the stage. Data: " + ex.getMessage());
+        }
+        
         setUp();
     }
 

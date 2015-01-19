@@ -20,7 +20,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ComboBox;  
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -122,6 +122,16 @@ public class ServerSelectGUI {
         Label lblPort = new Label("Status:");
         gp.add(lblPort, 0, 6);
         TextField tfPort = new TextField();
+        
+        try //Try-catch because untested
+        {
+            tfPort.editableProperty().setValue(false);
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Exception in making the status textfield non-editable. Data" + ex.getMessage());
+        }
+        
         tfPort.setText("Not Connected");
         gp.add(tfPort, 1, 6);
 
