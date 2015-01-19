@@ -89,8 +89,8 @@ public class ServerSelectGUI {
         gp.setVgap(10);
         gp.setPadding(new Insets(25, 25, 25, 25));
 
-        Label ip = new Label("FTP website:");
-        gp.add(ip, 0, 1);
+        Label lblServerIP = new Label("FTP website:");
+        gp.add(lblServerIP, 0, 1);
         TextField tfFTPAddress = new TextField();
         tfFTPAddress.setText(this.server);
         gp.add(tfFTPAddress, 1, 1);
@@ -114,8 +114,8 @@ public class ServerSelectGUI {
         CheckBox cbxAnyConnect = new CheckBox("AnyConnect running");
         gp.add(cbxAnyConnect, 1, 5);
 
-        Label port = new Label("Status:");
-        gp.add(port, 0, 6);
+        Label lblPort = new Label("Status:");
+        gp.add(lblPort, 0, 6);
         TextField tfPort = new TextField();
         tfPort.setText("Not Connected");
         gp.add(tfPort, 1, 6);
