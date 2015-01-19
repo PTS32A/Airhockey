@@ -5,7 +5,6 @@
  */
 package s32a.Client.Startup;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.value.ChangeListener;
@@ -35,7 +34,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import s32a.Client.GUI.AirhockeyGUI;
-import s32a.Shared.IServerInfo;
 import s32a.Shared.ServerInfo;
 
 /**
@@ -146,7 +144,7 @@ public class ServerSelectGUI {
                 server = tfFTPAddress.getText();
                 SSL = cbxSSL.isSelected();
 
-                if (loginToFTP(server, lblUser, lblPass, SSL)) {
+                if (loginToFTP(server, user, pass, SSL)) {
                     setDataFromFTP(cbxAnyConnect.isSelected());
                     displayServers(true);
                     ftpLoginStage.close();
