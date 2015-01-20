@@ -6,6 +6,7 @@
 package s32a.Server.Startup;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -137,42 +138,53 @@ public class ServerMain extends Application {
             gp.setHgap(10);
             gp.setVgap(10);
             gp.setPadding(new Insets(25, 25, 25, 25));
+
             Label serverName = new Label("Server name:");
             gp.add(serverName, 0, 1);
+
             TextField tfSN = new TextField();
             tfSN.setText("Airhockey");
             gp.add(tfSN, 1, 1);
+
             Label bind = new Label("Binding Name:");
             gp.add(bind, 0, 2);
+
             TextField tfBind = new TextField();
             tfBind.setText("AirhockeyServer");
             gp.add(tfBind, 1, 2);
+
             Label localhost = new Label("Localhost:");
             gp.add(localhost, 0, 3);
-            TextField tfLH = new TextField();
-            tfLH.setEditable(false);
-            tfLH.setText("InetAddress.getLocalHost()");
-            gp.add(tfLH, 1, 3);
+            
+            Label lblLocalHost = new Label(InetAddress.getLocalHost().toString());
+            gp.add(lblLocalHost, 1, 3);
             Label ip = new Label("IP Adress:");
             gp.add(ip, 0, 4);
+
             TextField tfIP = new TextField();
             tfIP.setPromptText("0.0.0.0");
             tfIP.setText("127.0.0.1");
             gp.add(tfIP, 1, 4);
+
             Label port = new Label("Port:");
             gp.add(port, 0, 5);
+
             TextField tfPort = new TextField();
             tfPort.setText("1099");
             gp.add(tfPort, 1, 5);
+
             Label desc = new Label("Description");
             gp.add(desc, 0, 6);
+
             TextArea taDesc = new TextArea();
             taDesc.setText("");
             taDesc.setMaxWidth(200);
             taDesc.setMaxHeight(75);
             gp.add(taDesc, 1, 6);
+
             Button btnConfirm = new Button("Start Server");
             gp.add(btnConfirm, 1, 7);
+
             btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
 
                 @Override
