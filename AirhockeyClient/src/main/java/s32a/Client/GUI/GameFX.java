@@ -166,7 +166,20 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     cbxCustomDifficulty.setDisable(true);
                     sldCustomDifficulty.setDisable(true);
                     btnStart.setDisable(true);
-                    myGame.getPlayer1NameProperty().removeListener(this);
+                    myGame.getPlayer1NameProperty().removeListener(this);  
+                }
+            }
+        });
+        
+        myGame.getGameStatusProperty().addListener(new ChangeListener() {
+            
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if(myGame.getGameStatusProperty().equals(GameStatus.Playing)) {       
+                    gameTimeTask = new GameTimeTask(myGame);
+                    gameTimer.scheduleAtFixedRate(gameTimeTask, 100, 1000, TimeUnit.MILLISECONDS);
+                    
+                    myGame.getGameStatusProperty().removeListener(this);
                 }
             }
         });
@@ -447,9 +460,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             if (afkTimerTask != null) {
                 afkTimerTask.cancel();
             }
-            if (gameTimeTask != null) {
-                gameTimeTask.cancel();
-            }
             if (gameTimer != null) {
                 gameTimer.shutdownNow();
             }
@@ -518,9 +528,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         afkTimerTask = new AFKTimerTask(this);
         gameTimer.scheduleAtFixedRate(afkTimerTask, 500, 5000, TimeUnit.MILLISECONDS);
         
-        gameTimeTask = new GameTimeTask(myGame);
-        gameTimer.scheduleAtFixedRate(gameTimeTask, 100, 1000, TimeUnit.MILLISECONDS);
-        
         //Moving left or right
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {
             @Override
@@ -576,6 +583,12 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 quitClick(null);
             }
         });
+    }
+    
+    public void cancelGameTimerTask() {
+        if (gameTimeTask != null) {
+            gameTimeTask.cancel();
+        }
     }
 
     /**

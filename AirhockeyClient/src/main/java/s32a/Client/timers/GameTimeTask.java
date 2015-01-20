@@ -32,28 +32,23 @@ public class GameTimeTask extends TimerTask {
 
     @Override
     public void run() {
-        try {
-            if (myGame.getStatus().equals(GameStatus.Playing)) {
-                sec++;
-                if (sec > 59) {
-                    sec = 0;
-                    min++;
-                }
-                String second = Integer.toString(sec);
-                if (sec < 10) {
-                    second = "0" + Integer.toString(sec);
-                }
-                String minute = Integer.toString(min);
-                if (min < 10) {
-                    minute = "0" + Integer.toString(min);
-                }
-                final String output = minute + ":" + second;
-                
-                myGame.setGameTimeProperty(output);
+        if (myGame.getGameStatusProperty().equals(GameStatus.Playing)) {
+            sec++;
+            if (sec > 59) {
+                sec = 0;
+                min++;
             }
-        } catch (RemoteException ex) {
-            Logger.getLogger(GameTimeTask.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("RemoteException in GameTimeTask: " + ex.getMessage());
+            String second = Integer.toString(sec);
+            if (sec < 10) {
+                second = "0" + Integer.toString(sec);
+            }
+            String minute = Integer.toString(min);
+            if (min < 10) {
+                minute = "0" + Integer.toString(min);
+            }
+            final String output = minute + ":" + second;
+            
+            myGame.setGameTimeProperty(output);
         }
     }    
 }
