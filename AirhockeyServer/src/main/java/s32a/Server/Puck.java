@@ -43,6 +43,8 @@ public class Puck extends TimerTask {
     @Getter
     @Setter
     boolean isMoving;
+    boolean stuck = false;
+    long stuckBegin = 0;
 
     @Getter
     private float sideLength;
@@ -314,16 +316,11 @@ public class Puck extends TimerTask {
         //this.position.set(new Vector2(myGame.getMyPlayers().get(0).getPosX().floatValue() + (batWidth / 2),
         //myGame.getMyPlayers().get(0).getPosY().floatValue()));
         //this.position.set(new Vector2(myGame.getMyPlayers().get(0).getPosX().floatValue(), this.sideGoalMaxY));
-        if (isMoving) {
+        if (isMoving && !stuck) {
             float oldX = position.get().x;
             float oldY = position.get().y;
 
             double radians = Math.toRadians((double) direction);
-
-            if (beingPushed) {
-                distance = distance * 2;
-                beingPushed = false;
-            }
 
             float newX = oldX + (float) (Math.sin(radians) * (double) distance);
             float newY = oldY + (float) (Math.cos(radians) * (double) distance);
@@ -383,6 +380,16 @@ public class Puck extends TimerTask {
                     System.out.println("RemoteException in Puck.updatePosition: " + ex.getMessage());
                 }
             }
+        } else if (stuck) {
+            stuckRandomDirection();
+        }
+    }
+
+    public void stuckRandomDirection() {
+        if (System.currentTimeMillis() - stuckBegin > 1000) {
+            Random r = new Random();
+            direction += r.nextInt(180);
+            stuck = false;
         }
     }
 
@@ -684,19 +691,20 @@ public class Puck extends TimerTask {
                 //Flip angle back to origin and add ofset
                 double xMovement = Math.cos(Math.toRadians((int) (180 + degrees)));
                 double yMovement = Math.sin(Math.toRadians((int) (180 + degrees)));
-                batBouncePosition = new Vector2(position.get().x + (float) xMovement, position.get().y + (float) yMovement);
+                //batBouncePosition = new Vector2(position.get().x + (float) xMovement, position.get().y + (float) yMovement);
+                
                 if (p.getColor() == Colors.Green) {
-                    direction = (float) (180 + degrees);
+                    direction = 120;
+                    batBouncePosition = new Vector2((float)(p.getPosX().get() + radius), (float)(p.getPosY().get()));
                 } else if (p.getColor() == Colors.Blue) {
-                    direction = (float) (180 - degrees);
+                    direction = 60;
+                    batBouncePosition = new Vector2((float)(p.getPosX().get() - radius), (float)(p.getPosY().get()));
                 } else {
-                    if (batCentre.x < 0) {
-                        direction = (float) (180 - degrees);
-                    } else {
-                        direction = (float) (180 + degrees);
-                    }
+                    direction = 0;
+                    batBouncePosition = new Vector2((float)(p.getPosX().get()), (float)(p.getPosY().get() + radius));
                 }
-                correctDirection();
+                stuck = true;
+                //correctDirection();
 
             }
             //getIntersectionWithCircle(position.get(), pos, batCentre, radius);
