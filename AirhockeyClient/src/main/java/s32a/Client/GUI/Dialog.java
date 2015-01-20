@@ -31,15 +31,20 @@ import javafx.stage.Stage;
  */
 public class Dialog extends Stage {
 
+    public static void showDialog(String header, String message){
+        Dialog d = new Dialog(header, message);
+    }
+
     /**
      * this application's equivalent of a mbox in C#
      * @param owner
      * @param header
      * @param message
      */
-    public Dialog(Stage owner, String header, String message) {
+    private Dialog(String header, String message) {
         super();
-        initOwner(owner);
+        Stage stage = new Stage();
+        initOwner(stage);
         setTitle(header);
 
         AnchorPane root = new AnchorPane();
@@ -82,5 +87,6 @@ public class Dialog extends Stage {
         BorderPane buttonRegion = new BorderPane();
         buttonRegion.setRight(btClose);
         gridPane.add(buttonRegion, 0, 4);
+        stage.show();
     }
 }

@@ -18,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import static s32a.Client.GUI.Dialog.showDialog;
 
 /**
  *
@@ -44,30 +45,30 @@ public class RegisterFX extends AirhockeyGUI implements Initializable {
     public void registerOk(Event evt) {
         if (tfUserName.getText().equals("") || pwfPassword.getText().equals("")
                 || pwfPasswordConfirm.getText().equals("")) {
-            super.showDialog("Error", "One or more fields are empty");
+            showDialog("Error", "One or more fields are empty");
         } else {
             if (!pwfPassword.getText().equals(pwfPasswordConfirm.getText())) {
-                super.showDialog("Error", "Passwords do not match");
+                showDialog("Error", "Passwords do not match");
             } else {
                 try {
                     if (lobby.addPerson(tfUserName.getText(), pwfPassword.getText())) {
                         try {
                             super.goToLogin(getThisStage());
-                            super.showDialog("Success", "Welcome to Airhockey, " + tfUserName.getText() + "!");
+                            showDialog("Success", "Welcome to Airhockey, " + tfUserName.getText() + "!");
                         } catch (IOException ex) {
-                            super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+                            showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
                         }
                     } else {
-                        super.showDialog("Error", "Username already exists.");
+                        showDialog("Error", "Username already exists.");
                     }
                 }
                 catch (IllegalArgumentException ex) {
                     System.out.println("IllegalArgumentException on lobby.addPerson: " + ex.getMessage());
-                    super.showDialog("Error", "Wrong input");
+                    showDialog("Error", "Wrong input");
                 }
                 catch (SQLException ex) {
                     System.out.println("SQL Exception on lobby.addPerson: " + ex.getMessage());
-                    super.showDialog("Database Error", "SQL Error on adding person: " + ex.getMessage());
+                    showDialog("Database Error", "SQL Error on adding person: " + ex.getMessage());
                 }
                 catch (RemoteException ex) {
                     System.out.println("RemoteException on lobby.addPerson: " + ex.getMessage());
@@ -86,7 +87,7 @@ public class RegisterFX extends AirhockeyGUI implements Initializable {
         try {
             super.goToLogin(getThisStage());
         } catch (IOException ex) {
-            super.showDialog("Error", "Unable to go to Login: " + ex.getMessage());
+            showDialog("Error", "Unable to go to Login: " + ex.getMessage());
         }
     }
 

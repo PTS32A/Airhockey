@@ -316,7 +316,7 @@ public class ServerSelectGUI {
      * After being logged in to FTP, handles the data retrieved from there.
      */
     private void setDataFromFTP(boolean anyConnect) {
-        servers.addAll(handler.getFTPData());
+        servers.setAll(handler.getFTPData());
 
         // sets codebase property
         System.setProperty("java.rmi.server.codebase", handler.getCodebaseURL());

@@ -22,6 +22,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import s32a.Client.ClientData.GameClient;
+import static s32a.Client.GUI.Dialog.showDialog;
 import s32a.Shared.IGame;
 import s32a.Shared.IPerson;
 import s32a.Shared.IPlayer;
@@ -82,7 +83,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             this.updatePlayerInfo();
         }
         catch (Exception ex) {
-            super.showDialog("Error", "Unable to initialise Lobby: " + ex.getMessage());
+            showDialog("Error", "Unable to initialise Lobby: " + ex.getMessage());
         }
     }
 
@@ -106,7 +107,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         try {
             IPerson p = super.getMe();
             if (p == null) {
-                super.showDialog("Error", "You are not logged in");
+                showDialog("Error", "You are not logged in");
                 return;
             }
             if (p instanceof IPerson) {
@@ -115,14 +116,14 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 if (game != null) {
                     openNewGameWindow(client);
                 } else {
-                    super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
+                    showDialog("Error", "Unable to create a new Game: NullPointer at game");
                 }
             } else {
-                super.showDialog("Error", "You are currently spectating or playing a game");
+                showDialog("Error", "You are currently spectating or playing a game");
             }
         }
         catch (RemoteException ex) {
-            super.showDialog("Error", "Unable to open new game due to RemoteException: " + ex.getMessage());
+            showDialog("Error", "Unable to open new game due to RemoteException: " + ex.getMessage());
         }
     }
 
@@ -143,13 +144,13 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                             p.getName(), client) != null) {
                         openNewGameWindow(client);
                     } else {
-                        super.showDialog("Error", "Unable to create a new Game: NullPointer at game");
+                        showDialog("Error", "Unable to create a new Game: NullPointer at game");
                     }
                 }
             }
         }
         catch (Exception ex) {
-            super.showDialog("Error", "Unable to join game: " + ex.getMessage());
+            showDialog("Error", "Unable to join game: " + ex.getMessage());
         }
     }
 
@@ -161,7 +162,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     public void spectateGame(Event evt) {
         IPerson p = super.getMe();
         if (p instanceof IPlayer) {
-            super.showDialog("Error",
+            showDialog("Error",
                     "You are playing a game and can't spectate at the same time");
             return;
         }
@@ -175,7 +176,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 openNewGameWindow(client);
             }
             catch (IllegalArgumentException ex) {
-                super.showDialog("Error", ex.getMessage());
+                showDialog("Error", ex.getMessage());
             }
             catch (RemoteException ex) {
                 System.out.println("RemoteException on trying to spectate game: " + ex.getMessage());
@@ -189,7 +190,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
      * @param evt
      */
     public void showControls(Event evt) {
-        super.showDialog("Controls", "Use the left and right arrow keys or"
+        showDialog("Controls", "Use the left and right arrow keys or"
                 + " the A and D keys to move your bat.");
     }
 
@@ -204,7 +205,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             super.goToLogin(getThisStage());
         }
         catch (IOException ex) {
-            super.showDialog("Error", "Unable to log out: " + ex.getMessage());
+            showDialog("Error", "Unable to log out: " + ex.getMessage());
         }
     }
 
@@ -221,7 +222,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             }
             catch (IllegalArgumentException ex) {
                 System.out.println("IllegalArgumentException on sendChatMessage: " + ex.getMessage());
-                super.showDialog("Error", "Unable to send message: " + ex.getMessage());
+                showDialog("Error", "Unable to send message: " + ex.getMessage());
                 Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
             }
             catch (RemoteException ex) {
@@ -252,7 +253,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                     client.setGameFX(fx);
                 }
                 catch (IOException ex) {
-                    base.showDialog("Error", "Could not open game: " + ex.getMessage());
+                    showDialog("Error", "Could not open game: " + ex.getMessage());
                 }
             }
         });

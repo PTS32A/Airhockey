@@ -9,6 +9,9 @@ import s32a.Shared.enums.GameStatus;
 import com.badlogic.gdx.math.Vector2;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
@@ -40,6 +43,7 @@ import javafx.stage.WindowEvent;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Client.ClientData.GameClient;
+import static s32a.Client.GUI.Dialog.showDialog;
 import s32a.Client.timers.AFKTimerTask;
 import s32a.Client.timers.GameTimeTask;
 import s32a.Shared.*;
@@ -92,7 +96,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         this.width = new SimpleDoubleProperty(.0);
         this.height = new SimpleDoubleProperty(.0);
-        
+
         setUp();
     }
 
@@ -153,8 +157,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     }
 
     /**
-     * Binds gameclient properties to various listeners and bindings in this GameFX.
-     * Done so after gameclient is initialized (not on startup gamefx)
+     * Binds gameclient properties to various listeners and bindings in this
+     * GameFX. Done so after gameclient is initialized (not on startup gamefx)
      */
     public void bindMyGameProperties() {
         // Disables certain controls if person is not starter
@@ -162,7 +166,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if(!myGame.getPlayer1NameProperty().get().equals(me)){
+                if (!myGame.getPlayer1NameProperty().get().equals(me)) {
                     cbxCustomDifficulty.setDisable(true);
                     sldCustomDifficulty.setDisable(true);
                     btnStart.setDisable(true);
@@ -243,12 +247,12 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (myGame.getGameStatusProperty().get() == GameStatus.Waiting) {
-                    try{
+                    try {
                         gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
-                    } catch (RejectedExecutionException ex){
+                    } catch (RejectedExecutionException ex) {
                         System.out.println("rejected execution of countdowndisplay");
                     }
-                } 
+                }
             }
         });
     }
@@ -388,7 +392,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     this.sldCustomDifficulty.setDisable(true);
                     this.cbxCustomDifficulty.setDisable(true);
                 } else {
-                    super.showDialog("Error", "Failed to begin game");
+                    showDialog("Error", "Failed to begin game");
                 }
             } catch (RemoteException ex) {
                 System.out.println("RemoteException on beginGame: " + ex.getMessage());
@@ -396,7 +400,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
 
         } else {
-            super.showDialog("Warning", "Not enough players to begin game.");
+            showDialog("Warning", "Not enough players to begin game.");
         }
     }
 
@@ -458,7 +462,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             GameStatus status = myGame.getGameStatusProperty().get();
             if (myPerson instanceof ISpectator) {
                 lobby.stopSpectating(myGame.getID(), myPerson.getName());
-            } else if (status.equals(GameStatus.GameOver) || status.equals(GameStatus.Preparing)) {              
+            } else if (status.equals(GameStatus.GameOver) || status.equals(GameStatus.Preparing)) {
                 lobby.endGame(myGame.getID(), null);
             } else {
                 lobby.endGame(myGame.getID(), myPerson.getName());
@@ -517,10 +521,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     public void addEvents(IPlayer myPlayer) {
         afkTimerTask = new AFKTimerTask(this);
         gameTimer.scheduleAtFixedRate(afkTimerTask, 500, 5000, TimeUnit.MILLISECONDS);
-        
+
         gameTimeTask = new GameTimeTask(myGame);
         gameTimer.scheduleAtFixedRate(gameTimeTask, 100, 1000, TimeUnit.MILLISECONDS);
-        
+
         //Moving left or right
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {
             @Override
@@ -619,75 +623,53 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private void displayPostGameStats() {
         // Remove this println after implementation
         System.out.println("Display post game stats");
-        // open new stage, and chuck all info in here, including whether game was ended before time
-        String message = "";
-        message += "Round: " + this.getMyGame().getRoundNoProperty().getValue() + "\n";
-        try
-        {
-            message += this.getWinnerText() + "\n";
-            
-            message += "P1 " + this.getMyGame().getPlayer1Name() + ": " + this.getMyGame().getPlayer1Score().getValue() + "\n";
-            message += "P2 " + this.getMyGame().getPlayer2Name() + ": " + this.getMyGame().getPlayer2Score().getValue() + "\n";
-            message += "P3 " + this.getMyGame().getPlayer3Name() + ": " + this.getMyGame().getPlayer3Score().getValue() + "\n";
-        }
-        catch (RemoteException ex)
-        {
-            System.out.println("RemoteException (setting winning player text): " + ex.getMessage());
-            message += "Failed to retreive player info.";
-        }        
         
-        Dialog d = new Dialog(this.getMyStage(), "Statistics", message);
-        d.show();
+        // open new stage, and chuck all info in here, including whether game was ended before time
+        Map<String, Integer> playerScores = new HashMap<>();
+        playerScores.put(this.myGame.getPlayer1NameProperty().get(),
+                this.myGame.getPlayer1Score().get());
+        playerScores.put(this.myGame.getPlayer2NameProperty().get(),
+                this.myGame.getPlayer2Score().get());
+        playerScores.put(this.myGame.getPlayer3NameProperty().get(),
+                this.myGame.getPlayer3Score().get());
+
+        String message = "Round: " + this.getMyGame().getRoundNoProperty().getValue() + "\n";
+        message += this.getWinnerText(playerScores) + "\n";
+
+        showDialog("Statistics", message);
     }
 
-    private void closeMyStage(){
+    private void closeMyStage() {
         Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
-                if(getMyStage() != null){
+                if (getMyStage() != null) {
                     getMyStage().close();
                 }
             }
         });
     }
 
-    private String getWinnerText() throws RemoteException
-    {
-        String playerWinString = "Player ";
-        
-        int winningScore = 0;
-        int p1Score = this.getMyGame().getPlayer1Score().getValue();
-        int p2Score = this.getMyGame().getPlayer2Score().getValue();
-        int p3Score = this.getMyGame().getPlayer3Score().getValue();
-        
-        if (p1Score > p2Score)
-        {
-            if (p1Score > p3Score)
-            {
-                playerWinString +=  this.getMyGame().getPlayer1Name();
-                winningScore = p1Score;
-            }
-            else
-            {
-                playerWinString += this.getMyGame().getPlayer3Name();
-                winningScore = p3Score;
+    /**
+     * Determines highest scoring player, and formats that to string.
+     *
+     * @param input
+     * @return
+     * @throws RemoteException
+     */
+    private String getWinnerText(Map<String, Integer> input) {
+
+        String winner = "Unknown";
+        int winningScore = -10;
+        for (String s : input.keySet()) {
+            if (input.get(s) > winningScore) {
+                winningScore = input.get(s);
+                winner = s;
             }
         }
-        else
-        {
-            if (p2Score > p3Score)
-            {
-                playerWinString += this.getMyGame().getPlayer2Name();
-                winningScore = p2Score;
-            }
-            else
-            {
-               playerWinString += this.getMyGame().getPlayer3Name();
-               winningScore = p3Score;
-            }
-        }
-        
+
+        String playerWinString = "Player " + winner;
         playerWinString += " won with score " + winningScore;
         return playerWinString;
     }

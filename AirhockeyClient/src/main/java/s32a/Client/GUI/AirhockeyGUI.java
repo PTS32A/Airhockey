@@ -57,13 +57,13 @@ public class AirhockeyGUI {
         try {
             lobby = new LobbyClient(this, this.requestRemoteLobby(ipAddress, bindingName, portNumber));
             if (lobby == null) {
-                showDialog("Error", "lobby is null");
+                Dialog.showDialog("Error", "lobby is null");
                 return;
             }
         } catch (RemoteException ex) {
             String error = "RemoteException in trying to open new LobbyClient";
             System.out.println(error);
-            showDialog("Error", error);
+            Dialog.showDialog("Error", error);
             Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
@@ -171,14 +171,7 @@ public class AirhockeyGUI {
         // Terminates game
         stage.show();
         return controller;
-    }
-
-    void showDialog(String type, String message) {
-        Stage myDialog = new Dialog(getStage(), type, message);
-        myDialog.show();
-    }
-
-    
+    }    
 
     /**
      * Makes the initial RMI connection by retrieving the ILobby bound in the
@@ -191,7 +184,7 @@ public class AirhockeyGUI {
      */
     private ILobby requestRemoteLobby(String ipAddress, String bindingName, int portNumber) {
         if (ipAddress == null || bindingName == null || portNumber == -1) {
-            showDialog("Error", "no binding name, ipAddress or portNumber provided");
+            Dialog.showDialog("Error", "no binding name, ipAddress or portNumber provided");
             return null;
         }
 

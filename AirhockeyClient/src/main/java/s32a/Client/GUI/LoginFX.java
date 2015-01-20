@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import static s32a.Client.GUI.Dialog.showDialog;
 import s32a.Client.Startup.ClientMain;
 
 /**
@@ -46,21 +47,21 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
      */
     public void login(Event evt) {
         if (tfUserName.getText().equals("") || pwfPassword.getText().equals("")) {
-            super.showDialog("Error", "One or more fields are empty.");
+            showDialog("Error", "One or more fields are empty.");
         } else {
             try {
                 AirhockeyGUI.me = tfUserName.getText();
                 if (lobby.checkLogin(tfUserName.getText(), pwfPassword.getText(), lobby)) {
                     super.goToLobby(getThisStage());
                 } else {
-                    super.showDialog("Error", "Username or password is incorrect.");
+                    showDialog("Error", "Username or password is incorrect.");
                 }
             } catch (IllegalArgumentException ex) {
-                super.showDialog("Error", "Unable to login: " + ex.getMessage());
+                showDialog("Error", "Unable to login: " + ex.getMessage());
                 // executed if not logged in
                 ClientMain.launchClient();
             } catch (SQLException ex) {
-                super.showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
+                showDialog("Error", "Unable to open Lobby: " + ex.getMessage());
                 // executed if not logged in
                 ClientMain.launchClient();
             } catch (IOException ex) {
@@ -74,7 +75,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
                     // executed if not logged in
                     ClientMain.launchClient();
                 }
-                super.showDialog("Error", "Unable to open Lobby" + ex.getMessage());
+                showDialog("Error", "Unable to open Lobby" + ex.getMessage());
             }
 
         }
@@ -98,7 +99,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
         try {
             super.goToRegister(getThisStage());
         } catch (IOException ex) {
-            super.showDialog("Error", "Unable to go to Register: " + ex.getMessage());
+            showDialog("Error", "Unable to go to Register: " + ex.getMessage());
         }
     }
 
