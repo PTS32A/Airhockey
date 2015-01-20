@@ -391,6 +391,9 @@ public class Puck extends TimerTask {
             direction += r.nextInt(180);
             stuck = false;
         }
+//        else{
+//            position.set(new Vector2());
+//        }
     }
 
     private void continueUpdatePosition(Vector2 bouncePosition, Vector2 newPosition) {
@@ -695,10 +698,10 @@ public class Puck extends TimerTask {
                 
                 if (p.getColor() == Colors.Green) {
                     direction = 120;
-                    batBouncePosition = new Vector2((float)(p.getPosX().get() + radius), (float)(p.getPosY().get()));
+                    batBouncePosition = new Vector2((float)(p.getPosX().get() - radius), (float)(p.getPosY().get()));
                 } else if (p.getColor() == Colors.Blue) {
                     direction = 60;
-                    batBouncePosition = new Vector2((float)(p.getPosX().get() - radius), (float)(p.getPosY().get()));
+                    batBouncePosition = new Vector2((float)(p.getPosX().get() + radius), (float)(p.getPosY().get()));
                 } else {
                     direction = 0;
                     batBouncePosition = new Vector2((float)(p.getPosX().get()), (float)(p.getPosY().get() + radius));
