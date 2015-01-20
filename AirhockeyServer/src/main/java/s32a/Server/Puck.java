@@ -690,7 +690,6 @@ public class Puck extends TimerTask {
                 //Flip angle back to origin and add ofset
                 double xMovement = Math.cos(Math.toRadians((int) (180+degrees)));
                 double yMovement = Math.sin(Math.toRadians((int) (180+degrees)));
-                System.out.println("Before: "+ direction);
                 batBouncePosition = new Vector2(position.get().x + (float)xMovement, position.get().y + (float)yMovement);
                 if (p.getColor() == Colors.Green) {
                     direction = (float)(180+degrees);
@@ -706,8 +705,7 @@ public class Puck extends TimerTask {
                         direction = (float)(180+degrees);
                     }
                 }
-                System.out.println("After: " + direction);
-                //correctDirection();
+                correctDirection();
                 
             }
                     //getIntersectionWithCircle(position.get(), pos, batCentre, radius);
