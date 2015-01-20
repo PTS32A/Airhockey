@@ -515,7 +515,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * @param myPlayer
      */
     public void addEvents(IPlayer myPlayer) {
-        // timer for afk timeout - probably should be moved serverside
         afkTimerTask = new AFKTimerTask(this);
         gameTimer.scheduleAtFixedRate(afkTimerTask, 500, 5000, TimeUnit.MILLISECONDS);
         
