@@ -33,10 +33,11 @@ public class GameTimeTask extends TimerTask {
     @Override
     public void run() {
         if (myGame.getGameStatusProperty().get() == GameStatus.Playing) {
-            sec++;
-            if (sec > 59) {
+            if (sec >= 59) {
                 sec = 0;
                 min++;
+            } else {
+                sec++;
             }
             String second = Integer.toString(sec);
             if (sec < 10) {

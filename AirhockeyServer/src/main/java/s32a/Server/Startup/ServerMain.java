@@ -158,7 +158,7 @@ public class ServerMain extends Application {
             
             Label lblLocalHost = new Label(InetAddress.getLocalHost().toString());
             gp.add(lblLocalHost, 1, 3);
-            Label ip = new Label("IP Adress:");
+            Label ip = new Label("IP Address:");
             gp.add(ip, 0, 4);
 
             TextField tfIP = new TextField();

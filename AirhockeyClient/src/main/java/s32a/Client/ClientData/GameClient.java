@@ -11,6 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -23,6 +24,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import lombok.Setter;
 import s32a.Client.GUI.GameFX;
 import s32a.Shared.*;
 import s32a.Shared.enums.GameStatus;
@@ -54,22 +56,24 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     private GameFX fx;
     // boolean preventing failsafe methods causing quitclick to be called multiple times
-    private boolean isShutDown = false;
+    @Getter
+    private AtomicBoolean isShutDown;
 
     /**
      * Constructor
      * @throws RemoteException
      */
     public GameClient() throws RemoteException {
+        this.isShutDown = new AtomicBoolean(false);
         this.myPlayers = new ArrayList<>();
         this.oChat = FXCollections.observableArrayList(new ArrayList<String>());
         this.roundNoProperty = new SimpleIntegerProperty();
         this.puckXProperty = new SimpleDoubleProperty();
         this.puckYProperty = new SimpleDoubleProperty();
 
-        this.player1NameProperty = new SimpleStringProperty("-");
-        this.player2NameProperty = new SimpleStringProperty("-");
-        this.player3NameProperty = new SimpleStringProperty("-");
+        this.player1NameProperty = new SimpleStringProperty(" ");
+        this.player2NameProperty = new SimpleStringProperty(" ");
+        this.player3NameProperty = new SimpleStringProperty(" ");
 
         float width = 500;
         float x;
@@ -128,14 +132,14 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public synchronized void endGame() {
-        if(this.isShutDown){
+        if(this.isShutDown.get()){
             return;
         }
         this.gameStatusProperty.set(GameStatus.GameOver);
         if(fx != null){
             fx.cancelGameTimerTask();
             fx.quitClick(null);
-            this.isShutDown = true;
+            this.isShutDown.set(true);
         } else {
             System.out.println("gameClient GameFX = null");
         }
@@ -393,9 +397,19 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         });
     }
 
-    
+    /**
+     * Updates gameTime. Called from clientSide task.
+     * @param time
+     */
     public void setGameTimeProperty(String time) {
-        gameTimeProperty.set(time);
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                gameTimeProperty.set(time);
+            }
+        });
+        
     }
     
     // ----------------------------------- Methods querying game info, used for up-to-date game display in lobby -------------------
@@ -406,6 +420,7 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
 
     @Override
     public String getPlayer1Name() throws RemoteException {
+        System.out.println("myGame == null: " + (myGame == null));
         return this.myGame.getPlayer1Name();
     }
 

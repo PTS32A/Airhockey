@@ -483,6 +483,9 @@ public class Game extends UnicastRemoteObject implements IGame {
      * @throws java.rmi.RemoteException
      */
     public void startRound() throws RemoteException {
+        if(this.statusProp.get().equals(GameStatus.GameOver)){
+            return;
+        }
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
         printMessage("-ROUND " + (roundNo.get() + 1));
@@ -496,6 +499,9 @@ public class Game extends UnicastRemoteObject implements IGame {
      * Starts a 4-second countdown before each round - including the first.
      */
     private void startCountDown() throws RemoteException {
+        if(this.statusProp.get().equals(GameStatus.GameOver)){
+            return;
+        }
         this.statusProp.set(GameStatus.Waiting);
         this.countDownTime.set(4);
 
@@ -530,7 +536,7 @@ public class Game extends UnicastRemoteObject implements IGame {
             printMessage("END GAME");
             printMessage("");
             Lobby.getSingle().endGame(this.getID(), null);
-        } else {
+        } else if(!this.statusProp.get().equals(GameStatus.GameOver)) {
             //new round is started at the end of countdown
             this.startCountDown();
         }
@@ -543,6 +549,7 @@ public class Game extends UnicastRemoteObject implements IGame {
         try {
             this.addChatMessage("-- Game Over --", "GAME");
             this.statusProp.set(GameStatus.GameOver);
+            this.endRound();
             publisher.broadcastEndGame();
         }
         catch (RemoteException ex) {

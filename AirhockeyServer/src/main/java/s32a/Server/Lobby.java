@@ -535,16 +535,17 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         player2score += (player1rating + player3rating - 2 * player2rating) / 8;
         player3score += (player1rating + player2rating - 2 * player3rating) / 8;
 
+        int roundNo = game.getRoundNo().get();
         // adjusts score based on whether the game ended prematurely
-        if (earlyEnding) {
-            player1score = (player1score - 20) * 10 / game.getRoundNo().get() + 20;
-            player2score = (player2score - 20) * 10 / game.getRoundNo().get() + 20;
-            player3score = (player3score - 20) * 10 / game.getRoundNo().get() + 20;
+        if (earlyEnding && roundNo > 0) {
+            player1score = (player1score - 20) * 10 / roundNo + 20;
+            player2score = (player2score - 20) * 10 / roundNo + 20;
+            player3score = (player3score - 20) * 10 / roundNo + 20;
+        } else if (roundNo > 0) {
+            ((Player) game.getMyPlayers().get(0)).setScore(player1score);
+            ((Player) game.getMyPlayers().get(1)).setScore(player2score);
+            ((Player) game.getMyPlayers().get(2)).setScore(player3score);
         }
-
-        ((Player) game.getMyPlayers().get(0)).setScore(player1score);
-        ((Player) game.getMyPlayers().get(1)).setScore(player2score);
-        ((Player) game.getMyPlayers().get(2)).setScore(player3score);
 
         try {
             // saves game

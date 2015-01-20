@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -34,13 +35,19 @@ import javafx.stage.WindowEvent;
  *
  * @author frankpeeters
  */
-public class Dialog{
+public class Dialog {
 
     private static Map<Long, Dialog> dialogs = new HashMap<>();
 
     public static void showDialog(String header, String message) {
-        Long id = System.currentTimeMillis();
-        dialogs.put(id, new Dialog(id, header, message));
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                Long id = System.currentTimeMillis();
+                dialogs.put(id, new Dialog(id, header, message));
+            }
+        });
     }
 
     private Stage stage;
@@ -94,7 +101,7 @@ public class Dialog{
                 }
             }
         });
-        
+
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
             @Override
