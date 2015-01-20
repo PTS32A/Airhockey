@@ -104,8 +104,7 @@ public class Puck extends TimerTask {
         Lobby lobby = null;
         try {
             lobby = Lobby.getSingle();
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("RemoteExceptoin in getSingle: " + ex.getMessage());
             Logger.getLogger(Puck.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -263,8 +262,7 @@ public class Puck extends TimerTask {
             if (this.runCount == 0) {
                 try {
                     myGame.endRound();
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     System.out.println("remoteException in myGame.endRound(): " + ex.getMessage());
                     Logger.getLogger(Puck.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -327,8 +325,8 @@ public class Puck extends TimerTask {
                 beingPushed = false;
             }
 
-            float newX = oldX + (float) (Math.cos(radians) * (double) distance);
-            float newY = oldY + (float) (Math.sin(radians) * (double) distance);
+            float newX = oldX + (float) (Math.sin(radians) * (double) distance);
+            float newY = oldY + (float) (Math.cos(radians) * (double) distance);
 
             Vector2 newPosition = new Vector2(newX, newY);
 
@@ -381,8 +379,7 @@ public class Puck extends TimerTask {
                         //Continue the position with the remaining distance, calculated using bouncePosition and newPosition
                         continueUpdatePosition(bouncePosition, newPosition);
                     }
-                }
-                catch (RemoteException ex) {
+                } catch (RemoteException ex) {
                     System.out.println("RemoteException in Puck.updatePosition: " + ex.getMessage());
                 }
             }
@@ -515,8 +512,7 @@ public class Puck extends TimerTask {
 
         try {
             return new Vector2(x, y);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
             return null;
         }
@@ -673,54 +669,45 @@ public class Puck extends TimerTask {
         for (IPlayer Ip : myGame.getMyPlayers()) {
             Player p = (Player) Ip;
             batCentre = new Vector2(p.getPosX().floatValue(), p.getPosY().floatValue());
-            
-            
+
             Vector2 batBouncePosition = null;
             //Pythagoras
             double deltaX = Math.abs(position.get().x - batCentre.x);
             double deltaY = Math.abs(position.get().y - batCentre.y);
             double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            
-            if (distance < (puckSize/2) + (p.getBatWidth()/2)) {
+
+            if (distance < (puckSize / 2) + (p.getBatWidth() / 2)) {
 
                 //Reverse angle of the collision point
-                double degrees = Math.toDegrees(Math.atan2
-                    (batCentre.y - position.get().y, batCentre.x - position.get().x));
-                
+                double degrees = Math.toDegrees(Math.atan2(batCentre.y - position.get().y, batCentre.x - position.get().x));
+
                 //Flip angle back to origin and add ofset
-                double xMovement = Math.cos(Math.toRadians((int) (180+degrees)));
-                double yMovement = Math.sin(Math.toRadians((int) (180+degrees)));
-                System.out.println("Before: "+ direction);
-                batBouncePosition = new Vector2(position.get().x + (float)xMovement, position.get().y + (float)yMovement);
+                double xMovement = Math.cos(Math.toRadians((int) (180 + degrees)));
+                double yMovement = Math.sin(Math.toRadians((int) (180 + degrees)));
+                batBouncePosition = new Vector2(position.get().x + (float) xMovement, position.get().y + (float) yMovement);
                 if (p.getColor() == Colors.Green) {
-                    direction = (float)(180+degrees);
-                }
-                else if (p.getColor() == Colors.Blue) {
-                    direction = (float)(180-degrees);
-                }
-                else{
+                    direction = (float) (180 + degrees);
+                } else if (p.getColor() == Colors.Blue) {
+                    direction = (float) (180 - degrees);
+                } else {
                     if (batCentre.x < 0) {
-                        direction = (float)(180-degrees);
-                    }
-                    else{
-                        direction = (float)(180+degrees);
+                        direction = (float) (180 - degrees);
+                    } else {
+                        direction = (float) (180 + degrees);
                     }
                 }
-                System.out.println("After: " + direction);
-                //correctDirection();
-                
+                correctDirection();
+
             }
-                    //getIntersectionWithCircle(position.get(), pos, batCentre, radius);
+            //getIntersectionWithCircle(position.get(), pos, batCentre, radius);
 
             if (batBouncePosition != null) {
 
                 //Bat bounce by player p
                 printMessage("Bat-Bounce @ player " + p.getColor());
                 this.hitBy.add(p);
-                
-                
-//                int index = myGame.getMyPlayers().indexOf(p);
 
+//                int index = myGame.getMyPlayers().indexOf(p);
 //                if (index == 0) {
 //                    //RED
 //                    updateDirection(180);
@@ -755,9 +742,7 @@ public class Puck extends TimerTask {
 //
 //                    direction += correction;
 //                }
-
                 //correctDirection();
-
                 return batBouncePosition;
             }
         }
@@ -891,13 +876,11 @@ public class Puck extends TimerTask {
         String output = "Unknown";
         try {
             output = this.myGame.getMyPlayers().get(playerID).getColor().toString();
-        }
-        catch (NullPointerException ex) {
+        } catch (NullPointerException ex) {
             System.out.println("Null pointer thrown in Puck.getColorName(): "
                     + ex.getMessage());
             output = "Unknown";
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("RemoteException in getColorName: " + ex.getMessage());
             Logger.getLogger(Puck.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -916,8 +899,7 @@ public class Puck extends TimerTask {
             if (printMessages) {
                 System.out.println("   " + message);
             }
-        }
-        catch (StackOverflowError ex) {
+        } catch (StackOverflowError ex) {
 
         }
     }

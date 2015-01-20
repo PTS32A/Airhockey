@@ -334,8 +334,8 @@ public class Puck extends TimerTask {
                 beingPushed = false;
             }
 
-            float newX = oldX + (float) (Math.cos(radians) * (double) distance);
-            float newY = oldY + (float) (Math.sin(radians) * (double) distance);
+            float newX = oldX + (float) (Math.sin(radians) * (double) distance);
+            float newY = oldY + (float) (Math.cos(radians) * (double) distance);
 
             Vector2 newPosition = new Vector2(newX, newY);
 
@@ -386,7 +386,7 @@ public class Puck extends TimerTask {
                         myGame.endRound();
                     } else {
                         //Continue the position with the remaining distance, calculated using bouncePosition and newPosition
-                        continueUpdatePosition(bouncePosition, newPosition);
+                        //continueUpdatePosition(bouncePosition, newPosition);
                     }
                 }
                 catch (RemoteException ex) {
