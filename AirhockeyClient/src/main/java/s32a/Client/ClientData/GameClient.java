@@ -137,7 +137,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
         }
         this.gameStatusProperty.set(GameStatus.GameOver);
         if(fx != null){
-            fx.cancelGameTimerTask();
             fx.quitClick(null);
             this.isShutDown.set(true);
         } else {

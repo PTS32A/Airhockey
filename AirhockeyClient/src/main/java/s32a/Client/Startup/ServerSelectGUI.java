@@ -279,7 +279,7 @@ public class ServerSelectGUI {
             Scene scene = new Scene(root, 500, 280);
             root.getChildren().add(gp);
             stage.setScene(scene);
-            stage.setTitle("Server Information");
+            stage.setTitle("Airhockey");
 
             // confirms on hitting enter
             stage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {

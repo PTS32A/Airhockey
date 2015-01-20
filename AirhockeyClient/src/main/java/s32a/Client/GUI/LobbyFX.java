@@ -55,6 +55,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     @FXML
     ListView lvPlayerInfo;
 
+    private int selectedGameIndex = -1;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         tfChatbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -148,7 +150,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 if (game != null) {
                     openNewGameWindow(client);
                 } else {
-                    showDialog("Error", "Unable to create a new Game: NullPointer at game");
+                    showDialog("Error", "Unable to create a new Game");
                 }
             } else {
                 showDialog("Error", "You are currently spectating or playing a game");
@@ -175,7 +177,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                             p.getName(), client) != null) {
                         openNewGameWindow(client);
                     } else {
-                        showDialog("Error", "Unable to create a new Game: NullPointer at game");
+                        showDialog("Error", "Unable to join Game.");
                     }
                 }
             }

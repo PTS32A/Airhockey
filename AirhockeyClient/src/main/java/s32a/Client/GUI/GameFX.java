@@ -165,7 +165,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * GameFX. Done so after gameclient is initialized (not on startup gamefx)
      */
     public void bindMyGameProperties() {
-            // Disables certain controls if person is not starter
+        // Disables certain controls if person is not starter
         myGame.getOChat().addListener(new ListChangeListener() {
 
             @Override
@@ -178,15 +178,15 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 }
             }
         });
-        
+
         myGame.getGameStatusProperty().addListener(new ChangeListener() {
-            
+
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if(myGame.getGameStatusProperty().get() == GameStatus.Playing) {
+                if (myGame.getGameStatusProperty().get() == GameStatus.Playing) {
                     gameTimeTask = new GameTimeTask(myGame);
-                    gameTimer.scheduleAtFixedRate(gameTimeTask, 100, 1000, TimeUnit.MILLISECONDS);
-                    
+                    tryScheduleAtFixedRate(gameTimeTask, 100L, 1000L, TimeUnit.MILLISECONDS);
+
                     myGame.getGameStatusProperty().removeListener(this);
                 }
             }
@@ -293,7 +293,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (myGame.getGameStatusProperty().get() == GameStatus.Waiting) {
                     try {
-                        gameTimer.scheduleAtFixedRate(countDownDisplay, 10, 500, TimeUnit.MILLISECONDS);
+                        tryScheduleAtFixedRate(countDownDisplay, 10L, 500L, TimeUnit.MILLISECONDS);
                     } catch (RejectedExecutionException ex) {
                         System.out.println("rejected execution of countdowndisplay");
                     }
@@ -498,6 +498,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             if (afkTimerTask != null) {
                 afkTimerTask.cancel();
             }
+            if (gameTimeTask != null) {
+                gameTimeTask.cancel();
+            }
             if (gameTimer != null) {
                 gameTimer.shutdownNow();
             }
@@ -511,7 +514,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             } else {
                 lobby.endGame(myGame.getID(), myPerson.getName());
             }
-            myGame.addChatMessage("has left the game", super.getMe().getName());           
+            myGame.addChatMessage("has left the game", super.getMe().getName());
         } catch (RemoteException ex) {
             System.out.println("RemoteException on quitClick: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
@@ -565,7 +568,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     public void addEvents(IPlayer myPlayer) {
         afkTimerTask = new AFKTimerTask(this);
-        gameTimer.scheduleAtFixedRate(afkTimerTask, 500, 5000, TimeUnit.MILLISECONDS);
+        tryScheduleAtFixedRate(afkTimerTask, 500L, 5000L, TimeUnit.MILLISECONDS);
         //Moving left or right
         final EventHandler<KeyEvent> keyPressed = new EventHandler<KeyEvent>() {
             @Override
@@ -622,12 +625,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
         });
     }
-    
-    public void cancelGameTimerTask() {
-        if (gameTimeTask != null) {
-            gameTimeTask.cancel();
-        }
-    }
 
     /**
      * Adds listeners to the slider and checkbox used to govern custom
@@ -670,7 +667,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     private void displayPostGameStats() {
         // Remove this println after implementation
         System.out.println("Display post game stats");
-        
+
         // open new stage, and chuck all info in here, including whether game was ended before time
         Map<String, Integer> playerScores = new HashMap<>();
         playerScores.put(this.myGame.getPlayer1NameProperty().get(),
@@ -684,23 +681,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         String message = "Round: " + this.getMyGame().getRoundNoProperty().getValue() + "\n";
         message += this.getWinnerText(playerScores) + "\n" + "\n";
 
-        for(String s : playerScores.keySet()){
+        for (String s : playerScores.keySet()) {
             message += "Player " + s + " scored " + playerScores.get(s) + "\n";
         }
 
         showDialog("Statistics", message);
-    }
-
-    private void closeMyStage() {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                if (getMyStage() != null) {
-                    getMyStage().hide();
-                }
-            }
-        });
     }
 
     /**
@@ -725,4 +710,37 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         playerWinString += " won with score " + winningScore;
         return playerWinString;
     }
+
+    /**
+     * Executes a thread-safe closing of game stage.
+     */
+    private void closeMyStage() {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if (getMyStage() != null) {
+                    getMyStage().hide();
+                }
+            }
+        });
+    }
+
+    /**
+     * Schedules a runnable with gameTimer. Provides try/catch for
+     * RejectedExecutionExceptions.
+     *
+     * @param r
+     * @param start
+     * @param interval
+     * @param tu
+     */
+    private void tryScheduleAtFixedRate(Runnable r, Long start, Long interval, TimeUnit tu) {
+        try {
+            gameTimer.scheduleAtFixedRate(r, start, interval, tu);
+        } catch (RejectedExecutionException ex) {
+            System.out.println("rejected execution");
+        }
+    }
+
 }
