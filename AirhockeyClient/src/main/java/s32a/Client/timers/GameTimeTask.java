@@ -32,7 +32,7 @@ public class GameTimeTask extends TimerTask {
 
     @Override
     public void run() {
-        if (myGame.getGameStatusProperty().equals(GameStatus.Playing)) {
+        if (myGame.getGameStatusProperty().get() == GameStatus.Playing) {
             sec++;
             if (sec > 59) {
                 sec = 0;
@@ -49,6 +49,7 @@ public class GameTimeTask extends TimerTask {
             final String output = minute + ":" + second;
             
             myGame.setGameTimeProperty(output);
+            System.out.println(output);
         }
     }    
 }

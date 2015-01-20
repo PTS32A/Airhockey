@@ -183,7 +183,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if(myGame.getGameStatusProperty().equals(GameStatus.Playing)) {       
+                if(myGame.getGameStatusProperty().get() == GameStatus.Playing) {
                     gameTimeTask = new GameTimeTask(myGame);
                     gameTimer.scheduleAtFixedRate(gameTimeTask, 100, 1000, TimeUnit.MILLISECONDS);
                     
