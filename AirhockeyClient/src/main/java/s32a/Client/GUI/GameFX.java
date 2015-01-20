@@ -165,16 +165,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * GameFX. Done so after gameclient is initialized (not on startup gamefx)
      */
     public void bindMyGameProperties() {
-            // Disables certain controls if person is not starter
-        myGame.getOChat().addListener(new ListChangeListener() {
+        // Disables certain controls if person is not starter
+        myGame.getPlayer1NameProperty().addListener(new ChangeListener() {
 
             @Override
-            public void onChanged(ListChangeListener.Change c) {
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (!myGame.getPlayer1NameProperty().get().equals(me)) {
                     cbxCustomDifficulty.setDisable(true);
                     sldCustomDifficulty.setDisable(true);
                     btnStart.setDisable(true);
-                    myGame.getOChat().removeListener(this);
+                    myGame.getPlayer1NameProperty().removeListener(this);  
                 }
             }
         });
@@ -492,8 +492,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     @FXML
     public void quitClick(Event evt) {
-        myGame.getIsShutDown().set(true);
-        closeMyStage();
         try {
             if (afkTimerTask != null) {
                 afkTimerTask.cancel();
@@ -511,7 +509,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             } else {
                 lobby.endGame(myGame.getID(), myPerson.getName());
             }
-            myGame.addChatMessage("has left the game", super.getMe().getName());           
+            myGame.addChatMessage("has left the game", super.getMe().getName());
+            closeMyStage();
         } catch (RemoteException ex) {
             System.out.println("RemoteException on quitClick: " + ex.getMessage());
             Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
@@ -679,14 +678,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 this.myGame.getPlayer2Score().get());
         playerScores.put(this.myGame.getPlayer3NameProperty().get(),
                 this.myGame.getPlayer3Score().get());
-        playerScores.remove(" ");
 
         String message = "Round: " + this.getMyGame().getRoundNoProperty().getValue() + "\n";
-        message += this.getWinnerText(playerScores) + "\n" + "\n";
-
-        for(String s : playerScores.keySet()){
-            message += "Player " + s + " scored " + playerScores.get(s) + "\n";
-        }
+        message += this.getWinnerText(playerScores) + "\n";
 
         showDialog("Statistics", message);
     }
@@ -697,7 +691,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             @Override
             public void run() {
                 if (getMyStage() != null) {
-                    getMyStage().hide();
+                    getMyStage().close();
                 }
             }
         });
