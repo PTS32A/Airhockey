@@ -13,6 +13,8 @@ import java.util.Random;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleFloatProperty;
@@ -33,8 +35,8 @@ public class Puck extends TimerTask {
 
     @Getter
     private ObjectProperty<Vector2> position;
-//    @Getter
-//    private DoubleProperty xPos, yPos;
+    @Getter
+    private DoubleProperty xPosBat, yPosBat;
     @Getter
     @Setter
     private float direction;
@@ -391,9 +393,9 @@ public class Puck extends TimerTask {
             direction += r.nextInt(180);
             stuck = false;
         }
-//        else{
-//            position.set(new Vector2());
-//        }
+        else{
+            position.set(new Vector2((float)xPosBat.get(), (float)yPosBat.get()));
+        }
     }
 
     private void continueUpdatePosition(Vector2 bouncePosition, Vector2 newPosition) {
@@ -699,12 +701,18 @@ public class Puck extends TimerTask {
                 if (p.getColor() == Colors.Green) {
                     direction = 120;
                     batBouncePosition = new Vector2((float)(p.getPosX().get() - radius), (float)(p.getPosY().get()));
+                    xPosBat.bind(Bindings.subtract(p.getPosX(), radius));
+                    yPosBat.bind(p.getPosY());
                 } else if (p.getColor() == Colors.Blue) {
                     direction = 60;
                     batBouncePosition = new Vector2((float)(p.getPosX().get() + radius), (float)(p.getPosY().get()));
+                    xPosBat.bind(Bindings.add(p.getPosX(), radius));
+                    yPosBat.bind(p.getPosY());
                 } else {
                     direction = 0;
                     batBouncePosition = new Vector2((float)(p.getPosX().get()), (float)(p.getPosY().get() + radius));
+                    xPosBat.bind(p.getPosX());
+                    yPosBat.bind(Bindings.add(p.getPosY(), radius));
                 }
                 stuckBegin = System.currentTimeMillis();
                 stuck = true;
