@@ -17,6 +17,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.shape.Line;
@@ -121,6 +122,8 @@ public class Puck extends TimerTask {
         }
 
         this.speed = new SimpleFloatProperty(0f);
+        this.xPosBat = new SimpleDoubleProperty(0);
+        this.yPosBat = new SimpleDoubleProperty(0);
         this.speed.set(speed);
         this.hitBy = new ArrayList<>();
 
@@ -700,14 +703,14 @@ public class Puck extends TimerTask {
                 
                 if (p.getColor() == Colors.Green) {
                     direction = 120;
-                    batBouncePosition = new Vector2((float)(p.getPosX().get() - radius), (float)(p.getPosY().get()));
+                    batBouncePosition = new Vector2((float)(p.getPosX().get() - radius), (float)(p.getPosY().get() - puckSize/2));
                     xPosBat.bind(Bindings.subtract(p.getPosX(), radius));
-                    yPosBat.bind(p.getPosY());
+                    yPosBat.bind(Bindings.subtract(p.getPosY(), puckSize/2));
                 } else if (p.getColor() == Colors.Blue) {
                     direction = 60;
-                    batBouncePosition = new Vector2((float)(p.getPosX().get() + radius), (float)(p.getPosY().get()));
+                    batBouncePosition = new Vector2((float)(p.getPosX().get() + radius), (float)(p.getPosY().get() - puckSize/2));
                     xPosBat.bind(Bindings.add(p.getPosX(), radius));
-                    yPosBat.bind(p.getPosY());
+                    yPosBat.bind(Bindings.subtract(p.getPosY(), puckSize/2));
                 } else {
                     direction = 0;
                     batBouncePosition = new Vector2((float)(p.getPosX().get()), (float)(p.getPosY().get() + radius));
