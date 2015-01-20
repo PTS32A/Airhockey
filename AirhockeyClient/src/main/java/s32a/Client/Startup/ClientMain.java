@@ -43,6 +43,7 @@ public class ClientMain extends Application {
         System.setSecurityManager(new SecurityManager());
 
         ClientMain.stage = stage;
+        stage.setResizable(false);
         launchClient();
     }
 

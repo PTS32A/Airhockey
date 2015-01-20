@@ -275,6 +275,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             public void run() {
                 try {
                     Stage stage1 = new Stage();
+                    stage1.setResizable(false);
                     GameFX fx = base.goToGame(stage1, client);
                     client.setGameFX(fx);
                 } catch (IOException ex) {

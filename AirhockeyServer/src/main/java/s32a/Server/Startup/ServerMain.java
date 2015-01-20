@@ -45,6 +45,7 @@ public class ServerMain extends Application {
     public void start(Stage primaryStage) {
 
         this.stage = primaryStage;
+        stage.setResizable(false);
         Platform.runLater(new Runnable() {
 
             @Override

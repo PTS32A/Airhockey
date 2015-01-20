@@ -78,6 +78,7 @@ public class ServerSelectGUI {
      */
     private void displayFTPLogin() {
         Stage ftpLoginStage = new Stage();
+        ftpLoginStage.setResizable(false);
         ftpLoginStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
             @Override
