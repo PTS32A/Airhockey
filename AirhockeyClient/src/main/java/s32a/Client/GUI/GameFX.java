@@ -25,6 +25,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -37,12 +38,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import lombok.Getter;
 import lombok.Setter;
 import s32a.Client.ClientData.GameClient;
+import static s32a.Client.GUI.AirhockeyGUI.lobby;
 import static s32a.Client.GUI.Dialog.showDialog;
 import s32a.Client.timers.AFKTimerTask;
 import s32a.Client.timers.GameTimeTask;
@@ -206,7 +210,35 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         this.lblRound.textProperty().bind(myGame.getRoundNoProperty().asString());
 
         // Chatbox
+        this.lvChatbox.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> list) {
+                final ListCell cell = new ListCell() {
+                    private Text text;
+
+                    @Override
+                    public void updateItem(Object item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            text = new Text(item.toString());
+                            text.setWrappingWidth(lvChatbox.getPrefWidth());
+                            setGraphic(text);
+                        }
+                    }
+                };
+
+                return cell;
+            }
+        });
         this.lvChatbox.setItems(myGame.getOChat());
+        // autoscrolls to end of chatbox
+        myGame.getOChat().addListener(new ListChangeListener() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                lvChatbox.scrollTo(c.getList().size() - 1);
+            }
+        });
 
         // Difficulty 
         this.lblDifficulty.textProperty().bind(myGame.getDifficultyProperty());
@@ -499,6 +531,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
             } catch (RemoteException ex) {
                 System.out.println("RemoteException in addChatMessage: " + ex.getMessage());
+            } catch (IllegalArgumentException ex) {
+                // do nothing on empty messages
             }
         } else {
             showDialog("Error", "Current Person is null.");

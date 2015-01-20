@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,7 +21,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import s32a.Client.ClientData.GameClient;
 import static s32a.Client.GUI.Dialog.showDialog;
 import s32a.Shared.IGame;
@@ -64,6 +67,27 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             }
         });
 
+        this.lvChatbox.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> list) {
+                final ListCell cell = new ListCell() {
+                    private Text text;
+
+                    @Override
+                    public void updateItem(Object item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            text = new Text(item.toString());
+                            text.setWrappingWidth(lvChatbox.getPrefWidth());
+                            setGraphic(text);
+                        }
+                    }
+                };
+
+                return cell;
+            }
+        });
+
         try {
             this.lvChatbox.setItems(lobby.getOChatList());
             this.tvHighscores.setItems(lobby.getORankingsList());
@@ -81,10 +105,18 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             this.tcGDPlayer3.setCellValueFactory(new PropertyValueFactory<>("player3Name"));
 
             this.updatePlayerInfo();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             showDialog("Error", "Unable to initialise Lobby: " + ex.getMessage());
         }
+
+        // autoscrolls to end of chatbox
+        lobby.getOChatList().addListener(new ListChangeListener() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                lvChatbox.scrollTo(c.getList().size() - 1);
+            }
+        });
     }
 
     /**
@@ -121,8 +153,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             } else {
                 showDialog("Error", "You are currently spectating or playing a game");
             }
-        }
-        catch (RemoteException ex) {
+        } catch (RemoteException ex) {
             showDialog("Error", "Unable to open new game due to RemoteException: " + ex.getMessage());
         }
     }
@@ -148,8 +179,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                     }
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             showDialog("Error", "Unable to join game: " + ex.getMessage());
         }
     }
@@ -174,11 +204,9 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                 GameClient client = new GameClient();
                 lobby.spectateGame(game.getID(), super.getMe().getName(), client);
                 openNewGameWindow(client);
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
                 showDialog("Error", ex.getMessage());
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("RemoteException on trying to spectate game: " + ex.getMessage());
                 Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -187,6 +215,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
 
     /**
      * A simple help screen, showing controls.
+     *
      * @param evt
      */
     public void showControls(Event evt) {
@@ -203,8 +232,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         try {
             lobby.logOut(super.getMe().getName());
             super.goToLogin(getThisStage());
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             showDialog("Error", "Unable to log out: " + ex.getMessage());
         }
     }
@@ -219,13 +247,11 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             try {
                 lobby.addChatMessage(tfChatbox.getText(), me);
                 tfChatbox.setText("");
-            }
-            catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ex) {
                 System.out.println("IllegalArgumentException on sendChatMessage: " + ex.getMessage());
                 showDialog("Error", "Unable to send message: " + ex.getMessage());
                 Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            catch (RemoteException ex) {
+            } catch (RemoteException ex) {
                 System.out.println("RemoteException on sendChatMessage: " + ex.getMessage());
                 Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -251,8 +277,7 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
                     Stage stage1 = new Stage();
                     GameFX fx = base.goToGame(stage1, client);
                     client.setGameFX(fx);
-                }
-                catch (IOException ex) {
+                } catch (IOException ex) {
                     showDialog("Error", "Could not open game: " + ex.getMessage());
                 }
             }
