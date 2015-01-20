@@ -327,8 +327,8 @@ public class Puck extends TimerTask {
                 beingPushed = false;
             }
 
-            float newX = oldX + (float) (Math.sin(radians) * (double) distance);
-            float newY = oldY + (float) (Math.cos(radians) * (double) distance);
+            float newX = oldX + (float) (Math.cos(radians) * (double) distance);
+            float newY = oldY + (float) (Math.sin(radians) * (double) distance);
 
             Vector2 newPosition = new Vector2(newX, newY);
 
@@ -427,7 +427,7 @@ public class Puck extends TimerTask {
 
             printMessage("Left Wall-Bounce");
 
-            updateDirection(60 + r.nextInt(10));
+            updateDirection(60 + r.nextInt(15));
 
             return getIntersection(position.get(), newPosition, leftCorner, upperCorner);
         } else if (outside == 1) {
@@ -435,7 +435,7 @@ public class Puck extends TimerTask {
 
             printMessage("Right Wall-Bounce");
 
-            updateDirection(-60 + r.nextInt(10));
+            updateDirection(-60 + r.nextInt(15));
 
             return getIntersection(position.get(), newPosition, rightCorner, upperCorner);
         } else {
@@ -690,6 +690,7 @@ public class Puck extends TimerTask {
                 //Flip angle back to origin and add ofset
                 double xMovement = Math.cos(Math.toRadians((int) (180+degrees)));
                 double yMovement = Math.sin(Math.toRadians((int) (180+degrees)));
+                System.out.println("Before: "+ direction);
                 batBouncePosition = new Vector2(position.get().x + (float)xMovement, position.get().y + (float)yMovement);
                 if (p.getColor() == Colors.Green) {
                     direction = (float)(180+degrees);
@@ -705,8 +706,8 @@ public class Puck extends TimerTask {
                         direction = (float)(180+degrees);
                     }
                 }
-                
-                correctDirection();
+                System.out.println("After: " + direction);
+                //correctDirection();
                 
             }
                     //getIntersectionWithCircle(position.get(), pos, batCentre, radius);

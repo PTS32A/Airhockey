@@ -57,7 +57,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
     Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
-            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver
+            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver;
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
     @FXML
