@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -46,6 +47,16 @@ public class ServerMain extends Application {
 
         this.stage = primaryStage;
         stage.setResizable(false);
+        
+        try
+        {
+            stage.getIcons().add(new Image("file:GamePNG.png"));
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Exception in setting the stage icon: " + ex.getMessage());
+        }
+        
         Platform.runLater(new Runnable() {
 
             @Override

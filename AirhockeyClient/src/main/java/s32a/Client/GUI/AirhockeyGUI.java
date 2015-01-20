@@ -17,6 +17,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.Getter;
@@ -103,6 +104,16 @@ public class AirhockeyGUI {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setResizable(false);
+        
+        try
+        {
+            stage.getIcons().add(new Image("file:GamePNG.png"));
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Exception in setting the stage icon: " + ex.getMessage());
+        }
+        
         stage.show();
     }
 
@@ -114,6 +125,7 @@ public class AirhockeyGUI {
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        
         stage.show();
     }
 
@@ -164,6 +176,16 @@ public class AirhockeyGUI {
         controller.setMyGame(client);
         controller.bindMyGameProperties();
         controller.setMyStage(stage);
+        
+        try
+        {
+            stage.getIcons().add(new Image("file:GamePNG.png"));
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Exception in setting the stage icon: " + ex.getMessage());
+        }
+        
         if (lobby.getMyPerson(me) instanceof IPlayer) {
             controller.addEvents((IPlayer) lobby.getMyPerson(me));
         }

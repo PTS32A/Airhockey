@@ -6,9 +6,9 @@
 package s32a.Client.Startup;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import s32a.Client.GUI.AirhockeyGUI;
-import s32a.Client.GUI.Dialog;
 
 /**
  *
@@ -31,6 +31,16 @@ public class ClientMain extends Application {
      * Repeatable method for (re)starting the client application.
      */
     public static void launchClient() {
+        
+        try
+        {
+            stage.getIcons().add(new Image("file:GamePNG.png"));
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Exception in setting the stage icon: " + ex.getMessage());
+        }
+        
         AirhockeyGUI gui = new AirhockeyGUI();
         gui.setStage(stage);
         ServerSelectGUI serverSelect = new ServerSelectGUI(stage, gui);

@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -64,6 +65,15 @@ public class Dialog {
         this.dialogID = id;
         stage = new Stage();
 
+        try
+        {
+            stage.getIcons().add(new Image("file:GamePNG.png"));
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Exception in setting the stage icon: " + ex.getMessage());
+        }
+        
         AnchorPane root = new AnchorPane();
         Scene scene = new Scene(root, 300, 250, Color.LIGHTSKYBLUE);
 
