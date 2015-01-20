@@ -5,6 +5,10 @@
  */
 package s32a.Server.GUI;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -24,27 +28,37 @@ import static javafx.scene.layout.GridPane.setRowSpan;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
  * @author frankpeeters
  */
-public class Dialog extends Stage {
+public class Dialog{
+
+    private static Map<Long, Dialog> dialogs = new HashMap<>();
+
+    public static void showDialog(String header, String message) {
+        Long id = System.currentTimeMillis();
+        dialogs.put(id, new Dialog(id, header, message));
+    }
+
+    private Stage stage;
+    private Long dialogID;
 
     /**
      * this application's equivalent of a mbox in C#
+     *
      * @param owner
      * @param header
      * @param message
      */
-    public Dialog(Stage owner, String header, String message) {
-        super();
-        initOwner(owner);
-        setTitle(header);
+    private Dialog(Long id, String header, String message) {
+        this.dialogID = id;
+        stage = new Stage();
 
         AnchorPane root = new AnchorPane();
         Scene scene = new Scene(root, 300, 250, Color.LIGHTSKYBLUE);
-        setScene(scene);
 
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(20));
@@ -61,13 +75,14 @@ public class Dialog extends Stage {
         taMessage.editableProperty().setValue(false);
         setRowSpan(taMessage, 4);
         gridPane.add(taMessage, 0, 0);
+
         Button btClose = new Button("Close");
         btClose.setDefaultButton(true);
         btClose.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                close();
+                stage.close();
             }
         });
         taMessage.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -79,8 +94,21 @@ public class Dialog extends Stage {
                 }
             }
         });
+        
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Dialog.dialogs.remove(dialogID);
+            }
+        });
+
         BorderPane buttonRegion = new BorderPane();
         buttonRegion.setRight(btClose);
         gridPane.add(buttonRegion, 0, 4);
+
+        stage.setScene(scene);
+        stage.setTitle(header);
+        stage.show();
     }
 }

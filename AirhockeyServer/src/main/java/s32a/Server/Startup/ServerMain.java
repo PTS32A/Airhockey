@@ -5,7 +5,6 @@
  */
 package s32a.Server.Startup;
 
-import java.awt.Dialog;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -27,6 +26,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import s32a.Server.AirhockeyServer;
+import s32a.Server.GUI.Dialog;
 import s32a.Shared.ServerInfo;
 
 /**
@@ -176,8 +176,7 @@ public class ServerMain extends Application {
                             tfIP.getText(), tfPort.getText(), taDesc.getText())) {
                         if(!AirhockeyServer.checkLobby()){
                             System.out.println("Unable to initiate Lobby");
-                            s32a.Server.GUI.Dialog d = new s32a.Server.GUI.Dialog(stage, "Server error", "Unable to initiate Lobby");
-                            d.show();
+                            Dialog.showDialog("Server error", "Unable to initiate Lobby");
                             return;
                         }
                         server = new AirhockeyServer(
