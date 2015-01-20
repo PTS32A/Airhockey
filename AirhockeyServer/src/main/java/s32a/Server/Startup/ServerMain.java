@@ -192,7 +192,7 @@ public class ServerMain extends Application {
             });
 
             Group root = new Group();
-            Scene scene = new Scene(root, 300, 300);
+            Scene scene = new Scene(root, 400, 300);
             root.getChildren().add(gp);
             stage.setScene(scene);
             stage.setTitle("Start New Server");
