@@ -106,7 +106,7 @@ public class ServerMain extends Application {
                     });
 
                     Group root = new Group();
-                    Scene scene = new Scene(root, 300, 250);
+                    Scene scene = new Scene(root, 330, 275);
                     root.getChildren().add(gp);
                     stage.setScene(scene);
                     stage.setTitle("FTP Server");
@@ -147,26 +147,32 @@ public class ServerMain extends Application {
             TextField tfBind = new TextField();
             tfBind.setText("AirhockeyServer");
             gp.add(tfBind, 1, 2);
+            Label localhost = new Label("Localhost:");
+            gp.add(localhost, 0, 3);
+            TextField tfLH = new TextField();
+            tfLH.setEditable(false);
+            tfLH.setText("InetAddress.getLocalHost()");
+            gp.add(tfLH, 1, 3);
             Label ip = new Label("IP Adress:");
-            gp.add(ip, 0, 3);
+            gp.add(ip, 0, 4);
             TextField tfIP = new TextField();
             tfIP.setPromptText("0.0.0.0");
             tfIP.setText("127.0.0.1");
-            gp.add(tfIP, 1, 3);
+            gp.add(tfIP, 1, 4);
             Label port = new Label("Port:");
-            gp.add(port, 0, 4);
+            gp.add(port, 0, 5);
             TextField tfPort = new TextField();
             tfPort.setText("1099");
-            gp.add(tfPort, 1, 4);
+            gp.add(tfPort, 1, 5);
             Label desc = new Label("Description");
-            gp.add(desc, 0, 5);
+            gp.add(desc, 0, 6);
             TextArea taDesc = new TextArea();
             taDesc.setText("");
             taDesc.setMaxWidth(200);
             taDesc.setMaxHeight(75);
-            gp.add(taDesc, 1, 5);
+            gp.add(taDesc, 1, 6);
             Button btnConfirm = new Button("Start Server");
-            gp.add(btnConfirm, 1, 6);
+            gp.add(btnConfirm, 1, 7);
             btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
 
                 @Override
@@ -191,7 +197,7 @@ public class ServerMain extends Application {
             });
 
             Group root = new Group();
-            Scene scene = new Scene(root, 400, 300);
+            Scene scene = new Scene(root, 375, 375);
             root.getChildren().add(gp);
             stage.setScene(scene);
             stage.setTitle("Start New Server");
