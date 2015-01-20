@@ -703,6 +703,7 @@ public class Puck extends TimerTask {
                     direction = 0;
                     batBouncePosition = new Vector2((float)(p.getPosX().get()), (float)(p.getPosY().get() + radius));
                 }
+                stuckBegin = System.currentTimeMillis();
                 stuck = true;
                 //correctDirection();
 
