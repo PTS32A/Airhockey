@@ -73,6 +73,10 @@ public class GamePublisher {
     private final long scoreUpdateDelay = 1000L;
     private final long batUpdateDelay = 10L;
 
+    private ChangeListener scoreListener = null, batListener = null;
+    Map<String, Double> batPosMap;
+    Map<String, Integer> scoresMap;
+
     /**
      * Creates a new publisher associated with given game. Observers need to be
      * manually registered.
@@ -111,6 +115,7 @@ public class GamePublisher {
      *
      */
     private void initTimer() {
+        batPosMap = new HashMap<>();
         // governing pushing bat positions
         Runnable posTask = new Runnable() {
 
@@ -124,6 +129,7 @@ public class GamePublisher {
             }
         };
 
+        scoresMap = new HashMap<>();
         // pushing score
         Runnable scoreTask = new Runnable() {
 
@@ -463,13 +469,14 @@ public class GamePublisher {
                 || this.player3Prop.get() == null) {
             return;
         }
-        Map<String, Integer> scores = new HashMap<>();
-        scores.put("player1", player1Score.get());
-        scores.put("player2", player2Score.get());
-        scores.put("player3", player3Score.get());
+
+        scoresMap.clear();
+        scoresMap.put("player1", player1Score.get());
+        scoresMap.put("player2", player2Score.get());
+        scoresMap.put("player3", player3Score.get());
         for (String key : observers.keySet()) {
             try {
-                observers.get(key).setPlayerScores(scores);
+                observers.get(key).setPlayerScores(scoresMap);
             } catch (RemoteException ex) {
                 System.out.println("remoteException on setting player score for " + key);
                 this.removeObserver(key);
@@ -486,17 +493,18 @@ public class GamePublisher {
                 || this.player3Prop.get() == null) {
             return;
         }
-        Map<String, Double> posMap = new HashMap<>();
-        posMap.put("player1x", player1Prop.get().getPosX().get());
-        posMap.put("player2x", player2Prop.get().getPosX().get());
-        posMap.put("player3x", player3Prop.get().getPosX().get());
 
-        posMap.put("player1y", player1Prop.get().getPosY().get());
-        posMap.put("player2y", player2Prop.get().getPosY().get());
-        posMap.put("player3y", player3Prop.get().getPosY().get());
+        batPosMap.clear();
+        batPosMap.put("player1x", player1Prop.get().getPosX().get());
+        batPosMap.put("player2x", player2Prop.get().getPosX().get());
+        batPosMap.put("player3x", player3Prop.get().getPosX().get());
+
+        batPosMap.put("player1y", player1Prop.get().getPosY().get());
+        batPosMap.put("player2y", player2Prop.get().getPosY().get());
+        batPosMap.put("player3y", player3Prop.get().getPosY().get());
         for (String key : observers.keySet()) {
             try {
-                observers.get(key).setPlayerBatPositions(posMap);
+                observers.get(key).setPlayerBatPositions(batPosMap);
             } catch (RemoteException ex) {
                 System.out.println("remoteException on setting player bat locations for " + key);
                 this.removeObserver(key);
@@ -507,11 +515,34 @@ public class GamePublisher {
     /**
      * Attempts to bind the next player. returns false if there are three
      * players present already.
+     * Initiates bat and score listeners if null.
      *
      * @param input
      * @return
      */
     public boolean bindNextPlayer(Player input) {
+        // starts batListener
+        if(this.batListener == null){
+            this.batListener = new ChangeListener() {
+
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    batUpdated.set(true);
+                }
+            };
+        }
+
+        // starts scoreListener
+        if (this.scoreListener == null){
+            this.scoreListener = new ChangeListener() {
+
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                    scoreUpdated.set(true);
+                }
+            };
+        }
+
         if (this.player1Prop.get() == null) {
             this.bindPlayer1(input);
         } else if (this.player2Prop.get() == null) {
@@ -539,23 +570,9 @@ public class GamePublisher {
         this.player1Prop.set(input);
         this.player1Score.bind(input.getScore());
 
-        ChangeListener posListener = new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                batUpdated.set(true);
-            }
-        };
-        this.player1Prop.get().getPosX().addListener(posListener);
-        this.player1Prop.get().getPosY().addListener(posListener);
-
-        this.player1Score.addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                scoreUpdated.set(true);
-            }
-        });
+        this.player1Prop.get().getPosX().addListener(batListener);
+        this.player1Prop.get().getPosY().addListener(batListener);
+        this.player1Score.addListener(scoreListener);
     }
 
     /**
@@ -570,23 +587,10 @@ public class GamePublisher {
         this.player2Prop.set(input);
         this.player2Score.bind(input.getScore());
 
-        ChangeListener posListener = new ChangeListener() {
+        this.player2Prop.get().getPosX().addListener(batListener);
+        this.player2Prop.get().getPosY().addListener(batListener);
 
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                batUpdated.set(true);
-            }
-        };
-        this.player2Prop.get().getPosX().addListener(posListener);
-        this.player2Prop.get().getPosY().addListener(posListener);
-
-        this.player2Score.addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                scoreUpdated.set(true);
-            }
-        });
+        this.player2Score.addListener(scoreListener);
     }
 
     /**
@@ -601,30 +605,18 @@ public class GamePublisher {
         this.player3Prop.set(input);
         this.player3Score.bind(input.getScore());
 
-        ChangeListener posListener = new ChangeListener() {
+        this.player3Prop.get().getPosX().addListener(batListener);
+        this.player3Prop.get().getPosY().addListener(batListener);
 
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                batUpdated.set(true);
-            }
-        };
-        this.player3Prop.get().getPosX().addListener(posListener);
-        this.player3Prop.get().getPosY().addListener(posListener);
-
-        this.player3Score.addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                scoreUpdated.set(true);
-            }
-        });
+        this.player3Score.addListener(scoreListener);
     }
 
     /**
      * Broadcasts end of game to all listeners. Declares end of game for
      * scheduled updater.
+     * @param hasLeft
      */
-    public void broadcastEndGame() {
+    public void broadcastEndGame(String hasLeft) {
         System.out.println("broadcasting end game");
         tryExecute(new Runnable() {
 
@@ -637,7 +629,9 @@ public class GamePublisher {
                 }
                 for (String key : observers.keySet()) {
                     try {
-                        observers.get(key).endGame();
+                        if(hasLeft == null || !key.equals(hasLeft)){
+                            observers.get(key).endGame();
+                        }
                     } catch (RemoteException ex) {
                         Logger.getLogger(GamePublisher.class.getName()).log(Level.SEVERE, null, ex);
                         System.out.println("RemoteException ending game for " + key);

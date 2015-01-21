@@ -44,41 +44,28 @@ import s32a.Shared.enums.LobbySetting;
  */
 public class Game extends UnicastRemoteObject implements IGame {
 
-//    private StringProperty difficultyProp;
-    @Getter
-    private ObjectProperty<GameStatus> statusProp;
-
-    @Getter
-    private Chatbox myChatbox;
-    private Puck myPuck;
-
     private ObservableList<ISpectator> mySpectators;
     private ObservableList<IPlayer> myPlayers;
 
-    private GamePublisher publisher;
-
-    /**
-     * includes gameID, nextColor, sideLength, gameDate
-     */
     @Getter
-    private Map<GameSetting, Object> gameInfo;
+    private ObjectProperty<GameStatus> statusProp;
+    @Getter
+    private StringProperty gameTime;
     @Getter
     private IntegerProperty roundNo;
 
     @Getter
-    @Setter
-    private boolean continueRun = false;
+    private Map<GameSetting, Object> gameInfo;
 
-    private int maxRounds = 10;
-
+    private Chatbox myChatbox;
+    private Puck myPuck;
+    private GamePublisher publisher;
+    protected boolean continueRun = false;
+    private Timer puckTimer;
     private AtomicInteger countDownTime;
 
-    private Timer puckTimer;
-
-    @Getter
-    private StringProperty gameTime;
-
-    private boolean printMessages = false;
+    private final float defaultSpeed = 15f;
+    private int maxRounds = 10;
 
     /**
      * Constructor. Initialises sideLength, isPaused, gameID and roundNo to
@@ -104,11 +91,8 @@ public class Game extends UnicastRemoteObject implements IGame {
         this.gameInfo.put(GameSetting.NextColor, this.getNextColor());
 
         this.roundNo = new SimpleIntegerProperty(0);
-        float defaultSpeed = 15f; // Default puckspeed
         this.myPuck = new Puck(defaultSpeed, this);
         this.adjustDifficulty();
-//        this.difficultyProp = new SimpleStringProperty("speed");
-//        this.difficultyProp.bind(myPuck.getSpeed().asString());
         this.puckTimer = new Timer();
         this.gameTime = new SimpleStringProperty("00:00");
         this.statusProp = new SimpleObjectProperty<>(GameStatus.Preparing);
@@ -219,12 +203,11 @@ public class Game extends UnicastRemoteObject implements IGame {
                         this.statusProp.set(GameStatus.Ready);
                         this.addChatMessage("-- Ready to Start --", "GAME");
                     }
-
                     return true;
                 }
             }
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Player or Client input was null");
         }
         return false;
     }
@@ -242,9 +225,6 @@ public class Game extends UnicastRemoteObject implements IGame {
         Player p = (Player) pInput;
 
         float width = (float) Lobby.getSingle().getAirhockeySettings().get(LobbySetting.SideLength);
-        float bat = width / 100 * 8;
-        float x;
-        float y;
         Vector2 batPos;
 
         if (playerID == 0) {
@@ -268,31 +248,6 @@ public class Game extends UnicastRemoteObject implements IGame {
                 batPos = new Vector2((float) (cX + ((bX - cX) / 100 * 50)),
                         (float) ((cY + ((bY - cY) / 100 * 50))));
             }
-//            //Player blue or green
-//            y = (float) (Math.tan(Math.toRadians(30)) * (0.5 * (double) sideLength));
-//
-//            float middleLine = (float) Math.sqrt(Math.pow(sideLength, 2) - Math.pow(sideLength / 2, 2));
-//
-//            Vector2 linePos1 = new Vector2(0, (float) middleLine);
-//            Vector2 linePos2;
-//
-//            if (playerID == 1)
-//            {
-//                //Player blue
-//                linePos2 = new Vector2((float) (sideLength / 2), 0);
-//            } else
-//            {
-//                //Player green
-//                linePos2 = new Vector2((float) (-(sideLength / 2)), 0);
-//            }
-//
-//            float a = (linePos1.y - linePos2.y) / (linePos1.x - linePos2.x);
-//            float b = linePos1.y - a * linePos1.x;
-//
-//            //y = a*x + b
-//            //a*x = y - b
-//            //x = (y - b) / a
-//            x = (y - b) / a;
         }
         p.setPosX(new SimpleDoubleProperty(batPos.x));
         p.setPosY(new SimpleDoubleProperty(batPos.y));
@@ -361,31 +316,16 @@ public class Game extends UnicastRemoteObject implements IGame {
      */
     @Override
     public boolean beginGame() throws RemoteException {
-        if (myPlayers.size() == 3) {
-            if (roundNo.get() == 0) {
-                printMessage("BEGIN GAME");
-
+        if ((myPlayers.size() == 3) && (roundNo.get() == 0)) {
                 //Timer will keep going until game end
                 long interval = 20;
                 puckTimer.scheduleAtFixedRate(myPuck, 1000, interval);
-                //Starts new Timer for gameTime
-//                puckTimer.scheduleAtFixedRate(new GameTimeTask(this), 1000, 1000);
-
-                // REMOVE THIS SHIT IN FINAL BUILD
-                if (myPlayers.get(0).getName().equals("j")
-                        || myPlayers.get(1).getName().equals("j")
-                        || myPlayers.get(2).getName().equals("j")) {
-                    this.printMessages = true;
-                    this.myPuck.setPrintMessages(true);
-                }
-
                 this.gameInfo.put(GameSetting.GameStartTime, System.currentTimeMillis());
                 this.startCountDown();
                 return true;
-            }
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -408,7 +348,7 @@ public class Game extends UnicastRemoteObject implements IGame {
                 myPuck.setSpeed(Math.round(puckSpeed));
                 return true;
             } else {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Puckspeed was too high or low");
             }
         } else {
             //Can't adjust difficulty if game has already begun
@@ -466,17 +406,6 @@ public class Game extends UnicastRemoteObject implements IGame {
     }
 
     /**
-     * This method cycles to a new frame (puck position, bot position)
-     */
-    private void run() {
-        //Continue       
-        if (this.statusProp.get().equals(GameStatus.Playing) && myPuck != null) {
-            //BEGIN PUCK MOVEMENT
-            this.continueRun = true; //This allows Puck to be moved
-        }
-    }
-
-    /**
      * Starts a new round within the running game rounds are ended automatically
      * within Game.run() whenever someone scores
      *
@@ -488,11 +417,12 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
         //Start new round
         this.setRoundNo(this.roundNo.get() + 1);
-        printMessage("-ROUND " + (roundNo.get() + 1));
-
         this.statusProp.set(GameStatus.Playing);
 
-        this.run();
+        if (myPuck != null) {
+            //BEGIN PUCK MOVEMENT
+            this.continueRun = true; //This allows Puck to be moved
+        }
     }
 
     /**
@@ -516,7 +446,8 @@ public class Game extends UnicastRemoteObject implements IGame {
                         this.cancel();
                     }
                     catch (RemoteException ex) {
-                        System.out.println("RemoteException in startCountdown starting new round: " + ex.getMessage());
+                        System.out.println("RemoteException in startCountdown "
+                                + "starting new round: " + ex.getMessage());
                     }
                 }
             }
@@ -533,8 +464,6 @@ public class Game extends UnicastRemoteObject implements IGame {
 
         if (roundNo.get() >= maxRounds) {
             //End game
-            printMessage("END GAME");
-            printMessage("");
             Lobby.getSingle().endGame(this.getID(), null);
         } else if(!this.statusProp.get().equals(GameStatus.GameOver)) {
             //new round is started at the end of countdown
@@ -544,13 +473,14 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     /**
      * Broadcasts end of game to all unaware clients.
+     * @param hasLeft
      */
-    public void broadcastEndGame() {
+    public void broadcastEndGame(String hasLeft) {
         try {
             this.addChatMessage("-- Game Over --", "GAME");
             this.statusProp.set(GameStatus.GameOver);
             this.endRound();
-            publisher.broadcastEndGame();
+            publisher.broadcastEndGame(hasLeft);
         }
         catch (RemoteException ex) {
             System.out.println("RemoteException in broadcastEndGame: " + ex.getMessage());
@@ -629,12 +559,6 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
     }
 
-    private void printMessage(String message) {
-        if (printMessages) {
-            System.out.println(message);
-        }
-    }
-
     /**
      * @return Puck
      */
@@ -659,15 +583,6 @@ public class Game extends UnicastRemoteObject implements IGame {
     private void setRoundNo(int input) {
         roundNo.set(input);
     }
-
-//    /**
-//     * getter for difficulty as a property
-//     *
-//     * @return
-//     */
-//    public StringProperty difficultyProperty() {
-//        return this.difficultyProp;
-//    }
 
     /**
      *

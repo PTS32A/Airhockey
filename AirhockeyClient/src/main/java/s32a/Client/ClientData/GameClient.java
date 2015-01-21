@@ -145,17 +145,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
 
     /**
-     * Outgoing to server to start nextRound.
-     *
-     * @param input true or false for round change
-     * @throws RemoteException
-     */
-    @Override
-    public void setContinueRun(boolean input) throws RemoteException {
-        myGame.setContinueRun(input);
-    }
-
-    /**
      * Outgoing to server, sending message in chatbox
      *
      * @param message

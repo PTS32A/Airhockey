@@ -439,7 +439,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         }
 
         try {
-            game.broadcastEndGame();
+            game.broadcastEndGame(hasLeft);
             this.activeGames.remove(gameInput);
             this.oRankings.setAll(this.myDatabaseControls.getRankings());
         } catch (SQLException ex) {

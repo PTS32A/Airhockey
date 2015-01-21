@@ -16,14 +16,6 @@ import java.rmi.RemoteException;
 public interface IGame extends Remote, Serializable {
 
     /**
-     * Used in between rounds to allow or disallow the continuation of Puck movement.
-     * @param input boolean value to set continueRun
-     * @throws RemoteException 
-     */
-    public void setContinueRun(boolean input)
-            throws RemoteException;
-
-    /**
      * Adds a chat message to the ChatBox
      * @param message The message to be added
      * @param from A String containing the name of the Person who sent the message
