@@ -155,6 +155,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             public void handle(KeyEvent ke) {
                 if (ke.getCode() == KeyCode.ENTER) {
                     sendMessage(null);
+                } else if (ke.getCode() == KeyCode.ESCAPE) {
+                    apGame.requestFocus();
                 }
             }
         });
@@ -590,9 +592,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 } catch (RemoteException ex) {
                     System.out.println("RemoteException in moveBat: " + ex.getMessage());
                 }
-
             }
-
         };
 
         //Stop moving
@@ -665,6 +665,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * Displays end of game stats whenever game window is closed.
      */
     private void displayPostGameStats() {
+        String eol = System.getProperty("line.separator");
         // Remove this println after implementation
         System.out.println("Display post game stats");
 
@@ -678,37 +679,27 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 this.myGame.getPlayer3Score().get());
         playerScores.remove(" ");
 
-        String message = "Round: " + this.getMyGame().getRoundNoProperty().getValue() + "\n";
-        message += this.getWinnerText(playerScores) + "\n" + "\n";
-
-        for (String s : playerScores.keySet()) {
-            message += "Player " + s + " scored " + playerScores.get(s) + "\n";
-        }
-
-        showDialog("Statistics", message);
-    }
-
-    /**
-     * Determines highest scoring player, and formats that to string.
-     *
-     * @param input
-     * @return
-     * @throws RemoteException
-     */
-    private String getWinnerText(Map<String, Integer> input) {
-
+        // Checks who won the game
         String winner = "Unknown";
         int winningScore = -10;
-        for (String s : input.keySet()) {
-            if (input.get(s) > winningScore) {
-                winningScore = input.get(s);
+        for (String s : playerScores.keySet()) {
+            if (playerScores.get(s) > winningScore) {
+                winningScore = playerScores.get(s);
                 winner = s;
             }
         }
-
         String playerWinString = "Player " + winner;
         playerWinString += " won with score " + winningScore;
-        return playerWinString;
+
+        // Final compilation
+        String message = "Round: " + this.getMyGame().getRoundNoProperty().getValue() + eol;
+        message += playerWinString + eol + eol;
+
+        for (String s : playerScores.keySet()) {
+            message += "Player " + s + " scored " + playerScores.get(s) + eol;
+        }
+
+        showDialog("Statistics", message);
     }
 
     /**
