@@ -25,3 +25,4 @@ hs_err_pid*
 # local ftp server config - contains reference to local dir #
 users.xml
 ftptrace.txt
+AirhockeyFTPServer/ftptrace.txt
