@@ -312,10 +312,10 @@ public class ServerSelectGUI {
      * Logs in to FTP server, and retrieves info. Can be called with default
      * info.
      *
-     * @param server
-     * @param user
-     * @param pw
-     * @param SSL
+     * @param server ftp server
+     * @param user username
+     * @param pw password
+     * @param SSL whether SSL should be used
      * @return connection success
      */
     private boolean loginToFTP(String server, String user, String pw, boolean SSL) {
@@ -325,6 +325,7 @@ public class ServerSelectGUI {
 
     /**
      * After being logged in to FTP, handles the data retrieved from there.
+     * @param anyConnect whether anyconnect should be used
      */
     private void setDataFromFTP(boolean anyConnect) {
         servers.setAll(handler.getFTPData());

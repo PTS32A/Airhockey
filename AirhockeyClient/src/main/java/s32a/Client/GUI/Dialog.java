@@ -55,11 +55,10 @@ public class Dialog {
     private Long dialogID;
 
     /**
-     * this application's equivalent of a mbox in C#
-     *
-     * @param owner
-     * @param header
-     * @param message
+     * This application's equivalent of a mbox in C#
+     * @param id the id of the dialog
+     * @param header the title for the dialog window
+     * @param message the message for the dialog
      */
     private Dialog(Long id, String header, String message) {
         this.dialogID = id;

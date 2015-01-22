@@ -185,6 +185,11 @@ public class FTPHandler {
         return output;
     }
     
+    /**
+     * Reads the information of a server file
+     * @param input
+     * @return Returns the information as serverinfo
+     */
     private ServerInfo readServerFile(File input){
         Scanner in = null;
         ServerInfo output = null;

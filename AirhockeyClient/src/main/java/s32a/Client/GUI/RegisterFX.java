@@ -91,6 +91,10 @@ public class RegisterFX extends AirhockeyGUI implements Initializable {
         }
     }
 
+    /**
+     * Gets this stage
+     * @return Returns the stage
+     */
     private Stage getThisStage() {
         return (Stage) tfUserName.getScene().getWindow();
     }

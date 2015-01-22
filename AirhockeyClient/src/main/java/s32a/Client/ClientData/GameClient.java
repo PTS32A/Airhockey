@@ -401,42 +401,82 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
     }
     
     // ----------------------------------- Methods querying game info, used for up-to-date game display in lobby -------------------
+    /**
+     * Gets the difficulty of the game
+     * @return Returns the difficulty of the game
+     * @throws RemoteException 
+     */
     @Override
     public String getDifficulty() throws RemoteException {
         return this.myGame.getDifficulty();
     }
 
+    /**
+     * Gets the name of the first player to join the game
+     * @return Returns the first player name
+     * @throws RemoteException 
+     */
     @Override
     public String getPlayer1Name() throws RemoteException {
         System.out.println("myGame == null: " + (myGame == null));
         return this.myGame.getPlayer1Name();
     }
 
+    /**
+     * Gets the name of the second player to join the game
+     * @return Returns the second player name
+     * @throws RemoteException 
+     */
     @Override
     public String getPlayer2Name() throws RemoteException {
         return this.myGame.getPlayer2Name();
     }
 
+    /**
+     * Gets the name of the third player to join the game
+     * @return Returns the third player name
+     * @throws RemoteException 
+     */
     @Override
     public String getPlayer3Name() throws RemoteException {
         return this.myGame.getPlayer3Name();
     }
 
+    /**
+     * Gets the status of the game
+     * @return Returns the status of the game
+     * @throws RemoteException 
+     */
     @Override
     public String getStatus() throws RemoteException {
         return this.myGame.getStatus();
     }
 
+    /**
+     * Gets the id of the game 
+     * @return Returns the id of the game
+     * @throws RemoteException 
+     */
     @Override
     public String getID() throws RemoteException {
         return this.myGame.getID();
     }
 
+    /**
+     * Gets the countdown time of the game
+     * @return Returns the countdown time of the game
+     * @throws RemoteException 
+     */
     @Override
     public int getCountDownTime() throws RemoteException {
         return this.myGame.getCountDownTime();
     }
 
+    /**
+     * Gets the starting time of the game
+     * @return Returns the starting time of the game
+     * @throws RemoteException 
+     */
     @Override
     public long getGameStartTime() throws RemoteException {
         return this.myGame.getGameStartTime();

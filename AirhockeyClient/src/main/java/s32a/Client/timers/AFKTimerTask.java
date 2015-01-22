@@ -17,12 +17,18 @@ public class AFKTimerTask extends TimerTask {
     private final GameFX gameFX;
     private long lastAction, prevTimeUpdate;
 
+    /**
+     * constructor
+     * @param gameFX 
+     */
     public AFKTimerTask(GameFX gameFX) {
         this.gameFX = gameFX;
         this.lastAction = 0;
     }
 
-
+    /**
+    * runs the timer
+    */
     @Override
     public void run() {
         long now = System.currentTimeMillis();

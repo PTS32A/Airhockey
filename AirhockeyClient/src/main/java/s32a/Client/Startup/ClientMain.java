@@ -46,6 +46,11 @@ public class ClientMain extends Application {
         ServerSelectGUI serverSelect = new ServerSelectGUI(stage, gui);
     }
 
+    /**
+     * Starts the client
+     * @param stage the client's stage
+     * @throws Exception 
+     */
     @Override
     public void start(Stage stage) throws Exception {
         // sets security manager

@@ -107,7 +107,7 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
     /**
      * Returns currently active stage
      *
-     * @return
+     * @return Returns this stage
      */
     private Stage getThisStage() {
         return (Stage) tfUserName.getScene().getWindow();

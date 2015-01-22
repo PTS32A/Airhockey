@@ -118,7 +118,9 @@ public class AirhockeyGUI {
     }
 
     /**
-     *
+     * Allows clients to login by showing the login stage
+     * @param stage the airhockeyclient stage to be set as the login stage
+     * @throws IOException 
      */
     void goToLogin(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Login.fxml"));
@@ -130,8 +132,8 @@ public class AirhockeyGUI {
     }
 
     /**
-     *
-     * @param stage
+     * Allows clients to register by showing the register stage
+     * @param stage the airhockeyclient stage to be set as the login stage
      * @throws java.io.IOException
      */
     public void goToRegister(Stage stage) throws IOException {
@@ -143,7 +145,9 @@ public class AirhockeyGUI {
     }
 
     /**
-     *
+     * Allows clients to use the lobby stage
+     * @param stage the airhockeygui stage to be set as the game stage
+     * @throws IOException 
      */
     void goToLobby(Stage stage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Lobby.fxml"));
@@ -154,7 +158,11 @@ public class AirhockeyGUI {
     }
 
     /**
-     *
+     * Allows clients to use the game stage
+     * @param stage the airhockeygui stage to be set as the game stage
+     * @param client the gameclient used by the client
+     * @return
+     * @throws IOException 
      */
     GameFX goToGame(Stage stage, GameClient client) throws IOException {
 
@@ -241,7 +249,7 @@ public class AirhockeyGUI {
      * general method for returning current person. Provided here to prevent
      * having to catch RemoteExceptions everywhere on a commong call
      *
-     * @return
+     * @return Returns the current person of the client
      */
     protected IPerson getMe() {
         if (me == null || lobby == null) {

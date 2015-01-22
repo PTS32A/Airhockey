@@ -307,7 +307,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     /**
      * Threadsafe display of given string in countdown display of given value.
      *
-     * @param countDown
+     * @param countDown the countdown to be displayed
      */
     private void displayCountDown(int countDown) {
         final String countDownString;
@@ -426,7 +426,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * Checks if there are enough players to start. Disables start button when
      * clicked and start is successful
      *
-     * @param evt
+     * @param evt the event invoking the start of the game
      */
     @FXML
     public void startClick(Event evt) {
@@ -452,9 +452,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     }
 
     /**
-     * Selects or unselect custom difficulty
+     * Selects or unselects custom difficulty
      *
-     * @param evt
+     * @param evt the event invoking the selection of the custom difficulty
      */
     public void customDifficultySelect(Event evt) {
         try {
@@ -474,7 +474,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     /**
      * Pauses and unpauses game
      *
-     * @param evt
+     * @param evt the event invoking the pause of the game
      */
     @FXML
     public void pauseClick(Event evt) {
@@ -490,7 +490,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     /**
      * Calls lobby.endGame(). Closes down fx applications.
      *
-     * @param evt
+     * @param evt the event invoking the end of the game
      */
     @FXML
     public void quitClick(Event evt) {
@@ -526,7 +526,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     /**
      * Send message in chatbox
      *
-     * @param evt
+     * @param evt the event invoking a message to be sent
      */
     @FXML
     public void sendMessage(Event evt) {
@@ -550,7 +550,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * Closes window, removes spectator from game, and returns spectator to
      * Personhood.
      *
-     * @param evt
+     * @param evt the event invoking a spectator to stop spectating
      */
     @FXML
     public void stopSpectating(Event evt) {
@@ -566,7 +566,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     /**
      * Adds Eventhandlers to the screen for moving the bat
      *
-     * @param myPlayer
+     * @param myPlayer a player to be notified by events
      */
     public void addEvents(IPlayer myPlayer) {
         afkTimerTask = new AFKTimerTask(this);
@@ -613,7 +613,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     /**
      * Adds eventhandlers for closing the screen and logging out
      *
-     * @param stage
+     * @param stage the closevent
      */
     public void addCloseEvent(Stage stage) {
 
@@ -721,10 +721,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      * Schedules a runnable with gameTimer. Provides try/catch for
      * RejectedExecutionExceptions.
      *
-     * @param r
-     * @param start
-     * @param interval
-     * @param tu
+     * @param r the runnable to be scheduled
+     * @param start the delay of the schedule
+     * @param interval the interval of the schedule
+     * @param tu the timeunit for the schedule
      */
     private void tryScheduleAtFixedRate(Runnable r, Long start, Long interval, TimeUnit tu) {
         try {

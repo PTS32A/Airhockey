@@ -24,12 +24,19 @@ public class GameTimeTask extends TimerTask {
     private int min;
     private int sec;
 
+    /**
+     * constructor
+     * @param game 
+     */
     public GameTimeTask(GameClient game) {
         this.myGame = game;
         this.min = 0;
         this.sec = 0;
     }
 
+    /**
+     * runs the timer
+     */
     @Override
     public void run() {
         if (myGame.getGameStatusProperty().get() == GameStatus.Playing) {
