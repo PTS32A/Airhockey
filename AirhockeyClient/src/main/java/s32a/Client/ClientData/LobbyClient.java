@@ -34,13 +34,11 @@ import s32a.Shared.IPerson;
 public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, ILobby {
 
     @Getter
-    private ObservableList<String> oChatList;
+    private ObservableList<String> oChatList, playerInfo;
     @Getter
     private ObservableList<IPerson> oRankingsList;
     @Getter
     private ObservableList<IGame> oActiveGamesList;
-    @Getter
-    private ObservableList<String> playerInfo;
 
     private ILobby myLobby;
     private AirhockeyGUI gui;
@@ -272,7 +270,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
                 oActiveGamesList.addAll(activeGames.values());
             }
         });
-
     }
 
     /**
@@ -346,7 +343,6 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
                 }
             }
         });
-
     }
 
     /**
@@ -365,5 +361,4 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
             }
         });
     }
-
 }

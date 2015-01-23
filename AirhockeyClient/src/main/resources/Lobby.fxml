@@ -19,8 +19,8 @@
       </menus>
     </MenuBar>
     <Button id="btnLogOut" layoutX="740.0" layoutY="366.0" mnemonicParsing="false" onAction="#logOut" text="Log out" />
-    <Button id="btnSpec" layoutX="473.0" layoutY="366.0" mnemonicParsing="false" onAction="#spectateGame" text="Spectate" />
-    <Button id="btnJoin" layoutX="557.0" layoutY="366.0" mnemonicParsing="false" onAction="#joinGame" text="Join" />
+    <Button id="btnSpec" fx:id="btnSpectateGame" disable="true" layoutX="473.0" layoutY="366.0" mnemonicParsing="false" onAction="#spectateGame" text="Spectate" />
+    <Button id="btnJoin" fx:id="btnJoinGame" disable="true" layoutX="557.0" layoutY="366.0" mnemonicParsing="false" onAction="#joinGame" text="Join" />
     <Button id="btnNewGame" layoutX="379.0" layoutY="366.0" mnemonicParsing="false" onAction="#newGame" text="New Game" />
     <TableView id="tbl" fx:id="tvGameDisplay" layoutX="209.0" layoutY="28.0" prefHeight="325.0" prefWidth="390.0">
       <columns>

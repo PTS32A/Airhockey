@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -55,7 +55,8 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
     @FXML
     ListView lvPlayerInfo;
 
-    private int selectedGameIndex = -1;
+    @FXML
+    Button btnJoinGame, btnSpectateGame;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -117,6 +118,22 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             @Override
             public void onChanged(ListChangeListener.Change c) {
                 lvChatbox.scrollTo(c.getList().size() - 1);
+            }
+        });
+
+        // disables join / spectate buttons if no game is selected
+        this.tvGameDisplay.getSelectionModel().selectedIndexProperty()
+                .addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if((int)newValue >= 0){
+                    btnJoinGame.setDisable(false);
+                    btnSpectateGame.setDisable(false);
+                } else {
+                    btnJoinGame.setDisable(true);
+                    btnSpectateGame.setDisable(true);
+                }
             }
         });
     }
