@@ -71,8 +71,11 @@ public class RegisterFX extends AirhockeyGUI implements Initializable {
                     showDialog("Database Error", "SQL Error on adding person: " + ex.getMessage());
                 }
                 catch (RemoteException ex) {
-                    System.out.println("RemoteException on lobby.addPerson: " + ex.getMessage());
-                    Logger.getLogger(RegisterFX.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("RemoteException on lobby.addPerson: " 
+                            + ex.getMessage());
+                    showDialog("Error", "An error occured adding a new person to lobby: "
+                            + ex.getMessage());
+//                    Logger.getLogger(RegisterFX.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

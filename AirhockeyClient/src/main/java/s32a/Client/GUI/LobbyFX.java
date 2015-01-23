@@ -209,8 +209,11 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             } catch (IllegalArgumentException ex) {
                 showDialog("Error", ex.getMessage());
             } catch (RemoteException ex) {
-                System.out.println("RemoteException on trying to spectate game: " + ex.getMessage());
-                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("RemoteException on trying to spectate game: " 
+                        + ex.getMessage());
+                showDialog("Error", "An error occured trying to spectate game: "
+                        + ex.getMessage());
+//                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -252,10 +255,12 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
             } catch (IllegalArgumentException ex) {
                 System.out.println("IllegalArgumentException on sendChatMessage: " + ex.getMessage());
                 showDialog("Error", "Unable to send message: " + ex.getMessage());
-                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
             } catch (RemoteException ex) {
                 System.out.println("RemoteException on sendChatMessage: " + ex.getMessage());
-                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
+                showDialog("Error", "An error occured trying to send a chat message: "
+                        + ex.getMessage());
+//                Logger.getLogger(LobbyFX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

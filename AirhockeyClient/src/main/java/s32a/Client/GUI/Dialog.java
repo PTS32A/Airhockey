@@ -56,6 +56,7 @@ public class Dialog {
 
     /**
      * This application's equivalent of a mbox in C#
+     *
      * @param id the id of the dialog
      * @param header the title for the dialog window
      * @param message the message for the dialog
@@ -63,13 +64,10 @@ public class Dialog {
     private Dialog(Long id, String header, String message) {
         this.dialogID = id;
         stage = new Stage();
-        
-        try
-        {
+
+        try {
             stage.getIcons().add(new Image("file:GamePNG.png"));
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println("Exception in setting the stage icon: " + ex.getMessage());
         }
 

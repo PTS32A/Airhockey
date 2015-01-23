@@ -71,8 +71,9 @@ public class LoginFX extends AirhockeyGUI implements Initializable {
                     // executed if not logged in
                     ClientMain.launchClient();
                 } catch (RemoteException ex1) {
-                    System.out.println("RemoteException on trying to logout after IOException: " + ex1.getMessage());
-                    Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex1);
+                    System.out.println("RemoteException on trying to logout after IOException: "
+                            + ex1.getMessage());
+//                    Logger.getLogger(LoginFX.class.getName()).log(Level.SEVERE, null, ex1);
                     // executed if not logged in
                     ClientMain.launchClient();
                 }

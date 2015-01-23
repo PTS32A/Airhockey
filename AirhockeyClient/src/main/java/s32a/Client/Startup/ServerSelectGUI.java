@@ -19,7 +19,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;  
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -35,6 +35,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import s32a.Client.GUI.AirhockeyGUI;
+import static s32a.Client.GUI.Dialog.showDialog;
 import s32a.Shared.ServerInfo;
 
 /**
@@ -60,6 +61,7 @@ public class ServerSelectGUI {
 
     /**
      * Constructor
+     *
      * @param stage
      * @param gui
      */
@@ -88,15 +90,12 @@ public class ServerSelectGUI {
             }
         });
 
-        try
-        {
+        try {
             ftpLoginStage.getIcons().add(new Image("file:GamePNG.png"));
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println("Exception in setting the ftpLoginStage icon: " + ex.getMessage());
         }
-        
+
         GridPane gp = new GridPane();
         gp.setAlignment(Pos.CENTER);
         gp.setHgap(10);
@@ -130,13 +129,9 @@ public class ServerSelectGUI {
 
         Label lblPort = new Label("Status:");
         gp.add(lblPort, 0, 6);
-        TextField tfPort = new TextField();
-        tfPort.editableProperty().setValue(false);
-        tfPort.setText("Not Connected");
-        gp.add(tfPort, 1, 6);
 
         Button btnConfirm = new Button("Connect");
-        gp.add(btnConfirm, 1, 7);
+        gp.add(btnConfirm, 1, 6);
         btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -151,7 +146,8 @@ public class ServerSelectGUI {
                     displayServers(true);
                     ftpLoginStage.close();
                 } else {
-                    tfPort.setText("Could not connect, check spelling and internet connection.");
+                    showDialog("Error",
+                            "Could not connect, check spelling and internet connection.");
                 }
             }
 
@@ -201,6 +197,8 @@ public class ServerSelectGUI {
                 public void handle(ActionEvent event) {
                     if (loginToFTP(server, user, pass, SSL)) {
                         setDataFromFTP(false);
+                    } else {
+                        showDialog("Error", "Unable to login to the Central Server");
                     }
                 }
             });
@@ -305,6 +303,7 @@ public class ServerSelectGUI {
             stage.show();
         } catch (Exception ex) {
             System.out.println("Error: Could not open game: " + ex.getMessage());
+            showDialog("Error", "An error has occured: " + ex.getMessage());
         }
     }
 
@@ -325,6 +324,7 @@ public class ServerSelectGUI {
 
     /**
      * After being logged in to FTP, handles the data retrieved from there.
+     *
      * @param anyConnect whether anyconnect should be used
      */
     private void setDataFromFTP(boolean anyConnect) {

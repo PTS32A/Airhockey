@@ -130,8 +130,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
             } catch (Exception ex) {
-                System.out.println("RemoteException on setting player info in setUp: " + ex.getMessage());
-                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("RemoteException on setting player info in setUp: " 
+                        + ex.getMessage());
+                showDialog("Error", "An error occured setting player info: "
+                        + ex.getMessage());
+//                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else if (myPerson instanceof ISpectator) {
@@ -260,7 +263,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                     this.apGame.getTransforms().add(new Rotate(120, bX, bY, 0, Rotate.Z_AXIS));
                 }
             } catch (RemoteException ex) {
-                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+                showDialog("Error", "An error occured rotating game screen: " + ex.getMessage());
+//                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -283,7 +287,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         this.cancel();
                     }
                 } catch (RemoteException ex) {
-                    System.out.println("RemoteException retrieving countdown from game: " + ex.getMessage());
+                    System.out.println("RemoteException retrieving countdown from game: " 
+                            + ex.getMessage());
+                    showDialog("Error", "An error occured: " + ex.getMessage());
                 }
             }
         };
@@ -443,7 +449,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 }
             } catch (RemoteException ex) {
                 System.out.println("RemoteException on beginGame: " + ex.getMessage());
-                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+                showDialog("Error", "An error occured trying to start game: "
+                        + ex.getMessage());
+//                Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else {
@@ -466,8 +474,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 myGame.adjustDifficulty();
             }
         } catch (RemoteException ex) {
-            System.out.println("RemoteException in setting difficulty: " + ex.getMessage());
-            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException in setting difficulty: " 
+                    + ex.getMessage());
+            showDialog("Error", "An error occured setting difficulty: "
+                    + ex.getMessage());
+//            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -482,8 +493,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             myGame.pauseGame(!myGame.getGameStatusProperty().get().equals(GameStatus.Paused));
             actionTaken = true;
         } catch (RemoteException ex) {
-            System.out.println("RemoteException on pausing / unpausing the game: " + ex.getMessage());
-            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("RemoteException on pausing / unpausing the game: " 
+                    + ex.getMessage());
+            showDialog("Error", "An error occured pausing / unpausing game: "
+                    + ex.getMessage());
+//            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -519,7 +533,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             myGame.addChatMessage("has left the game", super.getMe().getName());
         } catch (RemoteException ex) {
             System.out.println("RemoteException on quitClick: " + ex.getMessage());
-            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+            showDialog("Error", "An error occured trying to exit game: "
+                    + ex.getMessage());
+//            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -536,7 +552,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             try {
                 myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
             } catch (RemoteException ex) {
-                System.out.println("RemoteException in addChatMessage: " + ex.getMessage());
+                System.out.println("RemoteException in addChatMessage: " 
+                        + ex.getMessage());
+                showDialog("Error", "An error occured posting a chat message: "
+                        + ex.getMessage());
             } catch (IllegalArgumentException ex) {
                 // do nothing on empty messages
             }
@@ -559,7 +578,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             closeMyStage();
         } catch (RemoteException ex) {
             System.out.println("RemoteException on stopSpectating: " + ex.getMessage());
-            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+            showDialog("Error", "An error occured trying to stop spectating: "
+                    + ex.getMessage());
+//            Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -578,12 +599,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 try {
                     if (keyEvent.getCode() == KeyCode.A
                             || keyEvent.getCode() == KeyCode.LEFT) {
+                        System.out.println("keyevent called");
+                        keyEvent.consume();
                         if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                             myPlayer.moveBat(-1);
                             actionTaken = true;
                         }
                     } else if (keyEvent.getCode() == KeyCode.D
                             || keyEvent.getCode() == KeyCode.RIGHT) {
+                        System.out.println("keyevent called");
+                        keyEvent.consume();
                         if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                             myPlayer.moveBat(1);
                             actionTaken = true;
@@ -654,8 +679,11 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         myGame.adjustDifficulty();
                     }
                 } catch (RemoteException ex) {
-                    System.out.println("RemoteException on adjustDifficulty changeEventHandler: " + ex.getMessage());
-                    Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("RemoteException on adjustDifficulty changeEventHandler: " 
+                            + ex.getMessage());
+                    showDialog("Error", "An error occured trying to automatically change difficulty: "
+                            + ex.getMessage());
+//                    Logger.getLogger(GameFX.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -666,7 +694,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     private void displayPostGameStats() {
         String eol = System.getProperty("line.separator");
-        // Remove this println after implementation
         System.out.println("Display post game stats");
 
         // open new stage, and chuck all info in here, including whether game was ended before time

@@ -31,16 +31,13 @@ public class ClientMain extends Application {
      * Repeatable method for (re)starting the client application.
      */
     public static void launchClient() {
-        
-        try
-        {
+
+        try {
             stage.getIcons().add(new Image("file:GamePNG.png"));
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             System.out.println("Exception in setting the stage icon: " + ex.getMessage());
         }
-        
+
         AirhockeyGUI gui = new AirhockeyGUI();
         gui.setStage(stage);
         ServerSelectGUI serverSelect = new ServerSelectGUI(stage, gui);
@@ -48,8 +45,9 @@ public class ClientMain extends Application {
 
     /**
      * Starts the client
+     *
      * @param stage the client's stage
-     * @throws Exception 
+     * @throws Exception
      */
     @Override
     public void start(Stage stage) throws Exception {
