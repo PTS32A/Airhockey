@@ -42,6 +42,10 @@ public class ServerMain extends Application {
     private FTPHandler handler = null;
     private AirhockeyServer server = null;
 
+    /**
+     * Starts the server
+     * @param primaryStage 
+     */
     @Override
     public void start(Stage primaryStage) {
 
@@ -143,6 +147,10 @@ public class ServerMain extends Application {
         });
     }
 
+    /**
+     * Sets up the server
+     * @throws IOException 
+     */
     private void serverSetUp() throws IOException {
         try {
             GridPane gp = new GridPane();
@@ -242,6 +250,15 @@ public class ServerMain extends Application {
         }
     }
 
+    /**
+     * Sets the serverinfo of the server
+     * @param address The address of the server
+     * @param bind The binding name of the server
+     * @param ip The ip-address of the server
+     * @param port The port number of the server
+     * @param description The description of the server
+     * @return Returns the success of the setting
+     */
     public boolean serverInfo(String address, String bind, String ip, String port, String description) {
         try {
             // sets security manager

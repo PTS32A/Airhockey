@@ -36,6 +36,13 @@ public class FTPHandler {
      */
     private String ftpRefLocation = null;
 
+    /**
+     * constructor
+     * @param ftpServer The name of the ftpserver
+     * @param username The username
+     * @param password The password
+     * @param SSL Whether SSL should be used
+     */
     public FTPHandler(String ftpServer, String username, String password, boolean SSL) {
         this.ftpServer = ftpServer;
         this.username = username;
@@ -46,7 +53,8 @@ public class FTPHandler {
     /**
      * Checks whether client was able to login with given info.
      *
-     * @return
+     * @return Returns a boolean indicating whether the client has been
+     * successfully logged in
      */
     public boolean checkLogin() {
         boolean success = false;
@@ -78,7 +86,7 @@ public class FTPHandler {
     /**
      * Registers
      *
-     * @param input
+     * @param input The server info to be registered
      * @return The url that should be used as java for codebase purposes
      */
     public String registerServer(ServerInfo input) {
@@ -145,8 +153,8 @@ public class FTPHandler {
     /**
      * Writes given info to local file, and returns a reference.
      *
-     * @param input
-     * @return
+     * @param input The serverinfo to be saved
+     * @return Returns the file that the serverinfo was saved in
      */
     private File saveInfoToFile(ServerInfo input) {
         FileWriter fw = null;
@@ -186,8 +194,8 @@ public class FTPHandler {
      * Reads the file containing the codebase address as it should be used by
      * java
      *
-     * @param input
-     * @return
+     * @param input The file to be read
+     * @return Returns the content of the file
      */
     private String readCodebaseInfo(File input) {
         if (input == null) {
@@ -210,6 +218,10 @@ public class FTPHandler {
         return output;
     }
 
+    /**
+     * Unregisters the server
+     * @param serverInfo The serverinfo of the server
+     */
     void unRegisterServer(ServerInfo serverInfo) {
         FTPClient client = null;
 

@@ -23,6 +23,12 @@ public class Spectator extends Person implements ISpectator {
     @Getter
     private List<IGame> myGames;
 
+    /**
+     * constructor
+     * @param name The name of the spectator
+     * @param rating The rating of the spectator
+     * @throws RemoteException 
+     */
     Spectator(String name, double rating) throws RemoteException {
         super(name, rating);
         myGames = new ArrayList<>();
@@ -31,8 +37,8 @@ public class Spectator extends Person implements ISpectator {
     /**
      * if spectator is not already watching input, it will add it to his list.
      *
-     * @param inputGame
-     * @return
+     * @param inputGame The game to be added
+     * @return Returns a boolean indicating the success of the addition
      */
     public boolean addGame(IGame inputGame) {
         if (inputGame == null) {
@@ -50,8 +56,8 @@ public class Spectator extends Person implements ISpectator {
     /**
      * Denotes spectator is no longer watching given IGame.
      *
-     * @param input
-     * @return
+     * @param input The game to be removed
+     * @return Returns a boolean indicating the success of the removal
      */
     public boolean removeGame(IGame input) {
         if (input == null) {
@@ -60,6 +66,12 @@ public class Spectator extends Person implements ISpectator {
         return myGames.remove(input);
     }
 
+    /**
+     * equals method
+     * @param other The other object to be compared with this
+     * @return Returns a boolean indicating whether the compared objects are 
+     * equal based on this' parent equals method
+     */
     @Override
     public boolean equals(Object other) {
         return super.equals(other);

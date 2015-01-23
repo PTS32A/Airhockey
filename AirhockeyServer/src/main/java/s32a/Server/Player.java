@@ -57,7 +57,7 @@ public class Player extends Person implements IPlayer {
     /**
      * sets both int and property values
      *
-     * @param input
+     * @param input The new score value
      * @throws java.rmi.RemoteException
      */
     public void setScore(int input) throws RemoteException {
@@ -65,7 +65,7 @@ public class Player extends Person implements IPlayer {
     }
 
     /**
-     *
+     * constructor
      * @param name provided by Person
      * @param rating provided by Person
      * @param color player color - linked to them being player 1, 2 or 3
@@ -184,6 +184,12 @@ public class Player extends Person implements IPlayer {
         }
     }
 
+    /**
+     * equals method
+     * @param other The other object to be compared to this
+     * @return Returns a boolean indicating whether the compared objects are
+     * equal based on this' parent equals method
+     */
     @Override
     public boolean equals(Object other) {
         return super.equals(other);

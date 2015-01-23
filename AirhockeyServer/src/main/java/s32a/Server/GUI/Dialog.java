@@ -40,6 +40,11 @@ public class Dialog {
 
     private static Map<Long, Dialog> dialogs = new HashMap<>();
 
+    /**
+     * Shows the dialog
+     * @param header The header of the dialog window
+     * @param message The message to be displayed
+     */
     public static void showDialog(String header, String message) {
         Platform.runLater(new Runnable() {
 
@@ -57,9 +62,9 @@ public class Dialog {
     /**
      * this application's equivalent of a mbox in C#
      *
-     * @param owner
-     * @param header
-     * @param message
+     * @param id The id of the dialog
+     * @param header The header of the dialog's window
+     * @param message The message to be displayed
      */
     private Dialog(Long id, String header, String message) {
         this.dialogID = id;

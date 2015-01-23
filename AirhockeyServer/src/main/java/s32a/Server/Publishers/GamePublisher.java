@@ -78,7 +78,7 @@ public class GamePublisher {
      * Creates a new publisher associated with given game. Observers need to be
      * manually registered.
      *
-     * @param myGame
+     * @param myGame The game to used by the gamepublisher
      */
     public GamePublisher(Game myGame) {
         this.observers = new ConcurrentHashMap<>();
@@ -149,7 +149,7 @@ public class GamePublisher {
     /**
      * pool.execute, wrapped in a try-catch
      *
-     * @param r
+     * @param r The runnable to be executed
      */
     private void tryExecute(Runnable r) {
         try {
@@ -164,8 +164,8 @@ public class GamePublisher {
      * Tries to add an observer to the list. If the list already contains given
      * observer, return false;
      *
-     * @param name
-     * @param client
+     * @param name The name of the observer
+     * @param client The gameclient of the observer
      * @throws java.rmi.RemoteException
      */
     public void addObserver(String name, IGameClient client) throws RemoteException {
@@ -176,8 +176,8 @@ public class GamePublisher {
     /**
      * Pushes all data to the new observer - and only to him.
      *
-     * @param name
-     * @param client
+     * @param name The name of the observer
+     * @param client The gameclient of the observer
      * @throws RemoteException
      */
     private void pushToNewObserver(String name, IGameClient client) {
@@ -208,7 +208,7 @@ public class GamePublisher {
      * called on a spectator leaving, as a player leaving triggers deletion of
      * the entire game.
      *
-     * @param name
+     * @param name The name of the observer
      */
     public void removeObserver(String name) {
         System.out.println("Removed " + name + " from observers.");
@@ -219,7 +219,7 @@ public class GamePublisher {
      * Binds given list of players to players. Event only pushes if a player was
      * added or removed, to prevent firing on every bat position change.
      *
-     * @param players
+     * @param players The observable list of players
      */
     public void bindPlayers(ObservableList<IPlayer> players) {
         this.players = players;
@@ -261,7 +261,7 @@ public class GamePublisher {
      * Binds roundNo to given roundNo. Adds Listener responsible for pushing
      * updates.
      *
-     * @param roundNo
+     * @param roundNo The round number
      */
     public void bindRoundNo(IntegerProperty roundNo) {
         this.roundNo.bind(roundNo);
@@ -300,7 +300,8 @@ public class GamePublisher {
      * Binds difficulty provided as string - Double version not required. Only
      * needs to be done once.
      *
-     * @param difficultyAsFloatProp
+     * @param difficultyAsFloatProp The difficulty of the game as a
+     * floatproperty
      */
     public void bindDifficulty(FloatProperty difficultyAsFloatProp) {
         this.difficultyProp.bind(difficultyAsFloatProp.asString());
@@ -339,7 +340,7 @@ public class GamePublisher {
      * Sets chatbox observableList to point to actual chatbox. Adds
      * ListChangeListener responsible for pushing updates to clients.
      *
-     * @param chat
+     * @param chat The observable list of strings containing chat messages
      */
     public void bindChat(ObservableList<String> chat) {
         this.chatbox = chat;
@@ -379,7 +380,7 @@ public class GamePublisher {
      * Binds Vector2 property containing puck x and y. Assigns listeners
      * responsible for pushing value changes.
      *
-     * @param position
+     * @param position The puck's position
      */
     public void bindPuckPosition(ObjectProperty<Vector2> position) {
         this.puckPosition.bind(position);
@@ -417,7 +418,7 @@ public class GamePublisher {
     /**
      * Binds statusproperty. Only needs to be done once.
      *
-     * @param input
+     * @param input The status of the game
      */
     public void bindStatus(ObjectProperty<GameStatus> input) {
         this.statusProp.bind(input);
@@ -513,7 +514,7 @@ public class GamePublisher {
      * Attempts to bind the next player. returns false if there are three
      * players present already. Initiates bat and score listeners if null.
      *
-     * @param input
+     * @param input The next player
      * @return
      */
     public boolean bindNextPlayer(Player input) {
@@ -574,7 +575,8 @@ public class GamePublisher {
      * Broadcasts end of game to all listeners. Declares end of game for
      * scheduled updater.
      *
-     * @param hasLeft
+     * @param hasLeft The name of the player who left, causing the end of the 
+     * game, if any
      */
     public void broadcastEndGame(String hasLeft) {
         System.out.println("broadcasting end game");

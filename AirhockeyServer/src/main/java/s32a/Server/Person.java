@@ -43,7 +43,7 @@ public class Person extends UnicastRemoteObject implements IPerson {
     /**
      * Garden variety setter - also sets ratingProperty
      *
-     * @param input
+     * @param input The new rating
      */
     public void setRating(double input) {
 
@@ -59,7 +59,7 @@ public class Person extends UnicastRemoteObject implements IPerson {
      * Garden variety getter, not linked through lombok for naming reasons. Used
      * by JavaFX for display.
      *
-     * @return
+     * @return Returns the name of the person as a stringproperty
      */
     public StringProperty nameProperty() {
         return this.nameProp;
@@ -69,16 +69,16 @@ public class Person extends UnicastRemoteObject implements IPerson {
      * Garden variety getter, not linked through lombok for naming reasons. Used
      * by JavaFX for display.
      *
-     * @return
+     * @return Returns the rating of the person as a ratingproperty
      */
     public DoubleProperty ratingProperty() {
         return this.ratingProp;
     }
 
     /**
-     *
-     * @param name
-     * @param rating
+     * constructor
+     * @param name The name of the person
+     * @param rating The rating of the person
      * @throws java.rmi.RemoteException
      */
     public Person(String name, Double rating) throws RemoteException {
@@ -95,7 +95,7 @@ public class Person extends UnicastRemoteObject implements IPerson {
      * JVM method used for deSerializing this class - instantiates transient
      * fields.
      *
-     * @param is
+     * @param is The objectinputstream to be read
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -110,7 +110,7 @@ public class Person extends UnicastRemoteObject implements IPerson {
      * NOTE: All subclasses will call this. A Player named "testey" will be
      * considered equal to a spectator, or a person named "testey".
      *
-     * @param other
+     * @param other The other object to be compared to this
      * @return
      */
     @Override
@@ -128,6 +128,10 @@ public class Person extends UnicastRemoteObject implements IPerson {
         return this.name.equals(otherMyClass.getName());
     }
 
+    /**
+     * Gets the hashcode from this name
+     * @return 
+     */
     @Override
     public int hashCode() {
         int hash = 5;
@@ -135,6 +139,10 @@ public class Person extends UnicastRemoteObject implements IPerson {
         return hash;
     }
 
+    /**
+     * toString method
+     * @return Returns this name as String
+     */
     @Override
     public String toString(){
         return this.name;

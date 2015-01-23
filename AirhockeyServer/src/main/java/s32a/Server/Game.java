@@ -131,8 +131,8 @@ public class Game extends UnicastRemoteObject implements IGame {
      * Starts publisher associated with game. Done outside constructor to avoid
      * issues with trying to use not-yet-initialised fields.
      *
-     * @param starter
-     * @param starterClient
+     * @param starter The player creating the game
+     * @param starterClient The gameclient of the player creating the game
      * @throws RemoteException
      */
     public void startPublisher(Player starter, IGameClient starterClient) throws RemoteException {
@@ -178,7 +178,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      *
      * @param playerInput The player that's going to be added to the active game
      * player color can be retrieved from gameID.get("nextColor")
-     * @param client
+     * @param client The gameclient of the added player
      * @return returns true when the player was successfully added returns false
      * when game is full, or player is already a participant also returns false
      * when anything wonky happens
@@ -214,9 +214,9 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     /**
      * sets initial bat position for given player
-     *
-     * @param p
-     * @param playerID
+     * @param pInput The player whose bat's position should be set
+     * @param playerID The id of the player
+     * @throws RemoteException 
      */
     private void setBatPosition(IPlayer pInput, int playerID) throws RemoteException {
         if (pInput == null) {
@@ -258,7 +258,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      *
      * @param spectator The spectator that's going to be added to the active
      * game
-     * @param client
+     * @param client The gameclient of the spectator to be added
      * @return returns true when the spectator was successfully added. false
      * when the spectator was already associated with this game also false if
      * the method failed to add for any other reason
@@ -473,7 +473,7 @@ public class Game extends UnicastRemoteObject implements IGame {
 
     /**
      * Broadcasts end of game to all unaware clients.
-     * @param hasLeft
+     * @param hasLeft The player who has left, causing the game to end, if any
      */
     public void broadcastEndGame(String hasLeft) {
         try {
@@ -509,7 +509,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     }
 
     /**
-     *
+     * toString method
      * @return gameID
      */
     @Override
@@ -526,7 +526,7 @@ public class Game extends UnicastRemoteObject implements IGame {
      * @param direction the start direction of the Puck
      * @param runCount the number of times the run() method of Puck should be
      * called
-     * @param maxRounds
+     * @param maxRounds the maximum number of rounds to be played in the game
      */
     public void customSetup(Vector2 position, float puckSpeed,
             float direction, int runCount, int maxRounds) {
@@ -560,6 +560,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     }
 
     /**
+     * Gets the puck
      * @return Puck
      */
     public Puck getMyPuck() {
@@ -569,7 +570,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     /**
      * Sets gameTime - non threadsafe
      *
-     * @param input
+     * @param input Game time as string
      */
     public void setGameTime(String input) {
         this.gameTime.set(input);
@@ -578,7 +579,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     /**
      * threadsafe set of roundNo
      *
-     * @param input
+     * @param input The round number
      */
     private void setRoundNo(int input) {
         roundNo.set(input);
@@ -595,7 +596,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     /**
      * loads the name of player 1 in a StringProperty
      *
-     * @return
+     * @return Returns the name of player 1
      */
     public StringProperty player1NameProperty() {
         return this.playerNameProp(0);
@@ -604,7 +605,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     /**
      * loads the name of player 2 in a StringProperty
      *
-     * @return
+     * @return Returns the name of player 2
      */
     public StringProperty player2NameProperty() {
         return this.playerNameProp(1);
@@ -613,7 +614,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     /**
      * loads the name of Player 3 in a StringProperty
      *
-     * @return
+     * @return Returns the name of player 3
      */
     public StringProperty player3NameProperty() {
         return this.playerNameProp(2);
@@ -622,7 +623,7 @@ public class Game extends UnicastRemoteObject implements IGame {
     /**
      * returns playername property at given index - used by player<X>Property
      *
-     * @param index
+     * @param index The index of the player
      * @return
      */
     private StringProperty playerNameProp(int index) {
@@ -633,14 +634,27 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
     }
 
+    /**
+     * Gets the game's players
+     * @return A list of the game's players
+     */
     public List<IPlayer> getMyPlayers() {
         return new ArrayList<>(myPlayers);
     }
 
+    /**
+     * Gets the game's spectators
+     * @return A list of the game's spectators
+     */
     public List<ISpectator> getMySpectators() {
         return new ArrayList<>(mySpectators);
     }
 
+    /**
+     * Gets the difficulty of the game
+     * @return
+     * @throws RemoteException 
+     */
     @Override
     public String getDifficulty() throws RemoteException {
 //        return this.difficultyProp.get();
@@ -650,6 +664,12 @@ public class Game extends UnicastRemoteObject implements IGame {
         return String.valueOf(this.myPuck.getSpeed().get());
     }
 
+    /**
+     * Gets the name of player 1
+     * @return Returns the name of player 1
+     * Returns "-" if name cannot be found
+     * @throws RemoteException 
+     */
     @Override
     public String getPlayer1Name() throws RemoteException {
         if (this.myPlayers.size() > 0) {
@@ -659,6 +679,12 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
     }
 
+    /**
+     * Gets the name of player 2
+     * @return Returns the name of player 2
+     * Returns "-" if name cannot be found
+     * @throws RemoteException 
+     */
     @Override
     public String getPlayer2Name() throws RemoteException {
         if (this.myPlayers.size() > 1) {
@@ -668,6 +694,12 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
     }
 
+    /**
+     * Gets the name of player 3
+     * @return Returns the name of player 3
+     * Returns "-" if name cannot be found
+     * @throws RemoteException 
+     */
     @Override
     public String getPlayer3Name() throws RemoteException {
         if (this.myPlayers.size() > 2) {
@@ -677,21 +709,41 @@ public class Game extends UnicastRemoteObject implements IGame {
         }
     }
 
+    /**
+     * Gets the status of the game
+     * @return Returns the status
+     * @throws RemoteException 
+     */
     @Override
     public String getStatus() throws RemoteException {
         return this.statusProp.get().toString();
     }
 
+    /**
+     * Gets the id of the game
+     * @return Returns the id
+     * @throws RemoteException 
+     */
     @Override
     public String getID() throws RemoteException {
         return (String) this.gameInfo.get(GameSetting.GameID);
     }
 
+    /**
+     * Gets the countdown time of the game
+     * @return Returns the countdown time
+     * @throws RemoteException 
+     */
     @Override
     public int getCountDownTime() throws RemoteException {
         return this.countDownTime.get();
     }
 
+    /**
+     * Gets the start time of the game
+     * @return Returns the start time
+     * @throws RemoteException 
+     */
     @Override
     public long getGameStartTime() throws RemoteException {
         if(!this.gameInfo.containsKey(GameSetting.GameStartTime)){

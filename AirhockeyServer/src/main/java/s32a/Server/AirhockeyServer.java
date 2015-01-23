@@ -31,6 +31,13 @@ public class AirhockeyServer {
 //    private String bindingName;
 //    private String ipAddress;
 
+    /**
+     * constructor
+     * @param stage the server stage
+     * @param IPAddress the ip-address of the server
+     * @param bindingName the binding name of the server 
+     * @param portNumber the port number of the server
+     */
     public AirhockeyServer(Stage stage, String IPAddress, String bindingName, int portNumber) {
 
         try {
@@ -144,7 +151,7 @@ public class AirhockeyServer {
 
     /**
      * Performs a quick check whether it was possible to init Lobby
-     * @return
+     * @return Return a boolean indicating success
      */
     public static boolean checkLobby() {
         try {

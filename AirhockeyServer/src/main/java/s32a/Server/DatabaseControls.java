@@ -110,9 +110,9 @@ class DatabaseControls {
      * Checks whether provided playername and password correspond to an existing
      * database item
      *
-     * @param playerName
-     * @param password
-     * @return
+     * @param playerName The name of the player
+     * @param password The password of the player
+     * @return Returns a person based on the player name and password if existing
      * @throws java.sql.SQLException
      */
     public IPerson checkLogin(String playerName, String password) throws SQLException, RemoteException {
@@ -147,8 +147,8 @@ class DatabaseControls {
     /**
      * Adds a new Person to the database
      *
-     * @param playerName
-     * @param password
+     * @param playerName The name of the player
+     * @param password The password of the player
      * @return the newly added person, if applicable
      * @throws java.sql.SQLException
      */
@@ -237,7 +237,7 @@ class DatabaseControls {
      * as game does not save gamedate yet. Does not adjust scores - that's
      * lobby's job
      *
-     * @param game
+     * @param game The game to be saved
      * @throws SQLException
      * @throws IllegalArgumentException when game doesn't have three players
      */
@@ -292,7 +292,7 @@ class DatabaseControls {
      * updates player's game history, and calculates his new rating player
      * scores should have been adjusted before this
      *
-     * @param player
+     * @param player The player whose values should be updated
      * @param hasLeft can be null
      * @return his new rating
      * @throws java.sql.SQLException

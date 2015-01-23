@@ -100,7 +100,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * Replaces an item in the list with itself, forcing an ObservableList to
      * fire change events.
      *
-     * @param list
+     * @param list The observable list to be updated
      */
     public void forceListUpdate(ObservableList list) {
         if (list == null) {
@@ -114,7 +114,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * Replaces item with given key with itself. Forces an ObservableMap to fire
      * changeEvents.
      *
-     * @param map
+     * @param map The observablemap to be updated
      */
     public void forceMapUpdate(ObservableMap map) {
         if (map == null) {
@@ -159,7 +159,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * @param playerName can't be null or whitespace can't contain white spaces
      * @param password can't be null or whitespace can't contain trailing /
      * leading white spaces
-     * @param client
+     * @param client the provided lobbyclient
      * @throws java.sql.SQLException
      * @throws java.rmi.RemoteException
      * @return the String
@@ -196,7 +196,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * logs out given player. Sets currentPerson to null if it was him. Should
      * always be called with currentPerson by the GUI
      *
-     * @param name
+     * @param name the name of the player logging out
      * @return whether logout succeeded
      * @throws java.rmi.RemoteException
      */
@@ -241,8 +241,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * converted to Player Person is used as gamestarter for Game constructor
      * parameter person can't already be a Player or Spectator
      *
-     * @param name
-     * @param client
+     * @param name the name of player starting the game
+     * @param client the gameclient of the player starting the game
      * @return - the freshly started game if everything went well - null
      * @throws java.rmi.RemoteException
      */
@@ -281,7 +281,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      *
      * @param gameInput can't be null
      * @param personInput should be Lobby.currentPerson if called by GUI
-     * @param client
+     * @param client the gameclient of the player joining the game
      * @return joined game if everything went well null otherwise
      * @throws java.rmi.RemoteException
      */
@@ -333,7 +333,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      *
      * @param gameInput can't be null
      * @param personInput should be currentPerson if called by GUI
-     * @param client
+     * @param client the gameclient of the spectator joining the game
      * @return - Game if everything went well - Null otherwise
      * @throws java.rmi.RemoteException
      */
@@ -452,8 +452,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
      * returns given person to lobby, and removes him from the spectators of
      * given game.
      *
-     * @param gameInput
-     * @param spectator
+     * @param gameInput The game as string
+     * @param spectator The name of the spectator stopping spectating
      * @throws java.rmi.RemoteException
      */
     @Override
@@ -498,8 +498,9 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     /**
      * Adjusts end of game scores according to the URS
      *
-     * @param game
-     * @return
+     * @param game The game whose score should be adjusted
+     * @param earlyEnding Whether the game is ending before is should
+     * @return Returns the game with the adjusted score
      */
     private IGame adjustScore(Game game, boolean earlyEnding)
             throws IllegalArgumentException, RemoteException {
@@ -633,7 +634,7 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     }
 
     /**
-     * @param name
+     * @param name The name of the person
      * @return Up-to-date version of person with given name
      * @throws RemoteException
      */

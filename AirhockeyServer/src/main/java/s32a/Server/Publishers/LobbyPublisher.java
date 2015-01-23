@@ -49,7 +49,7 @@ public class LobbyPublisher {
     private ScheduledExecutorService pool = Executors.newScheduledThreadPool(2);
 
     /**
-     * Constructor. Initialises Properties that get bound.
+     * Constructor. Initializes Properties that get bound.
      *
      * @throws RemoteException
      */
@@ -91,7 +91,7 @@ public class LobbyPublisher {
     /**
      * pool.execute, wrapped in a try-catch
      *
-     * @param r
+     * @param r The runnable to be executed
      */
     private void tryExecute(Runnable r) {
         try {
@@ -121,8 +121,8 @@ public class LobbyPublisher {
      * Pushes all values to a newly registered observer. Avoids mass pushing
      * everything to everyone.
      *
-     * @param name
-     * @param newObsv
+     * @param name The name of the observer
+     * @param newObsv the lobbyclient of the observer
      * @return
      */
     private void pushToNewObserver(String name, ILobbyClient newObsv) {
@@ -148,7 +148,7 @@ public class LobbyPublisher {
      * Removes an observer
      *
      * @param name The name corresponding with the observer
-     * @param notifyClient
+     * @param notifyClient whether the client should be notified
      */
     public void enforceLogout(String name, boolean notifyClient) {
         if (!observers.containsKey(name)) {
@@ -218,7 +218,7 @@ public class LobbyPublisher {
     /**
      * Called whenever rating updates for a player (postgame).
      *
-     * @param person
+     * @param person The person whos ranking should be pushed
      */
     public void pushNewRanking(IPerson person) {
         if (person == null) {

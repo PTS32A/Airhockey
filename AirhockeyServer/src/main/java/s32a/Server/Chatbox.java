@@ -23,11 +23,16 @@ public class Chatbox {
     private ObservableList<String> chat;
     private final int chatLimit = 500;
 
+    /**
+     * Getter for the observable list used for chat
+     * @return Return an observabhle list containing chat
+     */
     public ObservableList<String> chatProperty() {
         return this.chat;
     }
 
     /**
+     * constructor
      * The chat box element.
      */
     public Chatbox() {
@@ -38,7 +43,7 @@ public class Chatbox {
      * Message should be preformatted "<PlayerName>[HH:MM:SS]: message"
      *
      * @param message The message that is going to be sent to the chat box
-     * @param sender
+     * @param sender The name of the person who sent the message
      * @return returns true if the message was sent successfully returns
      * IllegalArgumentException if message wasn't formatted correctly
      */

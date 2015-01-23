@@ -93,8 +93,8 @@ public class Puck extends TimerTask {
      * initialises a game's puck position is randomised, speed is a given
      * isMoving is initialised as false
      *
-     * @param speed
-     * @param myGame
+     * @param speed The speed of the puck
+     * @param myGame The parent game of the puck
      */
     public Puck(float speed, Game myGame) {
         Lobby lobby = null;
@@ -171,6 +171,10 @@ public class Puck extends TimerTask {
         clearEndData();
     }
 
+    /**
+     * Resets the puck position to the centre of the field and randomizes the
+     * puck's direction
+     */
     public void resetPuck() {
         setEndData();
         this.position.set(centre);
@@ -320,6 +324,9 @@ public class Puck extends TimerTask {
         }
     }
 
+    /**
+     * Sets a random direction when the puck is stuck
+     */
     public void stuckRandomDirection() {
         if (System.currentTimeMillis() - stuckBegin > 1000) {
             Random r = new Random();
@@ -330,6 +337,11 @@ public class Puck extends TimerTask {
         }
     }
 
+    /**
+     * Continues to update position after a change
+     * @param bouncePosition The bounce position calculated for the next frame
+     * @param newPosition  The new position calculated for the next frame
+     */
     private void continueUpdatePosition(Vector2 bouncePosition, Vector2 newPosition) {
         //Position is set to bouncePosition and new direction has been calculated
         //Repeat process with remaining distance to travel
@@ -341,7 +353,7 @@ public class Puck extends TimerTask {
     }
 
     /**
-     * @param newPosition
+     * @param newPosition The position to be checked
      * @return the wall position that the puck bounces off returns null if the
      * puck is not in collision with any walls
      */
@@ -489,7 +501,7 @@ public class Puck extends TimerTask {
     /**
      * Calculate whether a Vector2 position is in a goal
      *
-     * @param pos
+     * @param pos The position to be checked
      * @return Return an int value to tell whose goal is hit where: 0 refers to
      * player Red, 1 refers to player Blue and 2 refers to player Green. Returns
      * 0 if no goal has been hit
@@ -516,7 +528,7 @@ public class Puck extends TimerTask {
     /**
      * USED FOR Bat AS ROUND OBJECT. FOR Bat AS LINE GO TO checkBatBlock()
      *
-     * @param pos
+     * @param pos The position to be checked
      * @return Returns a the player whose bat the position is on. Return null if
      * the position is not on any bats.
      */
@@ -574,7 +586,7 @@ public class Puck extends TimerTask {
     /**
      * Returns X-coord, Y-coord, and pucksize of puck
      *
-     * @return
+     * @return Returns the puck's position as an array of float
      */
     public float[] getPuckLocation() {
         return new float[]{position.get().x, position.get().y, puckSize};

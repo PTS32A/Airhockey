@@ -25,16 +25,20 @@ import s32a.Shared.enums.GameStatus;
 public class Bot extends Player {
 
     /**
-     *
-     * @param name
-     * @param rating
-     * @param color
+     * constructor
+     * @param name The name of the bot
+     * @param rating The rating of the bot
+     * @param color The color used by the bot in-game
      * @throws java.rmi.RemoteException
      */
     public Bot(String name, double rating, Colors color) throws RemoteException {
         super(name, rating, color);
     }
 
+    /**
+     * Moves the bot's bat around to defend it's goal from the puck
+     * @throws RemoteException 
+     */
     public void moveBot() throws RemoteException {
         if (((Game)getMyGame()).statusProperty().get().equals(GameStatus.Playing)) {
             if (this.getColor() == Colors.Red) {
@@ -55,6 +59,11 @@ public class Bot extends Player {
         }
     }
 
+    /**
+     * Equals function
+     * @param other The object this should be compared to
+     * @return Returns whether the objects are equal based on this' parent equals method
+     */
     @Override
     public boolean equals(Object other) {
         return super.equals(other);
