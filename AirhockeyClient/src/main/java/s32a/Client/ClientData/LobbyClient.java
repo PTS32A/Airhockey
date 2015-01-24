@@ -20,6 +20,7 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 import s32a.Client.GUI.AirhockeyGUI;
 import static s32a.Client.GUI.AirhockeyGUI.me;
+import s32a.Client.GUI.Dialog;
 import s32a.Client.Startup.ClientMain;
 import s32a.Shared.IGame;
 import s32a.Shared.IGameClient;
@@ -357,6 +358,8 @@ public class LobbyClient extends UnicastRemoteObject implements ILobbyClient, IL
 
             @Override
             public void run() {
+                Dialog.showDialog("Notification",
+                        "The Server has terminated the session.");
                 ClientMain.launchClient();
             }
         });

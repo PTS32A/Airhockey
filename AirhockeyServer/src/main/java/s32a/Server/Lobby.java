@@ -97,6 +97,15 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     }
 
     /**
+     * Notifies all clients that the server is being shut down.
+     */
+    public void shutDownLobby(){
+        if(this.publisher != null){
+            this.publisher.broadCastShutDown();
+        }
+    }
+
+    /**
      * Replaces an item in the list with itself, forcing an ObservableList to
      * fire change events.
      *

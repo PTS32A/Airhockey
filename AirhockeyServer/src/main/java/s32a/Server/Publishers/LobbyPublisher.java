@@ -67,6 +67,20 @@ public class LobbyPublisher {
     }
 
     /**
+     * Notifies all clients that server is being shut down imminently.
+     */
+    public void broadCastShutDown() {
+        for(String key: this.observers.keySet()){
+            try {
+                this.observers.get(key).enforceLogout();
+            } catch (RemoteException ex) {
+                System.out.println("RemoteException broadcating lobby shutdown to player: "
+                        + ex.getMessage());
+            }
+        }
+    }
+
+    /**
      * Starts a timed push mechanic to update all clients of changes. Prevents
      * spam. Only used for collections liable to have bursts of updates at once.
      *
@@ -261,8 +275,7 @@ public class LobbyPublisher {
      */
     private void pushActiveGames() {
         HashMap<String, IGame> output = new HashMap<>(this.games);
-        for (Iterator<String> it = observers.keySet().iterator(); it.hasNext();) {
-            String key = it.next();
+        for (String key : observers.keySet()) {
             try {
                 observers.get(key).setActiveGames(output);
             } catch (RemoteException ex) {
@@ -305,4 +318,6 @@ public class LobbyPublisher {
             }
         }
     }
+
+    
 }

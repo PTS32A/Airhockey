@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import s32a.Server.AirhockeyServer;
 import s32a.Server.GUI.Dialog;
+import s32a.Server.Lobby;
 import s32a.Shared.ServerInfo;
 
 /**
@@ -286,8 +287,15 @@ public class ServerMain extends Application {
 
                 @Override
                 public void handle(WindowEvent event) {
+                    stage.hide();
                     System.out.println("dropping server reference");
                     handler.unRegisterServer(serverInfo);
+                    try{
+                        System.out.println("Notifying all clients");
+                        Lobby.getSingle().shutDownLobby();
+                    } catch (Exception ex){
+                        // do nothing
+                    }
                     System.exit(0);
                 }
             });
