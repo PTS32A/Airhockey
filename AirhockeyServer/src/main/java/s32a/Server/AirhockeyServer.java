@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import static s32a.Server.GUI.Dialog.showDialog;
 
 /**
  *
@@ -43,12 +44,11 @@ public class AirhockeyServer {
         try {
             lobby = Lobby.getSingle();
             lobby.startPublisher();
-            System.out.println("Server: Lobby created");
         } catch (RemoteException ex) {
-            System.out.println("Server: RemoteException: " + ex.getMessage());
+            showDialog("Error", "Server: RemoteException: " + ex.getMessage());
             lobby = null;
         } catch (NullPointerException ex) {
-            System.out.println("Null pointer in Lobby - database error");
+            showDialog("Error", "Null pointer in Lobby - database error: " + ex.getMessage());
             lobby = null;
         }
 
@@ -62,7 +62,7 @@ public class AirhockeyServer {
                     registry = LocateRegistry.getRegistry(portNumber);
                     registry.list();
                 } catch (RemoteException ex){
-                    System.out.println("Unable to find existing registry");
+                    showDialog("Error", "Unable to find existing registry: " + ex.getMessage());
                     registry = null;
                 }
 
@@ -72,11 +72,11 @@ public class AirhockeyServer {
                 }
                 registry.rebind(bindingName, lobby);
             } catch (RemoteException ex) {
-                System.out.println("Server: RemoteException: " + ex.getMessage());
+                showDialog("Error", "Server: RemoteException: " + ex.getMessage());
             }
-            System.out.println("Server: Lobby bound to " + bindingName);
+            //System.out.println("Server: Lobby bound to " + bindingName);
         } else {
-            System.out.println("Server: Lobby not bound");
+            showDialog("Error", "Server: Lobby not bound");
         }
 
 //        ipAddress = "";
@@ -178,8 +178,7 @@ public class AirhockeyServer {
                 }
             }
         } catch (UnknownHostException ex) {
-            System.out.println("Server: Cannot get IP address of local host");
-            System.out.println("Server: UnknownHostException: " + ex.getMessage());
+            showDialog("Error", "Server: Cannot get IP address of local host. UnknownHostException: " + ex.getMessage());
         }
 
 //        try {

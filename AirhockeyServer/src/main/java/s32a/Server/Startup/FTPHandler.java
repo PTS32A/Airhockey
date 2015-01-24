@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
+import static s32a.Server.GUI.Dialog.showDialog;
 import s32a.Shared.ServerInfo;
 
 /**
@@ -70,13 +71,15 @@ public class FTPHandler {
             success = client.login(username, password);
         } catch (IOException ex) {
             success = false;
-            Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
+            showDialog("Error", "FTP: CheckLogin IOException: " + ex.getMessage());
+            //Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (client != null) {
                 try {
                     client.logout();
                 } catch (IOException ex) {
-                    Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    showDialog("Error", "FTP: CheckLogin Logout IOException: " + ex.getMessage());
+                    //Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -92,7 +95,8 @@ public class FTPHandler {
     public String registerServer(ServerInfo input) {
         File infoFile = this.saveInfoToFile(input);
         if (infoFile == null || infoFile.length() == 0) {
-            System.out.println("No file to store: " + infoFile.getAbsolutePath());
+            showDialog("Error", "No file to store: " + infoFile.getAbsolutePath());
+            //System.out.println("No file to store: " + infoFile.getAbsolutePath());
             return null;
         }
 
@@ -129,10 +133,12 @@ public class FTPHandler {
 
             client.logout();
         } catch (IOException ex) {
-            System.out.println("IOException: " + ex.getMessage());
-            ex.printStackTrace();
+            showDialog("Error", "FTP: IOException " + ex.getMessage());
+//            System.out.println("IOException: " + ex.getMessage());
+//            ex.printStackTrace();
         } catch (Exception ex) {
-            System.out.println("exception caught: " + ex.getMessage());
+            showDialog("Error", "FTP: Exception: " + ex.getMessage());
+            //System.out.println("exception caught: " + ex.getMessage());
         } finally {
             try {
                 if (fis != null) {
@@ -162,7 +168,7 @@ public class FTPHandler {
         BufferedWriter writer = null;
         try {
             file = new File(input.getIP() + ".server");
-            System.out.println("Saving to: " + file.getAbsolutePath());
+            //System.out.println("Saving to: " + file.getAbsolutePath());
             if (file.exists()) {
                 file.delete();
             }
@@ -178,13 +184,15 @@ public class FTPHandler {
             writer.write(":" + input.getPort());
 
         } catch (IOException ex) {
-            Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
+            showDialog("Error", "FTP: save info to file: " + ex.getMessage());
+//            /Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 writer.close();
                 fw.close();
             } catch (IOException ex) {
-                Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
+                showDialog("Error", "FTP: Save info to file close: " + ex.getMessage());
+                //Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return file;
@@ -208,7 +216,8 @@ public class FTPHandler {
             output = in.nextLine();
             System.out.println("codebase: " + output);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
+            showDialog("Error", "FTP: Read codebase info file not found: " + ex.getMessage());
+            //Logger.getLogger(FTPHandler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (in != null) {
                 in.close();
@@ -243,15 +252,17 @@ public class FTPHandler {
             client.logout();
 
         } catch (IOException ex) {
-            System.out.println("IOException: " + ex.getMessage());
-            ex.printStackTrace();
+            showDialog("Error", "FTP: unRegisterServer IOException: " + ex.getMessage());
+//            System.out.println("IOException: " + ex.getMessage());
+//            ex.printStackTrace();
         } catch (Exception ex) {
-            System.out.println("exception caught: " + ex.getMessage());
+            showDialog("Error", "FTP: CheckLogin Exception: " + ex.getMessage());
+            //System.out.println("exception caught: " + ex.getMessage());
         } finally {
             try {
                 client.disconnect();
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }

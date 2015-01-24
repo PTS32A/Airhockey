@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import s32a.Server.AirhockeyServer;
 import s32a.Server.GUI.Dialog;
+import static s32a.Server.GUI.Dialog.showDialog;
 import s32a.Server.Lobby;
 import s32a.Shared.ServerInfo;
 
@@ -59,7 +60,8 @@ public class ServerMain extends Application {
         }
         catch (Exception ex)
         {
-            System.out.println("Exception in setting the stage icon: " + ex.getMessage());
+            showDialog("Error", "Exception in setting the stage icon: " + ex.getMessage());
+            //System.out.println("Exception in setting the stage icon: " + ex.getMessage());
         }
         
         Platform.runLater(new Runnable() {
@@ -91,12 +93,6 @@ public class ServerMain extends Application {
                     PasswordField tfPass = new PasswordField();
                     tfPass.setText("ifvr2edfh101");
                     gp.add(tfPass, 1, 4);
-                    Label port = new Label("Status:");
-                    gp.add(port, 0, 5);
-                    TextField tfConnStatus = new TextField();
-                    tfConnStatus.setText("Not Connected");
-                    tfConnStatus.setEditable(false);
-                    gp.add(tfConnStatus, 1, 5);
                     Button btnConfirm = new Button("Connect");
                     gp.add(btnConfirm, 1, 6);
                     btnConfirm.setOnAction(new EventHandler<ActionEvent>() {
@@ -114,7 +110,7 @@ public class ServerMain extends Application {
                                     stage.close();
                                     serverSetUp();
                                 } else {
-                                    tfConnStatus.setText("Could not connect, check spelling and internet connection.");
+                                    showDialog("Error", "Could not connect, check spelling and internet connection.");
                                 }
                             } catch (IOException ex) {
                                 ex.printStackTrace();
@@ -167,7 +163,7 @@ public class ServerMain extends Application {
             tfSN.setText("Airhockey");
             gp.add(tfSN, 1, 1);
 
-            Label bind = new Label("Binding Name:");
+            Label bind = new Label("Binding name:");
             gp.add(bind, 0, 2);
 
             TextField tfBind = new TextField();
@@ -214,7 +210,7 @@ public class ServerMain extends Application {
                     if (serverInfo(tfSN.getText(), tfBind.getText(),
                             tfIP.getText(), tfPort.getText(), taDesc.getText())) {
                         if(!AirhockeyServer.checkLobby()){
-                            System.out.println("Unable to initiate Lobby");
+                            //System.out.println("Unable to initiate Lobby");
                             Dialog.showDialog("Server error", "Unable to initiate Lobby");
                             return;
                         }
@@ -224,7 +220,8 @@ public class ServerMain extends Application {
                                 serverInfo.getBindingName(),
                                 serverInfo.getPort());
                     } else {
-                        System.out.println("Error occured, unable to open server");
+                        showDialog("Error", "Error occured, unable to open server");
+                        //System.out.println("Error occured, unable to open server");
                     }
                 }
             });
@@ -247,7 +244,8 @@ public class ServerMain extends Application {
 
             stage.show();
         } catch (Exception ex) {
-            System.out.println(ex.toString());
+            showDialog("Error", "Exception server setup scence " + ex.getMessage());
+            //System.out.println(ex.toString());
         }
     }
 
@@ -301,7 +299,8 @@ public class ServerMain extends Application {
             });
             
         } catch (NumberFormatException ex) {
-            System.out.println("unable to parse " + port + " to a number");
+            showDialog("Error", "Given port number is not a number: " + ex.getMessage());
+            //System.out.println("unable to parse " + port + " to a number");
             return false;
         } catch (Exception ex) {
             ex.printStackTrace();
