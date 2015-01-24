@@ -65,7 +65,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
     Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
-            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver;
+            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver, statlblTime;
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
     @FXML
@@ -137,6 +137,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             }
 
         } else if (myPerson instanceof ISpectator) {
+            statlblTime.setVisible(false);
             btnStart.setVisible(false);
             btnPause.setVisible(false);
             btnQuit.setVisible(false);

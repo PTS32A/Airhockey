@@ -94,12 +94,13 @@ public class AirhockeyGUI {
             @Override
             public void handle(WindowEvent event) {
                 try {
-                    lobby.logOut(me);
-                    Platform.exit();
-                    System.exit(0);
+                    lobby.logOut(me);                  
                 } catch (RemoteException ex) {
                     System.out.println("RemoteException on logout: " + ex.getMessage());
 //                    Logger.getLogger(AirhockeyGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    Platform.exit();
+                    System.exit(0);
                 }
             }
         });
