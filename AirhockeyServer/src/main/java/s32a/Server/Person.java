@@ -36,9 +36,6 @@ public class Person extends UnicastRemoteObject implements IPerson {
     private final String name;
     @Getter
     private double rating;
-    @Getter
-    @Setter
-    private boolean isBot = false;
 
     /**
      * Garden variety setter - also sets ratingProperty

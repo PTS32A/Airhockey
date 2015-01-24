@@ -99,8 +99,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     /**
      * Notifies all clients that the server is being shut down.
      */
-    public void shutDownLobby(){
-        if(this.publisher != null){
+    public void shutDownLobby() {
+        if (this.publisher != null) {
             this.publisher.broadCastShutDown();
         }
     }
@@ -308,14 +308,9 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         Game game = (Game) this.activeGames.get(gameInput);
         Person person = (Person) this.activePersons.get(personInput);
         try {
-            Player player;
-            if (person.isBot()) {
-                player = new Bot(person.getName(), person.ratingProperty().get(),
-                        game.getNextColor());
-            } else {
-                player = new Player(person.getName(), person.ratingProperty().get(),
-                        game.getNextColor());
-            }
+            Player player = new Player(person.getName(), person.ratingProperty().get(),
+                    game.getNextColor());
+
             if (game.addPlayer(player, client)) {
                 this.activePersons.replace(person.getName(), player);
                 this.forceMapUpdate(activeGames);
@@ -495,10 +490,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         try {
             if (participant instanceof Spectator && ((Spectator) participant).getMyGames().size() > 1) {
             } else {
-                boolean isBot = participant.isBot();
                 this.activePersons.replace(participant.getName(),
                         new Person(participant.getName(), participant.ratingProperty().get()));
-                ((Person) this.activePersons.get(participant.getName())).setBot(isBot);
             }
         } catch (Exception ex) {
         }
