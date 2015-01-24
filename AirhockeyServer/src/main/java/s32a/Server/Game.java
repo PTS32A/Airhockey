@@ -274,6 +274,8 @@ public class Game extends UnicastRemoteObject implements IGame {
             if (((Spectator) spectator).addGame(this)) {
                 this.mySpectators.add(spectator);
                 this.publisher.addObserver(spectator.getName(), client);
+                this.addChatMessage(spectator.getName() + " is now spectating",
+                        "GAME");
                 return true;
             } else {
                 return false;
@@ -298,6 +300,7 @@ public class Game extends UnicastRemoteObject implements IGame {
                 ((Spectator) spectator).removeGame(this);
                 mySpectators.remove(spectator);
                 publisher.removeObserver(spectator.getName());
+                this.addChatMessage(spectator.getName() + " stopped spectating", "GAME");
                 return true;
             }
         } else {

@@ -119,7 +119,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             try {
                 // Player
                 btnStopSpec.setVisible(false);
-                btnPause.setDisable(true);
 
                 // bind custom difficulty indicators
                 this.customSpeed = new SimpleIntegerProperty(15);
@@ -130,7 +129,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 // adds listeners governing custom difficulty
                 this.addDifficultyListeners();
             } catch (Exception ex) {
-                System.out.println("RemoteException on setting player info in setUp: " 
+                System.out.println("RemoteException on setting player info in setUp: "
                         + ex.getMessage());
                 showDialog("Error", "An error occured setting player info: "
                         + ex.getMessage());
@@ -287,7 +286,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         this.cancel();
                     }
                 } catch (RemoteException ex) {
-                    System.out.println("RemoteException retrieving countdown from game: " 
+                    System.out.println("RemoteException retrieving countdown from game: "
                             + ex.getMessage());
                     showDialog("Error", "An error occured: " + ex.getMessage());
                 }
@@ -474,7 +473,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 myGame.adjustDifficulty();
             }
         } catch (RemoteException ex) {
-            System.out.println("RemoteException in setting difficulty: " 
+            System.out.println("RemoteException in setting difficulty: "
                     + ex.getMessage());
             showDialog("Error", "An error occured setting difficulty: "
                     + ex.getMessage());
@@ -489,11 +488,16 @@ public class GameFX extends AirhockeyGUI implements Initializable {
      */
     @FXML
     public void pauseClick(Event evt) {
+        GameStatus status = myGame.getGameStatusProperty().get();
+        if(!status.equals(GameStatus.Playing) && !status.equals(GameStatus.Paused)){
+            return;
+        }
+
         try {
-            myGame.pauseGame(!myGame.getGameStatusProperty().get().equals(GameStatus.Paused));
+            myGame.pauseGame(!status.equals(GameStatus.Paused));
             actionTaken = true;
         } catch (RemoteException ex) {
-            System.out.println("RemoteException on pausing / unpausing the game: " 
+            System.out.println("RemoteException on pausing / unpausing the game: "
                     + ex.getMessage());
             showDialog("Error", "An error occured pausing / unpausing game: "
                     + ex.getMessage());
@@ -552,7 +556,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
             try {
                 myGame.addChatMessage(tfChatbox.getText(), currentPerson.getName());
             } catch (RemoteException ex) {
-                System.out.println("RemoteException in addChatMessage: " 
+                System.out.println("RemoteException in addChatMessage: "
                         + ex.getMessage());
                 showDialog("Error", "An error occured posting a chat message: "
                         + ex.getMessage());
@@ -613,6 +617,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                             myPlayer.moveBat(1);
                             actionTaken = true;
                         }
+                    } else if (keyEvent.getCode() == KeyCode.P) {
+                        pauseClick(null);
+                        actionTaken = true;
                     }
                 } catch (RemoteException ex) {
                     System.out.println("RemoteException in moveBat: " + ex.getMessage());
@@ -679,7 +686,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         myGame.adjustDifficulty();
                     }
                 } catch (RemoteException ex) {
-                    System.out.println("RemoteException on adjustDifficulty changeEventHandler: " 
+                    System.out.println("RemoteException on adjustDifficulty changeEventHandler: "
                             + ex.getMessage());
                     showDialog("Error", "An error occured trying to automatically change difficulty: "
                             + ex.getMessage());

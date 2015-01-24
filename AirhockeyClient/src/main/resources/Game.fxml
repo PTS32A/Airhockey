@@ -16,22 +16,22 @@
     <Button fx:id="btnPause" mnemonicParsing="false" onAction="#pauseClick" text="Pause" AnchorPane.bottomAnchor="72.0" AnchorPane.rightAnchor="21.0" />
     <Button fx:id="btnStart" mnemonicParsing="false" onAction="#startClick" prefWidth="51.000099999997474" text="Start" AnchorPane.bottomAnchor="113.0" AnchorPane.rightAnchor="20.0" />
     <TextArea id="taPowerUp" fx:id="taPower" disable="false" editable="false" prefHeight="30.0" prefWidth="84.0" text="Power Up: F" visible="false" wrapText="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="577.0" />
-    <Label text="Player 1:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+    <Label text="Player 1:" textFill="RED" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
       <font>
         <Font size="24.0" fx:id="x1" />
       </font>
     </Label>
     <Label font="$x1" layoutX="8.0" layoutY="111.0" text="Difficulty:" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="111.0" />
     <Canvas fx:id="canvas" height="500.0" width="560.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="330.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="50.0" />
-    <Label font="$x1" text="Score P1:" textFill="RED" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="44.0" />
-    <Label font="$x1" layoutX="912.0" layoutY="14.0" text="Time:" AnchorPane.rightAnchor="131.0" AnchorPane.topAnchor="14.0" />
+    <Label font="$x1" layoutX="914.0" layoutY="19.0" text="Score P1:" textFill="RED" AnchorPane.rightAnchor="89.0" AnchorPane.topAnchor="19.0" />
+    <Label font="$x1" layoutX="914.0" layoutY="115.0" text="Time:" AnchorPane.rightAnchor="129.0" AnchorPane.topAnchor="115.0" />
     <Label fx:id="lblDifficulty" font="$x1" layoutX="114.0" layoutY="111.0" text="()" AnchorPane.leftAnchor="114.0" AnchorPane.topAnchor="111.0" />
-    <Label id="lblScore" fx:id="lblScoreP1" font="$x1" prefHeight="35.0" prefWidth="69.0" text="---" textFill="RED" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="44.0" />
-    <Label fx:id="lblTime" font="$x1" layoutX="973.0" layoutY="14.0" prefHeight="35.0" prefWidth="69.0" text="" AnchorPane.rightAnchor="58.0" AnchorPane.topAnchor="14.0" />
-    <Label font="$x1" text="Score P2:" textFill="BLUE" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="76.0" />
-    <Label id="lblScore" fx:id="lblScoreP2" font="$x1" prefHeight="35.0" prefWidth="69.0" text="---" textFill="BLUE" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="76.0" />
-    <Label font="$x1" text="Score P3:" textFill="LIME" AnchorPane.rightAnchor="91.0" AnchorPane.topAnchor="108.0" />
-    <Label id="lblScore" fx:id="lblScoreP3" font="$x1" prefHeight="35.0" prefWidth="69.0" text="---" textFill="LIME" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="107.0" />
+    <Label id="lblScore" fx:id="lblScoreP1" font="$x1" layoutX="1015.0" layoutY="19.0" prefHeight="35.0" prefWidth="69.0" text="---" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="19.0" />
+    <Label fx:id="lblTime" font="$x1" layoutX="975.0" layoutY="115.0" prefHeight="35.0" prefWidth="69.0" text="" AnchorPane.rightAnchor="56.0" AnchorPane.topAnchor="115.0" />
+    <Label font="$x1" layoutX="914.0" layoutY="51.0" text="Score P2:" textFill="BLUE" AnchorPane.rightAnchor="89.0" AnchorPane.topAnchor="51.0" />
+    <Label id="lblScore" fx:id="lblScoreP2" font="$x1" layoutX="1017.0" layoutY="51.0" prefHeight="35.0" prefWidth="69.0" text="---" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="51.0" />
+    <Label font="$x1" layoutX="914.0" layoutY="83.0" text="Score P3:" textFill="LIME" AnchorPane.rightAnchor="89.0" AnchorPane.topAnchor="83.0" />
+    <Label id="lblScore" fx:id="lblScoreP3" font="$x1" layoutX="1017.0" layoutY="82.0" prefHeight="35.0" prefWidth="69.0" text="---" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="82.0" />
     <Label fx:id="lblPlayer1Name" font="$x1" layoutX="110.0" layoutY="14.0" text="--" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="14.0" />
       <Label fx:id="lblPlayer2Name" font="$x1" layoutX="110.0" layoutY="44.0" text="--" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="44.0" />
       <Label fx:id="lblPlayer3Name" font="$x1" layoutX="110.0" layoutY="76.0" text="--" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="76.0" />
@@ -61,12 +61,12 @@
                </font>
             </Label>
          </children></AnchorPane>
-      <Label layoutX="14.0" layoutY="44.0" text="Player 2:">
+      <Label layoutX="14.0" layoutY="44.0" text="Player 2:" textFill="BLUE">
          <font>
             <Font size="24.0" fx:id="x11" />
          </font>
       </Label>
-      <Label layoutX="14.0" layoutY="76.0" text="Player 3:">
+      <Label layoutX="14.0" layoutY="76.0" text="Player 3:" textFill="LIME">
          <font>
             <Font size="24.0" fx:id="x12" />
          </font>

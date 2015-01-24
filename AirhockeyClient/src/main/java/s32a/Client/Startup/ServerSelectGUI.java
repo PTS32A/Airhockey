@@ -124,11 +124,14 @@ public class ServerSelectGUI {
         tfPass.setText(this.pass);
         gp.add(tfPass, 1, 4);
 
-        CheckBox cbxAnyConnect = new CheckBox("AnyConnect running");
-        gp.add(cbxAnyConnect, 1, 5);
+        Label lblCustomIP = new Label("Custom IP Address");
+        gp.add(lblCustomIP, 0, 5);
+        TextField tfCustomIP = new TextField();
+        tfCustomIP.setPromptText("Leave blank for default");
+        gp.add(tfCustomIP, 1, 5);
 
-        Label lblPort = new Label("Status:");
-        gp.add(lblPort, 0, 6);
+//        CheckBox cbxAnyConnect = new CheckBox("AnyConnect running");
+//        gp.add(cbxAnyConnect, 1, 5);
 
         Button btnConfirm = new Button("Connect");
         gp.add(btnConfirm, 1, 6);
@@ -139,10 +142,10 @@ public class ServerSelectGUI {
                 user = tfUser.getText();
                 pass = tfPass.getText();
                 server = tfFTPAddress.getText();
-                SSL = cbxSSL.isSelected();
+                SSL = cbxSSL.isSelected(); 
 
                 if (loginToFTP(server, user, pass, SSL)) {
-                    setDataFromFTP(cbxAnyConnect.isSelected());
+                    setDataFromFTP(tfCustomIP.getText());
                     displayServers(true);
                     ftpLoginStage.close();
                 } else {
@@ -196,7 +199,7 @@ public class ServerSelectGUI {
                 @Override
                 public void handle(ActionEvent event) {
                     if (loginToFTP(server, user, pass, SSL)) {
-                        setDataFromFTP(false);
+                        setDataFromFTP(null);
                     } else {
                         showDialog("Error", "Unable to login to the Central Server");
                     }
@@ -327,14 +330,14 @@ public class ServerSelectGUI {
      *
      * @param anyConnect whether anyconnect should be used
      */
-    private void setDataFromFTP(boolean anyConnect) {
+    private void setDataFromFTP(String customIP) {
         servers.setAll(handler.getFTPData());
 
         // sets codebase property
         System.setProperty("java.rmi.server.codebase", handler.getCodebaseURL());
 
-        if (anyConnect) {
-            System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+        if (customIP != null && !customIP.isEmpty()) {
+            System.setProperty("java.rmi.server.hostname", customIP);
         }
 
         for (Control c : serverDisplayControls) {
