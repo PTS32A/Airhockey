@@ -60,8 +60,8 @@ public class ServerMain extends Application {
         }
         catch (Exception ex)
         {
-            showDialog("Error", "Exception in setting the stage icon: " + ex.getMessage());
-            //System.out.println("Exception in setting the stage icon: " + ex.getMessage());
+//            showDialog("Error", "Exception in setting the stage icon: " + ex.getMessage());
+            System.out.println("Exception in setting the stage icon: " + ex.getMessage());
         }
         
         Platform.runLater(new Runnable() {
@@ -137,7 +137,7 @@ public class ServerMain extends Application {
 
                     stage.show();
                 } catch (Exception ex) {
-                    //showDialog("Error", "Could not open game: " + ex.getMessage());
+//                    showDialog("Error", "Could not open server: " + ex.getMessage());
                     System.out.println(ex.toString());
                 }
             }
@@ -210,7 +210,7 @@ public class ServerMain extends Application {
                     if (serverInfo(tfSN.getText(), tfBind.getText(),
                             tfIP.getText(), tfPort.getText(), taDesc.getText())) {
                         if(!AirhockeyServer.checkLobby()){
-                            //System.out.println("Unable to initiate Lobby");
+                            System.out.println("Unable to initiate Lobby");
                             Dialog.showDialog("Server error", "Unable to initiate Lobby");
                             return;
                         }
@@ -221,7 +221,7 @@ public class ServerMain extends Application {
                                 serverInfo.getPort());
                     } else {
                         showDialog("Error", "Error occured, unable to open server");
-                        //System.out.println("Error occured, unable to open server");
+                        System.out.println("Error occured, unable to open server");
                     }
                 }
             });
@@ -300,7 +300,7 @@ public class ServerMain extends Application {
             
         } catch (NumberFormatException ex) {
             showDialog("Error", "Given port number is not a number: " + ex.getMessage());
-            //System.out.println("unable to parse " + port + " to a number");
+            System.out.println("unable to parse " + port + " to a number");
             return false;
         } catch (Exception ex) {
             ex.printStackTrace();
