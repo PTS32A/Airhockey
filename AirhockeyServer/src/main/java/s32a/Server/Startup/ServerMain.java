@@ -46,24 +46,22 @@ public class ServerMain extends Application {
 
     /**
      * Starts the server
-     * @param primaryStage 
+     *
+     * @param primaryStage
      */
     @Override
     public void start(Stage primaryStage) {
 
         this.stage = primaryStage;
         stage.setResizable(false);
-        
-        try
-        {
+
+        try {
             stage.getIcons().add(new Image("file:GamePNG.png"));
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
 //            showDialog("Error", "Exception in setting the stage icon: " + ex.getMessage());
             System.out.println("Exception in setting the stage icon: " + ex.getMessage());
         }
-        
+
         Platform.runLater(new Runnable() {
 
             @Override
@@ -146,7 +144,8 @@ public class ServerMain extends Application {
 
     /**
      * Sets up the server
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     private void serverSetUp() throws IOException {
         try {
@@ -172,7 +171,7 @@ public class ServerMain extends Application {
 
             Label localhost = new Label("Localhost:");
             gp.add(localhost, 0, 3);
-            
+
             Label lblLocalHost = new Label(InetAddress.getLocalHost().toString());
             gp.add(lblLocalHost, 1, 3);
             Label ip = new Label("IP Address:");
@@ -209,7 +208,7 @@ public class ServerMain extends Application {
                     System.out.println("Starting Server");
                     if (serverInfo(tfSN.getText(), tfBind.getText(),
                             tfIP.getText(), tfPort.getText(), taDesc.getText())) {
-                        if(!AirhockeyServer.checkLobby()){
+                        if (!AirhockeyServer.checkLobby()) {
                             System.out.println("Unable to initiate Lobby");
                             Dialog.showDialog("Server error", "Unable to initiate Lobby");
                             return;
@@ -251,6 +250,7 @@ public class ServerMain extends Application {
 
     /**
      * Sets the serverinfo of the server
+     *
      * @param address The address of the server
      * @param bind The binding name of the server
      * @param ip The ip-address of the server
@@ -275,7 +275,7 @@ public class ServerMain extends Application {
 
             // sets codebase property
             String codebase = this.handler.registerServer(serverInfo);
-            if(codebase == null){
+            if (codebase == null) {
                 return false;
             } else {
                 System.setProperty("java.rmi.server.codebase", codebase);
@@ -288,16 +288,16 @@ public class ServerMain extends Application {
                     stage.hide();
                     System.out.println("dropping server reference");
                     handler.unRegisterServer(serverInfo);
-                    try{
+                    try {
                         System.out.println("Notifying all clients");
                         Lobby.getSingle().shutDownLobby();
-                    } catch (Exception ex){
+                    } catch (Exception ex) {
                         // do nothing
                     }
                     System.exit(0);
                 }
             });
-            
+
         } catch (NumberFormatException ex) {
             showDialog("Error", "Given port number is not a number: " + ex.getMessage());
             System.out.println("unable to parse " + port + " to a number");
