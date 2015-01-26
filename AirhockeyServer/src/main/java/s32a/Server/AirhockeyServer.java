@@ -5,21 +5,31 @@
  */
 package s32a.Server;
 
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import static s32a.Server.GUI.Dialog.showDialog;
 
 /**
@@ -29,6 +39,7 @@ import static s32a.Server.GUI.Dialog.showDialog;
 public class AirhockeyServer {
 
     private Lobby lobby;
+    private ObservableList<String> outMessages;
 //    private int portNumber;
 //    private String bindingName;
 //    private String ipAddress;
@@ -103,6 +114,50 @@ public class AirhockeyServer {
         Label personIn = new Label("0");
         gp.add(personIn, 1, 4);
 
+        // Adds a listview displaying all system.out.println messages
+        ListView<String> lvOutDisplay = new ListView();
+        lvOutDisplay.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> list) {
+                final ListCell cell = new ListCell() {
+                    private Text text;
+
+                    @Override
+                    public void updateItem(Object item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!isEmpty()) {
+                            text = new Text(item.toString());
+                            text.setWrappingWidth(lvOutDisplay.getPrefWidth());
+                            setGraphic(text);
+                        }
+                    }
+                };
+
+                return cell;
+            }
+        });
+
+        this.outMessages = FXCollections.observableArrayList(new ArrayList<>());
+        // overrides default implementation of out.println to also output to list
+        System.setOut(new PrintStream(System.out){
+            public void println(String s){
+                outMessages.add(s);
+                super.println(s);
+            }
+        });
+
+        // autoscrolls to end of display
+        this.outMessages.addListener(new ListChangeListener() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change c) {
+                lvOutDisplay.scrollTo(c.getList().size() - 1);
+            }
+        });
+
+        lvOutDisplay.setItems(outMessages);
+        gp.add(lvOutDisplay, 1, 5);
+
         personIn.setText(String.valueOf(lobby.getActivePersons().keySet().size()));
         lobby.getActivePersons().addListener(new MapChangeListener() {
 
@@ -136,7 +191,7 @@ public class AirhockeyServer {
         });
 
         Group root = new Group();
-        Scene scene = new Scene(root, 300, 300);
+        Scene scene = new Scene(root, 400, 600);
         root.getChildren().add(gp);
         stage.setScene(scene);
         stage.setTitle("Server Information");
