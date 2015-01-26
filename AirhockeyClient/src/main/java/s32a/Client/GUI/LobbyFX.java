@@ -122,20 +122,20 @@ public class LobbyFX extends AirhockeyGUI implements Initializable {
         });
 
         // disables join / spectate buttons if no game is selected
-        this.tvGameDisplay.getSelectionModel().selectedIndexProperty()
-                .addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if((int)newValue >= 0){
-                    btnJoinGame.setDisable(false);
-                    btnSpectateGame.setDisable(false);
-                } else {
-                    btnJoinGame.setDisable(true);
-                    btnSpectateGame.setDisable(true);
-                }
-            }
-        });
+//        this.tvGameDisplay.getSelectionModel().selectedIndexProperty()
+//                .addListener(new ChangeListener() {
+//
+//            @Override
+//            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+//                if((int)newValue >= 0){
+//                    btnJoinGame.setDisable(false);
+//                    btnSpectateGame.setDisable(false);
+//                } else {
+//                    btnJoinGame.setDisable(true);
+//                    btnSpectateGame.setDisable(true);
+//                }
+//            }
+//        });
     }
 
     /**

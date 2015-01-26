@@ -604,7 +604,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                 try {
                     if (keyEvent.getCode() == KeyCode.A
                             || keyEvent.getCode() == KeyCode.LEFT) {
-                        System.out.println("keyevent called");
                         keyEvent.consume();
                         if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                             myPlayer.moveBat(-1);
@@ -612,7 +611,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                         }
                     } else if (keyEvent.getCode() == KeyCode.D
                             || keyEvent.getCode() == KeyCode.RIGHT) {
-                        System.out.println("keyevent called");
                         keyEvent.consume();
                         if (!myGame.getGameStatusProperty().get().equals(GameStatus.Paused)) {
                             myPlayer.moveBat(1);
