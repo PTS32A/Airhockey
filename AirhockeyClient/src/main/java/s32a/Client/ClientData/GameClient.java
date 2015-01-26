@@ -322,7 +322,6 @@ public class GameClient extends UnicastRemoteObject implements IGameClient, IGam
      */
     @Override
     public void setStatus(GameStatus status) throws RemoteException {
-//        System.out.println("status set to: " + status.toString());
         Platform.runLater(new Runnable() {
 
             @Override

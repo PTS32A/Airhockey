@@ -121,13 +121,13 @@ public class LobbyPublisher {
      *
      * @param name The name corresponding with the ILobbyClient
      * @param input The ILobbyClient to be added
-     * @return Returns a boolean indicating success of the addition
      */
     public void addObserver(String name, ILobbyClient input) {
         if (observers.containsKey(name)) {
             return;
         }
         observers.put(name, input);
+        System.out.println("Added observer " + name + " to LobbyPublisher");
         this.pushToNewObserver(name, input);
     }
 

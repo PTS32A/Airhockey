@@ -188,15 +188,21 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         myGame.getGameStatusProperty().addListener(new ChangeListener() {
 
             @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                GameStatus status = (GameStatus)newValue;
-                lblPaused.setVisible((status.equals(GameStatus.Paused)));
-                if (status == GameStatus.Playing) {
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {              
+                if (myGame.getGameStatusProperty().get() == GameStatus.Playing) {
                     gameTimeTask = new GameTimeTask(myGame);
                     tryScheduleAtFixedRate(gameTimeTask, 100L, 1000L, TimeUnit.MILLISECONDS);
-
                     myGame.getGameStatusProperty().removeListener(this);
                 }
+            }
+        });
+
+        myGame.getGameStatusProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                GameStatus status = myGame.getGameStatusProperty().get();
+                lblPaused.setVisible((status.equals(GameStatus.Paused)));
             }
         });
 

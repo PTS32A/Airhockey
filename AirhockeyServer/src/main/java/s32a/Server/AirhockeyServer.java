@@ -40,9 +40,10 @@ public class AirhockeyServer {
 
     /**
      * constructor
+     *
      * @param stage the server stage
      * @param IPAddress the ip-address of the server
-     * @param bindingName the binding name of the server 
+     * @param bindingName the binding name of the server
      * @param portNumber the port number of the server
      */
     public AirhockeyServer(Stage stage, String IPAddress, String bindingName, int portNumber) {
@@ -62,19 +63,19 @@ public class AirhockeyServer {
         if (lobby != null) {
             try {
                 Registry registry = null;
-                
+
                 // Checks whether usable registry pre-exists
-                try{
+                try {
                     registry = LocateRegistry.getRegistry(portNumber);
                     registry.lookup("test");
-                } catch (RemoteException | NotBoundException ex){
+                } catch (RemoteException | NotBoundException ex) {
                     // do nothing - expected in majority of cases
                     System.out.println("No existing registry found - starting new one");
                     registry = null;
                 }
 
                 // if not: creates new
-                if(registry == null){
+                if (registry == null) {
                     registry = LocateRegistry.createRegistry(portNumber);
                 }
                 registry.rebind(bindingName, lobby);
@@ -133,11 +134,17 @@ public class AirhockeyServer {
         });
 
         // overrides default implementation of out.println to also output to list
-        System.setOut(new PrintStream(System.out){
-            public void println(String s){
-                ObservableList<String> items = lvOutDisplay.itemsProperty().get();
-                items.add(s);
-                lvOutDisplay.scrollTo(items.size() - 1);
+        System.setOut(new PrintStream(System.out) {
+            public void println(String s) {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        ObservableList<String> items = lvOutDisplay.itemsProperty().get();
+                        items.add(s);
+                        lvOutDisplay.scrollTo(items.size() - 1);
+                    }
+                });
                 super.println(s);
             }
         });
@@ -191,6 +198,7 @@ public class AirhockeyServer {
 
     /**
      * Performs a quick check whether it was possible to init Lobby
+     *
      * @return Return a boolean indicating success
      */
     public static boolean checkLobby() {
