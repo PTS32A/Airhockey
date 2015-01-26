@@ -111,12 +111,10 @@ public class AirhockeyServer {
         gp.add(lblPersonCount, 0, 4);
         Label lblPersonCountDisplay = new Label("0");
         gp.add(lblPersonCountDisplay, 1, 4);
-        Label lblSystemLog = new Label("System Log:");
-        lblSystemLog.setUnderline(true);
-        gp.add(lblSystemLog, 1, 5);
 
         // Adds a listview displaying all system.out.println messages
         ListView<String> lvOutDisplay = new ListView();
+        lvOutDisplay.setMinWidth(400.0);
         lvOutDisplay.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> list) {
@@ -192,7 +190,7 @@ public class AirhockeyServer {
         });
 
         Group root = new Group();
-        Scene scene = new Scene(root, 300, 600);
+        Scene scene = new Scene(root, 450, 600);
         root.getChildren().add(gp);
 
         AnchorPane viewPane = new AnchorPane();

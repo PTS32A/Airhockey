@@ -65,7 +65,8 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
     Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
-            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver, statlblTime;
+            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver, 
+            statlblTime, lblPaused;
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
     @FXML
@@ -188,7 +189,9 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (myGame.getGameStatusProperty().get() == GameStatus.Playing) {
+                GameStatus status = (GameStatus)newValue;
+                lblPaused.setVisible((status.equals(GameStatus.Paused)));
+                if (status == GameStatus.Playing) {
                     gameTimeTask = new GameTimeTask(myGame);
                     tryScheduleAtFixedRate(gameTimeTask, 100L, 1000L, TimeUnit.MILLISECONDS);
 
