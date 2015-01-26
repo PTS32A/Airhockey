@@ -550,15 +550,21 @@ public class Puck extends TimerTask {
             double deltaX = Math.abs(position.get().x - batCentre.x);
             double deltaY = Math.abs(position.get().y - batCentre.y);
             double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            Vector2 result = null;
 
             if (distance < (puckSize / 2) + (p.getBatWidth() / 2)) {
+                
                 if (p.getColor() == Colors.Green) {
                     direction = 120;
+                    result.y = (float)p.getPosY().get() + (int)Math.round(radius * Math.sin(Math.toRadians(330)));
+                    result.x = (float)p.getPosX().get() + (int)Math.round(radius * Math.cos(Math.toRadians(330)));
                     batBouncePosition = new Vector2((float) (p.getPosX().get() - radius), (float) (p.getPosY().get() - puckSize / 2));
                     xPosBat.bind(Bindings.subtract(p.getPosX(), radius));
                     yPosBat.bind(Bindings.subtract(p.getPosY(), puckSize / 2));
                 } else if (p.getColor() == Colors.Blue) {
                     direction = 60;
+                    result.y = (float)p.getPosY().get() + (int)Math.round(radius * Math.sin(Math.toRadians(210)));
+                    result.x = (float)p.getPosX().get() + (int)Math.round(radius * Math.cos(Math.toRadians(210)));
                     batBouncePosition = new Vector2((float) (p.getPosX().get() + radius), (float) (p.getPosY().get() - puckSize / 2));
                     xPosBat.bind(Bindings.add(p.getPosX(), radius));
                     yPosBat.bind(Bindings.subtract(p.getPosY(), puckSize / 2));
