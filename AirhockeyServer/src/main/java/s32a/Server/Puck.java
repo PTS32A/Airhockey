@@ -558,15 +558,15 @@ public class Puck extends TimerTask {
                     direction = 120;
 //                    result.y = (float)p.getPosY().get() + (int)Math.round(radius * Math.sin(Math.toRadians(330)));
 //                    result.x = (float)p.getPosX().get() + (int)Math.round(radius * Math.cos(Math.toRadians(330)));
-                    xPosBat.bind(Bindings.add(p.getPosX(), p.getPosX().get() + (int)Math.round(radius * Math.sin(Math.toRadians(330)))));
-                    yPosBat.bind(Bindings.add(p.getPosY(), p.getPosY().get() + (int)Math.round(radius * Math.cos(Math.toRadians(330)))));
+                    xPosBat.bind(Bindings.add(p.getPosX(), (int)Math.round(radius * Math.sin(Math.toRadians(210)))));
+                    yPosBat.bind(Bindings.add(p.getPosY(), (int)Math.round(radius * Math.cos(Math.toRadians(210)))));
                     batBouncePosition = new Vector2((float)xPosBat.get(), (float)yPosBat.get());
                 } else if (p.getColor() == Colors.Blue) {
                     direction = 60;
 //                    result.y = (float)p.getPosY().get() + (int)Math.round(radius * Math.sin(Math.toRadians(210)));
 //                    result.x = (float)p.getPosX().get() + (int)Math.round(radius * Math.cos(Math.toRadians(210)));
-                    xPosBat.bind(Bindings.add(p.getPosX(), p.getPosX().get() + (int)Math.round(radius * Math.sin(Math.toRadians(210)))));
-                    yPosBat.bind(Bindings.add(p.getPosY(), p.getPosY().get() + (int)Math.round(radius * Math.cos(Math.toRadians(210)))));
+                    xPosBat.bind(Bindings.add(p.getPosX(), (int)Math.round(radius * Math.sin(Math.toRadians(330)))));
+                    yPosBat.bind(Bindings.add(p.getPosY(), (int)Math.round(radius * Math.cos(Math.toRadians(330)))));
                     batBouncePosition = new Vector2((float)xPosBat.get(), (float)yPosBat.get());
                 } else {
                     direction = 0;
