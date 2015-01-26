@@ -6,14 +6,11 @@
 package s32a.Server;
 
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -26,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -97,22 +95,25 @@ public class AirhockeyServer {
         gp.setHgap(10);
         gp.setVgap(10);
         gp.setPadding(new Insets(25, 25, 25, 25));
-        Label ip = new Label("IP Address:");
-        gp.add(ip, 0, 0);
-        Label ipIn = new Label(IPAddress);
-        gp.add(ipIn, 1, 0);
+        Label lblIP = new Label("IP Address:");
+        gp.add(lblIP, 0, 0);
+        Label lblIPDisplay = new Label(IPAddress);
+        gp.add(lblIPDisplay, 1, 0);
         Label lblPort = new Label("Port:");
         gp.add(lblPort, 0, 2);
-        Label portIn = new Label(String.valueOf(portNumber));
-        gp.add(portIn, 1, 2);
-        Label games = new Label("Active Games:");
-        gp.add(games, 0, 3);
-        Label gamesIn = new Label("0");
-        gp.add(gamesIn, 1, 3);
-        Label person = new Label("Active Users:");
-        gp.add(person, 0, 4);
-        Label personIn = new Label("0");
-        gp.add(personIn, 1, 4);
+        Label lblPortDisplay = new Label(String.valueOf(portNumber));
+        gp.add(lblPortDisplay, 1, 2);
+        Label lblGamesCount = new Label("Active Games:");
+        gp.add(lblGamesCount, 0, 3);
+        Label lblGamesCountDisplay = new Label("0");
+        gp.add(lblGamesCountDisplay, 1, 3);
+        Label lblPersonCount = new Label("Active Users:");
+        gp.add(lblPersonCount, 0, 4);
+        Label lblPersonCountDisplay = new Label("0");
+        gp.add(lblPersonCountDisplay, 1, 4);
+        Label lblSystemLog = new Label("System Log:");
+        lblSystemLog.setUnderline(true);
+        gp.add(lblSystemLog, 1, 5);
 
         // Adds a listview displaying all system.out.println messages
         ListView<String> lvOutDisplay = new ListView();
@@ -156,9 +157,9 @@ public class AirhockeyServer {
         });
 
         lvOutDisplay.setItems(outMessages);
-        gp.add(lvOutDisplay, 1, 5);
+//        gp.add(lvOutDisplay, 1, 5);
 
-        personIn.setText(String.valueOf(lobby.getActivePersons().keySet().size()));
+        lblPersonCountDisplay.setText(String.valueOf(lobby.getActivePersons().keySet().size()));
         lobby.getActivePersons().addListener(new MapChangeListener() {
 
             @Override
@@ -168,13 +169,13 @@ public class AirhockeyServer {
 
                     @Override
                     public void run() {
-                        personIn.setText(size);
+                        lblPersonCountDisplay.setText(size);
                     }
                 });
             }
         });
 
-        gamesIn.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
+        lblGamesCountDisplay.setText(String.valueOf(lobby.getActiveGames().keySet().size()));
         lobby.getActiveGames().addListener(new MapChangeListener() {
 
             @Override
@@ -184,15 +185,22 @@ public class AirhockeyServer {
 
                     @Override
                     public void run() {
-                        gamesIn.setText(size);
+                        lblGamesCountDisplay.setText(size);
                     }
                 });
             }
         });
 
         Group root = new Group();
-        Scene scene = new Scene(root, 400, 600);
+        Scene scene = new Scene(root, 300, 600);
         root.getChildren().add(gp);
+
+        AnchorPane viewPane = new AnchorPane();
+        viewPane.getChildren().add(lvOutDisplay);
+        AnchorPane.setTopAnchor(lvOutDisplay, 170.0);
+        AnchorPane.setLeftAnchor(lvOutDisplay, 25.0);
+        root.getChildren().add(viewPane);
+
         stage.setScene(scene);
         stage.setTitle("Server Information");
         stage.show();
