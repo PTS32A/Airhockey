@@ -65,7 +65,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
     @FXML
     Label lblPlayer1Name, lblPlayer2Name, lblPlayer3Name, lblDifficulty, lblScoreP1,
-            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver, 
+            lblScoreP2, lblScoreP3, lblRound, lblTime, lblCount, lblGameOver,
             statlblTime, lblPaused;
     @FXML
     Button btnStart, btnPause, btnQuit, btnStopSpec;
@@ -139,6 +139,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
 
         } else if (myPerson instanceof ISpectator) {
             statlblTime.setVisible(false);
+            lblTime.setVisible(false);
             btnStart.setVisible(false);
             btnPause.setVisible(false);
             btnQuit.setVisible(false);
@@ -188,7 +189,10 @@ public class GameFX extends AirhockeyGUI implements Initializable {
         myGame.getGameStatusProperty().addListener(new ChangeListener() {
 
             @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {              
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if ((getMe()) instanceof ISpectator) {
+                    myGame.getGameStatusProperty().removeListener(this);
+                }
                 if (myGame.getGameStatusProperty().get() == GameStatus.Playing) {
                     gameTimeTask = new GameTimeTask(myGame);
                     tryScheduleAtFixedRate(gameTimeTask, 100L, 1000L, TimeUnit.MILLISECONDS);
@@ -499,7 +503,7 @@ public class GameFX extends AirhockeyGUI implements Initializable {
     @FXML
     public void pauseClick(Event evt) {
         GameStatus status = myGame.getGameStatusProperty().get();
-        if(!status.equals(GameStatus.Playing) && !status.equals(GameStatus.Paused)){
+        if (!status.equals(GameStatus.Playing) && !status.equals(GameStatus.Paused)) {
             return;
         }
 
@@ -625,9 +629,6 @@ public class GameFX extends AirhockeyGUI implements Initializable {
                             myPlayer.moveBat(1);
                             actionTaken = true;
                         }
-                    } else if (keyEvent.getCode() == KeyCode.P) {
-                        pauseClick(null);
-                        actionTaken = true;
                     }
                 } catch (RemoteException ex) {
                     System.out.println("RemoteException in moveBat: " + ex.getMessage());
