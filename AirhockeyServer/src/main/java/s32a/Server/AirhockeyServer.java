@@ -37,10 +37,6 @@ import static s32a.Server.GUI.Dialog.showDialog;
 public class AirhockeyServer {
 
     private Lobby lobby;
-    private ObservableList<String> outMessages;
-//    private int portNumber;
-//    private String bindingName;
-//    private String ipAddress;
 
     /**
      * constructor
@@ -136,26 +132,15 @@ public class AirhockeyServer {
             }
         });
 
-        this.outMessages = FXCollections.observableArrayList(new ArrayList<>());
         // overrides default implementation of out.println to also output to list
         System.setOut(new PrintStream(System.out){
             public void println(String s){
-                outMessages.add(s);
+                ObservableList<String> items = lvOutDisplay.itemsProperty().get();
+                items.add(s);
+                lvOutDisplay.scrollTo(items.size() - 1);
                 super.println(s);
             }
         });
-
-        // autoscrolls to end of display
-        this.outMessages.addListener(new ListChangeListener() {
-
-            @Override
-            public void onChanged(ListChangeListener.Change c) {
-                lvOutDisplay.scrollTo(c.getList().size() - 1);
-            }
-        });
-
-        lvOutDisplay.setItems(outMessages);
-//        gp.add(lvOutDisplay, 1, 5);
 
         lblPersonCountDisplay.setText(String.valueOf(lobby.getActivePersons().keySet().size()));
         lobby.getActivePersons().addListener(new MapChangeListener() {
