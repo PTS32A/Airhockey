@@ -357,9 +357,9 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
         if (game.statusProperty().get() == GameStatus.GameOver) {
             throw new IllegalArgumentException("Unable to watch a finished game");
         }
-        if (game.getRoundNo().get() < 1) {
-            throw new IllegalArgumentException("Unable to spectate a game still waiting to start");
-        }
+//        if (game.getRoundNo().get() < 1) {
+//            throw new IllegalArgumentException("Unable to spectate a game still waiting to start");
+//        }
         if (client == null) {
             throw new IllegalArgumentException("Game client was null");
         }
